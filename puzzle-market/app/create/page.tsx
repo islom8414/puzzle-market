@@ -139,12 +139,23 @@ export default function CreatePage() {
 
     };
 
-    const { error } =
-      await supabase
-        .from("marketplace")
-        .insert(
-          marketplaceItem
-        );
+    const { data: insertedData, error } =
+  await supabase
+    .from("marketplace")
+    .insert([
+      marketplaceItem
+    ])
+    .select();
+
+console.log(
+  "INSERTED DATA:",
+  insertedData
+);
+
+console.log(
+  "INSERT ERROR:",
+  error
+);
 
     if (error) {
 
