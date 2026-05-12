@@ -44,9 +44,38 @@ export default function MarketplacePage() {
 
   useEffect(() => {
 
-    loadMarketplace();
+  loadMarketplace();
 
-  }, []);
+  const channel =
+    supabase
+      .channel(
+        "live-marketplace"
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table:
+            "marketplace",
+        },
+        () => {
+
+          loadMarketplace();
+
+        }
+      )
+      .subscribe();
+
+  return () => {
+
+    supabase.removeChannel(
+      channel
+    );
+
+  };
+
+}, []);
 
   const loadMarketplace =
     async () => {
