@@ -4,8 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
 
-import { fragments } from "@/data/fragments";
-
 import { supabase } from "@/lib/supabase";
 
 type MarketItem = {
@@ -20,11 +18,13 @@ type MarketItem = {
 
   image: string;
 
-  piece: number;
+  piece: string;
 
   price: number;
 
   rarity: string;
+
+  created_at?: string;
 
 };
 
@@ -54,7 +54,13 @@ export default function MarketplacePage() {
       const { data, error } =
         await supabase
           .from("marketplace")
-          .select("*");
+          .select("*")
+          .order(
+            "created_at",
+            {
+              ascending: false,
+            }
+          );
 
       if (!error && data) {
 
@@ -66,51 +72,10 @@ export default function MarketplacePage() {
 
     };
 
-  const combinedFragments =
-    useMemo(() => {
-
-      const originalFragments =
-        fragments.map((fragment) => ({
-
-          id: fragment.id,
-
-          fragment_id:
-            fragment.slug,
-
-          title:
-            fragment.title,
-
-          image:
-            fragment.image,
-
-          piece:
-            fragment.piece,
-
-          price:
-            fragment.price,
-
-          rarity:
-            fragment.rarity,
-
-          seller_email:
-            fragment.owner,
-
-          default:
-            true,
-
-        }));
-
-      return [
-        ...marketItems,
-        ...originalFragments,
-      ];
-
-    }, [marketItems]);
-
   const filteredFragments =
     useMemo(() => {
 
-      return combinedFragments.filter(
+      return marketItems.filter(
         (fragment) => {
 
           const matchesSearch =
@@ -136,7 +101,7 @@ export default function MarketplacePage() {
       );
 
     }, [
-      combinedFragments,
+      marketItems,
       search,
       rarityFilter,
     ]);
@@ -231,10 +196,10 @@ export default function MarketplacePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
           {filteredFragments.map(
-            (fragment, index) => (
+            (fragment) => (
 
               <div
-                key={`${fragment.fragment_id}-${index}`}
+                key={fragment.id}
                 className="rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 hover:border-cyan-400 transition"
               >
 
@@ -258,13 +223,9 @@ export default function MarketplacePage() {
                     }
                   </div>
 
-                  {!(fragment as any).default && (
-
-                    <div className="absolute top-4 right-4 bg-green-400 text-black px-3 py-1 rounded-full text-xs font-black">
-                      LIVE
-                    </div>
-
-                  )}
+                  <div className="absolute top-4 right-4 bg-green-400 text-black px-3 py-1 rounded-full text-xs font-black">
+                    LIVE
+                  </div>
 
                 </div>
 
@@ -287,7 +248,7 @@ export default function MarketplacePage() {
 
                   <div className="mt-5 space-y-3 text-sm">
 
-                    <div className="flex justify-between">
+                    <div className="flex justify-between gap-3">
 
                       <span className="text-zinc-500">
                         Seller
