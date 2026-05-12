@@ -258,7 +258,7 @@ export default function MarketplacePage() {
                     }
                   </div>
 
-                  {!fragment.default && (
+                  {!(fragment as any).default && (
 
                     <div className="absolute top-4 right-4 bg-green-400 text-black px-3 py-1 rounded-full text-xs font-black">
                       LIVE
