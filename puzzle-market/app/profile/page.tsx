@@ -16,9 +16,27 @@ type InventoryItem = {
 
   image: string;
 
-  piece: number;
+  piece: string;
 
   price: number;
+
+};
+
+type UploadedItem = {
+
+  id: number;
+
+  fragment_id: string;
+
+  title: string;
+
+  image: string;
+
+  piece: string;
+
+  price: number;
+
+  rarity: string;
 
 };
 
@@ -26,6 +44,9 @@ export default function ProfilePage() {
 
   const [inventory, setInventory] =
     useState<InventoryItem[]>([]);
+
+  const [uploads, setUploads] =
+    useState<UploadedItem[]>([]);
 
   const [balance, setBalance] =
     useState(8420);
@@ -56,7 +77,11 @@ export default function ProfilePage() {
         );
 
       if (savedBalance) {
-        setBalance(Number(savedBalance));
+
+        setBalance(
+          Number(savedBalance)
+        );
+
       }
 
       if (!savedUser) {
@@ -70,7 +95,11 @@ export default function ProfilePage() {
 
       setUsername(savedUser);
 
-      const { data, error } =
+      /* INVENTORY */
+
+      const {
+        data: inventoryData,
+      } =
         await supabase
           .from("inventory")
           .select("*")
@@ -79,9 +108,38 @@ export default function ProfilePage() {
             savedUser
           );
 
-      if (!error && data) {
+      if (inventoryData) {
 
-        setInventory(data);
+        setInventory(
+          inventoryData
+        );
+
+      }
+
+      /* USER UPLOADS */
+
+      const {
+        data: uploadData,
+      } =
+        await supabase
+          .from("marketplace")
+          .select("*")
+          .eq(
+            "seller_email",
+            savedUser
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false,
+            }
+          );
+
+      if (uploadData) {
+
+        setUploads(
+          uploadData
+        );
 
       }
 
@@ -114,17 +172,17 @@ export default function ProfilePage() {
                 </h1>
 
                 <p className="text-zinc-500 mt-2 text-sm">
-                  Premium Puzzle Collector
+                  Premium Puzzle Creator
                 </p>
 
                 <div className="flex items-center gap-3 mt-4">
 
                   <div className="bg-cyan-400 text-black px-3 py-1 rounded-full text-xs font-black">
-                    VIP MEMBER
+                    VERIFIED CREATOR
                   </div>
 
                   <div className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-xs font-black">
-                    Rank #12
+                    CLOUD MEMBER
                   </div>
 
                 </div>
@@ -133,9 +191,12 @@ export default function ProfilePage() {
 
             </div>
 
-            <button className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-5 py-3 rounded-2xl transition">
-              Edit Profile
-            </button>
+            <Link
+              href="/create"
+              className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-5 py-3 rounded-2xl transition text-center"
+            >
+              Upload Fragment
+            </Link>
 
           </div>
 
@@ -143,7 +204,7 @@ export default function ProfilePage() {
 
         {/* STATS */}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mt-8">
 
           <div className="bg-zinc-950 border border-white/10 rounded-3xl p-5">
 
@@ -153,6 +214,18 @@ export default function ProfilePage() {
 
             <h2 className="text-4xl font-black mt-3">
               {inventory.length}
+            </h2>
+
+          </div>
+
+          <div className="bg-zinc-950 border border-white/10 rounded-3xl p-5">
+
+            <p className="text-zinc-500 text-sm">
+              Uploaded Fragments
+            </p>
+
+            <h2 className="text-4xl font-black mt-3">
+              {uploads.length}
             </h2>
 
           </div>
@@ -183,21 +256,19 @@ export default function ProfilePage() {
 
         </div>
 
-        {/* TITLE */}
+        {/* INVENTORY */}
 
-        <div className="mt-12">
+        <div className="mt-14">
 
           <h2 className="text-4xl font-black">
-            Cloud Inventory
+            Owned Inventory
           </h2>
 
           <p className="text-zinc-500 mt-2">
-            Synced collectible fragments from database
+            Purchased collectible fragments
           </p>
 
         </div>
-
-        {/* LOADING */}
 
         {loading && (
 
@@ -211,34 +282,6 @@ export default function ProfilePage() {
 
         )}
 
-        {/* EMPTY */}
-
-        {!loading &&
-          inventory.length === 0 && (
-
-          <div className="mt-10 bg-zinc-950 border border-dashed border-white/10 rounded-3xl p-14 text-center">
-
-            <h3 className="text-3xl font-black">
-              No Fragments Yet
-            </h3>
-
-            <p className="text-zinc-500 mt-3">
-              Buy your first fragment from marketplace.
-            </p>
-
-            <Link
-              href="/marketplace"
-              className="inline-flex mt-7 bg-cyan-400 hover:bg-cyan-300 text-black font-black px-6 py-3 rounded-2xl transition"
-            >
-              Open Marketplace
-            </Link>
-
-          </div>
-
-        )}
-
-        {/* GRID */}
-
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7 mt-10">
 
           {inventory.map((fragment) => (
@@ -248,19 +291,11 @@ export default function ProfilePage() {
               className="rounded-3xl overflow-hidden border border-white/10 bg-zinc-950 hover:border-cyan-400 transition"
             >
 
-              <div className="relative">
-
-                <img
-                  src={fragment.image}
-                  alt={fragment.title}
-                  className="w-full h-72 object-cover"
-                />
-
-                <div className="absolute top-4 right-4 bg-green-400 text-black px-3 py-1 rounded-full text-xs font-black">
-                  OWNED
-                </div>
-
-              </div>
+              <img
+                src={fragment.image}
+                alt={fragment.title}
+                className="w-full h-72 object-cover"
+              />
 
               <div className="p-5">
 
@@ -275,18 +310,6 @@ export default function ProfilePage() {
                 <div className="mt-5">
 
                   <p className="text-zinc-500 text-sm">
-                    Cloud Synced
-                  </p>
-
-                  <h2 className="text-green-400 text-3xl font-black mt-1">
-                    STORED
-                  </h2>
-
-                </div>
-
-                <div className="mt-5">
-
-                  <p className="text-zinc-500 text-sm">
                     Estimated Value
                   </p>
 
@@ -296,12 +319,72 @@ export default function ProfilePage() {
 
                 </div>
 
-                <Link
-                  href={`/puzzle/${fragment.fragment_id}`}
-                  className="mt-6 flex items-center justify-center w-full bg-cyan-400 hover:bg-cyan-300 text-black font-black py-3 rounded-2xl transition"
-                >
-                  Open Fragment
-                </Link>
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+
+        {/* USER UPLOADS */}
+
+        <div className="mt-20">
+
+          <h2 className="text-4xl font-black">
+            Uploaded Fragments
+          </h2>
+
+          <p className="text-zinc-500 mt-2">
+            Your live marketplace creations
+          </p>
+
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7 mt-10">
+
+          {uploads.map((fragment) => (
+
+            <div
+              key={fragment.id}
+              className="rounded-3xl overflow-hidden border border-cyan-400/30 bg-zinc-950 hover:border-cyan-400 transition"
+            >
+
+              <div className="relative">
+
+                <img
+                  src={fragment.image}
+                  alt={fragment.title}
+                  className="w-full h-72 object-cover"
+                />
+
+                <div className="absolute top-4 right-4 bg-green-400 text-black px-3 py-1 rounded-full text-xs font-black">
+                  LIVE
+                </div>
+
+              </div>
+
+              <div className="p-5">
+
+                <p className="text-zinc-500 text-sm">
+                  {fragment.title}
+                </p>
+
+                <h3 className="text-3xl font-black mt-1">
+                  #{fragment.piece}
+                </h3>
+
+                <div className="mt-4 flex items-center justify-between">
+
+                  <div className="bg-black border border-white/10 px-3 py-1 rounded-full text-xs font-black">
+                    {fragment.rarity}
+                  </div>
+
+                  <div className="text-cyan-400 text-2xl font-black">
+                    ${fragment.price}
+                  </div>
+
+                </div>
 
               </div>
 
