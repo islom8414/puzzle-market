@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Puzzle Market</title>
+
+<style>
+body{
+  margin:0;
+  background:#111;
+  color:white;
+  font-family:Arial;
+  overflow:hidden;
+}
+
+.topbar{
+  height:60px;
+  background:#1b1b1b;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+  border-bottom:1px solid #333;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:bold;
+  color:#00ffcc;
+}
+
+.menu{
+  display:flex;
+  gap:20px;
+}
+
+.menu div{
+  cursor:pointer;
+  color:#ccc;
+}
+
+.menu div:hover{
+  color:white;
+}
+
+canvas{
+  display:block;
+  margin:auto;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">🧩 Puzzle Market</div>
+
+  <div class="menu">
+    <div>Economy</div>
+    <div>Standard</div>
+    <div>VIP</div>
+    <div>Profile</div>
+    <div>Login</div>
+  </div>
+</div>
+
+<script src="./node_modules/pixi.js/dist/browser/pixi.min.js"></script>
+
+<script>
+const app = new PIXI.Application({
+  width: 1200,
+  height: 800,
+  backgroundColor: 0x111111
+});
+
+document.body.appendChild(app.view);
+
+const size = 8; // много кусочков
+const pieceSize = 55;
+
+const frameX = 350;
+const frameY = 120;
+const puzzleSize = size * pieceSize;
+
+const loader = new PIXI.Loader();
+loader.add('img', 'image.jpg');
+
+loader.load((loader, resources)=>{
+
+  const texture = resources.img.texture;
+
+  // 🟩 рамка
+  const frame = new PIXI.Graphics();
+  frame.lineStyle(4, 0x00ffcc);
+  frame.beginFill(0x1a1a1a);
+  frame.drawRect(frameX, frameY, puzzleSize, puzzleSize);
+  frame.endFill();
+  app.stage.addChild(frame);
+
+  // ❌ отсутствующий кусок
+  const missingX = Math.floor(Math.random()*size);
+  const missingY = Math.floor(Math.random()*size);
+
+  for(let y=0;y<size;y++){
+    for(let x=0;x<size;x++){
+
+      // ❌ пропускаем один кусок
+      if(x===missingX && y===missingY){
+
+        const hole = new PIXI.Graphics();
+        hole.beginFill(0x000000);
+        hole.drawRect(
+          frameX + x*pieceSize,
+          frameY + y*pieceSize,
+          pieceSize,
+          pieceSize
+        );
+        hole.endFill();
+
+        // 💰 цена
+        const text = new PIXI.Text("VIP",{
+          fill:"white",
+          fontSize:14
+        });
+
+        text.x = frameX + x*pieceSize + 10;
+        text.y = frameY + y*pieceSize + 18;
+
+        app.stage.addChild(hole);
+        app.stage.addChild(text);
+
+        continue;
+      }
+
+      const rect = new PIXI.Rectangle(
+        x*pieceSize,
+        y*pieceSize,
+        pieceSize,
+        pieceSize
+      );
+
+      const part = new PIXI.Texture(texture.baseTexture, rect);
+
+      const sprite = new PIXI.Sprite(part);
+
+      // 🎯 сразу собранный пазл
+      sprite.x = frameX + x*pieceSize;
+      sprite.y = frameY + y*pieceSize;
+
+      sprite.correctX = sprite.x;
+      sprite.correctY = sprite.y;
+
+      sprite.width = pieceSize;
+      sprite.height = pieceSize;
+
+      sprite.interactive = true;
+      sprite.buttonMode = true;
+
+      sprite
+        .on("pointerdown", dragStart)
+        .on("pointerup", dragEnd)
+        .on("pointerupoutside", dragEnd)
+        .on("pointermove", dragMove);
+
+      app.stage.addChild(sprite);
+    }
+  }
+
+  function dragStart(e){
+    this.data = e.data;
+    this.dragging = true;
+
+    app.stage.addChild(this);
+
+    const pos = this.data.getLocalPosition(this);
+
+    this.offsetX = pos.x;
+    this.offsetY = pos.y;
+  }
+
+  function dragEnd(){
+    this.dragging = false;
+    this.data = null;
+
+    const snap = 10;
+
+    if(Math.abs(this.x - this.correctX) < snap &&
+       Math.abs(this.y - this.correctY) < snap){
+
+      this.x = this.correctX;
+      this.y = this.correctY;
+    }
+  }
+
+  function dragMove(){
+    if(this.dragging){
+
+      const pos = this.data.getLocalPosition(this.parent);
+
+      this.x = pos.x - this.offsetX;
+      this.y = pos.y - this.offsetY;
+    }
+  }
+
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>REAL PUZZLE (Pixi)</title>
+<style>
+  body { margin:0; background:#111; color:#fff; text-align:center; font-family:Arial; }
+  #game { width:800px; height:600px; margin:20px auto; }
+</style>
+</head>
+<body>
+
+<h1>🧩 REAL PUZZLE</h1>
+<div id="game"></div>
+
+<script src="https://pixijs.download/release/pixi.min.js"></script>
+
+<script>
+const app = new PIXI.Application({ width: 600, height: 600, backgroundColor: 0x222222 });
+document.getElementById("game").appendChild(app.view);
+
+const imgUrl = "image.jpg";
+const size = 4;
+const pieceSize = 150;
+const tab = 20;
+
+PIXI.Assets.load(imgUrl).then(texture => {
+  let pieces = [];
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+
+      const piece = new PIXI.Graphics();
+      piece.beginFill(0xffffff);
+
+      // форма пазла
+      piece.moveTo(0,0);
+      piece.lineTo(pieceSize/3,0);
+      piece.bezierCurveTo(pieceSize/3,-tab,2*pieceSize/3,-tab,2*pieceSize/3,0);
+      piece.lineTo(pieceSize,0);
+      piece.lineTo(pieceSize,pieceSize/3);
+      piece.bezierCurveTo(pieceSize+tab,pieceSize/3,pieceSize+tab,2*pieceSize/3,pieceSize,2*pieceSize/3);
+      piece.lineTo(pieceSize,pieceSize);
+      piece.lineTo(2*pieceSize/3,pieceSize);
+      piece.bezierCurveTo(2*pieceSize/3,pieceSize+tab,pieceSize/3,pieceSize+tab,pieceSize/3,pieceSize);
+      piece.lineTo(0,pieceSize);
+      piece.lineTo(0,2*pieceSize/3);
+      piece.bezierCurveTo(-tab,2*pieceSize/3,-tab,pieceSize/3,0,pieceSize/3);
+      piece.closePath();
+      piece.endFill();
+
+      const sprite = new PIXI.Sprite(texture);
+      sprite.x = -x * pieceSize;
+      sprite.y = -y * pieceSize;
+
+      const container = new PIXI.Container();
+      container.addChild(sprite);
+      container.mask = piece;
+      container.addChild(piece);
+
+      container.x = Math.random() * 400;
+      container.y = Math.random() * 400;
+
+      container.interactive = true;
+      container.buttonMode = true;
+
+      container
+        .on("pointerdown", onDragStart)
+        .on("pointerup", onDragEnd)
+        .on("pointerupoutside", onDragEnd)
+        .on("pointermove", onDragMove);
+
+      container.correctX = x * pieceSize;
+      container.correctY = y * pieceSize;
+
+      pieces.push(container);
+      app.stage.addChild(container);
+    }
+  }
+
+  // удаляем 1 кусок
+  const missing = Math.floor(Math.random() * pieces.length);
+  app.stage.removeChild(pieces[missing]);
+
+  function onDragStart(event) {
+    this.data = event.data;
+    this.dragging = true;
+  }
+
+  function onDragEnd() {
+    this.dragging = false;
+    this.data = null;
+
+    // магнит
+    if (Math.abs(this.x - this.correctX) < 30 &&
+        Math.abs(this.y - this.correctY) < 30) {
+      this.x = this.correctX;
+      this.y = this.correctY;
+    }
+  }
+
+  function onDragMove() {
+    if (this.dragging) {
+      const newPos = this.data.getLocalPosition(this.parent);
+      this.x = newPos.x;
+      this.y = newPos.y;
+    }
+  }
+});
+</script>
+
+</body>
+</html>
