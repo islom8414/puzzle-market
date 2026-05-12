@@ -115,6 +115,69 @@ export default function SellPage() {
 
       }
 
+      let uploadedImage =
+        fragment.image;
+
+      try {
+
+        if (
+          fragment.image.startsWith(
+            "blob:"
+          )
+        ) {
+
+          const response =
+            await fetch(
+              fragment.image
+            );
+
+          const blob =
+            await response.blob();
+
+          const fileName =
+            `${Date.now()}-${fragment.fragment_id}.jpg`;
+
+          const {
+            error: uploadError,
+          } =
+            await supabase.storage
+              .from(
+                "fragments"
+              )
+              .upload(
+                fileName,
+                blob,
+                {
+                  upsert: true,
+                }
+              );
+
+          if (!uploadError) {
+
+            const {
+              data,
+            } =
+              supabase.storage
+                .from(
+                  "fragments"
+                )
+                .getPublicUrl(
+                  fileName
+                );
+
+            uploadedImage =
+              data.publicUrl;
+
+          }
+
+        }
+
+      } catch (err) {
+
+        console.log(err);
+
+      }
+
       const original =
         fragments.find(
           (f) =>
@@ -131,7 +194,8 @@ export default function SellPage() {
 
         title: fragment.title,
 
-        image: fragment.image,
+        image:
+          uploadedImage,
 
         piece: fragment.piece,
 
@@ -191,8 +255,6 @@ export default function SellPage() {
 
       <div className="max-w-7xl mx-auto">
 
-        {/* HERO */}
-
         <div className="mb-12">
 
           <p className="text-cyan-400 font-black uppercase tracking-wider text-sm">
@@ -211,8 +273,6 @@ export default function SellPage() {
 
         </div>
 
-        {/* LOADING */}
-
         {loading && (
 
           <div className="bg-zinc-950 border border-white/10 rounded-3xl p-12 text-center">
@@ -224,8 +284,6 @@ export default function SellPage() {
           </div>
 
         )}
-
-        {/* EMPTY */}
 
         {!loading &&
           inventory.length === 0 && (
@@ -243,8 +301,6 @@ export default function SellPage() {
           </div>
 
         )}
-
-        {/* GRID */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
@@ -304,8 +360,6 @@ export default function SellPage() {
 
                   </div>
 
-                  {/* INPUT */}
-
                   <input
                     type="number"
                     value={
@@ -324,8 +378,6 @@ export default function SellPage() {
                     placeholder="Set listing price..."
                     className="w-full mt-6 bg-black border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-cyan-400 transition"
                   />
-
-                  {/* BUTTON */}
 
                   <button
                     onClick={() =>
