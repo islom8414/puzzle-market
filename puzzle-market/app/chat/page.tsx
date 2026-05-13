@@ -22,9 +22,6 @@ export default function ChatPage() {
   const [username, setUsername] =
     useState("Guest");
 
-  const [loading, setLoading] =
-    useState(true);
-
   const bottomRef =
     useRef<HTMLDivElement>(
       null
@@ -88,7 +85,6 @@ export default function ChatPage() {
 
       const {
         data,
-        error,
       } =
         await supabase
           .from("chat")
@@ -100,23 +96,11 @@ export default function ChatPage() {
             }
           );
 
-      console.log(
-        "CHAT DATA:",
-        data
-      );
-
-      console.log(
-        "CHAT ERROR:",
-        error
-      );
-
       if (data) {
 
         setMessages(data);
 
       }
-
-      setLoading(false);
 
     };
 
@@ -129,22 +113,14 @@ export default function ChatPage() {
 
       }
 
-      const {
-        error,
-      } =
-        await supabase
-          .from("chat")
-          .insert([
-            {
-              username,
-              text,
-            },
-          ]);
-
-      console.log(
-        "SEND ERROR:",
-        error
-      );
+      await supabase
+        .from("chat")
+        .insert([
+          {
+            username,
+            text,
+          },
+        ]);
 
       setText("");
 
@@ -156,54 +132,33 @@ export default function ChatPage() {
 
     <main className="h-screen bg-black text-white flex flex-col overflow-hidden">
 
-      {/* BG */}
+      {/* TOP */}
 
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.14),transparent_35%)] pointer-events-none" />
+      <div className="border-b border-white/10 p-6 shrink-0">
 
-      {/* HERO */}
+        <p className="text-cyan-400 uppercase text-xs font-black tracking-[0.3em]">
+          REALTIME MARKETPLACE CHAT
+        </p>
 
-      <div className="relative border-b border-white/10 bg-white/[0.03] backdrop-blur-xl shrink-0">
+        <h1 className="text-5xl font-black mt-4">
+          Live Messenger
+        </h1>
 
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-
-          <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
-            REALTIME MARKETPLACE CHAT
-          </p>
-
-          <h1 className="text-4xl md:text-6xl font-black mt-4 leading-none">
-            Live Messenger
-          </h1>
-
-          <p className="text-zinc-400 mt-4">
-            Talk with collectors, sellers and realtime marketplace traders.
-          </p>
-
-        </div>
+        <p className="text-zinc-500 mt-4">
+          Talk with collectors and traders.
+        </p>
 
       </div>
 
       {/* CHAT */}
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-4 py-6">
 
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-6 min-h-full">
+        <div className="max-w-4xl mx-auto space-y-5">
 
-          {loading && (
+          {messages.length === 0 && (
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-[32px] p-10 text-center">
-
-              <h2 className="text-3xl font-black">
-                Loading Chat...
-              </h2>
-
-            </div>
-
-          )}
-
-          {!loading &&
-            messages.length === 0 && (
-
-            <div className="bg-white/[0.03] border border-white/10 rounded-[32px] p-10 text-center">
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-10 text-center">
 
               <h2 className="text-3xl font-black">
                 No Messages Yet
@@ -213,70 +168,32 @@ export default function ChatPage() {
 
           )}
 
-          {messages.map(
-            (message, index) => {
+          {messages.map((message, index) => (
 
-              const own =
-                message.username ===
-                username;
+            <div
+              key={index}
+              className="bg-white/5 border border-white/10 rounded-3xl p-5"
+            >
 
-              return (
+              <p className="text-cyan-400 font-black text-sm">
+                {message.username}
+              </p>
 
-                <div
-                  key={index}
-                  className={`flex ${
-                    own
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
-                >
+              <p className="text-white text-lg mt-3 break-words">
+                {message.text}
+              </p>
 
-                  <div
-                    className={`max-w-[80%] rounded-[28px] px-6 py-5 border backdrop-blur-xl ${
-                      own
-                        ? "bg-cyan-400 text-black border-cyan-300"
-                        : "bg-white/[0.03] border-white/10 text-white"
-                    }`}
-                  >
+              <p className="text-zinc-500 text-xs mt-3">
+                {message.created_at
+                  ? new Date(
+                      message.created_at
+                    ).toLocaleTimeString()
+                  : "LIVE"}
+              </p>
 
-                    <p
-                      className={`text-xs uppercase tracking-[0.25em] font-black ${
-                        own
-                          ? "text-black/60"
-                          : "text-cyan-400"
-                      }`}
-                    >
-                      {message.username}
-                    </p>
+            </div>
 
-                    <p className="mt-3 text-lg break-words">
-                      {message.text}
-                    </p>
-
-                    <p
-                      className={`text-xs mt-4 ${
-                        own
-                          ? "text-black/60"
-                          : "text-zinc-500"
-                      }`}
-                    >
-
-                      {message.created_at
-                        ? new Date(
-                            message.created_at
-                          ).toLocaleTimeString()
-                        : "LIVE"}
-
-                    </p>
-
-                  </div>
-
-                </div>
-
-              );
-
-            }
-          )}
+          ))}
 
           <div ref={bottomRef} />
 
@@ -286,42 +203,38 @@ export default function ChatPage() {
 
       {/* INPUT */}
 
-      <div className="border-t border-white/10 bg-black/80 backdrop-blur-xl shrink-0">
+      <div className="border-t border-white/10 p-4 shrink-0">
 
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-5">
+        <div className="max-w-4xl mx-auto flex gap-4">
 
-          <div className="flex gap-4">
+          <input
+            value={text}
+            onChange={(e) =>
+              setText(
+                e.target.value
+              )
+            }
+            onKeyDown={(e) => {
 
-            <input
-              value={text}
-              onChange={(e) =>
-                setText(
-                  e.target.value
-                )
+              if (
+                e.key === "Enter"
+              ) {
+
+                sendMessage();
+
               }
-              onKeyDown={(e) => {
 
-                if (
-                  e.key === "Enter"
-                ) {
+            }}
+            placeholder="Write message..."
+            className="flex-1 bg-white/5 border border-white/10 rounded-3xl px-5 py-4 outline-none focus:border-cyan-400"
+          />
 
-                  sendMessage();
-
-                }
-
-              }}
-              placeholder="Send realtime marketplace message..."
-              className="flex-1 bg-white/[0.03] border border-white/10 rounded-3xl px-6 py-4 outline-none focus:border-cyan-400 transition"
-            />
-
-            <button
-              onClick={sendMessage}
-              className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-8 rounded-3xl transition"
-            >
-              Send
-            </button>
-
-          </div>
+          <button
+            onClick={sendMessage}
+            className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-8 rounded-3xl transition"
+          >
+            Send
+          </button>
 
         </div>
 
