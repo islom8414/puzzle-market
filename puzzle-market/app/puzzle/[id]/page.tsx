@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useParams } from "next/navigation";
-
-import { fragments } from "@/data/fragments";
 
 import { supabase } from "@/lib/supabase";
 
@@ -20,7 +18,7 @@ type MarketListing = {
 
   image: string;
 
-  piece: number;
+  piece: string;
 
   price: number;
 
@@ -35,14 +33,6 @@ export default function PuzzlePage() {
   const slug =
     (params.id || params.slug) as string;
 
-  const puzzle = useMemo(() => {
-
-    return fragments.find(
-      (item) => item.slug === slug
-    );
-
-  }, [slug]);
-
   const [listing, setListing] =
     useState<MarketListing | null>(
       null
@@ -51,36 +41,29 @@ export default function PuzzlePage() {
   const [balance, setBalance] =
     useState(8000);
 
-  const [username, setUsername] =
-    useState("Guest");
-
   const [owned, setOwned] =
     useState(false);
 
   const [loading, setLoading] =
+    useState(true);
+
+  const [buying, setBuying] =
     useState(false);
 
   useEffect(() => {
 
-    if (!puzzle) return;
+    if (!slug) return;
 
-    loadData();
+    loadFragment();
 
-  }, [puzzle]);
+  }, [slug]);
 
-  const loadData =
+  const loadFragment =
     async () => {
-
-      if (!puzzle) return;
 
       const savedBalance =
         localStorage.getItem(
           "puzzle-balance"
-        );
-
-      const savedUser =
-        localStorage.getItem(
-          "puzzle-user"
         );
 
       if (savedBalance) {
@@ -91,31 +74,20 @@ export default function PuzzlePage() {
 
       }
 
-      if (savedUser) {
-
-        setUsername(savedUser);
-
-      }
-
-      const inventory = JSON.parse(
+      const user =
         localStorage.getItem(
-          "puzzle-owned"
-        ) || "[]"
-      );
+          "puzzle-user"
+        );
 
-      setOwned(
-        inventory.includes(
-          puzzle.slug
-        )
-      );
-
-      const { data } =
+      const {
+        data,
+      } =
         await supabase
           .from("marketplace")
           .select("*")
           .eq(
             "fragment_id",
-            puzzle.slug
+            slug
           )
           .limit(1)
           .single();
@@ -126,34 +98,43 @@ export default function PuzzlePage() {
 
       }
 
+      if (user) {
+
+        const {
+          data: ownedData,
+        } =
+          await supabase
+            .from("inventory")
+            .select("*")
+            .eq(
+              "user_email",
+              user
+            )
+            .eq(
+              "fragment_id",
+              slug
+            )
+            .limit(1);
+
+        if (
+          ownedData &&
+          ownedData.length > 0
+        ) {
+
+          setOwned(true);
+
+        }
+
+      }
+
+      setLoading(false);
+
     };
-
-  if (!puzzle) {
-
-    return (
-
-      <main className="min-h-screen flex items-center justify-center text-white">
-
-        <h1 className="text-4xl font-black">
-          Fragment Not Found
-        </h1>
-
-      </main>
-
-    );
-
-  }
-
-  const currentPrice =
-    listing?.price ||
-    puzzle.price;
-
-  const currentOwner =
-    listing?.seller_email ||
-    puzzle.owner;
 
   const handleBuy =
     async () => {
+
+      if (!listing) return;
 
       if (owned) {
 
@@ -184,7 +165,8 @@ export default function PuzzlePage() {
       }
 
       if (
-        balance < currentPrice
+        balance <
+        listing.price
       ) {
 
         alert(
@@ -195,55 +177,65 @@ export default function PuzzlePage() {
 
       }
 
-      setLoading(true);
+      setBuying(true);
 
-      const inventoryData = {
+      /* ADD TO INVENTORY */
+
+      const inventoryItem = {
 
         user_email: user,
 
         fragment_id:
-          puzzle.slug,
+          listing.fragment_id,
 
-        title: puzzle.title,
+        title:
+          listing.title,
 
-        image: puzzle.image,
+        image:
+          listing.image,
 
-        piece: puzzle.piece,
+        piece:
+          listing.piece,
 
-        price: currentPrice,
+        price:
+          listing.price,
 
       };
 
-      const { error } =
+      const {
+        error:
+          inventoryError,
+      } =
         await supabase
           .from("inventory")
-          .insert(
-            inventoryData
-          );
+          .insert([
+            inventoryItem,
+          ]);
 
-      if (error) {
+      if (inventoryError) {
 
-        console.log(error);
+        console.log(
+          inventoryError
+        );
 
         alert(
           "Purchase failed."
         );
 
-        setLoading(false);
+        setBuying(false);
 
         return;
 
       }
 
-      /* TRANSACTION */
+      /* SAVE TRANSACTION */
 
-      if (listing) {
-
-        await supabase
-          .from(
-            "transactions"
-          )
-          .insert({
+      await supabase
+        .from(
+          "transactions"
+        )
+        .insert([
+          {
 
             buyer_email:
               user,
@@ -260,103 +252,100 @@ export default function PuzzlePage() {
             price:
               listing.price,
 
-          });
+          },
+        ]);
 
-        /* DELETE MARKET LISTING */
+      /* DELETE LISTING */
 
-        await supabase
-          .from(
-            "marketplace"
-          )
-          .delete()
-          .eq(
-            "id",
-            listing.id
-          );
-
-      }
+      await supabase
+        .from(
+          "marketplace"
+        )
+        .delete()
+        .eq(
+          "id",
+          listing.id
+        );
 
       /* BALANCE */
 
-      /* BUYER BALANCE */
+      const updatedBalance =
+        balance -
+        listing.price;
 
-const newBalance =
-  balance -
-  currentPrice;
-
-setBalance(
-  newBalance
-);
-
-localStorage.setItem(
-  "puzzle-balance",
-  String(newBalance)
-);
-
-/* SELLER EARNINGS */
-
-if (listing) {
-
-  const sellerWalletKey =
-    `wallet-${listing.seller_email}`;
-
-  const sellerCurrent =
-    Number(
-      localStorage.getItem(
-        sellerWalletKey
-      ) || "8000"
-    );
-
-  const updatedSellerBalance =
-    sellerCurrent +
-    currentPrice;
-
-  localStorage.setItem(
-    sellerWalletKey,
-    String(
-      updatedSellerBalance
-    )
-  );
-
-}
-      /* LOCAL INVENTORY */
-
-      const inventory = JSON.parse(
-        localStorage.getItem(
-          "puzzle-owned"
-        ) || "[]"
-      );
-
-      inventory.push(
-        puzzle.slug
+      setBalance(
+        updatedBalance
       );
 
       localStorage.setItem(
-        "puzzle-owned",
-        JSON.stringify(
-          inventory
+        "puzzle-balance",
+        String(
+          updatedBalance
         )
       );
 
+      /* SELLER WALLET */
+
+      const sellerWallet =
+        `wallet-${listing.seller_email}`;
+
+      const currentSeller =
+        Number(
+          localStorage.getItem(
+            sellerWallet
+          ) || "8000"
+        );
+
       localStorage.setItem(
-        `owner-${puzzle.slug}`,
-        user
+        sellerWallet,
+        String(
+          currentSeller +
+            listing.price
+        )
       );
 
       setOwned(true);
 
       alert(
-        listing
-          ? "Fragment purchased from live marketplace."
-          : "Fragment added to inventory."
+        "Fragment purchased successfully."
       );
-
-      setLoading(false);
 
       window.location.href =
         "/profile";
 
     };
+
+  if (loading) {
+
+    return (
+
+      <main className="min-h-screen flex items-center justify-center text-white">
+
+        <h1 className="text-4xl font-black">
+          Loading Fragment...
+        </h1>
+
+      </main>
+
+    );
+
+  }
+
+  if (!listing) {
+
+    return (
+
+      <main className="min-h-screen flex items-center justify-center text-white">
+
+        <h1 className="text-4xl font-black">
+          Fragment Not Found
+        </h1>
+
+      </main>
+
+    );
+
+  }
 
   return (
 
@@ -398,8 +387,8 @@ if (listing) {
           <div className="rounded-3xl overflow-hidden border border-white/10">
 
             <img
-              src={puzzle.image}
-              alt={puzzle.title}
+              src={listing.image}
+              alt={listing.title}
               className="w-full h-[500px] object-cover"
             />
 
@@ -412,31 +401,21 @@ if (listing) {
             <div className="flex items-center gap-3">
 
               <div className="bg-cyan-400 text-black px-3 py-1 rounded-full text-xs font-black">
-                {puzzle.rarity}
+                {listing.rarity}
               </div>
 
-              {listing ? (
-
-                <div className="bg-green-400 text-black px-3 py-1 rounded-full text-xs font-black">
-                  LIVE LISTING
-                </div>
-
-              ) : (
-
-                <div className="bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-black">
-                  ORIGINAL MARKET
-                </div>
-
-              )}
+              <div className="bg-green-400 text-black px-3 py-1 rounded-full text-xs font-black">
+                LIVE LISTING
+              </div>
 
             </div>
 
             <h1 className="text-5xl font-black mt-5">
-              Piece #{puzzle.piece}
+              Piece #{listing.piece}
             </h1>
 
             <p className="text-zinc-500 mt-3">
-              {puzzle.title}
+              {listing.title}
             </p>
 
             {/* STATS */}
@@ -450,7 +429,7 @@ if (listing) {
                 </p>
 
                 <h3 className="text-xl font-black mt-2 break-all">
-                  {currentOwner}
+                  {listing.seller_email}
                 </h3>
 
               </div>
@@ -462,7 +441,7 @@ if (listing) {
                 </p>
 
                 <h3 className="text-cyan-400 text-2xl font-black mt-2">
-                  ${currentPrice}
+                  ${listing.price}
                 </h3>
 
               </div>
@@ -475,14 +454,12 @@ if (listing) {
 
               <button
                 onClick={handleBuy}
-                disabled={loading}
+                disabled={buying}
                 className="w-full mt-8 bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-2xl transition"
               >
 
-                {loading
+                {buying
                   ? "Processing..."
-                  : listing
-                  ? "Buy From Seller"
                   : "Buy Fragment"}
 
               </button>
