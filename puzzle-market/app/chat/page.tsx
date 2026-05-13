@@ -19,7 +19,7 @@ export default function ChatPage() {
     useState("");
 
   const [username, setUsername] =
-    useState("Guest");
+    useState("ShadowUser");
 
   const bottomRef =
     useRef<HTMLDivElement>(null);
@@ -28,7 +28,7 @@ export default function ChatPage() {
 
     const savedUser =
       localStorage.getItem(
-        "puzzle-user"
+        "puzzle-username"
       );
 
     if (savedUser) {
@@ -141,9 +141,9 @@ export default function ChatPage() {
 
       {/* CHAT */}
 
-      <div className="flex-1 overflow-y-auto px-3 py-5">
+      <div className="flex-1 overflow-y-auto py-5">
 
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="w-full px-2 md:px-10 space-y-4">
 
           {messages.map((message, index) => {
 
@@ -163,7 +163,7 @@ export default function ChatPage() {
               >
 
                 <div
-                  className={`px-4 py-3 rounded-2xl max-w-[260px] md:max-w-[340px] ${
+                  className={`px-4 py-3 rounded-2xl max-w-[75%] md:max-w-[420px] ${
                     own
                       ? "bg-cyan-400 text-black"
                       : "bg-zinc-900 border border-white/10"
@@ -220,7 +220,7 @@ export default function ChatPage() {
 
       <div className="border-t border-white/10 p-3">
 
-        <div className="max-w-3xl mx-auto flex gap-3">
+        <div className="w-full px-2 md:px-10 flex gap-3">
 
           <input
             value={text}
