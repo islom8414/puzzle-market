@@ -132,7 +132,7 @@ export default function ChatPage() {
 
     <main className="h-screen bg-black text-white flex flex-col overflow-hidden">
 
-      {/* BG */}
+      {/* BACKGROUND */}
 
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
 
@@ -186,15 +186,16 @@ export default function ChatPage() {
 
               <div
                 key={index}
-                className={`flex ${
-                  own
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
+                className="w-full flex"
+                style={{
+                  justifyContent: own
+                    ? "flex-end"
+                    : "flex-start",
+                }}
               >
 
                 <div
-                  className={`rounded-3xl px-5 py-4 max-w-[85%] md:max-w-[65%] overflow-hidden break-words shadow-lg ${
+                  className={`rounded-3xl px-5 py-4 w-fit max-w-[85%] md:max-w-[65%] overflow-hidden break-words shadow-lg ${
                     own
                       ? "bg-cyan-400 text-black"
                       : "bg-white/5 border border-white/10 text-white"
