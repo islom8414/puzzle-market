@@ -56,10 +56,10 @@ export default function ProfilePage() {
           "puzzle-balance"
         );
 
-      const savedUser =
-        localStorage.getItem(
-          "puzzle-user"
-        );
+     const savedUser =
+  localStorage.getItem(
+    "puzzle-username"
+  );
 
       if (savedBalance) {
 
