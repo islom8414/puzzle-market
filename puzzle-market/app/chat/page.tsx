@@ -132,7 +132,7 @@ export default function ChatPage() {
 
     <main className="h-screen bg-black text-white flex flex-col overflow-hidden">
 
-      {/* BACKGROUND */}
+      {/* BG */}
 
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
 
@@ -158,7 +158,7 @@ export default function ChatPage() {
 
       </div>
 
-      {/* CHAT AREA */}
+      {/* CHAT */}
 
       <div className="flex-1 overflow-y-auto">
 
@@ -194,7 +194,7 @@ export default function ChatPage() {
               >
 
                 <div
-                  className={`rounded-3xl px-5 py-4 max-w-[85%] md:max-w-[65%] break-words shadow-lg ${
+                  className={`rounded-3xl px-5 py-4 max-w-[85%] md:max-w-[65%] overflow-hidden break-words shadow-lg ${
                     own
                       ? "bg-cyan-400 text-black"
                       : "bg-white/5 border border-white/10 text-white"
@@ -202,7 +202,7 @@ export default function ChatPage() {
                 >
 
                   <p
-                    className={`font-black text-xs uppercase tracking-[0.2em] break-all ${
+                    className={`font-black text-xs break-all ${
                       own
                         ? "text-black/60"
                         : "text-cyan-400"
@@ -211,7 +211,7 @@ export default function ChatPage() {
                     {message.username}
                   </p>
 
-                  <p className="mt-3 text-sm md:text-lg leading-relaxed break-words">
+                  <p className="mt-3 text-sm md:text-lg leading-relaxed break-all">
                     {message.text}
                   </p>
 
