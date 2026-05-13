@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-const notificationsData = [
-  "New legendary fragment listed",
-  "Marketplace activity increased",
-  "Rare puzzle collection unlocked",
-  "Wallet updated successfully",
+import { supabase } from "@/lib/supabase";
+
+const initialNotifications = [
+  "Marketplace synced successfully",
 ];
 
 export default function Navbar() {
@@ -26,6 +25,14 @@ export default function Navbar() {
   const [username, setUsername] =
     useState("");
 
+  const [notifications, setNotifications] =
+    useState<string[]>(
+      initialNotifications
+    );
+
+  const [notificationCount, setNotificationCount] =
+    useState(0);
+
   useEffect(() => {
 
     const savedBalance =
@@ -39,16 +46,99 @@ export default function Navbar() {
       );
 
     if (savedBalance) {
-      setBalance(Number(savedBalance));
+
+      setBalance(
+        Number(savedBalance)
+      );
+
     }
 
     if (savedUser) {
+
       setUsername(savedUser);
+
     }
+
+    loadNotifications();
+
+    const channel =
+      supabase
+        .channel(
+          "navbar-live"
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table:
+              "marketplace",
+          },
+          (payload) => {
+
+            const item =
+              payload.new as any;
+
+            setNotifications(
+              (prev) => [
+                `New fragment listed: ${item.title}`,
+                ...prev,
+              ]
+            );
+
+            setNotificationCount(
+              (prev) =>
+                prev + 1
+            );
+
+          }
+        )
+        .subscribe();
+
+    return () => {
+
+      supabase.removeChannel(
+        channel
+      );
+
+    };
 
   }, []);
 
-  const addFunds = (amount: number) => {
+  const loadNotifications =
+    async () => {
+
+      const { data } =
+        await supabase
+          .from("marketplace")
+          .select("*")
+          .order(
+            "created_at",
+            {
+              ascending: false,
+            }
+          )
+          .limit(5);
+
+      if (data) {
+
+        const mapped =
+          data.map(
+            (item: any) =>
+              `New fragment listed: ${item.title}`
+          );
+
+        setNotifications(
+          mapped
+        );
+
+      }
+
+    };
+
+  const addFunds = (
+    amount: number
+  ) => {
 
     const newBalance =
       balance + amount;
@@ -68,7 +158,8 @@ export default function Navbar() {
       "puzzle-user"
     );
 
-    window.location.href = "/login";
+    window.location.href =
+      "/login";
 
   };
 
@@ -84,8 +175,6 @@ export default function Navbar() {
             {/* LEFT */}
 
             <div className="flex items-center gap-10">
-
-              {/* LOGO */}
 
               <a
                 href="/marketplace"
@@ -110,8 +199,6 @@ export default function Navbar() {
 
               </a>
 
-              {/* NAV */}
-
               <nav className="hidden xl:flex items-center gap-6 text-sm font-semibold">
 
                 <a
@@ -122,17 +209,10 @@ export default function Navbar() {
                 </a>
 
                 <a
-                  href="/collection"
+                  href="/create"
                   className="hover:text-cyan-400 transition"
                 >
-                  Collection
-                </a>
-
-                <a
-                  href="/auctions"
-                  className="hover:text-cyan-400 transition"
-                >
-                  Auctions
+                  Create
                 </a>
 
                 <a
@@ -149,27 +229,6 @@ export default function Navbar() {
                   Sell
                 </a>
 
-                <a
-                  href="/activity"
-                  className="hover:text-cyan-400 transition"
-                >
-                  Activity
-                </a>
-
-                <a
-                  href="/leaderboard"
-                  className="hover:text-cyan-400 transition"
-                >
-                  Leaderboard
-                </a>
-
-                <a
-                  href="/support"
-                  className="hover:text-cyan-400 transition"
-                >
-                  Support
-                </a>
-
               </nav>
 
             </div>
@@ -183,15 +242,32 @@ export default function Navbar() {
               <div className="relative hidden md:block">
 
                 <button
-                  onClick={() =>
+                  onClick={() => {
+
                     setNotificationsOpen(
                       !notificationsOpen
-                    )
-                  }
-                  className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:border-cyan-400 transition"
+                    );
+
+                    setNotificationCount(
+                      0
+                    );
+
+                  }}
+                  className="relative w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:border-cyan-400 transition"
                 >
 
                   🔔
+
+                  {notificationCount >
+                    0 && (
+
+                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-cyan-400 text-black text-[10px] font-black flex items-center justify-center">
+                      {
+                        notificationCount
+                      }
+                    </div>
+
+                  )}
 
                 </button>
 
@@ -200,13 +276,16 @@ export default function Navbar() {
                   <div className="absolute right-0 top-14 w-[320px] bg-zinc-950 border border-white/10 rounded-3xl p-4 shadow-2xl">
 
                     <h3 className="font-black text-lg mb-4">
-                      Notifications
+                      Live Notifications
                     </h3>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 max-h-[320px] overflow-y-auto">
 
-                      {notificationsData.map(
-                        (item, index) => (
+                      {notifications.map(
+                        (
+                          item,
+                          index
+                        ) => (
 
                           <div
                             key={index}
@@ -236,7 +315,9 @@ export default function Navbar() {
                 >
 
                   <div className="w-8 h-8 rounded-full bg-cyan-400 text-black flex items-center justify-center font-black text-sm">
-                    {username.charAt(0).toUpperCase()}
+                    {username
+                      .charAt(0)
+                      .toUpperCase()}
                   </div>
 
                   <div>
@@ -246,7 +327,7 @@ export default function Navbar() {
                     </p>
 
                     <p className="text-zinc-500 text-[10px]">
-                      VIP MEMBER
+                      LIVE USER
                     </p>
 
                   </div>
@@ -319,12 +400,8 @@ export default function Navbar() {
                 Explore
               </a>
 
-              <a href="/collection">
-                Collection
-              </a>
-
-              <a href="/auctions">
-                Auctions
+              <a href="/create">
+                Create
               </a>
 
               <a href="/profile">
@@ -333,18 +410,6 @@ export default function Navbar() {
 
               <a href="/sell">
                 Sell
-              </a>
-
-              <a href="/activity">
-                Activity
-              </a>
-
-              <a href="/leaderboard">
-                Leaderboard
-              </a>
-
-              <a href="/support">
-                Support
               </a>
 
             </div>
