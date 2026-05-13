@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
 import { supabase } from "@/lib/supabase";
 
 type Message = {
@@ -23,9 +22,7 @@ export default function ChatPage() {
     useState("Guest");
 
   const bottomRef =
-    useRef<HTMLDivElement>(
-      null
-    );
+    useRef<HTMLDivElement>(null);
 
   useEffect(() => {
 
@@ -44,9 +41,7 @@ export default function ChatPage() {
 
     const channel =
       supabase
-        .channel(
-          "live-chat"
-        )
+        .channel("live-chat")
         .on(
           "postgres_changes",
           {
@@ -83,9 +78,7 @@ export default function ChatPage() {
   const loadMessages =
     async () => {
 
-      const {
-        data,
-      } =
+      const { data } =
         await supabase
           .from("chat")
           .select("*")
@@ -132,49 +125,25 @@ export default function ChatPage() {
 
     <main className="h-screen bg-black text-white flex flex-col overflow-hidden">
 
-      {/* BACKGROUND */}
-
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
-
       {/* HEADER */}
 
-      <div className="relative border-b border-white/10 bg-black/70 backdrop-blur-xl shrink-0">
+      <div className="border-b border-white/10 p-5">
 
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-5">
+        <p className="text-cyan-400 text-xs font-black tracking-[0.3em] uppercase">
+          Realtime Marketplace Chat
+        </p>
 
-          <p className="text-cyan-400 uppercase tracking-[0.3em] text-[10px] md:text-xs font-black">
-            REALTIME MARKETPLACE CHAT
-          </p>
-
-          <h1 className="text-4xl md:text-6xl font-black mt-3 leading-none">
-            Live Messenger
-          </h1>
-
-          <p className="text-zinc-500 mt-3 text-sm md:text-base">
-            Talk with collectors and traders realtime.
-          </p>
-
-        </div>
+        <h1 className="text-4xl md:text-6xl font-black mt-3">
+          Live Messenger
+        </h1>
 
       </div>
 
       {/* CHAT */}
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-3 py-5">
 
-        <div className="max-w-5xl mx-auto px-3 md:px-6 py-6 space-y-5">
-
-          {messages.length === 0 && (
-
-            <div className="bg-white/5 border border-white/10 rounded-3xl p-8 text-center">
-
-              <h2 className="text-2xl md:text-3xl font-black">
-                No Messages Yet
-              </h2>
-
-            </div>
-
-          )}
+        <div className="max-w-3xl mx-auto space-y-4">
 
           {messages.map((message, index) => {
 
@@ -186,38 +155,39 @@ export default function ChatPage() {
 
               <div
                 key={index}
-                className="w-full flex"
-                style={{
-                  justifyContent: own
-                    ? "flex-end"
-                    : "flex-start",
-                }}
+                className={`flex ${
+                  own
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
               >
 
                 <div
-                  className={`rounded-3xl px-5 py-4 w-fit max-w-[85%] md:max-w-[65%] overflow-hidden break-words shadow-lg ${
+                  className={`px-4 py-3 rounded-2xl max-w-[260px] md:max-w-[340px] ${
                     own
                       ? "bg-cyan-400 text-black"
-                      : "bg-white/5 border border-white/10 text-white"
+                      : "bg-zinc-900 border border-white/10"
                   }`}
                 >
 
                   <p
-                    className={`font-black text-xs break-all ${
+                    className={`text-[10px] font-black truncate ${
                       own
                         ? "text-black/60"
                         : "text-cyan-400"
                     }`}
                   >
+
                     {message.username}
+
                   </p>
 
-                  <p className="mt-3 text-sm md:text-lg leading-relaxed break-all">
+                  <p className="mt-2 text-sm break-words">
                     {message.text}
                   </p>
 
                   <p
-                    className={`text-[10px] md:text-xs mt-4 ${
+                    className={`text-[10px] mt-2 ${
                       own
                         ? "text-black/60"
                         : "text-zinc-500"
@@ -248,42 +218,38 @@ export default function ChatPage() {
 
       {/* INPUT */}
 
-      <div className="border-t border-white/10 bg-black/80 backdrop-blur-xl shrink-0">
+      <div className="border-t border-white/10 p-3">
 
-        <div className="max-w-5xl mx-auto px-3 md:px-6 py-4">
+        <div className="max-w-3xl mx-auto flex gap-3">
 
-          <div className="flex gap-3">
+          <input
+            value={text}
+            onChange={(e) =>
+              setText(
+                e.target.value
+              )
+            }
+            onKeyDown={(e) => {
 
-            <input
-              value={text}
-              onChange={(e) =>
-                setText(
-                  e.target.value
-                )
+              if (
+                e.key === "Enter"
+              ) {
+
+                sendMessage();
+
               }
-              onKeyDown={(e) => {
 
-                if (
-                  e.key === "Enter"
-                ) {
+            }}
+            placeholder="Write message..."
+            className="flex-1 bg-zinc-900 border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-cyan-400"
+          />
 
-                  sendMessage();
-
-                }
-
-              }}
-              placeholder="Write message..."
-              className="flex-1 bg-white/5 border border-white/10 rounded-3xl px-5 py-4 text-sm md:text-base outline-none focus:border-cyan-400"
-            />
-
-            <button
-              onClick={sendMessage}
-              className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-5 md:px-8 rounded-3xl transition whitespace-nowrap"
-            >
-              Send
-            </button>
-
-          </div>
+          <button
+            onClick={sendMessage}
+            className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-5 rounded-2xl"
+          >
+            Send
+          </button>
 
         </div>
 
