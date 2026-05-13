@@ -141,8 +141,7 @@ export default function ChatPage() {
 
   return (
 
-    <main className="min-h-screen bg-black text-white overflow-hidden flex flex-col">
-
+   <main className="h-screen bg-black text-white overflow-hidden flex flex-col">
       {/* BG */}
 
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.14),transparent_35%)] pointer-events-none" />
