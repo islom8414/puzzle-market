@@ -398,9 +398,11 @@ export default function MarketplacePage() {
                       Seller
                     </p>
 
-                    <h3 className="font-black mt-2 break-all">
+                    <h3 className="font-black mt-2">
                       {
-                        fragment.seller_email
+                        localStorage.getItem(
+                          "puzzle-username"
+                        ) || "ShadowUser"
                       }
                     </h3>
 
@@ -409,7 +411,7 @@ export default function MarketplacePage() {
                   {/* BUTTON */}
 
                   <Link
-                    href={`/puzzle/${fragment.fragment_id}`}
+                     href={`/fragment/${fragment.fragment_id}`}
                     className="mt-6 flex items-center justify-center w-full bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-2xl transition duration-300"
                   >
                     Open Fragment
