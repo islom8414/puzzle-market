@@ -412,7 +412,7 @@ export default function SearchPage() {
                   </div>
 
                   <Link
-                    href={`/puzzle/${fragment.fragment_id}`}
+                    href={`/fragment/${fragment.fragment_id}`}
                     className="mt-6 flex items-center justify-center w-full bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-2xl transition"
                   >
                     Open Fragment
