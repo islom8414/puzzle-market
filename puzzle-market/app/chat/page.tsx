@@ -147,7 +147,7 @@ export default function ChatPage() {
 
       <div className="flex-1 overflow-y-auto py-5">
 
-        <div className="max-w-5xl mx-auto w-full px-4 md:px-6 py-6 space-y-4">
+       <div className="max-w-3xl mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-4">
 
           {messages.map((message, index) => {
 
@@ -159,15 +159,15 @@ export default function ChatPage() {
 
               <div
                 key={index}
-                className={`flex ${
+                className={`w-full flex ${
                   own
                     ? "justify-end"
                     : "justify-start"
                 }`}
               >
 
-                <div
-                  className={`w-fit px-4 py-3 rounded-2xl max-w-[320px] md:max-w-[520px] ${
+               className={`inline-block px-4 py-3 rounded-2xl w-[320px] md:w-[420px]
+                  
                     own
                       ? "bg-cyan-400 text-black"
                       : "bg-zinc-900 border border-white/10"
@@ -175,7 +175,7 @@ export default function ChatPage() {
                 >
 
                   <p
-                    className={`text-[10px] font-black break-all ${
+                    className={`text-[11px] font-black truncate ${
                       own
                         ? "text-black/60"
                         : "text-cyan-400"
