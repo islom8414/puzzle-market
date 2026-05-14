@@ -359,8 +359,7 @@ export default function AdminPage() {
                       </h2>
 
                       <p className="text-zinc-500 mt-4 break-all">
-                        Seller: {item.seller_email}
-                      </p>
+                        Seller: {localStorage.getItem("puzzle-username") || "ShadowUser"}                     </p>
 
                     </div>
 
