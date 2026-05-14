@@ -129,13 +129,17 @@ export default function ChatPage() {
 
       <div className="border-b border-white/10 p-5">
 
-        <p className="text-cyan-400 text-xs font-black tracking-[0.3em] uppercase">
-          Realtime Marketplace Chat
-        </p>
+        <div className="max-w-5xl mx-auto">
 
-        <h1 className="text-4xl md:text-6xl font-black mt-3">
-          Live Messenger
-        </h1>
+          <p className="text-cyan-400 text-xs font-black tracking-[0.3em] uppercase">
+            Realtime Marketplace Chat
+          </p>
+
+          <h1 className="text-4xl md:text-6xl font-black mt-3">
+            Live Messenger
+          </h1>
+
+        </div>
 
       </div>
 
@@ -143,7 +147,7 @@ export default function ChatPage() {
 
       <div className="flex-1 overflow-y-auto py-5">
 
-        <div className="w-full px-2 md:px-10 space-y-4">
+        <div className="max-w-5xl mx-auto w-full px-4 md:px-6 py-6 space-y-4">
 
           {messages.map((message, index) => {
 
@@ -163,7 +167,7 @@ export default function ChatPage() {
               >
 
                 <div
-                  className={`px-4 py-3 rounded-2xl max-w-[75%] md:max-w-[420px] ${
+                  className={`w-fit px-4 py-3 rounded-2xl max-w-[320px] md:max-w-[520px] ${
                     own
                       ? "bg-cyan-400 text-black"
                       : "bg-zinc-900 border border-white/10"
@@ -171,7 +175,7 @@ export default function ChatPage() {
                 >
 
                   <p
-                    className={`text-[10px] font-black truncate ${
+                    className={`text-[10px] font-black break-all ${
                       own
                         ? "text-black/60"
                         : "text-cyan-400"
@@ -220,7 +224,7 @@ export default function ChatPage() {
 
       <div className="border-t border-white/10 p-3">
 
-        <div className="w-full px-2 md:px-10 flex gap-3">
+        <div className="max-w-5xl mx-auto w-full px-2 md:px-6 flex gap-3">
 
           <input
             value={text}
