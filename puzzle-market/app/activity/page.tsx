@@ -4,15 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
 
-type Transaction = {
+type Activity = {
 
   id?: number;
 
-  buyer_email: string;
+  username: string;
 
-  seller_email: string;
-
-  fragment_id: string;
+  action: string;
 
   title: string;
 
@@ -25,7 +23,7 @@ type Transaction = {
 export default function ActivityPage() {
 
   const [transactions, setTransactions] =
-    useState<Transaction[]>([]);
+    useState<Activity[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -37,7 +35,7 @@ export default function ActivityPage() {
     const channel =
       supabase
         .channel(
-          "live-transactions"
+          "live-activity"
         )
         .on(
           "postgres_changes",
@@ -45,7 +43,7 @@ export default function ActivityPage() {
             event: "*",
             schema: "public",
             table:
-              "transactions",
+              "activity",
           },
           () => {
 
@@ -73,7 +71,7 @@ export default function ActivityPage() {
         error,
       } =
         await supabase
-          .from("transactions")
+          .from("activity")
           .select("*")
           .order(
             "created_at",
@@ -142,7 +140,7 @@ export default function ActivityPage() {
               <div className="bg-white/[0.03] border border-white/10 rounded-[28px] p-6">
 
                 <p className="text-zinc-500 text-sm">
-                  Total Transactions
+                  Total Activity
                 </p>
 
                 <h2 className="text-5xl font-black mt-4">
@@ -249,11 +247,13 @@ export default function ActivityPage() {
                       <div className="flex flex-wrap items-center gap-3">
 
                         <div className="bg-cyan-400 text-black px-4 py-2 rounded-full text-xs font-black">
-                          PURCHASE
+                          {
+                            transaction.action
+                          }
                         </div>
 
                         <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-xs font-black">
-                          LIVE TRANSACTION
+                          LIVE ACTIVITY
                         </div>
 
                       </div>
@@ -269,12 +269,12 @@ export default function ActivityPage() {
                         <div>
 
                           <p className="text-zinc-500 text-sm">
-                            Buyer
+                            User
                           </p>
 
-                          <h3 className="font-black mt-2 break-all">
+                          <h3 className="font-black mt-2">
                             {
-                              transaction.buyer_email
+                              transaction.username
                             }
                           </h3>
 
@@ -283,12 +283,12 @@ export default function ActivityPage() {
                         <div>
 
                           <p className="text-zinc-500 text-sm">
-                            Seller
+                            Action
                           </p>
 
-                          <h3 className="font-black mt-2 break-all">
+                          <h3 className="text-cyan-400 font-black mt-2">
                             {
-                              transaction.seller_email
+                              transaction.action
                             }
                           </h3>
 

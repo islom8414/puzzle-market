@@ -34,7 +34,7 @@ export default function ProfilePage() {
     useState<UploadedItem[]>([]);
 
   const [balance, setBalance] =
-    useState(8420);
+    useState(0);
 
   const [username, setUsername] =
     useState("Guest");
@@ -51,34 +51,41 @@ export default function ProfilePage() {
   const loadProfile =
     async () => {
 
-      const savedBalance =
+      const savedUser =
         localStorage.getItem(
-          "puzzle-balance"
+          "puzzle-username"
         );
-
-     const savedUser =
-  localStorage.getItem(
-    "puzzle-username"
-  );
-
-      if (savedBalance) {
-
-        setBalance(
-          Number(savedBalance)
-        );
-
-      }
 
       if (!savedUser) {
 
         window.location.href =
-          "/login";
+          "/setup";
 
         return;
 
       }
 
       setUsername(savedUser);
+
+      const {
+        data: walletData,
+      } =
+        await supabase
+          .from("wallets")
+          .select("*")
+          .eq(
+            "username",
+            savedUser
+          )
+          .single();
+
+      if (walletData) {
+
+        setBalance(
+          walletData.balance
+        );
+
+      }
 
       const {
         data: inventoryData,
@@ -286,190 +293,6 @@ export default function ProfilePage() {
             <h2 className="text-5xl font-black mt-4 text-green-400">
               ${totalValue}
             </h2>
-
-          </div>
-
-        </section>
-
-        {/* INVENTORY */}
-
-        <section className="mt-16">
-
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-
-            <div>
-
-              <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
-                Collection
-              </p>
-
-              <h2 className="text-5xl font-black mt-3">
-                Owned Inventory
-              </h2>
-
-            </div>
-
-          </div>
-
-          {loading && (
-
-            <div className="mt-10 bg-white/[0.03] border border-white/10 rounded-[36px] p-20 text-center">
-
-              <h3 className="text-5xl font-black">
-                Loading Inventory...
-              </h3>
-
-            </div>
-
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-10">
-
-            {inventory.map(
-              (fragment) => (
-
-                <div
-                  key={fragment.id}
-                  className="group rounded-[32px] overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-xl hover:border-cyan-400/40 transition duration-500 hover:-translate-y-2"
-                >
-
-                  <div className="relative overflow-hidden">
-
-                    <img
-                      src={
-                        fragment.image
-                      }
-                      alt={
-                        fragment.title
-                      }
-                      className="w-full h-[340px] object-cover transition duration-700 group-hover:scale-110"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
-                    <div className="absolute top-5 right-5 bg-cyan-400 text-black px-4 py-2 rounded-full text-xs font-black">
-                      OWNED
-                    </div>
-
-                  </div>
-
-                  <div className="p-6">
-
-                    <p className="text-zinc-500 text-sm uppercase tracking-wider">
-                      {fragment.title}
-                    </p>
-
-                    <h3 className="text-4xl font-black mt-2">
-                      Piece #{fragment.piece}
-                    </h3>
-
-                    <div className="mt-6 flex items-center justify-between">
-
-                      <div>
-
-                        <p className="text-zinc-500 text-sm">
-                          Current Value
-                        </p>
-
-                        <h2 className="text-cyan-400 text-4xl font-black mt-2">
-                          ${fragment.price}
-                        </h2>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        </section>
-
-        {/* UPLOADS */}
-
-        <section className="mt-24">
-
-          <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
-            Marketplace
-          </p>
-
-          <h2 className="text-5xl font-black mt-3">
-            Uploaded Fragments
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-10">
-
-            {uploads.map(
-              (fragment) => (
-
-                <div
-                  key={fragment.id}
-                  className={`group rounded-[32px] overflow-hidden border bg-white/[0.03] backdrop-blur-xl transition duration-500 hover:-translate-y-2 ${rarityGlow(fragment.rarity)}`}
-                >
-
-                  <div className="relative overflow-hidden">
-
-                    <img
-                      src={
-                        fragment.image
-                      }
-                      alt={
-                        fragment.title
-                      }
-                      className="w-full h-[340px] object-cover transition duration-700 group-hover:scale-110"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
-                    <div className="absolute top-5 left-5 bg-black/70 backdrop-blur-xl px-4 py-2 rounded-full text-xs font-black border border-white/10">
-
-                      {fragment.rarity}
-
-                    </div>
-
-                    <div className="absolute top-5 right-5 bg-green-400 text-black px-4 py-2 rounded-full text-xs font-black">
-                      LIVE
-                    </div>
-
-                  </div>
-
-                  <div className="p-6">
-
-                    <p className="text-zinc-500 text-sm uppercase tracking-wider">
-                      {fragment.title}
-                    </p>
-
-                    <h2 className="text-4xl font-black mt-2">
-                      Piece #{fragment.piece}
-                    </h2>
-
-                    <div className="mt-6 flex items-center justify-between">
-
-                      <div>
-
-                        <p className="text-zinc-500 text-sm">
-                          Market Price
-                        </p>
-
-                        <h2 className="text-cyan-400 text-4xl font-black mt-2">
-                          ${fragment.price}
-                        </h2>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              )
-            )}
 
           </div>
 

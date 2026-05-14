@@ -41,8 +41,22 @@ export default function LoginPage() {
           data.user.email || ""
         );
 
-        window.location.href =
-          "/marketplace";
+        const nickname =
+          localStorage.getItem(
+            "puzzle-username"
+          );
+
+        if (!nickname) {
+
+          window.location.href =
+            "/setup";
+
+        } else {
+
+          window.location.href =
+            "/marketplace";
+
+        }
 
       }
 
@@ -52,13 +66,17 @@ export default function LoginPage() {
 
   return (
 
-    <main className="min-h-screen flex items-center justify-center px-4">
+    <main className="min-h-screen flex items-center justify-center px-4 bg-black text-white overflow-hidden">
 
-      <div className="w-full max-w-md bg-zinc-950 border border-white/10 rounded-3xl p-8">
+      {/* BG */}
+
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
+
+      <div className="relative w-full max-w-md bg-zinc-950 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
 
         <div className="flex justify-center">
 
-          <div className="w-20 h-20 rounded-full bg-cyan-400 flex items-center justify-center text-black text-4xl font-black">
+          <div className="w-20 h-20 rounded-full bg-cyan-400 flex items-center justify-center text-black text-4xl font-black shadow-[0_0_40px_rgba(34,211,238,0.35)]">
             P
           </div>
 
@@ -97,7 +115,7 @@ export default function LoginPage() {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-2xl transition"
+            className="w-full bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 text-black font-black py-4 rounded-2xl transition"
           >
 
             {loading
