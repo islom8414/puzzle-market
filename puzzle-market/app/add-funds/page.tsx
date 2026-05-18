@@ -30,6 +30,12 @@ export default function AddFundsPage() {
         window.location.href =
           data.url;
 
+      } else {
+
+        alert(
+          "Stripe session failed"
+        );
+
       }
 
     };
@@ -53,10 +59,8 @@ export default function AddFundsPage() {
         </h1>
 
         <p className="text-zinc-500 text-lg mt-6 max-w-2xl leading-relaxed">
-          Securely top up your Puzzle Market wallet using Visa or Mastercard through Stripe.
+          Securely top up your Puzzle Market wallet using Visa or Mastercard.
         </p>
-
-        {/* AMOUNTS */}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
 
