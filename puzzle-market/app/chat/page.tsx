@@ -147,7 +147,7 @@ export default function ChatPage() {
 
       <div className="flex-1 overflow-y-auto py-5">
 
-       <div className="max-w-3xl mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-4">
+        <div className="max-w-3xl mx-auto w-full px-4 md:px-6 py-6 flex flex-col gap-4">
 
           {messages.map((message, index) => {
 
@@ -166,8 +166,8 @@ export default function ChatPage() {
                 }`}
               >
 
-               className={`inline-block px-4 py-3 rounded-2xl w-[320px] md:w-[420px]
-                  
+                <div
+                  className={`inline-block px-4 py-3 rounded-2xl w-[320px] md:w-[420px] ${
                     own
                       ? "bg-cyan-400 text-black"
                       : "bg-zinc-900 border border-white/10"
