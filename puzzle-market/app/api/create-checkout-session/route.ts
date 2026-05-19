@@ -1,49 +1,35 @@
 import { NextResponse } from "next/server";
-
 import Stripe from "stripe";
 
 const stripe = new Stripe(
-  process.env.STRIPE_SECRET_KEY!,
+  process.env.STRIPE_SECRET_KEY as string,
   {
     apiVersion: "2026-04-22.dahlia",
   }
 );
 
-export async function POST(
-  request: Request
-) {
-
+export async function POST(request: Request) {
   try {
+    const body = await request.json();
 
-    const body =
-      await request.json();
-
-    const amount =
-      body.amount;
+    const amount = body.amount;
 
     const session =
       await stripe.checkout.sessions.create({
-
-        payment_method_types: [
-          "card"
-        ],
+        payment_method_types: ["card"],
 
         mode: "payment",
 
         line_items: [
           {
             price_data: {
-
               currency: "usd",
 
               product_data: {
-                name:
-                  "Puzzle Market Wallet Topup",
+                name: "Puzzle Market Wallet Topup",
               },
 
-              unit_amount:
-                amount * 100,
-
+              unit_amount: amount * 100,
             },
 
             quantity: 1,
@@ -55,7 +41,6 @@ export async function POST(
 
         cancel_url:
           "https://puzzle-market-lmny.vercel.app/profile",
-
       });
 
     return NextResponse.json({
@@ -63,6 +48,8 @@ export async function POST(
     });
 
   } catch (error) {
+
+    console.log(error);
 
     return NextResponse.json(
       {
@@ -72,7 +59,5 @@ export async function POST(
         status: 500,
       }
     );
-
   }
-
 }
