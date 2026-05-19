@@ -24,6 +24,28 @@ export default function ChatPage() {
   const bottomRef =
     useRef<HTMLDivElement>(null);
 
+  const loadMessages =
+    async () => {
+
+      const { data } =
+        await supabase
+          .from("chat")
+          .select("*")
+          .order(
+            "created_at",
+            {
+              ascending: true,
+            }
+          );
+
+      if (data) {
+
+        setMessages(data);
+
+      }
+
+    };
+
   useEffect(() => {
 
     const savedUser =
@@ -75,28 +97,6 @@ export default function ChatPage() {
 
   }, [messages]);
 
-  const loadMessages =
-    async () => {
-
-      const { data } =
-        await supabase
-          .from("chat")
-          .select("*")
-          .order(
-            "created_at",
-            {
-              ascending: true,
-            }
-          );
-
-      if (data) {
-
-        setMessages(data);
-
-      }
-
-    };
-
   const sendMessage =
     async () => {
 
@@ -125,8 +125,6 @@ export default function ChatPage() {
 
     <main className="h-screen bg-black text-white flex flex-col overflow-hidden">
 
-      {/* HEADER */}
-
       <div className="border-b border-white/10 p-5">
 
         <div className="max-w-5xl mx-auto">
@@ -142,8 +140,6 @@ export default function ChatPage() {
         </div>
 
       </div>
-
-      {/* CHAT */}
 
       <div className="flex-1 overflow-y-auto py-5">
 
@@ -181,9 +177,7 @@ export default function ChatPage() {
                         : "text-cyan-400"
                     }`}
                   >
-
                     {message.username}
-
                   </p>
 
                   <p className="mt-2 text-sm break-words">
@@ -197,13 +191,11 @@ export default function ChatPage() {
                         : "text-zinc-500"
                     }`}
                   >
-
                     {message.created_at
                       ? new Date(
                           message.created_at
                         ).toLocaleTimeString()
                       : "LIVE"}
-
                   </p>
 
                 </div>
@@ -219,8 +211,6 @@ export default function ChatPage() {
         </div>
 
       </div>
-
-      {/* INPUT */}
 
       <div className="border-t border-white/10 p-3">
 
