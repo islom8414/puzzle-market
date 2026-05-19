@@ -2,20 +2,23 @@
 
 export default function AddFundsPage() {
 
-  const addFunds =
-    async (
-      amount: number
-    ) => {
+  async function topup(
+    amount: number
+  ) {
+
+    try {
 
       const response =
         await fetch(
           "/api/create-checkout-session",
           {
             method: "POST",
+
             headers: {
               "Content-Type":
                 "application/json",
             },
+
             body: JSON.stringify({
               amount,
             }),
@@ -30,89 +33,50 @@ export default function AddFundsPage() {
         window.location.href =
           data.url;
 
-      } else {
-
-        alert(
-          "Stripe session failed"
-        );
-
       }
 
-    };
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  }
 
   return (
+    <main className="min-h-screen bg-black text-white flex items-center justify-center">
 
-    <main className="min-h-screen bg-black text-white overflow-hidden flex items-center justify-center px-4">
+      <div className="border border-cyan-500 rounded-3xl p-10 w-[900px]">
 
-      {/* BG */}
-
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
-
-      <div className="relative w-full max-w-3xl bg-white/[0.03] border border-white/10 rounded-[40px] p-8 md:p-12 backdrop-blur-xl">
-
-        <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
-          WALLET TOPUP
-        </p>
-
-        <h1 className="text-5xl md:text-7xl font-black mt-5 leading-none">
+        <h1 className="text-7xl font-black mb-4">
           Add Funds
         </h1>
 
-        <p className="text-zinc-500 text-lg mt-6 max-w-2xl leading-relaxed">
-          Securely top up your Puzzle Market wallet using Visa or Mastercard.
+        <p className="text-gray-400 mb-10">
+          Securely top up your Puzzle Market wallet.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div className="grid grid-cols-3 gap-4">
 
           <button
-            onClick={() =>
-              addFunds(10)
-            }
-            className="bg-white/[0.03] hover:border-cyan-400 border border-white/10 rounded-[32px] p-8 transition text-left"
+            onClick={() => topup(10)}
+            className="bg-zinc-900 hover:bg-cyan-500 transition rounded-3xl p-8 text-5xl font-black"
           >
-
-            <p className="text-zinc-500 text-sm">
-              Starter
-            </p>
-
-            <h2 className="text-5xl font-black mt-4">
-              $10
-            </h2>
-
+            $10
           </button>
 
           <button
-            onClick={() =>
-              addFunds(50)
-            }
-            className="bg-cyan-400 text-black rounded-[32px] p-8 transition text-left shadow-[0_0_40px_rgba(34,211,238,0.35)]"
+            onClick={() => topup(50)}
+            className="bg-cyan-500 hover:bg-cyan-400 transition rounded-3xl p-8 text-5xl font-black text-black"
           >
-
-            <p className="text-black/60 text-sm">
-              Popular
-            </p>
-
-            <h2 className="text-5xl font-black mt-4">
-              $50
-            </h2>
-
+            $50
           </button>
 
           <button
-            onClick={() =>
-              addFunds(100)
-            }
-            className="bg-white/[0.03] hover:border-cyan-400 border border-white/10 rounded-[32px] p-8 transition text-left"
+            onClick={() => topup(100)}
+            className="bg-zinc-900 hover:bg-cyan-500 transition rounded-3xl p-8 text-5xl font-black"
           >
-
-            <p className="text-zinc-500 text-sm">
-              Premium
-            </p>
-
-            <h2 className="text-5xl font-black mt-4">
-              $100
-            </h2>
-
+            $100
           </button>
 
         </div>
@@ -120,6 +84,6 @@ export default function AddFundsPage() {
       </div>
 
     </main>
-
   );
+
 }
