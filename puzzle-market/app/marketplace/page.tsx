@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import Link from "next/link";
 
 import { supabase } from "@/lib/supabase";
 
@@ -410,12 +409,187 @@ export default function MarketplacePage() {
 
                   {/* BUTTON */}
 
-                  <Link
-                     href={`/fragment/${fragment.fragment_id}`}
-                    className="mt-6 flex items-center justify-center w-full bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-2xl transition duration-300"
-                  >
-                    Open Fragment
-                  </Link>
+                 <button
+
+onClick={async()=>{
+
+try{
+
+const email=
+localStorage.getItem(
+"user-email"
+);
+
+if(!email){
+
+alert(
+"Login first"
+);
+
+return;
+
+}
+
+const {
+data:wallet,
+error
+
+}=
+
+await supabase
+
+.from(
+"wallets"
+)
+
+.select(
+"*"
+)
+
+.eq(
+"username",
+email
+)
+
+.single();
+
+if(
+error||
+!wallet
+){
+
+alert(
+"Wallet not found"
+);
+
+return;
+
+}
+
+if(
+wallet.balance
+<
+fragment.price
+){
+
+alert(
+"Not enough balance"
+);
+
+return;
+
+}
+
+await supabase
+
+.from(
+"wallets"
+)
+
+.update({
+
+balance:
+wallet.balance-
+fragment.price,
+
+})
+
+.eq(
+"username",
+email
+);
+
+await supabase
+
+.from(
+"inventory"
+)
+
+.insert({
+
+user_email:
+email,
+
+fragment_id:
+fragment.fragment_id,
+
+title:
+fragment.title,
+
+});
+
+await supabase
+
+.from(
+"transactions"
+)
+
+.insert({
+
+buyer_email:
+email,
+
+seller_email:
+fragment.seller_email,
+
+fragment_id:
+fragment.fragment_id,
+
+});
+
+await supabase
+
+.from(
+"marketplace"
+)
+
+.delete()
+
+.eq(
+"id",
+fragment.id
+);
+
+alert(
+"Purchase completed"
+);
+
+loadMarketplace();
+
+}
+
+catch{
+
+alert(
+"Purchase failed"
+);
+
+}
+
+}}
+
+className="
+mt-6
+flex
+items-center
+justify-center
+w-full
+bg-green-400
+hover:bg-green-300
+text-black
+font-black
+py-4
+rounded-2xl
+transition
+duration-300
+"
+
+>
+
+Buy Fragment • $
+{fragment.price}
+
+</button>
 
                 </div>
 
