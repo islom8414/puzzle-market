@@ -216,10 +216,11 @@ export default function FragmentPage() {
             <button
   onClick={async () => {
 
-    const username =
-      localStorage.getItem(
-        "puzzle-username"
-      ) || "ShadowUser";
+  const email =
+localStorage.getItem(
+"puzzle-username"
+) ||
+"ismatchanov08@gmail.com";
 
 const email =
 localStorage.getItem(
