@@ -57,7 +57,7 @@ export default function FragmentPage() {
             "fragment_id",
             params.id
           )
-          .single();
+          .maybeSingle()
 
       if (data) {
 
@@ -261,7 +261,26 @@ email
 )
         .single();
 
-    if (!walletData) {
+    if (error) {
+console.log(error);
+}
+
+if (!walletData) {
+
+await supabase
+.from("wallets")
+.insert([
+{
+username: email,
+balance: 100
+}
+]);
+
+window.location.reload();
+
+return;
+
+}
 
   await supabase
     .from("wallets")
@@ -310,8 +329,8 @@ email
       newBalance,
   })
   .eq(
-    "username",
-    user?.email
+   username:
+   email
   );
 
     localStorage.setItem(
@@ -323,8 +342,8 @@ email
       .from("inventory")
       .insert([
         {
-          user_email:
-            user?.email,
+         user_email:
+          email
           fragment_id:
             fragment.fragment_id,
           title:
@@ -343,7 +362,7 @@ email
       .insert([
         {
           username:
-             user?.email,
+              email
           action: "BUY",
           title:
             fragment.title,
