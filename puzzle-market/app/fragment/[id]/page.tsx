@@ -68,25 +68,15 @@ export default function FragmentPage() {
 
   async function buyFragment() {
 
-    const {
+   const {
 data: {
 session
 }
 } =
 await supabase.auth.getSession();
 
-const email =
+const username =
 session?.user?.email;
-
-if (!email) {
-
-alert(
-"Login first"
-);
-
-return;
-
-}
 
     let {
       data: wallets
