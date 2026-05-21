@@ -221,16 +221,44 @@ export default function FragmentPage() {
         "puzzle-username"
       ) || "ShadowUser";
 
-    const {
-      data: walletData,
-    } =
-      await supabase
-        .from("wallets")
-        .select("*")
+const email =
+localStorage.getItem(
+"puzzle-username"
+);
+
+const {
+data: walletData,
+error
+}
+=
+await supabase
+
+.from(
+"wallets"
+)
+
+.select(
+"*"
+)
+
+.eq(
+"username",
+email
+)
+
+.maybeSingle();
+
+console.log(
+email
+);
+
+console.log(
+walletData
+);
         .eq(
-          "username",
-           user?.email
-        )
+"username",
+email
+)
         .single();
 
     if (!walletData) {
@@ -239,8 +267,8 @@ export default function FragmentPage() {
     .from("wallets")
     .insert([
       {
-        username:
-          user?.email,
+        user_email:
+        email
         balance: 0
       }
     ]);
