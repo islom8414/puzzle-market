@@ -16,50 +16,54 @@ type Fragment = {
 };
 
 export default function FragmentPage() {
+
   const params = useParams();
 
-  const [fragment, setFragment] =
-    useState<Fragment | null>(null);
+  const [
+    fragment,
+    setFragment
+  ] =
+  useState<
+    Fragment | null
+  >(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    loading,
+    setLoading
+  ] =
+  useState(true);
 
   useEffect(() => {
+
     loadFragment();
+
   }, []);
 
   async function loadFragment() {
-    const { data } =
-      await supabase
-        .from("marketplace")
-        .select("*")
-        .eq(
-          "fragment_id",
-          params.id
-        )
-        .maybeSingle();
 
-    if (data) {
-      setFragment(data);
-    }
+    const {
+      data
+    } =
+    await supabase
+      .from(
+        "marketplace"
+      )
+      .select("*")
+      .eq(
+        "fragment_id",
+        params.id
+      )
+      .limit(1);
 
-    setLoading(false);
-  }
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        Loading...
-      </main>
+    setFragment(
+      data?.[0] ||
+      null
     );
-  }
 
-  if (!fragment) {
-    return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        Fragment Not Found
-      </main>
+    setLoading(
+      false
     );
+
   }
 
   async function buyFragment() {
@@ -71,42 +75,63 @@ export default function FragmentPage() {
       "ismatchanov08@gmail.com";
 
     let {
-      data: wallet
+      data: wallets
     } =
-      await supabase
-        .from("wallets")
-        .select("*")
-        .eq(
-          "username",
-          email
-        )
-        .maybeSingle();
+    await supabase
+      .from(
+        "wallets"
+      )
+      .select("*")
+      .eq(
+        "username",
+        email
+      )
+      .limit(1);
 
-    if (!wallet) {
+    let wallet =
+      wallets?.[0];
+
+    if (
+      !wallet
+    ) {
 
       const {
         data
       } =
-        await supabase
-          .from("wallets")
-          .insert([
-            {
-              username:
-                email,
-              balance:
-                100
-            }
-          ])
-          .select()
-          .single();
+      await supabase
+        .from(
+          "wallets"
+        )
+        .insert([
+          {
+            username:
+              email,
+            balance:
+              100
+          }
+        ])
+        .select();
 
-      wallet = data;
+      wallet =
+        data?.[0];
+
+    }
+
+    if (
+      !wallet
+    ) {
+
+      alert(
+        "Wallet create failed"
+      );
+
+      return;
 
     }
 
     if (
       wallet.balance <
-      fragment.price
+      fragment!.price
     ) {
 
       alert(
@@ -119,10 +144,12 @@ export default function FragmentPage() {
 
     const newBalance =
       wallet.balance -
-      fragment.price;
+      fragment!.price;
 
     await supabase
-      .from("wallets")
+      .from(
+        "wallets"
+      )
       .update({
         balance:
           newBalance
@@ -140,26 +167,30 @@ export default function FragmentPage() {
     );
 
     await supabase
-      .from("inventory")
+      .from(
+        "inventory"
+      )
       .insert([
         {
           user_email:
             email,
           fragment_id:
-            fragment.fragment_id,
+            fragment!.fragment_id,
           title:
-            fragment.title,
+            fragment!.title,
           image:
-            fragment.image,
+            fragment!.image,
           piece:
-            fragment.piece,
+            fragment!.piece,
           price:
-            fragment.price
+            fragment!.price
         }
       ]);
 
     await supabase
-      .from("activity")
+      .from(
+        "activity"
+      )
       .insert([
         {
           username:
@@ -167,56 +198,81 @@ export default function FragmentPage() {
           action:
             "BUY",
           title:
-            fragment.title
+            fragment!.title
         }
       ]);
 
     await supabase
-      .from("marketplace")
+      .from(
+        "marketplace"
+      )
       .delete()
       .eq(
         "fragment_id",
-        fragment.fragment_id
+        fragment!.fragment_id
       );
 
     alert(
       "Fragment Purchased!"
     );
 
-    window.location.href =
+    location.href =
       "/profile";
+
+  }
+
+  if (
+    loading
+  ) {
+
+    return (
+      <div>
+        Loading...
+      </div>
+    );
+
+  }
+
+  if (
+    !fragment
+  ) {
+
+    return (
+      <div>
+        Fragment not found
+      </div>
+    );
+
   }
 
   return (
+
     <main className="min-h-screen bg-black text-white">
 
       <div className="max-w-7xl mx-auto p-10">
 
         <img
-          src={fragment.image}
+          src={
+            fragment.image
+          }
           className="rounded-3xl"
         />
 
-        <h1 className="text-6xl font-black mt-8">
-          {fragment.title}
+        <h1 className="text-6xl font-black">
+
+          {
+            fragment.title
+          }
+
         </h1>
 
-        <div className="mt-10">
+        <div>
 
-          <div>
-            Price:
-            ${fragment.price}
-          </div>
-
-          <div>
-            Piece:
-            #{fragment.piece}
-          </div>
-
-          <div>
-            Seller:
-            {fragment.seller_email}
-          </div>
+          Price:
+          $
+          {
+            fragment.price
+          }
 
         </div>
 
@@ -224,13 +280,17 @@ export default function FragmentPage() {
           onClick={
             buyFragment
           }
-          className="mt-10 w-full bg-cyan-400 text-black p-5 rounded-3xl font-black"
+          className="w-full bg-cyan-400 text-black p-5 rounded-3xl"
         >
+
           Buy Fragment
+
         </button>
 
       </div>
 
     </main>
+
   );
+
 }
