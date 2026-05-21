@@ -214,18 +214,13 @@ export default function FragmentPage() {
             </div>
 
             <button
-  onClick={async () => {
-
-  const email =
-localStorage.getItem(
-"puzzle-username"
-) ||
-"ismatchanov08@gmail.com";
+ onClick={async () => {
 
 const email =
 localStorage.getItem(
 "puzzle-username"
-);
+) ||
+"ismatchanov08@gmail.com";
 
 const {
 data: walletData,
@@ -233,41 +228,27 @@ error
 }
 =
 await supabase
-
-.from(
-"wallets"
-)
-
-.select(
-"*"
-)
-
+.from("wallets")
+.select("*")
 .eq(
 "username",
 email
 )
-
 .maybeSingle();
 
-console.log(
-email
-);
-
-console.log(
-walletData
-);
-        .eq(
-"username",
-email
-)
-        .single();
-
-    if (error) {
+if (error) {
 console.log(error);
 }
 
-if (!walletData) {
+let wallet =
+walletData;
 
+if (!wallet) {
+
+const {
+data: newWallet
+}
+=
 await supabase
 .from("wallets")
 .insert([
@@ -275,119 +256,103 @@ await supabase
 username: email,
 balance: 100
 }
-]);
+])
+.select()
+.single();
 
-window.location.reload();
+wallet =
+newWallet;
+
+}
+
+const currentBalance =
+wallet.balance;
+
+if (
+currentBalance <
+fragment.price
+) {
+
+alert(
+"Not enough balance"
+);
 
 return;
 
 }
 
-  await supabase
-    .from("wallets")
-    .insert([
-      {
-        user_email:
-        email
-        balance: 0
-      }
-    ]);
+const newBalance =
+currentBalance -
+fragment.price;
 
-  window.location.reload();
+await supabase
+.from("wallets")
+.update({
+balance:
+newBalance
+})
+.eq(
+"username",
+email
+);
 
-  return;
+localStorage.setItem(
+"puzzle-balance",
+String(
+newBalance
+)
+);
 
+await supabase
+.from("inventory")
+.insert([
+{
+user_email:
+email,
+fragment_id:
+fragment.fragment_id,
+title:
+fragment.title,
+image:
+fragment.image,
+piece:
+fragment.piece,
+price:
+fragment.price
 }
+]);
 
-      return;
+await supabase
+.from("activity")
+.insert([
+{
+username:
+email,
+action:
+"BUY",
+title:
+fragment.title,
+price:
+fragment.price
+}
+]);
 
-    }
+await supabase
+.from("marketplace")
+.delete()
+.eq(
+"fragment_id",
+fragment.fragment_id
+);
 
-    const currentBalance =
-      walletData.balance;
+alert(
+"Fragment Purchased!"
+);
 
-    if (
-      currentBalance <
-      fragment.price
-    ) {
+window.location.href =
+"/profile";
 
-      alert(
-        "Not enough balance"
-      );
-
-      return;
-
-    }
-
-    const newBalance =
-      currentBalance -
-      fragment.price;
-
-    await supabase
-  .from("wallets")
-  .update({
-    balance:
-      newBalance,
-  })
-  .eq(
-   username:
-   email
-  );
-
-    localStorage.setItem(
-      "puzzle-balance",
-      String(newBalance)
-    );
-
-    await supabase
-      .from("inventory")
-      .insert([
-        {
-         user_email:
-          email
-          fragment_id:
-            fragment.fragment_id,
-          title:
-            fragment.title,
-          image:
-            fragment.image,
-          piece:
-            fragment.piece,
-          price:
-            fragment.price,
-        },
-      ]);
-
-    await supabase
-      .from("activity")
-      .insert([
-        {
-          username:
-              email
-          action: "BUY",
-          title:
-            fragment.title,
-          price:
-            fragment.price,
-        },
-      ]);
-
-    await supabase
-      .from("marketplace")
-      .delete()
-      .eq(
-        "fragment_id",
-        fragment.fragment_id
-      );
-
-    alert(
-      "Fragment Purchased!"
-    );
-
-    window.location.href =
-      "/profile";
-
-  }}
+}}
   className="w-full bg-cyan-400 hover:bg-cyan-300 text-black font-black py-5 rounded-[28px] text-lg transition"
 >
   Buy Fragment
