@@ -68,11 +68,13 @@ export default function FragmentPage() {
 
   async function buyFragment() {
 
-    const email =
-      localStorage.getItem(
-        "puzzle-username"
-      ) ||
-      "ismatchanov08@gmail.com";
+    const {
+data: { user }
+} =
+await supabase.auth.getUser();
+
+const email =
+user?.email;
 
     let {
       data: wallets
@@ -87,7 +89,10 @@ export default function FragmentPage() {
         email
       )
       .limit(1);
-
+console.log(
+"EMAIL=",
+email
+);
     let wallet =
       wallets?.[0];
 
