@@ -276,15 +276,15 @@ export default function FragmentPage() {
       fragment.price;
 
     await supabase
-      .from("wallets")
-      .update({
-        balance:
-          newBalance,
-      })
-      .eq(
-        "username",
-        username
-      );
+  .from("wallets")
+  .update({
+    balance:
+      newBalance,
+  })
+  .eq(
+    "username",
+    user?.email
+  );
 
     localStorage.setItem(
       "puzzle-balance",
@@ -296,7 +296,7 @@ export default function FragmentPage() {
       .insert([
         {
           user_email:
-            username,
+            user?.email,
           fragment_id:
             fragment.fragment_id,
           title:
@@ -314,7 +314,8 @@ export default function FragmentPage() {
       .from("activity")
       .insert([
         {
-          username,
+          username:
+             user?.email,
           action: "BUY",
           title:
             fragment.title,
