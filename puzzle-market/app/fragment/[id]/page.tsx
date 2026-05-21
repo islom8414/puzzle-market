@@ -229,15 +229,27 @@ export default function FragmentPage() {
         .select("*")
         .eq(
           "username",
-          username
+           user?.email
         )
         .single();
 
     if (!walletData) {
 
-      alert(
-        "Wallet not found"
-      );
+  await supabase
+    .from("wallets")
+    .insert([
+      {
+        username:
+          user?.email,
+        balance: 0
+      }
+    ]);
+
+  window.location.reload();
+
+  return;
+
+}
 
       return;
 
