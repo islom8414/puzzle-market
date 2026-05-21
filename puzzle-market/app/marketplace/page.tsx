@@ -447,8 +447,8 @@ await supabase
 )
 
 .eq(
-"username",
-email
+  "username",
+  user?.email
 )
 
 .single();
