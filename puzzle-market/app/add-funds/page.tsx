@@ -51,6 +51,10 @@ export default function AddFundsPage() {
 
             body: JSON.stringify({
               amount,
+              username:
+                localStorage.getItem(
+                  "puzzle-username"
+                ),
             }),
           }
         );

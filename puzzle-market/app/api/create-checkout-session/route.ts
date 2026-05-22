@@ -93,6 +93,54 @@ export async function POST(
       );
     }
 
+    const username =
+      typeof body.username ===
+        "string"
+        ? body.username.trim()
+        : "";
+
+    if (
+      !userData.user.email ||
+      username.length < 3 ||
+      username.length > 40
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Complete profile setup first",
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
+    const {
+      error: profileError,
+    } =
+      await admin
+        .from("market_profiles")
+        .upsert({
+          id: userData.user.id,
+          email:
+            userData.user.email,
+          username,
+        });
+
+    if (profileError) {
+      console.error(profileError);
+
+      return NextResponse.json(
+        {
+          error:
+            "Profile setup required",
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
     const profileUrl =
       new URL(
         "/profile",
