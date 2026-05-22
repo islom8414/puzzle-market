@@ -35,6 +35,7 @@ export default function FragmentPage() {
 
   useEffect(() => {
 
+    // eslint-disable-next-line react-hooks/immutability
     loadFragment();
 
   }, []);
@@ -86,7 +87,7 @@ export default function FragmentPage() {
 
     }
 
-    let {
+    const {
       data: wallets
     } =
     await supabase

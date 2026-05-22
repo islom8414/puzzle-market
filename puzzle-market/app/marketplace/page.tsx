@@ -43,6 +43,7 @@ export default function MarketplacePage() {
 
   useEffect(() => {
 
+    // eslint-disable-next-line react-hooks/immutability
     loadMarketplace();
 
     const channel =

@@ -40,6 +40,38 @@ export default function SetupPage() {
       );
 
       const {
+        data: {
+          user,
+        },
+      } =
+        await supabase.auth
+          .getUser();
+
+      if (user?.email) {
+
+        const {
+          error: profileError,
+        } =
+          await supabase
+            .from(
+              "market_profiles"
+            )
+            .upsert({
+              id: user.id,
+              email: user.email,
+              username:
+                nickname,
+            });
+
+        if (profileError) {
+          console.log(
+            profileError
+          );
+        }
+
+      }
+
+      const {
         data: existingWallet,
       } =
         await supabase

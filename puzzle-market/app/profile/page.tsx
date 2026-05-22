@@ -44,6 +44,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
 
+    // eslint-disable-next-line react-hooks/immutability
     loadProfile();
 
   }, []);
@@ -67,6 +68,50 @@ export default function ProfilePage() {
 
       setUsername(savedUser);
 
+      let realWalletLoaded =
+        false;
+
+      const {
+        data: {
+          user,
+        },
+      } =
+        await supabase.auth
+          .getUser();
+
+      if (user) {
+
+        const {
+          data: accountData,
+        } =
+          await supabase
+            .from(
+              "wallet_accounts"
+            )
+            .select(
+              "balance_cents"
+            )
+            .eq(
+              "user_id",
+              user.id
+            )
+            .maybeSingle();
+
+        if (accountData) {
+
+          realWalletLoaded =
+            true;
+
+          setBalance(
+            accountData
+              .balance_cents /
+              100
+          );
+
+        }
+
+      }
+
       const {
         data: walletData,
       } =
@@ -79,7 +124,10 @@ export default function ProfilePage() {
           )
           .single();
 
-      if (walletData) {
+      if (
+        walletData &&
+        !realWalletLoaded
+      ) {
 
         setBalance(
           walletData.balance

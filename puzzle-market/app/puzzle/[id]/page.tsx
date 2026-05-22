@@ -54,6 +54,7 @@ export default function PuzzlePage() {
 
     if (!slug) return;
 
+    // eslint-disable-next-line react-hooks/immutability
     loadFragment();
 
   }, [slug]);

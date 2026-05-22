@@ -30,6 +30,7 @@ export default function ActivityPage() {
 
   useEffect(() => {
 
+    // eslint-disable-next-line react-hooks/immutability
     loadTransactions();
 
     const channel =

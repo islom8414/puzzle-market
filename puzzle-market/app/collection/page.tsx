@@ -19,6 +19,7 @@ export default function CollectionPage() {
       ) || "[]"
     );
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOwned(saved);
 
   }, []);

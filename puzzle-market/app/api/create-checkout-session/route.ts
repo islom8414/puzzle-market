@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
+import {
+  createSupabaseAdmin,
+  getBearerToken,
+} from "@/lib/supabase-admin";
+
 export async function POST(
   request: Request
 ) {
@@ -31,6 +36,63 @@ export async function POST(
     const body =
       await request.json();
 
+    const token =
+      getBearerToken(request);
+
+    if (!token) {
+      return NextResponse.json(
+        {
+          error: "Login required",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
+    const amount =
+      Number(body.amount);
+
+    if (
+      !Number.isInteger(amount) ||
+      amount < 1 ||
+      amount > 10000
+    ) {
+      return NextResponse.json(
+        {
+          error: "Invalid topup amount",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const admin =
+      createSupabaseAdmin();
+
+    const {
+      data: userData,
+      error: userError,
+    } =
+      await admin.auth.getUser(
+        token
+      );
+
+    if (
+      userError ||
+      !userData.user
+    ) {
+      return NextResponse.json(
+        {
+          error: "Invalid session",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
     const profileUrl =
       new URL(
         "/profile",
@@ -58,7 +120,7 @@ export async function POST(
               },
 
               unit_amount:
-                body.amount * 100,
+                amount * 100,
 
             },
 
@@ -71,6 +133,15 @@ export async function POST(
 
         cancel_url:
           profileUrl,
+
+        client_reference_id:
+          userData.user.id,
+
+        metadata: {
+          kind: "wallet_topup",
+          user_id:
+            userData.user.id,
+        },
 
       });
 

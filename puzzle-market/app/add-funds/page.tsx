@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { supabase } from "@/lib/supabase";
+
 export default function AddFundsPage() {
 
   const [loading, setLoading] =
@@ -15,6 +17,25 @@ export default function AddFundsPage() {
 
       setLoading(true);
 
+      const {
+        data: {
+          session,
+        },
+      } =
+        await supabase.auth
+          .getSession();
+
+      if (!session) {
+        alert(
+          "Login required"
+        );
+
+        window.location.href =
+          "/login";
+
+        return;
+      }
+
       const response =
         await fetch(
           "/api/create-checkout-session",
@@ -24,6 +45,8 @@ export default function AddFundsPage() {
             headers: {
               "Content-Type":
                 "application/json",
+              Authorization:
+                `Bearer ${session.access_token}`,
             },
 
             body: JSON.stringify({

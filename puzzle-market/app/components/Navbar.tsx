@@ -8,6 +8,10 @@ const initialNotifications = [
   "Marketplace synced successfully",
 ];
 
+type MarketplaceNotification = {
+  title: string;
+};
+
 export default function Navbar() {
 
   const [open, setOpen] =
@@ -47,6 +51,7 @@ export default function Navbar() {
 
     if (savedBalance) {
 
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBalance(
         Number(savedBalance)
       );
@@ -59,6 +64,7 @@ export default function Navbar() {
 
     }
 
+    // eslint-disable-next-line react-hooks/immutability
     loadNotifications();
 
     const channel =
@@ -77,7 +83,7 @@ export default function Navbar() {
           (payload) => {
 
             const item =
-              payload.new as any;
+              payload.new as MarketplaceNotification;
 
             setNotifications(
               (prev) => [
@@ -124,7 +130,7 @@ export default function Navbar() {
 
         const mapped =
           data.map(
-            (item: any) =>
+            (item: MarketplaceNotification) =>
               `New fragment listed: ${item.title}`
           );
 
@@ -135,22 +141,6 @@ export default function Navbar() {
       }
 
     };
-
-  const addFunds = (
-    amount: number
-  ) => {
-
-    const newBalance =
-      balance + amount;
-
-    setBalance(newBalance);
-
-    localStorage.setItem(
-      "puzzle-balance",
-      String(newBalance)
-    );
-
-  };
 
   const handleLogout = () => {
 
@@ -457,25 +447,12 @@ export default function Navbar() {
 
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mt-6">
-
-              {[100, 500, 1000].map(
-                (amount) => (
-
-                  <button
-                    key={amount}
-                    onClick={() =>
-                      addFunds(amount)
-                    }
-                    className="bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-2xl transition"
-                  >
-                    +${amount}
-                  </button>
-
-                )
-              )}
-
-            </div>
+            <a
+              href="/add-funds"
+              className="flex items-center justify-center w-full mt-6 bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-2xl transition"
+            >
+              Add Funds
+            </a>
 
             <button
               onClick={() =>

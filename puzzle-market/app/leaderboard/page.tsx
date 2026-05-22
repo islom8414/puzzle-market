@@ -52,6 +52,7 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
 
+    // eslint-disable-next-line react-hooks/immutability
     loadLeaderboard();
 
     const channel =

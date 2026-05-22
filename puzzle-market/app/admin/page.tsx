@@ -62,6 +62,7 @@ export default function AdminPage() {
 
   useEffect(() => {
 
+    // eslint-disable-next-line react-hooks/immutability
     loadAdmin();
 
     const channel =

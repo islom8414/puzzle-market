@@ -45,6 +45,7 @@ export default function SearchPage() {
 
   useEffect(() => {
 
+    // eslint-disable-next-line react-hooks/immutability
     loadFragments();
 
     const channel =
@@ -108,7 +109,7 @@ export default function SearchPage() {
   const filtered =
     useMemo(() => {
 
-      let items =
+      const items =
         fragments.filter(
           (fragment) => {
 

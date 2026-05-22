@@ -61,6 +61,7 @@ export default function SellPage() {
 
   useEffect(() => {
 
+    // eslint-disable-next-line react-hooks/immutability
     loadData();
 
     const channel =
