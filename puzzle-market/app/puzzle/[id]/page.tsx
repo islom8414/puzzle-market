@@ -147,12 +147,15 @@ export default function PuzzlePage() {
 
       }
 
-      const user =
-        localStorage.getItem(
-          "puzzle-user"
-        );
+      const {
+        data: {
+          session,
+        },
+      } =
+        await supabase.auth
+          .getSession();
 
-      if (!user) {
+      if (!session) {
 
         alert(
           "Login required"
@@ -165,61 +168,52 @@ export default function PuzzlePage() {
 
       }
 
-      if (
-        balance <
-        listing.price
-      ) {
-
-        alert(
-          "Not enough balance."
-        );
-
-        return;
-
-      }
-
       setBuying(true);
 
-      /* ADD TO INVENTORY */
+      const username =
+        localStorage.getItem(
+          "puzzle-username"
+        ) ||
+        session.user.email
+          ?.split("@")[0]
+          ?.replace(
+            /[^a-zA-Z0-9_-]/g,
+            ""
+          )
+          ?.slice(0, 40) ||
+        "PuzzleUser";
 
-      const inventoryItem = {
+      localStorage.setItem(
+        "puzzle-username",
+        username
+      );
 
-        user_email: user,
-
-        fragment_id:
-          listing.fragment_id,
-
-        title:
-          listing.title,
-
-        image:
-          listing.image,
-
-        piece:
-          listing.piece,
-
-        price:
-          listing.price,
-
-      };
-
-      const {
-        error:
-          inventoryError,
-      } =
-        await supabase
-          .from("inventory")
-          .insert([
-            inventoryItem,
-          ]);
-
-      if (inventoryError) {
-
-        console.log(
-          inventoryError
+      const response =
+        await fetch(
+          "/api/purchase-marketplace",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+              Authorization:
+                `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              listingId:
+                listing.id,
+              username,
+            }),
+          }
         );
 
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+
         alert(
+          data.error ||
           "Purchase failed."
         );
 
@@ -228,82 +222,6 @@ export default function PuzzlePage() {
         return;
 
       }
-
-      /* SAVE TRANSACTION */
-
-      await supabase
-        .from(
-          "transactions"
-        )
-        .insert([
-          {
-
-            buyer_email:
-              user,
-
-            seller_email:
-              listing.seller_email,
-
-            fragment_id:
-              listing.fragment_id,
-
-            title:
-              listing.title,
-
-            price:
-              listing.price,
-
-          },
-        ]);
-
-      /* DELETE LISTING */
-
-      await supabase
-        .from(
-          "marketplace"
-        )
-        .delete()
-        .eq(
-          "id",
-          listing.id
-        );
-
-      /* BALANCE */
-
-      const updatedBalance =
-        balance -
-        listing.price;
-
-      setBalance(
-        updatedBalance
-      );
-
-      localStorage.setItem(
-        "puzzle-balance",
-        String(
-          updatedBalance
-        )
-      );
-
-      /* SELLER WALLET */
-
-      const sellerWallet =
-        `wallet-${listing.seller_email}`;
-
-      const currentSeller =
-        Number(
-          localStorage.getItem(
-            sellerWallet
-          ) || "8000"
-        );
-
-      localStorage.setItem(
-        sellerWallet,
-        String(
-          currentSeller +
-            listing.price
-        )
-      );
 
       setOwned(true);
 

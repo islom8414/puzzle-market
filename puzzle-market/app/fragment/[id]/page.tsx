@@ -69,165 +69,79 @@ export default function FragmentPage() {
 
   async function buyFragment() {
 
+    if (!fragment) return;
+
+    const {
+      data: {
+        session,
+      },
+    } =
+      await supabase.auth
+        .getSession();
+
+    if (!session) {
+
+      alert("Login required");
+
+      location.href =
+        "/login";
+
+      return;
+
+    }
+
     const username =
       localStorage.getItem(
         "puzzle-username"
-      );
-
-    if (!username) {
-
-      alert(
-        "Complete your profile first"
-      );
-
-      location.href =
-        "/setup";
-
-      return;
-
-    }
-
-    const {
-      data: wallets
-    } =
-    await supabase
-      .from(
-        "wallets"
-      )
-      .select("*")
-      .eq(
-        "username",
-        username
-      )
-      .limit(1);
-
-    let wallet =
-      wallets?.[0];
-
-    if (
-      !wallet
-    ) {
-
-      const {
-        data
-      } =
-      await supabase
-        .from(
-          "wallets"
+      ) ||
+      session.user.email
+        ?.split("@")[0]
+        ?.replace(
+          /[^a-zA-Z0-9_-]/g,
+          ""
         )
-        .insert([
-          {
-            username:
-              username,
-            balance:
-              100
-          }
-        ])
-        .select();
-
-      wallet =
-        data?.[0];
-
-    }
-
-    if (
-      !wallet
-    ) {
-
-      alert(
-        "Wallet create failed"
-      );
-
-      return;
-
-    }
-
-    if (
-      wallet.balance <
-      fragment!.price
-    ) {
-
-      alert(
-        "Not enough balance"
-      );
-
-      return;
-
-    }
-
-    const newBalance =
-      wallet.balance -
-      fragment!.price;
-
-    await supabase
-      .from(
-        "wallets"
-      )
-      .update({
-        balance:
-          newBalance
-      })
-      .eq(
-        "username",
-        username
-      );
+        ?.slice(0, 40) ||
+      "PuzzleUser";
 
     localStorage.setItem(
-      "puzzle-balance",
-      String(
-        newBalance
-      )
+      "puzzle-username",
+      username
     );
 
-    await supabase
-      .from(
-        "inventory"
-      )
-      .insert([
+    const response =
+      await fetch(
+        "/api/purchase-marketplace",
         {
-          user_email:
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Authorization:
+              `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            listingId:
+              fragment.id,
             username,
-          fragment_id:
-            fragment!.fragment_id,
-          title:
-            fragment!.title,
-          image:
-            fragment!.image,
-          piece:
-            fragment!.piece,
-          price:
-            fragment!.price
+          }),
         }
-      ]);
-
-    await supabase
-      .from(
-        "activity"
-      )
-      .insert([
-        {
-          username:
-            username,
-          action:
-            "BUY",
-          title:
-            fragment!.title
-        }
-      ]);
-
-    await supabase
-      .from(
-        "marketplace"
-      )
-      .delete()
-      .eq(
-        "fragment_id",
-        fragment!.fragment_id
       );
 
-    alert(
-      "Fragment Purchased!"
-    );
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+
+      alert(
+        data.error ||
+        "Purchase failed"
+      );
+
+      return;
+
+    }
+
+    alert("Fragment Purchased!");
 
     location.href =
       "/profile";

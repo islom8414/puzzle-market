@@ -160,6 +160,103 @@ export default function MarketplacePage() {
 
   };
 
+  const purchaseFragment =
+    async (
+      fragment: MarketItem
+    ) => {
+
+      try {
+
+        const {
+          data: {
+            session,
+          },
+        } =
+          await supabase.auth
+            .getSession();
+
+        if (!session) {
+
+          alert(
+            "Login required"
+          );
+
+          location.href =
+            "/login";
+
+          return;
+
+        }
+
+        const username =
+          localStorage.getItem(
+            "puzzle-username"
+          ) ||
+          session.user.email
+            ?.split("@")[0]
+            ?.replace(
+              /[^a-zA-Z0-9_-]/g,
+              ""
+            )
+            ?.slice(0, 40) ||
+          "PuzzleUser";
+
+        localStorage.setItem(
+          "puzzle-username",
+          username
+        );
+
+        const response =
+          await fetch(
+            "/api/purchase-marketplace",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+                Authorization:
+                  `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify({
+                listingId:
+                  fragment.id,
+                username,
+              }),
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+
+          alert(
+            data.error ||
+            "Purchase failed"
+          );
+
+          return;
+
+        }
+
+        alert(
+          "Purchase completed"
+        );
+
+        loadMarketplace();
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Purchase failed"
+        );
+
+      }
+
+    };
+
   return (
 
     <main className="min-h-screen bg-black text-white overflow-hidden">
@@ -410,170 +507,12 @@ export default function MarketplacePage() {
 
                   {/* BUTTON */}
 
-                 <button
-
-onClick={async()=>{
-
-try{
-
-const username=
-localStorage.getItem(
-"puzzle-username"
-);
-
-if(!username){
-
-alert(
-"Complete your profile first"
-);
-
-location.href =
-"/setup";
-
-return;
-
-}
-
-const {
-data:wallets,
-error
-
-}=
-
-await supabase
-
-.from(
-"wallets"
-)
-
-.select(
-"*"
-)
-
-.eq(
-"username",
-username
-)
-
-.limit(1);
-
-const wallet =
-wallets?.[0];
-
-if(
-error||
-!wallet
-){
-
-alert(
-"Wallet not found"
-);
-
-return;
-
-}
-
-if(
-wallet.balance
-<
-fragment.price
-){
-
-alert(
-"Not enough balance"
-);
-
-return;
-
-}
-
-await supabase
-
-.from(
-"wallets"
-)
-
-.update({
-
-balance:
-wallet.balance-
-fragment.price,
-
-})
-
-.eq(
-"username",
-username
-);
-
-await supabase
-
-.from(
-"inventory"
-)
-
-.insert({
-
-user_email:
-username,
-
-fragment_id:
-fragment.fragment_id,
-
-title:
-fragment.title,
-
-});
-
-await supabase
-
-.from(
-"transactions"
-)
-
-.insert({
-
-buyer_email:
-username,
-
-seller_email:
-fragment.seller_email,
-
-fragment_id:
-fragment.fragment_id,
-
-});
-
-await supabase
-
-.from(
-"marketplace"
-)
-
-.delete()
-
-.eq(
-"id",
-fragment.id
-);
-
-alert(
-"Purchase completed"
-);
-
-loadMarketplace();
-
-}
-
-catch{
-
-alert(
-"Purchase failed"
-);
-
-}
-
-}}
+                  <button
+                    onClick={() =>
+                      purchaseFragment(
+                        fragment
+                      )
+                    }
 
 className="
 mt-6
