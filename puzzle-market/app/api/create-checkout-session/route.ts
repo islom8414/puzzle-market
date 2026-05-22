@@ -93,11 +93,21 @@ export async function POST(
       );
     }
 
+    const fallbackUsername =
+      userData.user.email
+        ?.split("@")[0]
+        ?.replace(
+          /[^a-zA-Z0-9_-]/g,
+          ""
+        )
+        ?.slice(0, 40) ||
+      "PuzzleUser";
+
     const username =
       typeof body.username ===
         "string"
         ? body.username.trim()
-        : "";
+        : fallbackUsername;
 
     if (
       !userData.user.email ||
@@ -197,7 +207,9 @@ export async function POST(
       url: session.url,
     });
 
-  } catch {
+  } catch (error) {
+
+    console.error(error);
 
     return NextResponse.json(
       {
