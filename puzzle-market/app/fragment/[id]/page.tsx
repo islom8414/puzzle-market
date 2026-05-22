@@ -68,15 +68,23 @@ export default function FragmentPage() {
 
   async function buyFragment() {
 
-   const {
-data: {
-session
-}
-} =
-await supabase.auth.getSession();
+    const username =
+      localStorage.getItem(
+        "puzzle-username"
+      );
 
-const username =
-session?.user?.email;
+    if (!username) {
+
+      alert(
+        "Complete your profile first"
+      );
+
+      location.href =
+        "/setup";
+
+      return;
+
+    }
 
     let {
       data: wallets
@@ -88,13 +96,10 @@ session?.user?.email;
       .select("*")
       .eq(
         "username",
-        email
+        username
       )
       .limit(1);
-console.log(
-"EMAIL=",
-email
-);
+
     let wallet =
       wallets?.[0];
 
@@ -112,7 +117,7 @@ email
         .insert([
           {
             username:
-              email,
+              username,
             balance:
               100
           }
@@ -163,7 +168,7 @@ email
       })
       .eq(
         "username",
-        email
+        username
       );
 
     localStorage.setItem(
@@ -180,7 +185,7 @@ email
       .insert([
         {
           user_email:
-            email,
+            username,
           fragment_id:
             fragment!.fragment_id,
           title:
@@ -201,7 +206,7 @@ email
       .insert([
         {
           username:
-            email,
+            username,
           action:
             "BUY",
           title:

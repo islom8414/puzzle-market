@@ -415,23 +415,26 @@ onClick={async()=>{
 
 try{
 
-const email=
+const username=
 localStorage.getItem(
-"user-email"
+"puzzle-username"
 );
 
-if(!email){
+if(!username){
 
 alert(
-"Login first"
+"Complete your profile first"
 );
+
+location.href =
+"/setup";
 
 return;
 
 }
 
 const {
-data:wallet,
+data:wallets,
 error
 
 }=
@@ -448,10 +451,13 @@ await supabase
 
 .eq(
 "username",
-email
+username
 )
 
-.single();
+.limit(1);
+
+const wallet =
+wallets?.[0];
 
 if(
 error||
@@ -496,7 +502,7 @@ fragment.price,
 
 .eq(
 "username",
-email
+username
 );
 
 await supabase
@@ -508,7 +514,7 @@ await supabase
 .insert({
 
 user_email:
-email,
+username,
 
 fragment_id:
 fragment.fragment_id,
@@ -527,7 +533,7 @@ await supabase
 .insert({
 
 buyer_email:
-email,
+username,
 
 seller_email:
 fragment.seller_email,

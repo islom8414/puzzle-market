@@ -1,18 +1,41 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(
-  process.env.STRIPE_SECRET_KEY as string
-);
-
 export async function POST(
   request: Request
 ) {
 
   try {
 
+    const stripeSecretKey =
+      process.env.STRIPE_SECRET_KEY;
+
+    if (!stripeSecretKey) {
+
+      return NextResponse.json(
+        {
+          error: "Stripe key missing",
+        },
+        {
+          status: 500,
+        }
+      );
+
+    }
+
+    const stripe =
+      new Stripe(
+        stripeSecretKey
+      );
+
     const body =
       await request.json();
+
+    const profileUrl =
+      new URL(
+        "/profile",
+        request.url
+      ).toString();
 
     const session =
       await stripe.checkout.sessions.create({
@@ -44,10 +67,10 @@ export async function POST(
         ],
 
         success_url:
-          "https://puzzle-market-lmny.vercel.app/profile",
+          profileUrl,
 
         cancel_url:
-          "https://puzzle-market-lmny.vercel.app/profile",
+          profileUrl,
 
       });
 
