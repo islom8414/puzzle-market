@@ -26,109 +26,10 @@ type DragState = {
   offsetY: number;
 };
 
-const rows = 3;
-const columns = 3;
-const pieceSize = 130;
-const tabSize = 28;
-const snapDistance = 44;
-
-const edgeSigns = [
-  [1, -1],
-  [-1, 1],
-  [1, -1],
-];
-
-function tabPath(
-  startX: number,
-  startY: number,
-  endX: number,
-  endY: number,
-  sign: number
-) {
-  const horizontal =
-    startY === endY;
-
-  const length =
-    horizontal
-      ? endX - startX
-      : endY - startY;
-
-  const third =
-    length / 3;
-
-  if (sign === 0) {
-    return `L ${endX} ${endY}`;
-  }
-
-  if (horizontal) {
-    const direction =
-      Math.sign(length);
-
-    return [
-      `L ${startX + third} ${startY}`,
-      `C ${startX + third * 1.1} ${startY - tabSize * sign}`,
-      `${startX + third * 1.9} ${startY - tabSize * sign}`,
-      `${startX + third * 2} ${startY}`,
-      `L ${endX} ${endY}`,
-    ].join(" ");
-  }
-
-  const direction =
-    Math.sign(length);
-
-  return [
-    `L ${startX} ${startY + third}`,
-    `C ${startX + tabSize * sign * direction} ${startY + third * 1.1}`,
-    `${startX + tabSize * sign * direction} ${startY + third * 1.9}`,
-    `${startX} ${startY + third * 2}`,
-    `L ${endX} ${endY}`,
-  ].join(" ");
-}
-
-function piecePath(
-  index: number
-) {
-  const row =
-    Math.floor(index / columns);
-
-  const column =
-    index % columns;
-
-  const top =
-    row === 0
-      ? 0
-      : -edgeSigns[row - 1][column];
-
-  const right =
-    column === columns - 1
-      ? 0
-      : edgeSigns[row][column];
-
-  const bottom =
-    row === rows - 1
-      ? 0
-      : edgeSigns[row][column];
-
-  const left =
-    column === 0
-      ? 0
-      : -edgeSigns[row][column - 1];
-
-  const w =
-    pieceSize;
-
-  const h =
-    pieceSize;
-
-  return [
-    `M 0 0`,
-    tabPath(0, 0, w, 0, top),
-    tabPath(w, 0, w, h, right),
-    tabPath(w, h, 0, h, bottom),
-    tabPath(0, h, 0, 0, left),
-    "Z",
-  ].join(" ");
-}
+const rows = 5;
+const columns = 5;
+const pieceSize = 78;
+const snapDistance = 34;
 
 function slotPosition(
   index: number
@@ -143,6 +44,22 @@ function slotPosition(
   };
 }
 
+function getMissingIndexes(
+  puzzleId: number
+) {
+  const first =
+    (puzzleId * 7) %
+    (rows * columns);
+
+  const second =
+    (first + 11) %
+    (rows * columns);
+
+  return puzzleId % 2 === 0
+    ? [first, second]
+    : [first];
+}
+
 function createInitialPieces() {
   return Array.from(
     {
@@ -153,12 +70,12 @@ function createInitialPieces() {
       index,
       x:
         columns * pieceSize +
-        90 +
-        (index % 3) * 86,
+        70 +
+        (index % 5) * 86,
       y:
         18 +
-        Math.floor(index / 3) *
-          126,
+        Math.floor(index / 5) *
+          92,
       placed: false,
     })
   );
@@ -178,8 +95,14 @@ export default function PuzzlePage() {
         String(item.id) === slug
     ) || puzzles[0];
 
-  const missingIndex =
-    puzzle.id % 9;
+  const missingIndexes =
+    useMemo(
+      () =>
+        getMissingIndexes(
+          Number(puzzle.id)
+        ),
+      [puzzle.id]
+    );
 
   const [pieces, setPieces] =
     useState<PieceState[]>(
@@ -191,8 +114,8 @@ export default function PuzzlePage() {
       null
     );
 
-  const [ownsMissing, setOwnsMissing] =
-    useState(false);
+  const [ownedMissingCount, setOwnedMissingCount] =
+    useState(0);
 
   useEffect(() => {
     async function loadOwnership() {
@@ -216,74 +139,51 @@ export default function PuzzlePage() {
           .eq(
             "fragment_id",
             puzzle.slug
-          )
-          .limit(1);
+          );
 
-      setOwnsMissing(
-        Boolean(data?.length)
+      setOwnedMissingCount(
+        Math.min(
+          data?.length || 0,
+          missingIndexes.length
+        )
       );
     }
 
     loadOwnership();
-  }, [puzzle.slug]);
+  }, [
+    puzzle.slug,
+    missingIndexes.length,
+  ]);
+
+  const lockedMissingIndexes =
+    missingIndexes.slice(
+      ownedMissingCount
+    );
 
   const visiblePieces =
     useMemo(() => {
       return pieces.filter(
         (piece) =>
-          ownsMissing ||
-          piece.index !==
-            missingIndex
+          !lockedMissingIndexes.includes(
+            piece.index
+          )
       );
     }, [
       pieces,
-      ownsMissing,
-      missingIndex,
+      lockedMissingIndexes,
     ]);
 
   const placedCount =
-    pieces.filter(
-      (piece) =>
-        piece.placed &&
-        (ownsMissing ||
-          piece.index !==
-            missingIndex)
+    visiblePieces.filter(
+      (piece) => piece.placed
     ).length;
 
   const targetCount =
-    ownsMissing
-      ? rows * columns
-      : rows * columns - 1;
+    visiblePieces.length;
 
   function resetPieces() {
     setPieces(
       createInitialPieces()
-    );
-  }
-
-  function autoSolveOwned() {
-    setPieces((current) =>
-      current.map((piece) => {
-        if (
-          !ownsMissing &&
-          piece.index ===
-            missingIndex
-        ) {
-          return piece;
-        }
-
-        const slot =
-          slotPosition(
-            piece.index
-          );
-
-        return {
-          ...piece,
-          x: slot.x,
-          y: slot.y,
-          placed: true,
-        };
-      })
     );
   }
 
@@ -387,7 +287,7 @@ export default function PuzzlePage() {
             </Link>
 
             <p className="text-cyan-400 text-xs tracking-[0.35em] uppercase font-black mt-8">
-              Real Jigsaw Board
+              Hidden Puzzle Board
             </p>
 
             <h1 className="text-5xl md:text-7xl font-black mt-3">
@@ -395,114 +295,114 @@ export default function PuzzlePage() {
             </h1>
 
             <p className="text-zinc-400 mt-4 max-w-2xl">
-              Drag each unique puzzle piece into its matching slot. The missing market piece unlocks after purchase.
+              The full image is hidden. Build the picture from small pieces and unlock the missing market pieces through trading.
             </p>
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={resetPieces}
-              className="bg-white/5 border border-white/10 px-5 py-3 rounded-2xl font-black"
-            >
-              Shuffle
-            </button>
-
-            <button
-              onClick={autoSolveOwned}
-              className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-black"
-            >
-              Preview Fit
-            </button>
-          </div>
+          <button
+            onClick={resetPieces}
+            className="bg-white/5 border border-white/10 px-5 py-3 rounded-2xl font-black"
+          >
+            Shuffle
+          </button>
         </div>
 
-        <section className="grid grid-cols-1 xl:grid-cols-[430px_1fr] gap-8">
-          <div className="bg-white/[0.03] border border-white/10 rounded-[32px] p-6">
-            <div className="aspect-square rounded-[28px] overflow-hidden border border-white/10">
-              <img
-                src={puzzle.image}
-                alt={puzzle.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
+        <section className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-8">
+          <aside className="bg-white/[0.03] border border-white/10 rounded-[32px] p-6">
+            <div className="rounded-[28px] border border-cyan-400/20 bg-black/60 p-6">
+              <p className="text-cyan-400 text-xs tracking-[0.3em] uppercase font-black">
+                Puzzle Status
+              </p>
 
-            <div className="grid grid-cols-2 gap-4 mt-6">
-              <div className="bg-black/50 border border-white/10 rounded-2xl p-4">
-                <p className="text-zinc-500 text-sm">
-                  Progress
-                </p>
-                <h2 className="text-3xl font-black text-cyan-400 mt-2">
-                  {placedCount}/{targetCount}
-                </h2>
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4">
+                  <p className="text-zinc-500 text-sm">
+                    Progress
+                  </p>
+                  <h2 className="text-3xl font-black text-cyan-400 mt-2">
+                    {placedCount}/{targetCount}
+                  </h2>
+                </div>
+
+                <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4">
+                  <p className="text-zinc-500 text-sm">
+                    Missing
+                  </p>
+                  <h2 className="text-3xl font-black text-yellow-300 mt-2">
+                    {lockedMissingIndexes.length}
+                  </h2>
+                </div>
               </div>
 
-              <div className="bg-black/50 border border-white/10 rounded-2xl p-4">
-                <p className="text-zinc-500 text-sm">
-                  Missing Piece
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  Only small pieces are visible. There is no full preview, so players discover the image while assembling it.
                 </p>
-                <h2 className="text-3xl font-black text-yellow-300 mt-2">
-                  #{missingIndex + 1}
-                </h2>
               </div>
+
+              {lockedMissingIndexes.length > 0 && (
+                <Link
+                  href="/marketplace"
+                  className="mt-6 flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
+                >
+                  Buy Missing Piece
+                </Link>
+              )}
             </div>
+          </aside>
 
-            {!ownsMissing && (
-              <Link
-                href="/marketplace"
-                className="mt-6 flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
-              >
-                Buy Missing Piece
-              </Link>
-            )}
-          </div>
+          <section className="relative min-h-[650px] bg-white/[0.03] border border-white/10 rounded-[32px] overflow-hidden">
+            <div
+              className="absolute left-6 top-6"
+              style={{
+                width:
+                  columns * pieceSize,
+                height:
+                  rows * pieceSize,
+              }}
+            >
+              {Array.from({
+                length:
+                  rows * columns,
+              }).map((_, index) => {
+                const slot =
+                  slotPosition(index);
 
-          <div className="relative min-h-[560px] bg-white/[0.03] border border-white/10 rounded-[32px] overflow-hidden">
-            <div className="absolute left-6 top-6">
-              <div
-                className="relative"
-                style={{
-                  width:
-                    columns * pieceSize,
-                  height:
-                    rows * pieceSize,
-                }}
-              >
-                {Array.from({
-                  length:
-                    rows * columns,
-                }).map((_, index) => {
+                const locked =
+                  lockedMissingIndexes.includes(
+                    index
+                  );
+
+                return (
+                  <div
+                    key={index}
+                    className={`absolute border ${locked ? "border-red-400/30 bg-red-500/10" : "border-white/10 bg-white/[0.02]"}`}
+                    style={{
+                      left: slot.x,
+                      top: slot.y,
+                      width:
+                        pieceSize,
+                      height:
+                        pieceSize,
+                    }}
+                  >
+                    {locked && (
+                      <div className="h-full w-full flex items-center justify-center text-[10px] font-black text-red-300">
+                        MISSING
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {visiblePieces.map(
+                (piece) => {
                   const slot =
-                    slotPosition(index);
-
-                  const locked =
-                    !ownsMissing &&
-                    index ===
-                      missingIndex;
+                    slotPosition(
+                      piece.index
+                    );
 
                   return (
-                    <div
-                      key={index}
-                      className={`absolute border border-white/10 ${locked ? "bg-red-500/10" : "bg-white/[0.02]"}`}
-                      style={{
-                        left: slot.x,
-                        top: slot.y,
-                        width:
-                          pieceSize,
-                        height:
-                          pieceSize,
-                      }}
-                    >
-                      {locked && (
-                        <div className="w-full h-full flex items-center justify-center text-center text-xs font-black text-red-300 px-3">
-                          Missing
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-
-                {visiblePieces.map(
-                  (piece) => (
                     <div
                       key={piece.index}
                       onPointerDown={(event) =>
@@ -520,18 +420,20 @@ export default function PuzzlePage() {
                       onPointerCancel={
                         endDrag
                       }
-                      className={`absolute touch-none select-none ${piece.placed ? "cursor-default" : "cursor-grab active:cursor-grabbing"}`}
+                      className={`absolute touch-none select-none border border-white/40 bg-black bg-cover shadow-[0_12px_22px_rgba(0,0,0,0.55)] ${piece.placed ? "cursor-default" : "cursor-grab active:cursor-grabbing"}`}
                       style={{
                         left: piece.x,
                         top: piece.y,
                         width:
-                          pieceSize +
-                          tabSize * 2,
+                          pieceSize,
                         height:
-                          pieceSize +
-                          tabSize * 2,
-                        transform:
-                          `translate(${-tabSize}px, ${-tabSize}px)`,
+                          pieceSize,
+                        backgroundImage:
+                          `url(${puzzle.image})`,
+                        backgroundSize:
+                          `${columns * pieceSize}px ${rows * pieceSize}px`,
+                        backgroundPosition:
+                          `-${slot.x}px -${slot.y}px`,
                         zIndex:
                           dragging?.index ===
                           piece.index
@@ -540,71 +442,21 @@ export default function PuzzlePage() {
                               ? 20
                               : 30,
                       }}
-                    >
-                      <svg
-                        viewBox={`${-tabSize} ${-tabSize} ${pieceSize + tabSize * 2} ${pieceSize + tabSize * 2}`}
-                        className="drop-shadow-[0_14px_20px_rgba(0,0,0,0.65)]"
-                      >
-                        <defs>
-                          <clipPath
-                            id={`piece-${piece.index}`}
-                          >
-                            <path
-                              d={piecePath(
-                                piece.index
-                              )}
-                            />
-                          </clipPath>
-                        </defs>
-
-                        <image
-                          href={puzzle.image}
-                          x={
-                            -slotPosition(
-                              piece.index
-                            ).x
-                          }
-                          y={
-                            -slotPosition(
-                              piece.index
-                            ).y
-                          }
-                          width={
-                            columns *
-                            pieceSize
-                          }
-                          height={
-                            rows *
-                            pieceSize
-                          }
-                          preserveAspectRatio="xMidYMid slice"
-                          clipPath={`url(#piece-${piece.index})`}
-                        />
-
-                        <path
-                          d={piecePath(
-                            piece.index
-                          )}
-                          fill="none"
-                          stroke="rgba(255,255,255,0.65)"
-                          strokeWidth="2"
-                        />
-                      </svg>
-                    </div>
-                  )
-                )}
-              </div>
+                    />
+                  );
+                }
+              )}
             </div>
 
-            <div className="absolute right-6 top-6 w-64 rounded-3xl border border-cyan-400/20 bg-black/50 p-5">
+            <div className="absolute right-6 top-6 w-72 rounded-3xl border border-cyan-400/20 bg-black/60 p-5">
               <p className="text-cyan-400 text-xs tracking-[0.25em] uppercase font-black">
                 Loose Pieces
               </p>
-              <p className="text-zinc-400 text-sm mt-3">
-                Drag pieces from the right side into the board. Near the correct slot, they snap into place.
+              <p className="text-zinc-400 text-sm mt-3 leading-relaxed">
+                Drag the small squares into the board. When a piece is near the correct cell, it snaps exactly into place.
               </p>
             </div>
-          </div>
+          </section>
         </section>
       </div>
     </main>

@@ -222,9 +222,17 @@ export async function POST(
       buyerWallet.balance_cents <
         priceCents
     ) {
+      const available =
+        (buyerWallet
+          ?.balance_cents || 0) / 100;
+
+      const required =
+        priceCents / 100;
+
       return NextResponse.json(
         {
-          error: "Not enough balance",
+          error:
+            `Not enough balance. Price is $${required}, your balance is $${available}.`,
         },
         {
           status: 409,
