@@ -364,6 +364,79 @@ export default function ProfilePage() {
 
         </section>
 
+        <section className="mt-12">
+
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
+                Inventory
+              </p>
+
+              <h2 className="text-4xl md:text-5xl font-black mt-3">
+                Owned Pieces
+              </h2>
+            </div>
+
+            <Link
+              href="/sell"
+              className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-5 py-3 rounded-2xl transition"
+            >
+              Resell Pieces
+            </Link>
+          </div>
+
+          {inventory.length === 0 && (
+            <div className="mt-8 bg-white/[0.03] border border-white/10 rounded-[30px] p-10 text-center">
+              <h3 className="text-3xl font-black">
+                No owned pieces yet
+              </h3>
+
+              <p className="text-zinc-500 mt-3">
+                Purchased missing pieces will appear here.
+              </p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
+            {inventory.map((item) => (
+              <div
+                key={item.id}
+                className="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.03]"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="h-56 w-full object-cover"
+                />
+
+                <div className="p-5">
+                  <p className="text-zinc-500 text-sm">
+                    {item.title}
+                  </p>
+
+                  <h3 className="text-3xl font-black mt-1">
+                    Piece #{item.piece}
+                  </h3>
+
+                  <div className="mt-5 flex items-center justify-between">
+                    <span className="text-cyan-400 text-3xl font-black">
+                      ${item.price}
+                    </span>
+
+                    <Link
+                      href="/sell"
+                      className="bg-cyan-400 text-black font-black px-4 py-2 rounded-xl"
+                    >
+                      Sell
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </section>
+
       </div>
 
     </main>

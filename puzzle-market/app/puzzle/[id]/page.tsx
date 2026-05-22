@@ -1,10 +1,8 @@
 "use client";
 
 import {
-  PointerEvent,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
@@ -14,122 +12,82 @@ import { useParams } from "next/navigation";
 import { puzzles } from "@/data/puzzles";
 import { supabase } from "@/lib/supabase";
 
-type PieceState = {
-  index: number;
-  x: number;
-  y: number;
-  placed: boolean;
-};
+type Selection =
+  | {
+      source: "tray";
+      piece: number;
+    }
+  | {
+      source: "board";
+      cell: number;
+      piece: number;
+    };
 
-type DragState = {
-  index: number;
-  offsetX: number;
-  offsetY: number;
+type SavedProgress = {
+  board: Array<number | null>;
+  tray: number[];
 };
 
 const rows = 5;
 const columns = 5;
-const pieceSize = 78;
-const snapDistance = 34;
-const trayStartX =
-  columns * pieceSize + 92;
-const trayStartY = 64;
-const trayColumns = 5;
-
-function slotPosition(
-  index: number
-) {
-  return {
-    x:
-      (index % columns) *
-      pieceSize,
-    y:
-      Math.floor(index / columns) *
-      pieceSize,
-  };
-}
-
-function shuffledIndex(
-  index: number
-) {
-  return (
-    index * 11 +
-    7
-  ) % (rows * columns);
-}
+const totalPieces =
+  rows * columns;
+const pieceSize = 66;
 
 function getMissingIndexes(
   puzzleId: number
 ) {
   const first =
     (puzzleId * 7) %
-    (rows * columns);
+    totalPieces;
 
   const second =
     (first + 11) %
-    (rows * columns);
+    totalPieces;
 
   return puzzleId % 2 === 0
     ? [first, second]
     : [first];
 }
 
-function createInitialPieces() {
+function shuffledPieces() {
   return Array.from(
     {
-      length:
-        rows * columns,
+      length: totalPieces,
     },
-    (_, index) => ({
-      index,
-      x:
-        trayStartX +
-        (shuffledIndex(index) %
-          trayColumns) *
-          88,
-      y:
-        trayStartY +
-        Math.floor(
-          shuffledIndex(index) /
-            trayColumns
-        ) *
-          92,
-      placed: false,
-    })
+    (_, index) => index
+  ).sort(
+    (a, b) =>
+      ((a * 17 + 9) %
+        totalPieces) -
+      ((b * 17 + 9) %
+        totalPieces)
   );
 }
 
-function getFallbackPieces() {
-  return Array.from(
-    {
-      length:
-        rows * columns,
-    },
-    (_, index) => ({
-      index,
-      x:
-        trayStartX +
-        (shuffledIndex(index) %
-          trayColumns) *
-          88,
-      y:
-        trayStartY +
-        Math.floor(
-          shuffledIndex(index) /
-            trayColumns
-        ) *
-          92,
-      placed: false,
-    })
-  );
+function pieceStyle(
+  image: string,
+  piece: number
+) {
+  const col =
+    piece % columns;
+
+  const row =
+    Math.floor(piece / columns);
+
+  return {
+    width: pieceSize,
+    height: pieceSize,
+    backgroundImage:
+      `url(${image})`,
+    backgroundSize:
+      `${columns * pieceSize}px ${rows * pieceSize}px`,
+    backgroundPosition:
+      `-${col * pieceSize}px -${row * pieceSize}px`,
+  };
 }
 
 export default function PuzzlePage() {
-  const stageRef =
-    useRef<HTMLDivElement | null>(
-      null
-    );
-
   const params =
     useParams();
 
@@ -152,13 +110,21 @@ export default function PuzzlePage() {
       [puzzle.id]
     );
 
-  const [pieces, setPieces] =
-    useState<PieceState[]>(
-      getFallbackPieces
+  const storageKey =
+    `puzzle-progress-${puzzle.slug}`;
+
+  const [board, setBoard] =
+    useState<Array<number | null>>(
+      Array(totalPieces).fill(null)
     );
 
-  const [dragging, setDragging] =
-    useState<DragState | null>(
+  const [tray, setTray] =
+    useState<number[]>(
+      shuffledPieces
+    );
+
+  const [selected, setSelected] =
+    useState<Selection | null>(
       null
     );
 
@@ -172,7 +138,31 @@ export default function PuzzlePage() {
           "puzzle-username"
         );
 
-      if (!username) return;
+      const {
+        data: {
+          user,
+        },
+      } =
+        await supabase.auth
+          .getUser();
+
+      const owners =
+        [
+          username || "",
+          user?.email || "",
+          user?.email
+            ?.split("@")[0]
+            ?.replace(
+              /[^a-zA-Z0-9_-]/g,
+              ""
+            )
+            ?.slice(0, 40) ||
+            "",
+        ].filter(Boolean);
+
+      if (owners.length === 0) {
+        return;
+      }
 
       const {
         data,
@@ -180,9 +170,9 @@ export default function PuzzlePage() {
         await supabase
           .from("inventory")
           .select("id")
-          .eq(
+          .in(
             "user_email",
-            username
+            owners
           )
           .eq(
             "fragment_id",
@@ -208,319 +198,394 @@ export default function PuzzlePage() {
       ownedMissingCount
     );
 
-  const visiblePieces =
-    useMemo(() => {
-      return pieces.filter(
-        (piece) =>
-          !lockedMissingIndexes.includes(
-            piece.index
-          )
+  useEffect(() => {
+    const saved =
+      localStorage.getItem(
+        storageKey
       );
-    }, [
-      pieces,
-      lockedMissingIndexes,
-    ]);
 
-  const placedCount =
-    visiblePieces.filter(
-      (piece) => piece.placed
+    if (!saved) {
+      setBoard(
+        Array(totalPieces).fill(null)
+      );
+      setTray(shuffledPieces());
+      return;
+    }
+
+    try {
+      const parsed =
+        JSON.parse(saved) as
+          SavedProgress;
+
+      if (
+        parsed.board?.length ===
+          totalPieces &&
+        Array.isArray(
+          parsed.tray
+        )
+      ) {
+        setBoard(parsed.board);
+        setTray(parsed.tray);
+      }
+    } catch {
+      setBoard(
+        Array(totalPieces).fill(null)
+      );
+      setTray(shuffledPieces());
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    const lockedSet =
+      new Set(
+        lockedMissingIndexes
+      );
+
+    setBoard((currentBoard) =>
+      currentBoard.map(
+        (piece, cell) =>
+          lockedSet.has(cell)
+            ? null
+            : piece
+      )
+    );
+
+    setTray((currentTray) => {
+      const used =
+        new Set(
+          board.filter(
+            (piece): piece is number =>
+              piece !== null
+          )
+        );
+
+      return shuffledPieces().filter(
+        (piece) =>
+          !used.has(piece) &&
+          !lockedSet.has(piece)
+      );
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    lockedMissingIndexes.join(","),
+  ]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        board,
+        tray,
+      })
+    );
+  }, [
+    board,
+    tray,
+    storageKey,
+  ]);
+
+  const solvedCount =
+    board.filter(
+      (piece, cell) =>
+        piece === cell
     ).length;
 
   const targetCount =
-    visiblePieces.length;
+    totalPieces -
+    lockedMissingIndexes.length;
 
-  function resetPieces() {
-    setPieces(
-      createInitialPieces()
+  function resetPuzzle() {
+    localStorage.removeItem(
+      storageKey
     );
+
+    setBoard(
+      Array(totalPieces).fill(null)
+    );
+
+    setTray(
+      shuffledPieces().filter(
+        (piece) =>
+          !lockedMissingIndexes.includes(
+            piece
+          )
+      )
+    );
+
+    setSelected(null);
   }
 
-  function startDrag(
-    event: PointerEvent,
-    piece: PieceState
+  function selectTrayPiece(
+    piece: number
   ) {
-    if (piece.placed) return;
-
-    const rect =
-      stageRef.current
-        ?.getBoundingClientRect();
-
-    if (!rect) return;
-
-    const target =
-      event.currentTarget as HTMLElement;
-
-    target.setPointerCapture(
-      event.pointerId
-    );
-
-    setDragging({
-      index: piece.index,
-      offsetX:
-        event.clientX -
-        rect.left -
-        piece.x,
-      offsetY:
-        event.clientY -
-        rect.top -
-        piece.y,
+    setSelected({
+      source: "tray",
+      piece,
     });
   }
 
-  function moveDrag(
-    event: PointerEvent
+  function selectBoardCell(
+    cell: number
   ) {
-    if (!dragging) return;
+    const cellPiece =
+      board[cell];
 
-    const rect =
-      stageRef.current
-        ?.getBoundingClientRect();
-
-    if (!rect) return;
-
-    setPieces((current) =>
-      current.map((piece) =>
-        piece.index ===
-        dragging.index
-          ? {
-              ...piece,
-              x:
-                event.clientX -
-                rect.left -
-                dragging.offsetX,
-              y:
-                event.clientY -
-                rect.top -
-                dragging.offsetY,
-            }
-          : piece
+    if (
+      lockedMissingIndexes.includes(
+        cell
       )
-    );
+    ) {
+      return;
+    }
+
+    if (!selected) {
+      if (cellPiece !== null) {
+        setSelected({
+          source: "board",
+          cell,
+          piece: cellPiece,
+        });
+      }
+
+      return;
+    }
+
+    if (selected.source === "tray") {
+      setBoard((current) => {
+        const next = [...current];
+        next[cell] = selected.piece;
+        return next;
+      });
+
+      setTray((current) => {
+        const next =
+          current.filter(
+            (piece) =>
+              piece !==
+              selected.piece
+          );
+
+        if (cellPiece !== null) {
+          next.push(cellPiece);
+        }
+
+        return next;
+      });
+    }
+
+    if (selected.source === "board") {
+      setBoard((current) => {
+        const next = [...current];
+        next[selected.cell] =
+          cellPiece;
+        next[cell] =
+          selected.piece;
+        return next;
+      });
+    }
+
+    setSelected(null);
   }
 
-  function endDrag() {
-    if (!dragging) return;
+  function removeFromBoard(
+    cell: number
+  ) {
+    const cellPiece =
+      board[cell];
 
-    setPieces((current) =>
-      current.map((piece) => {
-        if (
-          piece.index !==
-          dragging.index
-        ) {
-          return piece;
-        }
+    if (cellPiece === null) {
+      return;
+    }
 
-        const slot =
-          slotPosition(
-            piece.index
-          );
+    setBoard((current) => {
+      const next = [...current];
+      next[cell] = null;
+      return next;
+    });
 
-        const distance =
-          Math.hypot(
-            piece.x - slot.x,
-            piece.y - slot.y
-          );
+    setTray((current) => [
+      ...current,
+      cellPiece,
+    ]);
 
-        if (
-          distance <
-          snapDistance
-        ) {
-          return {
-            ...piece,
-            x: slot.x,
-            y: slot.y,
-            placed: true,
-          };
-        }
-
-        return piece;
-      })
-    );
-
-    setDragging(null);
+    setSelected(null);
   }
 
   return (
-    <main className="min-h-screen bg-black text-white px-4 py-8 overflow-hidden">
+    <main className="min-h-screen bg-black text-white px-3 py-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-6">
           <div>
             <Link
-              href="/collection"
+              href="/"
               className="text-cyan-400 font-black"
             >
-              Back to Collection
+              Back Home
             </Link>
 
-            <p className="text-cyan-400 text-xs tracking-[0.35em] uppercase font-black mt-8">
+            <p className="text-cyan-400 text-xs tracking-[0.3em] uppercase font-black mt-6">
               Hidden Puzzle Board
             </p>
 
-            <h1 className="text-5xl md:text-7xl font-black mt-3">
+            <h1 className="text-4xl md:text-6xl font-black mt-2 leading-none">
               {puzzle.title}
             </h1>
 
-            <p className="text-zinc-400 mt-4 max-w-2xl">
-              The full image is hidden. Build the picture from small pieces and unlock the missing market pieces through trading.
+            <p className="text-zinc-400 mt-3 max-w-2xl">
+              Choose a piece, then choose a cell. Pieces snap perfectly into the grid and can be swapped anytime.
             </p>
           </div>
 
           <button
-            onClick={resetPieces}
+            onClick={resetPuzzle}
             className="bg-white/5 border border-white/10 px-5 py-3 rounded-2xl font-black"
           >
             Shuffle
           </button>
         </div>
 
-        <section className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-8">
-          <aside className="bg-white/[0.03] border border-white/10 rounded-[32px] p-6">
-            <div className="rounded-[28px] border border-cyan-400/20 bg-black/60 p-6">
-              <p className="text-cyan-400 text-xs tracking-[0.3em] uppercase font-black">
-                Puzzle Status
-              </p>
+        <section className="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-5">
+          <aside className="bg-white/[0.03] border border-white/10 rounded-[28px] p-5">
+            <p className="text-cyan-400 text-xs tracking-[0.3em] uppercase font-black">
+              Puzzle Status
+            </p>
 
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4">
-                  <p className="text-zinc-500 text-sm">
-                    Progress
-                  </p>
-                  <h2 className="text-3xl font-black text-cyan-400 mt-2">
-                    {placedCount}/{targetCount}
-                  </h2>
-                </div>
-
-                <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4">
-                  <p className="text-zinc-500 text-sm">
-                    Missing
-                  </p>
-                  <h2 className="text-3xl font-black text-yellow-300 mt-2">
-                    {lockedMissingIndexes.length}
-                  </h2>
-                </div>
-              </div>
-
-              <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  Only small pieces are visible. There is no full preview, so players discover the image while assembling it.
+            <div className="grid grid-cols-2 gap-3 mt-5">
+              <div className="bg-black/50 border border-white/10 rounded-2xl p-4">
+                <p className="text-zinc-500 text-sm">
+                  Correct
                 </p>
+                <h2 className="text-3xl font-black text-cyan-400 mt-2">
+                  {solvedCount}/{targetCount}
+                </h2>
               </div>
 
-              {lockedMissingIndexes.length > 0 && (
-                <Link
-                  href={`/marketplace?search=${encodeURIComponent(puzzle.title)}`}
-                  className="mt-6 flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
-                >
-                  Buy Missing Piece
-                </Link>
-              )}
+              <div className="bg-black/50 border border-white/10 rounded-2xl p-4">
+                <p className="text-zinc-500 text-sm">
+                  Missing
+                </p>
+                <h2 className="text-3xl font-black text-yellow-300 mt-2">
+                  {lockedMissingIndexes.length}
+                </h2>
+              </div>
             </div>
+
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                The final image is hidden. Your progress is saved on this device, so returning after purchase keeps your board.
+              </p>
+            </div>
+
+            {lockedMissingIndexes.length > 0 && (
+              <Link
+                href={`/marketplace?search=${encodeURIComponent(puzzle.title)}`}
+                className="mt-5 flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
+              >
+                Buy Missing Piece
+              </Link>
+            )}
           </aside>
 
-          <section className="relative min-h-[650px] bg-white/[0.03] border border-white/10 rounded-[32px] overflow-auto">
-            <div
-              ref={stageRef}
-              className="absolute left-6 top-6"
-              style={{
-                width: 920,
-                height:
-                  560,
-              }}
-            >
-              {Array.from({
-                length:
-                  rows * columns,
-              }).map((_, index) => {
-                const slot =
-                  slotPosition(index);
+          <section className="bg-white/[0.03] border border-white/10 rounded-[28px] p-4 md:p-5">
+            <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-5 items-start">
+              <div
+                className="grid rounded-2xl border border-white/10 bg-black/50 overflow-hidden"
+                style={{
+                  gridTemplateColumns:
+                    `repeat(${columns}, ${pieceSize}px)`,
+                  width:
+                    columns * pieceSize,
+                }}
+              >
+                {Array.from({
+                  length: totalPieces,
+                }).map((_, cell) => {
+                  const piece =
+                    board[cell];
 
-                const locked =
-                  lockedMissingIndexes.includes(
-                    index
-                  );
-
-                return (
-                  <div
-                    key={index}
-                    className={`absolute border ${locked ? "border-red-400/30 bg-red-500/10" : "border-white/10 bg-white/[0.02]"}`}
-                    style={{
-                      left: slot.x,
-                      top: slot.y,
-                      width:
-                        pieceSize,
-                      height:
-                        pieceSize,
-                    }}
-                  >
-                    {locked && (
-                      <div className="h-full w-full flex items-center justify-center text-[10px] font-black text-red-300">
-                        MISSING
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-
-              {visiblePieces.map(
-                (piece) => {
-                  const slot =
-                    slotPosition(
-                      piece.index
+                  const locked =
+                    lockedMissingIndexes.includes(
+                      cell
                     );
 
-                  return (
-                    <div
-                      key={piece.index}
-                      onPointerDown={(event) =>
-                        startDrag(
-                          event,
-                          piece
-                        )
-                      }
-                      onPointerMove={
-                        moveDrag
-                      }
-                      onPointerUp={
-                        endDrag
-                      }
-                      onPointerCancel={
-                        endDrag
-                      }
-                      className={`absolute touch-none select-none border border-white/40 bg-black bg-cover shadow-[0_12px_22px_rgba(0,0,0,0.55)] ${piece.placed ? "cursor-default" : "cursor-grab active:cursor-grabbing"}`}
-                      style={{
-                        left: piece.x,
-                        top: piece.y,
-                        width:
-                          pieceSize,
-                        height:
-                          pieceSize,
-                        backgroundImage:
-                          `url(${puzzle.image})`,
-                        backgroundSize:
-                          `${columns * pieceSize}px ${rows * pieceSize}px`,
-                        backgroundPosition:
-                          `-${slot.x}px -${slot.y}px`,
-                        zIndex:
-                          dragging?.index ===
-                          piece.index
-                            ? 50
-                            : piece.placed
-                              ? 20
-                              : 30,
-                      }}
-                    />
-                  );
-                }
-              )}
-            </div>
+                  const correct =
+                    piece === cell;
 
-            <div className="absolute right-6 top-6 w-72 rounded-3xl border border-cyan-400/20 bg-black/60 p-5">
-              <p className="text-cyan-400 text-xs tracking-[0.25em] uppercase font-black">
-                Loose Pieces
-              </p>
-              <p className="text-zinc-400 text-sm mt-3 leading-relaxed">
-                Drag the small squares into the board. When a piece is near the correct cell, it snaps exactly into place.
-              </p>
+                  const selectedCell =
+                    selected?.source ===
+                      "board" &&
+                    selected.cell === cell;
+
+                  return (
+                    <button
+                      key={cell}
+                      onClick={() =>
+                        selectBoardCell(cell)
+                      }
+                      onDoubleClick={() =>
+                        removeFromBoard(cell)
+                      }
+                      className={`relative border border-white/10 ${locked ? "bg-red-500/10" : "bg-white/[0.02]"} ${selectedCell ? "ring-2 ring-cyan-400 z-10" : ""}`}
+                      style={{
+                        width: pieceSize,
+                        height: pieceSize,
+                      }}
+                    >
+                      {locked && (
+                        <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-red-300">
+                          MISSING
+                        </span>
+                      )}
+
+                      {piece !== null && (
+                        <span
+                          className={`absolute inset-0 bg-cover ${correct ? "outline outline-2 outline-green-400/70" : ""}`}
+                          style={pieceStyle(
+                            puzzle.image,
+                            piece
+                          )}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="rounded-2xl border border-cyan-400/20 bg-black/50 p-4">
+                <p className="text-cyan-400 text-xs tracking-[0.25em] uppercase font-black">
+                  Loose Pieces
+                </p>
+
+                <div
+                  className="mt-4 grid gap-2"
+                  style={{
+                    gridTemplateColumns:
+                      "repeat(auto-fill, minmax(58px, 1fr))",
+                  }}
+                >
+                  {tray.map((piece) => {
+                    const selectedPiece =
+                      selected?.piece ===
+                        piece &&
+                      selected.source ===
+                        "tray";
+
+                    return (
+                      <button
+                        key={piece}
+                        onClick={() =>
+                          selectTrayPiece(piece)
+                        }
+                        className={`border border-white/30 bg-cover shadow-[0_8px_14px_rgba(0,0,0,0.45)] ${selectedPiece ? "ring-2 ring-cyan-400" : ""}`}
+                        style={pieceStyle(
+                          puzzle.image,
+                          piece
+                        )}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </section>
         </section>

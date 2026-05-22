@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
+
+const adminEmails = [
+  "islommatchanov888@gmail.com",
+  "ismatchanov08@gmail.com",
+];
 
 export default function CreatePage() {
 
@@ -24,6 +29,43 @@ export default function CreatePage() {
   const [loading, setLoading] =
     useState(false);
 
+  const [allowed, setAllowed] =
+    useState(false);
+
+  useEffect(() => {
+    async function checkOwner() {
+      const {
+        data: {
+          user,
+        },
+      } =
+        await supabase.auth
+          .getUser();
+
+      const isOwner =
+        Boolean(
+          user?.email &&
+          adminEmails.includes(
+            user.email
+              .toLowerCase()
+          )
+        );
+
+      setAllowed(isOwner);
+
+      if (!isOwner) {
+        alert(
+          "Only the platform owner can add new puzzles."
+        );
+
+        window.location.href =
+          "/sell";
+      }
+    }
+
+    checkOwner();
+  }, []);
+
   const handleImage = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -43,17 +85,27 @@ export default function CreatePage() {
 
   const handlePublish = async () => {
 
-    const user =
-      localStorage.getItem(
-        "puzzle-user"
+    const {
+      data: {
+        user,
+      },
+    } =
+      await supabase.auth
+        .getUser();
+
+    if (
+      !user?.email ||
+      !adminEmails.includes(
+        user.email.toLowerCase()
+      )
+    ) {
+
+      alert(
+        "Only the platform owner can add new puzzles."
       );
 
-    if (!user) {
-
-      alert("Login required");
-
       window.location.href =
-        "/login";
+        "/sell";
 
       return;
 
@@ -120,7 +172,11 @@ export default function CreatePage() {
 
     const marketplaceItem = {
 
-      seller_email: user,
+      seller_email:
+        localStorage.getItem(
+          "puzzle-username"
+        ) ||
+        user.email,
 
       fragment_id:
         fragmentId,
@@ -185,6 +241,14 @@ console.log(
   return (
 
     <main className="min-h-screen px-4 md:px-6 py-10 text-white">
+
+      {!allowed && (
+        <div className="text-center text-zinc-400">
+          Checking owner access...
+        </div>
+      )}
+
+      {allowed && (
 
       <div className="max-w-4xl mx-auto">
 
@@ -330,6 +394,8 @@ console.log(
         </div>
 
       </div>
+
+      )}
 
     </main>
 

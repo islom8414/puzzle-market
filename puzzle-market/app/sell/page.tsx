@@ -98,10 +98,18 @@ export default function SellPage() {
   const loadData =
     async () => {
 
-      const user =
+      const savedUser =
         localStorage.getItem(
-          "puzzle-user"
+          "puzzle-username"
         );
+
+      const {
+        data: {
+          user,
+        },
+      } =
+        await supabase.auth
+          .getUser();
 
       if (!user) {
 
@@ -112,7 +120,42 @@ export default function SellPage() {
 
       }
 
-      setUserEmail(user);
+      const username =
+        savedUser ||
+        user.email
+          ?.split("@")[0]
+          ?.replace(
+            /[^a-zA-Z0-9_-]/g,
+            ""
+          )
+          ?.slice(0, 40) ||
+        user.email ||
+        "PuzzleUser";
+
+      localStorage.setItem(
+        "puzzle-username",
+        username
+      );
+
+      setUserEmail(username);
+
+      const ownerKeys =
+        Array.from(
+          new Set(
+            [
+              username,
+              user.email || "",
+              user.email
+                ?.split("@")[0]
+                ?.replace(
+                  /[^a-zA-Z0-9_-]/g,
+                  ""
+                )
+                ?.slice(0, 40) ||
+                "",
+            ].filter(Boolean)
+          )
+        );
 
       const {
         data: inventoryData,
@@ -120,9 +163,9 @@ export default function SellPage() {
         await supabase
           .from("inventory")
           .select("*")
-          .eq(
+          .in(
             "user_email",
-            user
+            ownerKeys
           );
 
       if (inventoryData) {
@@ -139,9 +182,9 @@ export default function SellPage() {
         await supabase
           .from("marketplace")
           .select("*")
-          .eq(
+          .in(
             "seller_email",
-            user
+            ownerKeys
           )
           .order(
             "created_at",
