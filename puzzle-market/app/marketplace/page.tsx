@@ -43,6 +43,18 @@ export default function MarketplacePage() {
 
   useEffect(() => {
 
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const searchParam =
+      params.get("search");
+
+    if (searchParam) {
+      setSearch(searchParam);
+    }
+
     // eslint-disable-next-line react-hooks/immutability
     loadMarketplace();
 

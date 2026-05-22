@@ -4,6 +4,7 @@ import {
   PointerEvent,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -30,6 +31,10 @@ const rows = 5;
 const columns = 5;
 const pieceSize = 78;
 const snapDistance = 34;
+const trayStartX =
+  columns * pieceSize + 92;
+const trayStartY = 64;
+const trayColumns = 5;
 
 function slotPosition(
   index: number
@@ -42,6 +47,15 @@ function slotPosition(
       Math.floor(index / columns) *
       pieceSize,
   };
+}
+
+function shuffledIndex(
+  index: number
+) {
+  return (
+    index * 11 +
+    7
+  ) % (rows * columns);
 }
 
 function getMissingIndexes(
@@ -69,12 +83,41 @@ function createInitialPieces() {
     (_, index) => ({
       index,
       x:
-        columns * pieceSize +
-        70 +
-        (index % 5) * 86,
+        trayStartX +
+        (shuffledIndex(index) %
+          trayColumns) *
+          88,
       y:
-        18 +
-        Math.floor(index / 5) *
+        trayStartY +
+        Math.floor(
+          shuffledIndex(index) /
+            trayColumns
+        ) *
+          92,
+      placed: false,
+    })
+  );
+}
+
+function getFallbackPieces() {
+  return Array.from(
+    {
+      length:
+        rows * columns,
+    },
+    (_, index) => ({
+      index,
+      x:
+        trayStartX +
+        (shuffledIndex(index) %
+          trayColumns) *
+          88,
+      y:
+        trayStartY +
+        Math.floor(
+          shuffledIndex(index) /
+            trayColumns
+        ) *
           92,
       placed: false,
     })
@@ -82,6 +125,11 @@ function createInitialPieces() {
 }
 
 export default function PuzzlePage() {
+  const stageRef =
+    useRef<HTMLDivElement | null>(
+      null
+    );
+
   const params =
     useParams();
 
@@ -106,7 +154,7 @@ export default function PuzzlePage() {
 
   const [pieces, setPieces] =
     useState<PieceState[]>(
-      createInitialPieces
+      getFallbackPieces
     );
 
   const [dragging, setDragging] =
@@ -193,6 +241,12 @@ export default function PuzzlePage() {
   ) {
     if (piece.placed) return;
 
+    const rect =
+      stageRef.current
+        ?.getBoundingClientRect();
+
+    if (!rect) return;
+
     const target =
       event.currentTarget as HTMLElement;
 
@@ -203,9 +257,13 @@ export default function PuzzlePage() {
     setDragging({
       index: piece.index,
       offsetX:
-        event.clientX - piece.x,
+        event.clientX -
+        rect.left -
+        piece.x,
       offsetY:
-        event.clientY - piece.y,
+        event.clientY -
+        rect.top -
+        piece.y,
     });
   }
 
@@ -213,6 +271,12 @@ export default function PuzzlePage() {
     event: PointerEvent
   ) {
     if (!dragging) return;
+
+    const rect =
+      stageRef.current
+        ?.getBoundingClientRect();
+
+    if (!rect) return;
 
     setPieces((current) =>
       current.map((piece) =>
@@ -222,9 +286,11 @@ export default function PuzzlePage() {
               ...piece,
               x:
                 event.clientX -
+                rect.left -
                 dragging.offsetX,
               y:
                 event.clientY -
+                rect.top -
                 dragging.offsetY,
             }
           : piece
@@ -307,7 +373,7 @@ export default function PuzzlePage() {
           </button>
         </div>
 
-        <section className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-8">
+        <section className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-8">
           <aside className="bg-white/[0.03] border border-white/10 rounded-[32px] p-6">
             <div className="rounded-[28px] border border-cyan-400/20 bg-black/60 p-6">
               <p className="text-cyan-400 text-xs tracking-[0.3em] uppercase font-black">
@@ -342,7 +408,7 @@ export default function PuzzlePage() {
 
               {lockedMissingIndexes.length > 0 && (
                 <Link
-                  href="/marketplace"
+                  href={`/marketplace?search=${encodeURIComponent(puzzle.title)}`}
                   className="mt-6 flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
                 >
                   Buy Missing Piece
@@ -351,14 +417,14 @@ export default function PuzzlePage() {
             </div>
           </aside>
 
-          <section className="relative min-h-[650px] bg-white/[0.03] border border-white/10 rounded-[32px] overflow-hidden">
+          <section className="relative min-h-[650px] bg-white/[0.03] border border-white/10 rounded-[32px] overflow-auto">
             <div
+              ref={stageRef}
               className="absolute left-6 top-6"
               style={{
-                width:
-                  columns * pieceSize,
+                width: 920,
                 height:
-                  rows * pieceSize,
+                  560,
               }}
             >
               {Array.from({

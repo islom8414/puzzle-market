@@ -112,6 +112,24 @@ export default function ProfilePage() {
 
       }
 
+      const inventoryOwners =
+        Array.from(
+          new Set(
+            [
+              savedUser,
+              user?.email || "",
+              user?.email
+                ?.split("@")[0]
+                ?.replace(
+                  /[^a-zA-Z0-9_-]/g,
+                  ""
+                )
+                ?.slice(0, 40) ||
+                "",
+            ].filter(Boolean)
+          )
+        );
+
       const {
         data: walletData,
       } =
@@ -141,9 +159,9 @@ export default function ProfilePage() {
         await supabase
           .from("inventory")
           .select("*")
-          .eq(
+          .in(
             "user_email",
-            savedUser
+            inventoryOwners
           );
 
       if (inventoryData) {
@@ -160,9 +178,9 @@ export default function ProfilePage() {
         await supabase
           .from("marketplace")
           .select("*")
-          .eq(
+          .in(
             "seller_email",
-            savedUser
+            inventoryOwners
           )
           .order(
             "created_at",

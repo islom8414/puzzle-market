@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { puzzles } from "@/data/puzzles";
+
 export default function HomePage() {
 
   return (
@@ -190,6 +192,67 @@ export default function HomePage() {
 
         </div>
 
+      </section>
+
+      <section className="px-4 md:px-6 pb-24">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+            <div>
+              <p className="text-cyan-400 font-black uppercase tracking-widest text-sm">
+                Start Collecting
+              </p>
+
+              <h2 className="text-4xl md:text-6xl font-black mt-4">
+                Choose A Puzzle
+              </h2>
+            </div>
+
+            <Link
+              href="/marketplace"
+              className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-6 py-4 rounded-2xl transition text-center"
+            >
+              Missing Pieces Market
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {puzzles.map((puzzle) => (
+              <Link
+                key={puzzle.id}
+                href={`/puzzle/${puzzle.slug}`}
+                className="group overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 transition hover:-translate-y-1 hover:border-cyan-400"
+              >
+                <div className="relative h-64 overflow-hidden">
+                  <img
+                    src={puzzle.image}
+                    alt={puzzle.title}
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                  />
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+
+                  <div className="absolute left-4 top-4 rounded-full bg-black/70 px-4 py-2 text-xs font-black text-cyan-400">
+                    {puzzle.rarity}
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <h3 className="text-3xl font-black">
+                    {puzzle.title}
+                  </h3>
+
+                  <p className="mt-3 text-sm text-zinc-500">
+                    Open the hidden board, assemble pieces, then unlock the missing market piece.
+                  </p>
+
+                  <div className="mt-6 rounded-2xl bg-cyan-400 py-3 text-center font-black text-black">
+                    Start Puzzle
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* FEATURES */}
