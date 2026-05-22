@@ -62,6 +62,17 @@ export default function AddFundsPage() {
       const data =
         await response.json();
 
+      if (!response.ok) {
+
+        alert(
+          data.error ||
+          "Stripe checkout failed"
+        );
+
+        return;
+
+      }
+
       if (data.url) {
 
         window.location.href =
