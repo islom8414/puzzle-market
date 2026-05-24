@@ -53,6 +53,9 @@ export default function MarketplacePage() {
   const [pieceFilter, setPieceFilter] =
     useState("");
 
+  const [currentUserNames, setCurrentUserNames] =
+    useState<string[]>([]);
+
   useEffect(() => {
 
     const params =
@@ -92,6 +95,39 @@ export default function MarketplacePage() {
     if (pieceParam) {
       setPieceFilter(pieceParam);
     }
+
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        const email =
+          data.user?.email || "";
+
+        const username =
+          email
+            .split("@")[0]
+            .replace(
+              /[^a-zA-Z0-9_-]/g,
+              ""
+            )
+            .slice(0, 40);
+
+        const saved =
+          localStorage.getItem(
+            "puzzle-username"
+          ) || "";
+
+        setCurrentUserNames(
+          [
+            email,
+            username,
+            saved,
+          ]
+            .filter(Boolean)
+            .map((value) =>
+              value.toLowerCase()
+            )
+        );
+      });
 
     if (puzzleParam) {
       loadExactMarketplace(
@@ -300,6 +336,14 @@ export default function MarketplacePage() {
         `${(col / (puzzleColumns - 1)) * 100}% ${(row / (puzzleRows - 1)) * 100}%`,
     };
   };
+
+  const isOwnListing = (
+    fragment: MarketItem
+  ) =>
+    currentUserNames.includes(
+      fragment.seller_email
+        .toLowerCase()
+    );
 
   async function loadExactMarketplace(
     puzzleSlug: string,
@@ -702,6 +746,11 @@ export default function MarketplacePage() {
                   {/* BUTTON */}
 
                   <button
+                    disabled={
+                      isOwnListing(
+                        fragment
+                      )
+                    }
                     onClick={() =>
                       purchaseFragment(
                         fragment
@@ -714,6 +763,8 @@ flex
 items-center
 justify-center
 w-full
+disabled:bg-zinc-700
+disabled:text-zinc-400
 bg-green-400
 hover:bg-green-300
 text-black
@@ -726,8 +777,9 @@ duration-300
 
 >
 
-Buy Fragment • $
-{fragment.price}
+{isOwnListing(fragment)
+  ? "Your Listing"
+  : `Buy Fragment - $${fragment.price}`}
 
 </button>
 
