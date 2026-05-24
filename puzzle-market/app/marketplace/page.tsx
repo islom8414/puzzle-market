@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 
 type MarketItem = {
 
-  id: number;
+  id: number | string;
 
   seller_email: string;
 
@@ -25,6 +25,8 @@ type MarketItem = {
   rarity: string;
 
   created_at?: string;
+
+  exact_listing?: boolean;
 
 };
 
@@ -91,8 +93,15 @@ export default function MarketplacePage() {
       setPieceFilter(pieceParam);
     }
 
-    // eslint-disable-next-line react-hooks/immutability
-    loadMarketplace();
+    if (puzzleParam) {
+      loadExactMarketplace(
+        puzzleParam,
+        pieceParam || ""
+      );
+    } else {
+      // eslint-disable-next-line react-hooks/immutability
+      loadMarketplace();
+    }
 
     const channel =
       supabase
@@ -125,8 +134,7 @@ export default function MarketplacePage() {
 
   }, []);
 
-  const loadMarketplace =
-    async () => {
+  async function loadMarketplace() {
 
       const { data, error } =
         await supabase
@@ -293,6 +301,33 @@ export default function MarketplacePage() {
     };
   };
 
+  async function loadExactMarketplace(
+    puzzleSlug: string,
+    piece: string
+  ) {
+      setLoading(true);
+
+      const params =
+        new URLSearchParams({
+          puzzle: puzzleSlug,
+          piece,
+        });
+
+      const response =
+        await fetch(
+          `/api/puzzle-market-listings?${params.toString()}`
+        );
+
+      const data =
+        await response.json();
+
+      setMarketItems(
+        data.listings || []
+      );
+
+      setLoading(false);
+  }
+
   const purchaseFragment =
     async (
       fragment: MarketItem
@@ -341,7 +376,9 @@ export default function MarketplacePage() {
 
         const response =
           await fetch(
-            "/api/purchase-marketplace",
+            fragment.exact_listing
+              ? "/api/purchase-listing"
+              : "/api/purchase-marketplace",
             {
               method: "POST",
               headers: {
@@ -376,7 +413,12 @@ export default function MarketplacePage() {
           "Purchase completed"
         );
 
-        loadMarketplace();
+        if (puzzleFilter) {
+          location.href =
+            `/puzzle/${puzzleFilter}`;
+        } else {
+          loadMarketplace();
+        }
 
       } catch (error) {
 

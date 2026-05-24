@@ -176,12 +176,79 @@ export default function PuzzlePage() {
           )
           .eq(
             "fragment_id",
-            puzzle.slug
-          );
+          puzzle.slug
+        );
+
+      let exactOwnedCount = 0;
+
+      if (user) {
+        const {
+          data: catalog,
+        } =
+          await supabase
+            .from(
+              "puzzle_catalog"
+            )
+            .select("id")
+            .eq(
+              "slug",
+              puzzle.slug
+            )
+            .maybeSingle();
+
+        if (catalog) {
+          const {
+            data: pieces,
+          } =
+            await supabase
+              .from(
+                "puzzle_pieces"
+              )
+              .select("id,piece_index")
+              .eq(
+                "puzzle_id",
+                catalog.id
+              )
+              .in(
+                "piece_index",
+                missingIndexes
+              );
+
+          const pieceIds =
+            pieces?.map(
+              (piece) => piece.id
+            ) || [];
+
+          if (pieceIds.length > 0) {
+            const {
+              data: ownership,
+            } =
+              await supabase
+                .from(
+                  "piece_ownership"
+                )
+                .select("piece_id")
+                .in(
+                  "piece_id",
+                  pieceIds
+                )
+                .eq(
+                  "owner_user_id",
+                  user.id
+                );
+
+            exactOwnedCount =
+              ownership?.length || 0;
+          }
+        }
+      }
 
       setOwnedMissingCount(
         Math.min(
-          data?.length || 0,
+          Math.max(
+            data?.length || 0,
+            exactOwnedCount
+          ),
           missingIndexes.length
         )
       );
