@@ -241,31 +241,54 @@ export default function PuzzlePage() {
         lockedMissingIndexes
       );
 
-    setBoard((currentBoard) =>
-      currentBoard.map(
-        (piece, cell) =>
-          lockedSet.has(cell)
-            ? null
-            : piece
-      )
-    );
-
-    setTray((currentTray) => {
-      const used =
-        new Set(
-          board.filter(
-            (piece): piece is number =>
-              piece !== null
-          )
+    setBoard((currentBoard) => {
+      const nextBoard =
+        currentBoard.map(
+          (piece, cell) =>
+            lockedSet.has(cell)
+              ? null
+              : piece
         );
 
-      return shuffledPieces().filter(
-        (piece) =>
-          !used.has(piece) &&
-          !lockedSet.has(piece)
-      );
+      setTray((currentTray) => {
+        const used =
+          new Set(
+            nextBoard.filter(
+              (
+                piece
+              ): piece is number =>
+                piece !== null
+            )
+          );
+
+        const currentSet =
+          new Set(
+            currentTray
+          );
+
+        const cleanedTray =
+          currentTray.filter(
+            (piece) =>
+              !lockedSet.has(piece) &&
+              !used.has(piece)
+          );
+
+        const restoredPieces =
+          shuffledPieces().filter(
+            (piece) =>
+              !lockedSet.has(piece) &&
+              !used.has(piece) &&
+              !currentSet.has(piece)
+          );
+
+        return [
+          ...cleanedTray,
+          ...restoredPieces,
+        ];
+      });
+
+      return nextBoard;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     lockedMissingIndexes.join(","),
   ]);
@@ -478,7 +501,7 @@ export default function PuzzlePage() {
 
             {lockedMissingIndexes.length > 0 && (
               <Link
-                href="/marketplace"
+                href={`/marketplace?puzzle=${puzzle.slug}&piece=${lockedMissingIndexes[0]}`}
                 className="mt-5 flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
               >
                 Buy Missing Piece

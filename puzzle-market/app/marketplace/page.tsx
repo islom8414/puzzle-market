@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 
+import { puzzles } from "@/data/puzzles";
 import { supabase } from "@/lib/supabase";
 
 type MarketItem = {
@@ -27,6 +28,9 @@ type MarketItem = {
 
 };
 
+const puzzleColumns = 5;
+const puzzleRows = 5;
+
 export default function MarketplacePage() {
 
   const [marketItems, setMarketItems] =
@@ -41,6 +45,12 @@ export default function MarketplacePage() {
   const [rarityFilter, setRarityFilter] =
     useState("ALL");
 
+  const [puzzleFilter, setPuzzleFilter] =
+    useState("");
+
+  const [pieceFilter, setPieceFilter] =
+    useState("");
+
   useEffect(() => {
 
     const params =
@@ -51,8 +61,34 @@ export default function MarketplacePage() {
     const searchParam =
       params.get("search");
 
+    const puzzleParam =
+      params.get("puzzle");
+
+    const pieceParam =
+      params.get("piece");
+
     if (searchParam) {
       setSearch(searchParam);
+    }
+
+    if (puzzleParam) {
+      setPuzzleFilter(puzzleParam);
+
+      const selectedPuzzle =
+        puzzles.find(
+          (item) =>
+            item.slug === puzzleParam
+        );
+
+      if (selectedPuzzle) {
+        setSearch(
+          selectedPuzzle.title
+        );
+      }
+    }
+
+    if (pieceParam) {
+      setPieceFilter(pieceParam);
     }
 
     // eslint-disable-next-line react-hooks/immutability
@@ -119,6 +155,36 @@ export default function MarketplacePage() {
       return marketItems.filter(
         (fragment) => {
 
+          if (puzzleFilter) {
+            const fragmentPiece =
+              Number(
+                fragment.piece
+              );
+
+            const requestedPiece =
+              Number(
+                pieceFilter
+              );
+
+            const matchesPuzzle =
+              fragment.fragment_id ===
+              puzzleFilter;
+
+            const matchesPiece =
+              !pieceFilter ||
+              fragment.piece ===
+                pieceFilter ||
+              fragmentPiece ===
+                requestedPiece ||
+              fragmentPiece ===
+                requestedPiece + 1;
+
+            return (
+              matchesPuzzle &&
+              matchesPiece
+            );
+          }
+
           const matchesSearch =
             fragment.title
               .toLowerCase()
@@ -145,6 +211,8 @@ export default function MarketplacePage() {
       marketItems,
       search,
       rarityFilter,
+      puzzleFilter,
+      pieceFilter,
     ]);
 
   const rarityGlow = (
@@ -170,6 +238,59 @@ export default function MarketplacePage() {
 
     return "shadow-[0_0_40px_rgba(34,211,238,0.25)] border-cyan-400/20";
 
+  };
+
+  const getPuzzleForFragment = (
+    fragment: MarketItem
+  ) =>
+    puzzles.find(
+      (item) =>
+        item.slug ===
+        fragment.fragment_id
+    );
+
+  const piecePreviewStyle = (
+    fragment: MarketItem
+  ) => {
+    const puzzle =
+      getPuzzleForFragment(
+        fragment
+      );
+
+    if (!puzzle) {
+      return null;
+    }
+
+    const rawPiece =
+      Number(fragment.piece);
+
+    const piece =
+      Number.isFinite(rawPiece)
+        ? ((rawPiece %
+            (puzzleRows *
+              puzzleColumns)) +
+            (puzzleRows *
+              puzzleColumns)) %
+          (puzzleRows *
+            puzzleColumns)
+        : 0;
+
+    const col =
+      piece % puzzleColumns;
+
+    const row =
+      Math.floor(
+        piece / puzzleColumns
+      );
+
+    return {
+      backgroundImage:
+        `url(${puzzle.image})`,
+      backgroundSize:
+        `${puzzleColumns * 100}% ${puzzleRows * 100}%`,
+      backgroundPosition:
+        `${(col / (puzzleColumns - 1)) * 100}% ${(row / (puzzleRows - 1)) * 100}%`,
+    };
   };
 
   const purchaseFragment =
@@ -292,8 +413,9 @@ export default function MarketplacePage() {
           </h1>
 
           <p className="text-zinc-400 text-lg mt-8 max-w-2xl leading-relaxed">
-            Real-time collectible economy powered by live cloud ownership,
-            instant marketplace sync and premium fragment trading.
+            {puzzleFilter
+              ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
+              : "Real-time collectible economy powered by live cloud ownership, instant marketplace sync and premium fragment trading."}
           </p>
 
           {/* STATS */}
@@ -371,7 +493,11 @@ export default function MarketplacePage() {
                 e.target.value
               )
             }
-            placeholder="Search rare fragments..."
+            placeholder={
+              puzzleFilter
+                ? "Exact puzzle filter is active"
+                : "Search rare fragments..."
+            }
             className="bg-white/[0.03] border border-white/10 rounded-3xl px-6 py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           />
 
@@ -435,15 +561,30 @@ export default function MarketplacePage() {
 
                 <div className="relative overflow-hidden">
 
-                  <img
-                    src={
-                      fragment.image
-                    }
-                    alt={
-                      fragment.title
-                    }
-                    className="w-full h-[340px] object-cover transition duration-700 group-hover:scale-110"
-                  />
+                  {piecePreviewStyle(
+                    fragment
+                  ) ? (
+                    <div className="h-[340px] bg-black flex items-center justify-center">
+                      <div
+                        className="w-[260px] h-[260px] border border-cyan-400/40 shadow-[0_0_40px_rgba(34,211,238,0.18)] transition duration-700 group-hover:scale-105"
+                        style={
+                          piecePreviewStyle(
+                            fragment
+                          ) || undefined
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <img
+                      src={
+                        fragment.image
+                      }
+                      alt={
+                        fragment.title
+                      }
+                      className="w-full h-[340px] object-cover transition duration-700 group-hover:scale-110"
+                    />
+                  )}
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
@@ -509,9 +650,8 @@ export default function MarketplacePage() {
 
                     <h3 className="font-black mt-2">
                       {
-                        localStorage.getItem(
-                          "puzzle-username"
-                        ) || "ShadowUser"
+                        fragment.seller_email ||
+                        "Market Owner"
                       }
                     </h3>
 
@@ -575,10 +715,13 @@ Buy Fragment • $
             </p>
 
             {(search ||
+              puzzleFilter ||
               rarityFilter !== "ALL") && (
               <button
                 onClick={() => {
                   setSearch("");
+                  setPuzzleFilter("");
+                  setPieceFilter("");
                   setRarityFilter("ALL");
                   window.history.replaceState(
                     null,
