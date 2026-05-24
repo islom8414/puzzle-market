@@ -571,8 +571,26 @@ Buy Fragment • $
             </h2>
 
             <p className="text-zinc-500 mt-5 text-lg">
-              Try changing filters or search query.
+              This exact missing piece is not listed right now. Browse all active fragments or check back later.
             </p>
+
+            {(search ||
+              rarityFilter !== "ALL") && (
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setRarityFilter("ALL");
+                  window.history.replaceState(
+                    null,
+                    "",
+                    "/marketplace"
+                  );
+                }}
+                className="mt-8 bg-cyan-400 text-black font-black px-6 py-4 rounded-2xl"
+              >
+                Show All Fragments
+              </button>
+            )}
 
           </div>
 

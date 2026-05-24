@@ -478,7 +478,7 @@ export default function PuzzlePage() {
 
             {lockedMissingIndexes.length > 0 && (
               <Link
-                href={`/marketplace?search=${encodeURIComponent(puzzle.title)}`}
+                href="/marketplace"
                 className="mt-5 flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
               >
                 Buy Missing Piece
