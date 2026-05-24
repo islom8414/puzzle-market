@@ -52,6 +52,12 @@ export default function ProfilePage() {
   const [username, setUsername] =
     useState("Guest");
 
+  const [editUsername, setEditUsername] =
+    useState("");
+
+  const [savingUsername, setSavingUsername] =
+    useState(false);
+
   const [loading, setLoading] =
     useState(true);
 
@@ -127,6 +133,10 @@ export default function ProfilePage() {
       }
 
       setUsername(
+        publicName
+      );
+
+      setEditUsername(
         publicName
       );
 
@@ -286,6 +296,80 @@ export default function ProfilePage() {
 
     };
 
+  const saveUsername =
+    async () => {
+
+      const nextName =
+        cleanPublicName(
+          editUsername
+        );
+
+      if (
+        nextName.length < 3 ||
+        nextName === "Collector"
+      ) {
+        alert(
+          "Choose a username with at least 3 letters"
+        );
+        return;
+      }
+
+      setSavingUsername(true);
+
+      const {
+        data: {
+          user,
+        },
+      } =
+        await supabase.auth
+          .getUser();
+
+      if (!user?.email) {
+        alert("Login required");
+        setSavingUsername(false);
+        return;
+      }
+
+      const { error } =
+        await supabase
+          .from(
+            "market_profiles"
+          )
+          .upsert(
+            {
+              id: user.id,
+              email: user.email,
+              username: nextName,
+            },
+            {
+              onConflict: "id",
+            }
+          );
+
+      if (error) {
+        alert(
+          error.message.includes(
+            "duplicate"
+          )
+            ? "Username is already taken"
+            : error.message
+        );
+        setSavingUsername(false);
+        return;
+      }
+
+      localStorage.setItem(
+        "puzzle-username",
+        nextName
+      );
+
+      setUsername(nextName);
+      setEditUsername(nextName);
+      setSavingUsername(false);
+      alert("Username updated");
+
+    };
+
   const totalValue =
     useMemo(() => {
 
@@ -378,6 +462,29 @@ export default function ProfilePage() {
                     REALTIME CLOUD SYNC
                   </div>
 
+                </div>
+
+                <div className="mt-6 flex flex-col sm:flex-row gap-3 max-w-xl">
+                  <input
+                    value={editUsername}
+                    onChange={(event) =>
+                      setEditUsername(
+                        event.target.value
+                      )
+                    }
+                    placeholder="Change username"
+                    className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/60 px-5 py-3 outline-none focus:border-cyan-400"
+                  />
+
+                  <button
+                    onClick={saveUsername}
+                    disabled={savingUsername}
+                    className="rounded-2xl bg-white/10 px-5 py-3 font-black transition hover:bg-cyan-400 hover:text-black disabled:opacity-50"
+                  >
+                    {savingUsername
+                      ? "Saving..."
+                      : "Save Name"}
+                  </button>
                 </div>
 
               </div>

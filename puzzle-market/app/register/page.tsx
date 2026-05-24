@@ -71,6 +71,20 @@ export default function RegisterPage() {
 
     };
 
+  const handleGoogleRegister =
+    async () => {
+
+      await supabase.auth
+        .signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo:
+              `${window.location.origin}/setup`,
+          },
+        });
+
+    };
+
   return (
 
     <main className="min-h-screen flex items-center justify-center px-4 bg-black text-white overflow-hidden">
@@ -129,6 +143,13 @@ export default function RegisterPage() {
               ? "Creating..."
               : "Create Account"}
 
+          </button>
+
+          <button
+            onClick={handleGoogleRegister}
+            className="w-full bg-white hover:bg-zinc-200 text-black font-black py-4 rounded-2xl transition"
+          >
+            Continue with Google
           </button>
 
         </div>
