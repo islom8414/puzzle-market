@@ -708,13 +708,13 @@ export default function MarketplacePage() {
                   <div className="mt-6 bg-black/40 border border-white/5 rounded-2xl p-4">
 
                     <p className="text-zinc-500 text-sm">
-                      Seller
+                      Current Owner
                     </p>
 
                     <h3 className="font-black mt-2">
                       {
                         fragment.seller_email ||
-                        "Market Owner"
+                        "Collector"
                       }
                     </h3>
 
@@ -755,8 +755,8 @@ duration-300
 >
 
 {isOwnListing(fragment)
-  ? "Your Listing"
-  : `Buy Fragment - $${fragment.price}`}
+  ? "This Piece Is Yours"
+  : `Buy Piece - $${fragment.price}`}
 
 </button>
 

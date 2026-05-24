@@ -2,9 +2,13 @@ import { NextResponse } from "next/server";
 
 import { puzzles } from "@/data/puzzles";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import {
+  platformOwnerEmails,
+  publicOwnerName,
+} from "@/lib/public-identity";
 
 const platformOwnerEmail =
-  "islommatchanov888@gmail.com";
+  platformOwnerEmails[0];
 
 const rows = 5;
 const columns = 5;
@@ -248,9 +252,9 @@ export async function GET(
           seller_user_id:
             listing.seller_user_id,
           seller_email:
-            seller?.username ||
-            seller?.email ||
-            "Market Owner",
+            publicOwnerName(
+              seller
+            ),
           fragment_id: puzzle.slug,
           title: puzzle.title,
           image: puzzle.image,

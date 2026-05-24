@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { supabase } from "@/lib/supabase";
+import { cleanPublicName } from "@/lib/public-identity";
 
 type InventoryItem = {
   id: number;
@@ -25,6 +26,15 @@ type UploadedItem = {
   rarity: string;
 };
 
+type OwnedPiece = {
+  pieceId: string;
+  pieceIndex: number;
+  puzzleSlug: string;
+  title: string;
+  image: string;
+  listingPrice: number | null;
+};
+
 export default function ProfilePage() {
 
   const [inventory, setInventory] =
@@ -32,6 +42,9 @@ export default function ProfilePage() {
 
   const [uploads, setUploads] =
     useState<UploadedItem[]>([]);
+
+  const [ownedPieces, setOwnedPieces] =
+    useState<OwnedPiece[]>([]);
 
   const [balance, setBalance] =
     useState(0);
@@ -53,20 +66,11 @@ export default function ProfilePage() {
     async () => {
 
       const savedUser =
-        localStorage.getItem(
-          "puzzle-username"
+        cleanPublicName(
+          localStorage.getItem(
+            "puzzle-username"
+          )
         );
-
-      if (!savedUser) {
-
-        window.location.href =
-          "/setup";
-
-        return;
-
-      }
-
-      setUsername(savedUser);
 
       let realWalletLoaded =
         false;
@@ -78,6 +82,58 @@ export default function ProfilePage() {
       } =
         await supabase.auth
           .getUser();
+
+      if (!user) {
+
+        window.location.href =
+          "/login";
+
+        return;
+
+      }
+
+      const {
+        data: profileData,
+      } =
+        await supabase
+          .from(
+            "market_profiles"
+          )
+          .select(
+            "username"
+          )
+          .eq(
+            "id",
+            user.id
+          )
+          .maybeSingle();
+
+      const publicName =
+        cleanPublicName(
+          profileData?.username ||
+          savedUser
+        );
+
+      if (
+        publicName ===
+        "Collector"
+      ) {
+
+        window.location.href =
+          "/setup";
+
+        return;
+
+      }
+
+      setUsername(
+        publicName
+      );
+
+      localStorage.setItem(
+        "puzzle-username",
+        publicName
+      );
 
       if (user) {
 
@@ -117,6 +173,7 @@ export default function ProfilePage() {
           new Set(
             [
               savedUser,
+              publicName,
               user?.email || "",
               user?.email
                 ?.split("@")[0]
@@ -138,9 +195,9 @@ export default function ProfilePage() {
           .select("*")
           .eq(
             "username",
-            savedUser
+            publicName
           )
-          .single();
+          .maybeSingle();
 
       if (
         walletData &&
@@ -195,6 +252,34 @@ export default function ProfilePage() {
           uploadData
         );
 
+      }
+
+      const {
+        data: sessionData,
+      } =
+        await supabase.auth
+          .getSession();
+
+      if (
+        sessionData.session
+      ) {
+        const response =
+          await fetch(
+            "/api/owned-pieces",
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${sessionData.session.access_token}`,
+              },
+            }
+          );
+
+        const exactData =
+          await response.json();
+
+        setOwnedPieces(
+          exactData.pieces || []
+        );
       }
 
       setLoading(false);
@@ -300,10 +385,10 @@ export default function ProfilePage() {
             </div>
 
             <Link
-              href="/create"
+              href="/sell"
               className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-8 py-5 rounded-3xl transition text-center text-lg shadow-[0_0_40px_rgba(34,211,238,0.35)]"
             >
-              Upload New Fragment
+              Resell My Pieces
             </Link>
 
           </div>
@@ -321,7 +406,8 @@ export default function ProfilePage() {
             </p>
 
             <h2 className="text-5xl font-black mt-4">
-              {inventory.length}
+              {inventory.length +
+                ownedPieces.length}
             </h2>
 
           </div>
@@ -385,19 +471,62 @@ export default function ProfilePage() {
             </Link>
           </div>
 
-          {inventory.length === 0 && (
+          {inventory.length === 0 &&
+            ownedPieces.length === 0 && (
             <div className="mt-8 bg-white/[0.03] border border-white/10 rounded-[30px] p-10 text-center">
               <h3 className="text-3xl font-black">
                 No owned pieces yet
               </h3>
 
               <p className="text-zinc-500 mt-3">
-                Purchased missing pieces will appear here.
+            Purchased missing pieces will appear here as ownership certificates.
               </p>
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
+            {ownedPieces.map((item) => (
+              <div
+                key={item.pieceId}
+                className="overflow-hidden rounded-[30px] border border-cyan-400/25 bg-cyan-400/[0.04]"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="h-56 w-full object-cover blur-sm scale-105"
+                />
+
+                <div className="p-5">
+                  <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.25em]">
+                    Ownership Certificate
+                  </p>
+
+                  <h3 className="text-3xl font-black mt-2">
+                    {item.title} #{item.pieceIndex}
+                  </h3>
+
+                  <p className="text-zinc-500 mt-3">
+                    This missing piece belongs to you. You can keep it or list it for resale.
+                  </p>
+
+                  <div className="mt-5 flex items-center justify-between">
+                    <span className="text-cyan-400 text-xl font-black">
+                      {item.listingPrice
+                        ? `Listed $${item.listingPrice}`
+                        : "Private"}
+                    </span>
+
+                    <Link
+                      href="/sell"
+                      className="bg-cyan-400 text-black font-black px-4 py-2 rounded-xl"
+                    >
+                      Resell
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+
             {inventory.map((item) => (
               <div
                 key={item.id}

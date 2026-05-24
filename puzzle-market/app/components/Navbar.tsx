@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
+import { cleanPublicName } from "@/lib/public-identity";
 
 const initialNotifications = [
   "Marketplace synced successfully",
@@ -46,7 +47,7 @@ export default function Navbar() {
 
     const savedUser =
       localStorage.getItem(
-        "puzzle-user"
+        "puzzle-username"
       );
 
     if (savedBalance) {
@@ -60,9 +61,16 @@ export default function Navbar() {
 
     if (savedUser) {
 
-      setUsername(savedUser);
+      setUsername(
+        cleanPublicName(
+          savedUser
+        )
+      );
 
     }
+
+    // eslint-disable-next-line react-hooks/immutability
+    loadUserProfile();
 
     // eslint-disable-next-line react-hooks/immutability
     loadNotifications();
@@ -142,11 +150,100 @@ export default function Navbar() {
 
     };
 
+  const loadUserProfile =
+    async () => {
+
+      const {
+        data: {
+          user,
+        },
+      } =
+        await supabase.auth
+          .getUser();
+
+      if (!user) {
+        return;
+      }
+
+      const {
+        data: profile,
+      } =
+        await supabase
+          .from(
+            "market_profiles"
+          )
+          .select(
+            "username"
+          )
+          .eq(
+            "id",
+            user.id
+          )
+          .maybeSingle();
+
+      const publicName =
+        cleanPublicName(
+          profile?.username ||
+          localStorage.getItem(
+            "puzzle-username"
+          )
+        );
+
+      setUsername(
+        publicName
+      );
+
+      localStorage.setItem(
+        "puzzle-username",
+        publicName
+      );
+
+      const {
+        data: account,
+      } =
+        await supabase
+          .from(
+            "wallet_accounts"
+          )
+          .select(
+            "balance_cents"
+          )
+          .eq(
+            "user_id",
+            user.id
+          )
+          .maybeSingle();
+
+      if (account) {
+        const dollars =
+          account.balance_cents /
+          100;
+
+        setBalance(dollars);
+
+        localStorage.setItem(
+          "puzzle-balance",
+          String(dollars)
+        );
+      }
+
+    };
+
   const handleLogout = () => {
 
     localStorage.removeItem(
       "puzzle-user"
     );
+
+    localStorage.removeItem(
+      "puzzle-username"
+    );
+
+    localStorage.removeItem(
+      "puzzle-balance"
+    );
+
+    supabase.auth.signOut();
 
     window.location.href =
       "/login";
@@ -199,13 +296,6 @@ export default function Navbar() {
                 </a>
 
                 <a
-                  href="/create"
-                  className="hover:text-cyan-400 transition"
-                >
-                  Create
-                </a>
-
-                <a
                   href="/profile"
                   className="hover:text-cyan-400 transition"
                 >
@@ -217,6 +307,27 @@ export default function Navbar() {
                   className="hover:text-cyan-400 transition"
                 >
                   Sell
+                </a>
+
+                <a
+                  href="/chat"
+                  className="hover:text-cyan-400 transition"
+                >
+                  Chat
+                </a>
+
+                <a
+                  href="/support"
+                  className="hover:text-cyan-400 transition"
+                >
+                  Support
+                </a>
+
+                <a
+                  href="/about"
+                  className="hover:text-cyan-400 transition"
+                >
+                  About
                 </a>
 
               </nav>
@@ -390,16 +501,24 @@ export default function Navbar() {
                 Explore
               </a>
 
-              <a href="/create">
-                Create
-              </a>
-
               <a href="/profile">
                 Profile
               </a>
 
               <a href="/sell">
                 Sell
+              </a>
+
+              <a href="/chat">
+                Chat
+              </a>
+
+              <a href="/support">
+                Support
+              </a>
+
+              <a href="/about">
+                About
               </a>
 
             </div>
