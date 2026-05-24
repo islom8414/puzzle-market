@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 
 const activities = [
-  "Alex bought Dragon Fantasy for $250",
-  "Mika listed Book Kingdom collection",
-  "ShadowUser sold rare puzzle piece",
-  "New VIP collection added",
-  "CryptoWolf purchased Dark Desert",
-  "Marketplace volume reached $2.4M",
-  "Rare piece discovered in fantasy archive",
+  "Marketplace is online",
+  "Private support is ready",
+  "Wallet topups are verified securely",
+  "Puzzle ownership is protected",
+  "Collector identities stay private",
 ];
 
 export default function LiveFeed() {
