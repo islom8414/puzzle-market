@@ -2,7 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { puzzles } from "@/data/puzzles";
 import { supabase } from "@/lib/supabase";
+
+const adminEmails = [
+  "islommatchanov888@gmail.com",
+  "ismatchanov08@gmail.com",
+];
 
 type Transaction = {
 
@@ -60,6 +66,20 @@ export default function AdminPage() {
   const [loading, setLoading] =
     useState(true);
 
+  const [allowed, setAllowed] =
+    useState(false);
+
+  const [selectedPuzzle, setSelectedPuzzle] =
+    useState(
+      puzzles[0]?.slug || ""
+    );
+
+  const [missingPrice, setMissingPrice] =
+    useState("");
+
+  const [savingPrice, setSavingPrice] =
+    useState(false);
+
   useEffect(() => {
 
     // eslint-disable-next-line react-hooks/immutability
@@ -112,6 +132,21 @@ export default function AdminPage() {
 
   const loadAdmin =
     async () => {
+      const {
+        data: {
+          user,
+        },
+      } =
+        await supabase.auth
+          .getUser();
+
+      const isAdmin =
+        !!user?.email &&
+        adminEmails.includes(
+          user.email
+        );
+
+      setAllowed(isAdmin);
 
       const {
         data: txData,
@@ -166,6 +201,78 @@ export default function AdminPage() {
 
       setLoading(false);
 
+    };
+
+  const saveMissingPiecePrice =
+    async () => {
+      if (!allowed) {
+        alert("Admin only");
+        return;
+      }
+
+      if (
+        !selectedPuzzle ||
+        !missingPrice
+      ) {
+        alert(
+          "Choose puzzle and price"
+        );
+        return;
+      }
+
+      setSavingPrice(true);
+
+      const {
+        data: {
+          session,
+        },
+      } =
+        await supabase.auth
+          .getSession();
+
+      if (!session) {
+        alert("Login first");
+        location.href = "/login";
+        return;
+      }
+
+      const response =
+        await fetch(
+          "/api/admin-piece-price",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+              Authorization:
+                `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              puzzleSlug:
+                selectedPuzzle,
+              price: Number(
+                missingPrice
+              ),
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      setSavingPrice(false);
+
+      if (!response.ok) {
+        alert(
+          data.error ||
+          "Price update failed"
+        );
+        return;
+      }
+
+      alert(
+        `Missing piece price saved: $${data.price}`
+      );
     };
 
   const totalRevenue =
@@ -313,6 +420,80 @@ export default function AdminPage() {
               {legendaryCount}
             </h2>
 
+          </div>
+
+        </section>
+
+        {/* MISSING PIECE PRICE */}
+
+        <section className="mt-16 bg-white/[0.03] border border-cyan-400/20 rounded-[36px] p-8 md:p-10 backdrop-blur-xl">
+
+          <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
+            OWNER CONTROLS
+          </p>
+
+          <h2 className="text-5xl font-black mt-3">
+            Missing Piece Price
+          </h2>
+
+          <p className="text-zinc-400 mt-5 max-w-2xl">
+            Set the first sale price for the exact missing piece. After a buyer owns it, only that owner can resell it at their own price.
+          </p>
+
+          {!allowed && (
+            <div className="mt-8 bg-red-500/10 border border-red-400/20 rounded-2xl p-5 text-red-200 font-black">
+              Login with the owner email to edit prices.
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_180px_auto] gap-4 mt-8">
+            <select
+              value={selectedPuzzle}
+              onChange={(event) =>
+                setSelectedPuzzle(
+                  event.target.value
+                )
+              }
+              disabled={!allowed}
+              className="bg-black/50 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400"
+            >
+              {puzzles.map((puzzle) => (
+                <option
+                  key={puzzle.slug}
+                  value={puzzle.slug}
+                >
+                  {puzzle.title}
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="number"
+              value={missingPrice}
+              onChange={(event) =>
+                setMissingPrice(
+                  event.target.value
+                )
+              }
+              disabled={!allowed}
+              placeholder="$ price"
+              className="bg-black/50 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400"
+            />
+
+            <button
+              onClick={
+                saveMissingPiecePrice
+              }
+              disabled={
+                !allowed ||
+                savingPrice
+              }
+              className="bg-cyan-400 disabled:bg-zinc-700 disabled:text-zinc-400 text-black font-black px-7 py-4 rounded-2xl"
+            >
+              {savingPrice
+                ? "Saving..."
+                : "Save Price"}
+            </button>
           </div>
 
         </section>
