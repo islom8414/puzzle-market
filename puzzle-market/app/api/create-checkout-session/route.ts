@@ -103,7 +103,7 @@ export async function POST(
         ?.slice(0, 40) ||
       "PuzzleUser";
 
-    const username =
+    const rawUsername =
       typeof body.username ===
         "string"
         ? body.username.trim()
@@ -111,8 +111,7 @@ export async function POST(
 
     if (
       !userData.user.email ||
-      username.length < 3 ||
-      username.length > 40
+      rawUsername.length < 3
     ) {
       return NextResponse.json(
         {
@@ -125,17 +124,50 @@ export async function POST(
       );
     }
 
+    const cleanUsername =
+      rawUsername
+        .replace(
+          /[^a-zA-Z0-9_-]/g,
+          ""
+        )
+        .slice(0, 40) ||
+      fallbackUsername;
+
+    const {
+      data: existingUsername,
+    } =
+      await admin
+        .from("market_profiles")
+        .select("id")
+        .eq(
+          "username",
+          cleanUsername
+        )
+        .maybeSingle();
+
+    const username =
+      existingUsername &&
+      existingUsername.id !==
+        userData.user.id
+        ? `${cleanUsername.slice(0, 31)}_${userData.user.id.slice(0, 8)}`
+        : cleanUsername;
+
     const {
       error: profileError,
     } =
       await admin
         .from("market_profiles")
-        .upsert({
-          id: userData.user.id,
-          email:
-            userData.user.email,
-          username,
-        });
+        .upsert(
+          {
+            id: userData.user.id,
+            email:
+              userData.user.email,
+            username,
+          },
+          {
+            onConflict: "id",
+          }
+        );
 
     if (profileError) {
       console.error(profileError);
@@ -143,6 +175,7 @@ export async function POST(
       return NextResponse.json(
         {
           error:
+            profileError.message ||
             "Profile setup required",
         },
         {
