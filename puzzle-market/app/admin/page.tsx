@@ -80,6 +80,9 @@ export default function AdminPage() {
   const [savingPrice, setSavingPrice] =
     useState(false);
 
+  const [resetBeforeSaving, setResetBeforeSaving] =
+    useState(false);
+
   useEffect(() => {
 
     // eslint-disable-next-line react-hooks/immutability
@@ -253,6 +256,8 @@ export default function AdminPage() {
               price: Number(
                 missingPrice
               ),
+              resetPuzzle:
+                resetBeforeSaving,
             }),
           }
         );
@@ -495,6 +500,23 @@ export default function AdminPage() {
                 : "Save Price"}
             </button>
           </div>
+
+          <label className="mt-5 flex items-center gap-3 text-sm text-zinc-300">
+            <input
+              type="checkbox"
+              checked={
+                resetBeforeSaving
+              }
+              onChange={(event) =>
+                setResetBeforeSaving(
+                  event.target.checked
+                )
+              }
+              disabled={!allowed}
+              className="h-5 w-5"
+            />
+            Reset this puzzle test ownership back to admin before saving price
+          </label>
 
         </section>
 

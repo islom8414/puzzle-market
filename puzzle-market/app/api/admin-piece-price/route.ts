@@ -14,11 +14,20 @@ const adminEmails = [
 const rows = 5;
 const columns = 5;
 
-function getMissingIndex(
+function getMissingIndexes(
   puzzleId: number
 ) {
-  return (puzzleId * 7) %
+  const first =
+    (puzzleId * 7) %
     (rows * columns);
+
+  const second =
+    (first + 11) %
+    (rows * columns);
+
+  return puzzleId % 2 === 0
+    ? [first, second]
+    : [first];
 }
 
 export async function POST(
@@ -47,6 +56,9 @@ export async function POST(
 
     const price =
       Number(body.price);
+
+    const resetPuzzle =
+      body.resetPuzzle === true;
 
     const puzzle =
       puzzles.find(
@@ -141,8 +153,8 @@ export async function POST(
       );
     }
 
-    const missingIndex =
-      getMissingIndex(
+    const missingIndexes =
+      getMissingIndexes(
         Number(puzzle.id)
       );
 
@@ -184,140 +196,180 @@ export async function POST(
       );
     }
 
-    const {
-      data: piece,
-      error: pieceError,
-    } =
-      await admin
-        .from("puzzle_pieces")
-        .upsert(
+    const updatedPieces: number[] = [];
+    const skippedPieces: number[] = [];
+
+    for (const missingIndex of missingIndexes) {
+      const {
+        data: piece,
+        error: pieceError,
+      } =
+        await admin
+          .from("puzzle_pieces")
+          .upsert(
+            {
+              puzzle_id: catalog.id,
+              piece_index:
+                missingIndex,
+              shape_seed:
+                puzzle.id * 100 +
+                missingIndex,
+              is_market_piece: true,
+            },
+            {
+              onConflict:
+                "puzzle_id,piece_index",
+            }
+          )
+          .select("*")
+          .single();
+
+      if (
+        pieceError ||
+        !piece
+      ) {
+        return NextResponse.json(
           {
-            puzzle_id: catalog.id,
-            piece_index: missingIndex,
-            shape_seed:
-              puzzle.id * 100 +
-              missingIndex,
-            is_market_piece: true,
+            error:
+              pieceError?.message ||
+              "Piece failed",
           },
           {
-            onConflict:
-              "puzzle_id,piece_index",
+            status: 500,
           }
-        )
-        .select("*")
-        .single();
+        );
+      }
 
-    if (
-      pieceError ||
-      !piece
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            pieceError?.message ||
-            "Piece failed",
-        },
-        {
-          status: 500,
-        }
-      );
-    }
+      if (resetPuzzle) {
+        await admin
+          .from("piece_listings")
+          .update({
+            status: "cancelled",
+          })
+          .eq(
+            "piece_id",
+            piece.id
+          )
+          .eq(
+            "status",
+            "active"
+          );
 
-    const {
-      data: ownership,
-    } =
-      await admin
-        .from("piece_ownership")
-        .select("*")
-        .eq(
-          "piece_id",
-          piece.id
-        )
-        .maybeSingle();
+        await admin
+          .from("piece_ownership")
+          .upsert(
+            {
+              piece_id: piece.id,
+              owner_user_id:
+                ownerProfile.id,
+            },
+            {
+              onConflict:
+                "piece_id",
+            }
+          );
+      }
 
-    if (!ownership) {
-      await admin
-        .from("piece_ownership")
-        .insert({
-          piece_id: piece.id,
-          owner_user_id:
-            ownerProfile.id,
-        });
-    } else if (
-      ownership.owner_user_id !==
-      ownerProfile.id
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "This piece is already owned by a buyer. They must set their resale price.",
-        },
-        {
-          status: 409,
-        }
-      );
-    }
+      const {
+        data: ownership,
+      } =
+        await admin
+          .from("piece_ownership")
+          .select("*")
+          .eq(
+            "piece_id",
+            piece.id
+          )
+          .maybeSingle();
 
-    await admin
-      .from("piece_listings")
-      .update({
-        status: "cancelled",
-      })
-      .eq(
-        "piece_id",
-        piece.id
-      )
-      .eq("status", "active")
-      .neq(
-        "seller_user_id",
+      if (!ownership) {
+        await admin
+          .from("piece_ownership")
+          .insert({
+            piece_id: piece.id,
+            owner_user_id:
+              ownerProfile.id,
+          });
+      } else if (
+        ownership.owner_user_id !==
         ownerProfile.id
-      );
+      ) {
+        skippedPieces.push(
+          missingIndex
+        );
+        continue;
+      }
 
-    const {
-      data: existingListing,
-    } =
-      await admin
-        .from("piece_listings")
-        .select("*")
-        .eq(
-          "piece_id",
-          piece.id
-        )
-        .eq(
-          "seller_user_id",
-          ownerProfile.id
-        )
-        .eq("status", "active")
-        .maybeSingle();
-
-    if (existingListing) {
       await admin
         .from("piece_listings")
         .update({
-          price_cents:
-            Math.round(price * 100),
+          status: "cancelled",
         })
         .eq(
-          "id",
-          existingListing.id
+          "piece_id",
+          piece.id
+        )
+        .eq("status", "active")
+        .neq(
+          "seller_user_id",
+          ownerProfile.id
         );
-    } else {
-      await admin
-        .from("piece_listings")
-        .insert({
-          piece_id: piece.id,
-          seller_user_id:
-            ownerProfile.id,
-          price_cents:
-            Math.round(price * 100),
-          status: "active",
-        });
+
+      const {
+        data: existingListing,
+      } =
+        await admin
+          .from("piece_listings")
+          .select("*")
+          .eq(
+            "piece_id",
+            piece.id
+          )
+          .eq(
+            "seller_user_id",
+            ownerProfile.id
+          )
+          .eq("status", "active")
+          .maybeSingle();
+
+      if (existingListing) {
+        await admin
+          .from("piece_listings")
+          .update({
+            price_cents:
+              Math.round(
+                price * 100
+              ),
+          })
+          .eq(
+            "id",
+            existingListing.id
+          );
+      } else {
+        await admin
+          .from("piece_listings")
+          .insert({
+            piece_id: piece.id,
+            seller_user_id:
+              ownerProfile.id,
+            price_cents:
+              Math.round(
+                price * 100
+              ),
+            status: "active",
+          });
+      }
+
+      updatedPieces.push(
+        missingIndex
+      );
     }
 
     return NextResponse.json({
       ok: true,
       puzzleSlug: puzzle.slug,
-      pieceIndex: missingIndex,
+      pieceIndexes: updatedPieces,
+      skippedPieces,
       price,
     });
   } catch (error) {
