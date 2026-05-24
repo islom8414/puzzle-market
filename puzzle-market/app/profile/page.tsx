@@ -7,25 +7,6 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { cleanPublicName } from "@/lib/public-identity";
 
-type InventoryItem = {
-  id: number;
-  fragment_id: string;
-  title: string;
-  image: string;
-  piece: string;
-  price: number;
-};
-
-type UploadedItem = {
-  id: number;
-  fragment_id: string;
-  title: string;
-  image: string;
-  piece: string;
-  price: number;
-  rarity: string;
-};
-
 type OwnedPiece = {
   pieceId: string;
   pieceIndex: number;
@@ -36,12 +17,6 @@ type OwnedPiece = {
 };
 
 export default function ProfilePage() {
-
-  const [inventory, setInventory] =
-    useState<InventoryItem[]>([]);
-
-  const [uploads, setUploads] =
-    useState<UploadedItem[]>([]);
 
   const [ownedPieces, setOwnedPieces] =
     useState<OwnedPiece[]>([]);
@@ -77,9 +52,6 @@ export default function ProfilePage() {
             "puzzle-username"
           )
         );
-
-      let realWalletLoaded =
-        false;
 
       const {
         data: {
@@ -165,9 +137,6 @@ export default function ProfilePage() {
 
         if (accountData) {
 
-          realWalletLoaded =
-            true;
-
           setBalance(
             accountData
               .balance_cents /
@@ -175,92 +144,6 @@ export default function ProfilePage() {
           );
 
         }
-
-      }
-
-      const inventoryOwners =
-        Array.from(
-          new Set(
-            [
-              savedUser,
-              publicName,
-              user?.email || "",
-              user?.email
-                ?.split("@")[0]
-                ?.replace(
-                  /[^a-zA-Z0-9_-]/g,
-                  ""
-                )
-                ?.slice(0, 40) ||
-                "",
-            ].filter(Boolean)
-          )
-        );
-
-      const {
-        data: walletData,
-      } =
-        await supabase
-          .from("wallets")
-          .select("*")
-          .eq(
-            "username",
-            publicName
-          )
-          .maybeSingle();
-
-      if (
-        walletData &&
-        !realWalletLoaded
-      ) {
-
-        setBalance(
-          walletData.balance
-        );
-
-      }
-
-      const {
-        data: inventoryData,
-      } =
-        await supabase
-          .from("inventory")
-          .select("*")
-          .in(
-            "user_email",
-            inventoryOwners
-          );
-
-      if (inventoryData) {
-
-        setInventory(
-          inventoryData
-        );
-
-      }
-
-      const {
-        data: uploadData,
-      } =
-        await supabase
-          .from("marketplace")
-          .select("*")
-          .in(
-            "seller_email",
-            inventoryOwners
-          )
-          .order(
-            "created_at",
-            {
-              ascending: false,
-            }
-          );
-
-      if (uploadData) {
-
-        setUploads(
-          uploadData
-        );
 
       }
 
@@ -373,38 +256,26 @@ export default function ProfilePage() {
   const totalValue =
     useMemo(() => {
 
-      return inventory.reduce(
+      return ownedPieces.reduce(
         (sum, item) =>
-          sum + item.price,
+          sum + (
+            item.listingPrice ||
+            0
+          ),
         0
       );
 
-    }, [inventory]);
+    }, [ownedPieces]);
 
-  const rarityGlow = (
-    rarity: string
-  ) => {
-
-    if (
-      rarity ===
-      "Legendary"
-    ) {
-
-      return "shadow-[0_0_40px_rgba(255,215,0,0.35)] border-yellow-400/30";
-
-    }
-
-    if (
-      rarity === "Epic"
-    ) {
-
-      return "shadow-[0_0_40px_rgba(168,85,247,0.35)] border-purple-400/30";
-
-    }
-
-    return "shadow-[0_0_40px_rgba(34,211,238,0.25)] border-cyan-400/20";
-
-  };
+  const activeListings =
+    useMemo(
+      () =>
+        ownedPieces.filter(
+          (item) =>
+            item.listingPrice
+        ).length,
+      [ownedPieces]
+    );
 
   return (
 
@@ -513,8 +384,7 @@ export default function ProfilePage() {
             </p>
 
             <h2 className="text-5xl font-black mt-4">
-              {inventory.length +
-                ownedPieces.length}
+              {ownedPieces.length}
             </h2>
 
           </div>
@@ -522,11 +392,11 @@ export default function ProfilePage() {
           <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6 backdrop-blur-xl">
 
             <p className="text-zinc-500 text-sm">
-              Uploaded Fragments
+              Active Listings
             </p>
 
             <h2 className="text-5xl font-black mt-4">
-              {uploads.length}
+              {activeListings}
             </h2>
 
           </div>
@@ -546,7 +416,7 @@ export default function ProfilePage() {
           <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6 backdrop-blur-xl">
 
             <p className="text-zinc-500 text-sm">
-              Inventory Value
+              Listed Value
             </p>
 
             <h2 className="text-5xl font-black mt-4 text-green-400">
@@ -578,8 +448,7 @@ export default function ProfilePage() {
             </Link>
           </div>
 
-          {inventory.length === 0 &&
-            ownedPieces.length === 0 && (
+          {ownedPieces.length === 0 && (
             <div className="mt-8 bg-white/[0.03] border border-white/10 rounded-[30px] p-10 text-center">
               <h3 className="text-3xl font-black">
                 No owned pieces yet
@@ -628,42 +497,6 @@ export default function ProfilePage() {
                       className="bg-cyan-400 text-black font-black px-4 py-2 rounded-xl"
                     >
                       Resell
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {inventory.map((item) => (
-              <div
-                key={item.id}
-                className="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.03]"
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="h-56 w-full object-cover"
-                />
-
-                <div className="p-5">
-                  <p className="text-zinc-500 text-sm">
-                    {item.title}
-                  </p>
-
-                  <h3 className="text-3xl font-black mt-1">
-                    Piece #{item.piece}
-                  </h3>
-
-                  <div className="mt-5 flex items-center justify-between">
-                    <span className="text-cyan-400 text-3xl font-black">
-                      ${item.price}
-                    </span>
-
-                    <Link
-                      href="/sell"
-                      className="bg-cyan-400 text-black font-black px-4 py-2 rounded-xl"
-                    >
-                      Sell
                     </Link>
                   </div>
                 </div>
