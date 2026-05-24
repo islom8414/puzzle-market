@@ -129,7 +129,7 @@ export default function SellPage() {
       price <= 0
     ) {
       alert(
-        "Set a valid resale price"
+        "Write a resale price first"
       );
       return;
     }
@@ -294,6 +294,8 @@ export default function SellPage() {
 
                 <input
                   type="number"
+                  min="1"
+                  step="1"
                   value={
                     prices[piece.pieceId] ||
                     ""
@@ -305,8 +307,8 @@ export default function SellPage() {
                         event.target.value,
                     })
                   }
-                  placeholder="Set resale price..."
-                  className="w-full mt-6 bg-black/50 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400"
+                  placeholder="Write price, example: 5"
+                  className="w-full mt-6 bg-black/80 border border-cyan-400/40 rounded-2xl px-5 py-4 text-xl font-black text-cyan-300 placeholder:text-zinc-500 outline-none focus:border-cyan-300"
                 />
 
                 <button
@@ -315,14 +317,17 @@ export default function SellPage() {
                   }
                   disabled={
                     savingId ===
-                    piece.pieceId
+                    piece.pieceId ||
+                    !prices[piece.pieceId]
                   }
                   className="w-full mt-5 bg-cyan-400 hover:bg-cyan-300 disabled:bg-zinc-700 disabled:text-zinc-400 text-black font-black py-4 rounded-2xl"
                 >
                   {savingId ===
                   piece.pieceId
                     ? "Listing..."
-                    : piece.listingId
+                    : !prices[piece.pieceId]
+                      ? "Enter Price First"
+                      : piece.listingId
                       ? "Update Resale Price"
                       : "List For Resale"}
                 </button>
