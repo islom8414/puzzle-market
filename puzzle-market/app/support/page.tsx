@@ -55,13 +55,47 @@ export default function SupportPage() {
         )
       );
 
-    await supabase
-      .from("chat")
-      .insert({
-        username: "Support Ticket",
-        message:
-          `[${publicName}] ${subject.trim()} - ${details.trim()}`,
-      });
+    const {
+      data: {
+        session,
+      },
+    } =
+      await supabase.auth
+        .getSession();
+
+    const response =
+      await fetch(
+        "/api/chat-messages",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Authorization:
+              `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({
+            username:
+              publicName,
+            message:
+              `[SUPPORT] ${subject.trim()} - ${details.trim()}`,
+          }),
+        }
+      );
+
+    if (!response.ok) {
+      const data =
+        await response.json();
+
+      alert(
+        data.error ||
+        "Support ticket failed"
+      );
+
+      setLoading(false);
+
+      return;
+    }
 
     setSubject("");
     setDetails("");

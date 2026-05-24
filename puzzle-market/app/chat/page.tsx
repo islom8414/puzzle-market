@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { cleanPublicName } from "@/lib/public-identity";
 
 type ChatMessage = {
-  id: number;
+  id: number | string;
   created_at: string;
   username: string;
   message: string;
@@ -39,8 +39,33 @@ export default function ChatPage() {
             table: "chat",
           },
           (payload) => {
+            const row =
+              payload.new as Record<
+                string,
+                string
+              >;
+
             setMessages((current) => [
-              payload.new as ChatMessage,
+              {
+                id:
+                  row.id ||
+                  crypto.randomUUID(),
+                created_at:
+                  row.created_at ||
+                  new Date().toISOString(),
+                username:
+                  row.username ||
+                  row.user_email ||
+                  row.sender ||
+                  row.author ||
+                  "Collector",
+                message:
+                  row.message ||
+                  row.text ||
+                  row.content ||
+                  row.body ||
+                  "",
+              },
               ...current,
             ]);
           }
@@ -82,16 +107,17 @@ export default function ChatPage() {
       setUsername(publicName);
     }
 
-    const { data } =
-      await supabase
-        .from("chat")
-        .select("*")
-        .order("created_at", {
-          ascending: false,
-        })
-        .limit(80);
+    const response =
+      await fetch(
+        "/api/chat-messages"
+      );
 
-    setMessages(data || []);
+    const data =
+      await response.json();
+
+    setMessages(
+      data.messages || []
+    );
     setLoading(false);
   }
 
@@ -120,23 +146,46 @@ export default function ChatPage() {
     const publicName =
       cleanPublicName(username);
 
-    const { error } =
-      await supabase
-        .from("chat")
-        .insert({
-          username: publicName,
-          message: text,
-        });
+    const {
+      data: {
+        session,
+      },
+    } =
+      await supabase.auth
+        .getSession();
 
-    if (error) {
-      alert(
-        "Chat is not ready yet. Check the chat table columns."
+    const response =
+      await fetch(
+        "/api/chat-messages",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Authorization:
+              `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({
+            username: publicName,
+            message: text,
+          }),
+        }
       );
-      console.log(error);
+
+    if (!response.ok) {
+      const data =
+        await response.json();
+
+      alert(
+        data.error ||
+        "Chat send failed"
+      );
+
       return;
     }
 
     setMessage("");
+    loadChat();
   }
 
   return (

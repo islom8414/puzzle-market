@@ -2,13 +2,13 @@ import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-black text-white px-4 md:px-6 py-12">
+    <main className="min-h-screen bg-black text-white px-4 md:px-6 py-12 overflow-hidden">
       <section className="mx-auto max-w-7xl">
         <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.3em]">
           About Puzzle Market
         </p>
 
-        <h1 className="mt-5 max-w-5xl text-5xl md:text-7xl font-black leading-none">
+        <h1 className="mt-5 max-w-5xl text-4xl sm:text-5xl md:text-6xl font-black leading-[0.95]">
           Hidden puzzle pieces with real ownership.
         </h1>
 
@@ -16,7 +16,7 @@ export default function AboutPage() {
           Puzzle Market is a collector marketplace where players assemble hidden images, discover missing pieces, buy the exact missing piece from its current owner, and later resell that piece at their own price.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-5">
           {[
             [
               "Pick A Puzzle",
@@ -33,9 +33,9 @@ export default function AboutPage() {
           ].map(([title, body]) => (
             <div
               key={title}
-              className="rounded-[30px] border border-white/10 bg-white/[0.03] p-7"
+              className="rounded-[28px] border border-white/10 bg-white/[0.03] p-7"
             >
-              <h2 className="text-3xl font-black">
+              <h2 className="text-2xl md:text-3xl font-black">
                 {title}
               </h2>
 
