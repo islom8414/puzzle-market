@@ -72,7 +72,7 @@ export default function LoginPage() {
           provider: "google",
           options: {
             redirectTo:
-              `${window.location.origin}/setup`,
+              "https://puzzle-market.vercel.app/setup",
           },
         });
 

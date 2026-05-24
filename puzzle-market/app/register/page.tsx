@@ -79,7 +79,7 @@ export default function RegisterPage() {
           provider: "google",
           options: {
             redirectTo:
-              `${window.location.origin}/setup`,
+              "https://puzzle-market.vercel.app/setup",
           },
         });
 
