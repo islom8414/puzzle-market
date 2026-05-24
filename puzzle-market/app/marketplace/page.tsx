@@ -12,6 +12,8 @@ type MarketItem = {
 
   seller_email: string;
 
+  seller_user_id?: string;
+
   fragment_id: string;
 
   title: string;
@@ -53,8 +55,8 @@ export default function MarketplacePage() {
   const [pieceFilter, setPieceFilter] =
     useState("");
 
-  const [currentUserNames, setCurrentUserNames] =
-    useState<string[]>([]);
+  const [currentUserId, setCurrentUserId] =
+    useState("");
 
   useEffect(() => {
 
@@ -99,33 +101,8 @@ export default function MarketplacePage() {
     supabase.auth
       .getUser()
       .then(({ data }) => {
-        const email =
-          data.user?.email || "";
-
-        const username =
-          email
-            .split("@")[0]
-            .replace(
-              /[^a-zA-Z0-9_-]/g,
-              ""
-            )
-            .slice(0, 40);
-
-        const saved =
-          localStorage.getItem(
-            "puzzle-username"
-          ) || "";
-
-        setCurrentUserNames(
-          [
-            email,
-            username,
-            saved,
-          ]
-            .filter(Boolean)
-            .map((value) =>
-              value.toLowerCase()
-            )
+        setCurrentUserId(
+          data.user?.id || ""
         );
       });
 
@@ -340,10 +317,10 @@ export default function MarketplacePage() {
   const isOwnListing = (
     fragment: MarketItem
   ) =>
-    currentUserNames.includes(
-      fragment.seller_email
-        .toLowerCase()
-    );
+    !!fragment.seller_user_id &&
+    !!currentUserId &&
+    fragment.seller_user_id ===
+      currentUserId;
 
   async function loadExactMarketplace(
     puzzleSlug: string,

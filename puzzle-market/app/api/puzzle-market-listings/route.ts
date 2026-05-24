@@ -245,6 +245,8 @@ export async function GET(
       listings: [
         {
           id: listing.id,
+          seller_user_id:
+            listing.seller_user_id,
           seller_email:
             seller?.username ||
             seller?.email ||
