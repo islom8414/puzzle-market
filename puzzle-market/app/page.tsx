@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { puzzles } from "@/data/puzzles";
-
 export default function HomePage() {
 
   return (
@@ -149,11 +147,11 @@ export default function HomePage() {
               <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-zinc-950/90 backdrop-blur-xl border border-white/10 rounded-3xl p-6 w-[320px]">
 
                 <p className="text-zinc-500 text-sm">
-                  Latest Legendary Sale
+                  Verified Ownership
                 </p>
 
                 <h3 className="text-3xl font-black mt-3">
-                  Dragon Fantasy
+                  Launch Ready
                 </h3>
 
                 <div className="flex items-center justify-between mt-5">
@@ -165,7 +163,7 @@ export default function HomePage() {
                     </p>
 
                     <h4 className="text-2xl font-black">
-                      #218
+                      Hidden
                     </h4>
 
                   </div>
@@ -173,11 +171,11 @@ export default function HomePage() {
                   <div>
 
                     <p className="text-zinc-500 text-sm">
-                      Sold
+                      Status
                     </p>
 
                     <h4 className="text-cyan-400 text-2xl font-black">
-                      $250
+                      Online
                     </h4>
 
                   </div>
@@ -215,42 +213,21 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {puzzles.map((puzzle) => (
-              <Link
-                key={puzzle.id}
-                href={`/puzzle/${puzzle.slug}`}
-                className="group overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 transition hover:-translate-y-1 hover:border-cyan-400"
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={puzzle.image}
-                    alt={puzzle.title}
-                    className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
-                  />
+          <div className="rounded-3xl border border-white/10 bg-zinc-950/80 p-10 text-center">
+            <h3 className="text-3xl md:text-5xl font-black">
+              New puzzles coming soon
+            </h3>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+            <p className="mx-auto mt-4 max-w-2xl text-zinc-500">
+              The test collections were removed. Real puzzle collections will appear here after the platform owner adds them.
+            </p>
 
-                  <div className="absolute left-4 top-4 rounded-full bg-black/70 px-4 py-2 text-xs font-black text-cyan-400">
-                    {puzzle.rarity}
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-3xl font-black">
-                    {puzzle.title}
-                  </h3>
-
-                  <p className="mt-3 text-sm text-zinc-500">
-                    Open the hidden board, assemble pieces, then unlock the missing market piece.
-                  </p>
-
-                  <div className="mt-6 rounded-2xl bg-cyan-400 py-3 text-center font-black text-black">
-                    Start Puzzle
-                  </div>
-                </div>
-              </Link>
-            ))}
+            <Link
+              href="/marketplace"
+              className="mt-8 inline-flex rounded-2xl bg-cyan-400 px-8 py-4 font-black text-black transition hover:bg-cyan-300"
+            >
+              Open Marketplace
+            </Link>
           </div>
         </div>
       </section>
