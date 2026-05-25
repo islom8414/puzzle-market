@@ -94,12 +94,29 @@ export default function PuzzlePage() {
   const slug =
     String(params.id);
 
-  const puzzle =
+  const foundPuzzle =
     puzzles.find(
       (item) =>
         item.slug === slug ||
         String(item.id) === slug
-    ) || puzzles[0];
+    );
+
+  const puzzle =
+    foundPuzzle || {
+      id: 0,
+      slug,
+      title: "Puzzle Not Available",
+      image: "",
+      price: 0,
+      owner: "Puzzle Market Vault",
+      rarity: "PRIVATE",
+      category: "private",
+      pieces: "0 / 0",
+      views: "0",
+      likes: "0",
+      description:
+        "This test puzzle was removed before launch.",
+    };
 
   const missingIndexes =
     useMemo(
@@ -499,6 +516,40 @@ export default function PuzzlePage() {
     ]);
 
     setSelected(null);
+  }
+
+  if (!foundPuzzle) {
+    return (
+      <main className="min-h-screen bg-black text-white px-4 py-24">
+        <div className="mx-auto max-w-3xl rounded-[28px] border border-white/10 bg-zinc-950 p-8">
+          <Link
+            href="/"
+            className="text-cyan-400 font-black"
+          >
+            Back Home
+          </Link>
+
+          <p className="mt-8 text-xs font-black uppercase tracking-[0.3em] text-cyan-400">
+            Hidden Puzzle Board
+          </p>
+
+          <h1 className="mt-4 text-4xl font-black md:text-6xl">
+            Puzzle removed
+          </h1>
+
+          <p className="mt-4 text-zinc-400">
+            This test collection was cleaned before launch. New real puzzle collections will appear here after the platform owner adds them.
+          </p>
+
+          <Link
+            href="/marketplace"
+            className="mt-8 inline-flex rounded-2xl bg-cyan-400 px-8 py-4 font-black text-black"
+          >
+            Open Marketplace
+          </Link>
+        </div>
+      </main>
+    );
   }
 
   return (
