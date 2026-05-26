@@ -42,11 +42,18 @@ export default function SupportPage() {
 
   const selectedThread =
     useMemo(
-      () =>
-        threads.find(
-          (thread) =>
-            thread.id === selectedId
-        ) || threads[0],
+      () => {
+        if (!selectedId) {
+          return null;
+        }
+
+        return (
+          threads.find(
+            (thread) =>
+              thread.id === selectedId
+          ) || null
+        );
+      },
       [threads, selectedId]
     );
 
@@ -121,6 +128,16 @@ export default function SupportPage() {
   async function sendSupport() {
     const text =
       message.trim();
+    const safeSubject =
+      subject.trim();
+
+    if (
+      isAdmin &&
+      !selectedThread
+    ) {
+      alert("Select a ticket first");
+      return;
+    }
 
     if (text.length < 2) {
       alert("Write a message first");
@@ -129,7 +146,7 @@ export default function SupportPage() {
 
     if (
       !selectedThread &&
-      subject.trim().length < 3
+      safeSubject.length < 3
     ) {
       alert("Write a subject first");
       return;
@@ -156,7 +173,8 @@ export default function SupportPage() {
           body: JSON.stringify({
             threadId:
               selectedThread?.id || "",
-            subject,
+            subject:
+              safeSubject,
             message: text,
           }),
         }
@@ -322,16 +340,27 @@ export default function SupportPage() {
                   }
                 }}
                 placeholder={
-                  isAdmin
+                  isAdmin &&
+                  !selectedThread
+                    ? "Select a ticket first..."
+                    : isAdmin
                     ? "Reply to this user..."
                     : "Write to support..."
                 }
-                className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black px-5 py-4 outline-none focus:border-cyan-400"
+                disabled={
+                  isAdmin &&
+                  !selectedThread
+                }
+                className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black px-5 py-4 outline-none focus:border-cyan-400 disabled:opacity-40"
               />
 
               <button
                 onClick={sendSupport}
-                className="rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300"
+                disabled={
+                  isAdmin &&
+                  !selectedThread
+                }
+                className="rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-40"
               >
                 Send
               </button>
