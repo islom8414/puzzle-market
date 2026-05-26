@@ -5,11 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { puzzles } from "@/data/puzzles";
 import { supabase } from "@/lib/supabase";
 
-const adminEmails = [
-  "islommatchanov888@gmail.com",
-  "ismatchanov08@gmail.com",
-];
-
 type Transaction = {
 
   id?: number;
@@ -137,19 +132,41 @@ export default function AdminPage() {
     async () => {
       const {
         data: {
-          user,
+          session,
         },
       } =
         await supabase.auth
-          .getUser();
+          .getSession();
 
-      const isAdmin =
-        !!user?.email &&
-        adminEmails.includes(
-          user.email
+      if (!session) {
+        setAllowed(false);
+        setLoading(false);
+        return;
+      }
+
+      const statusResponse =
+        await fetch(
+          "/api/admin-status",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${session.access_token}`,
+            },
+          }
         );
 
+      const status =
+        await statusResponse.json();
+
+      const isAdmin =
+        status.allowed === true;
+
       setAllowed(isAdmin);
+
+      if (!isAdmin) {
+        setLoading(false);
+        return;
+      }
 
       const {
         data: txData,
@@ -562,8 +579,9 @@ export default function AdminPage() {
                         {item.title}
                       </h2>
 
-                      <p className="text-zinc-500 mt-4 break-all">
-                        Seller: {localStorage.getItem("puzzle-username") || "ShadowUser"}                     </p>
+                      <p className="text-zinc-500 mt-4">
+                        Seller: Puzzle Market Vault
+                      </p>
 
                     </div>
 

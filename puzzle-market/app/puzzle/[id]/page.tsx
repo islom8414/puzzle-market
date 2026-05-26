@@ -150,11 +150,6 @@ export default function PuzzlePage() {
 
   useEffect(() => {
     async function loadOwnership() {
-      const username =
-        localStorage.getItem(
-          "puzzle-username"
-        );
-
       const {
         data: {
           user,
@@ -163,109 +158,75 @@ export default function PuzzlePage() {
         await supabase.auth
           .getUser();
 
-      const owners =
-        [
-          username || "",
-          user?.email || "",
-          user?.email
-            ?.split("@")[0]
-            ?.replace(
-              /[^a-zA-Z0-9_-]/g,
-              ""
-            )
-            ?.slice(0, 40) ||
-            "",
-        ].filter(Boolean);
-
-      if (owners.length === 0) {
+      if (!user) {
         return;
       }
 
-      const {
-        data,
-      } =
-        await supabase
-          .from("inventory")
-          .select("id")
-          .in(
-            "user_email",
-            owners
-          )
-          .eq(
-            "fragment_id",
-          puzzle.slug
-        );
-
       let exactOwnedCount = 0;
 
-      if (user) {
+      const {
+        data: catalog,
+      } =
+        await supabase
+          .from(
+            "puzzle_catalog"
+          )
+          .select("id")
+          .eq(
+            "slug",
+            puzzle.slug
+          )
+          .maybeSingle();
+
+      if (catalog) {
         const {
-          data: catalog,
+          data: pieces,
         } =
           await supabase
             .from(
-              "puzzle_catalog"
+              "puzzle_pieces"
             )
-            .select("id")
+            .select("id,piece_index")
             .eq(
-              "slug",
-              puzzle.slug
+              "puzzle_id",
+              catalog.id
             )
-            .maybeSingle();
+            .in(
+              "piece_index",
+              missingIndexes
+            );
 
-        if (catalog) {
+        const pieceIds =
+          pieces?.map(
+            (piece) => piece.id
+          ) || [];
+
+        if (pieceIds.length > 0) {
           const {
-            data: pieces,
+            data: ownership,
           } =
             await supabase
               .from(
-                "puzzle_pieces"
+                "piece_ownership"
               )
-              .select("id,piece_index")
-              .eq(
-                "puzzle_id",
-                catalog.id
-              )
+              .select("piece_id")
               .in(
-                "piece_index",
-                missingIndexes
+                "piece_id",
+                pieceIds
+              )
+              .eq(
+                "owner_user_id",
+                user.id
               );
 
-          const pieceIds =
-            pieces?.map(
-              (piece) => piece.id
-            ) || [];
-
-          if (pieceIds.length > 0) {
-            const {
-              data: ownership,
-            } =
-              await supabase
-                .from(
-                  "piece_ownership"
-                )
-                .select("piece_id")
-                .in(
-                  "piece_id",
-                  pieceIds
-                )
-                .eq(
-                  "owner_user_id",
-                  user.id
-                );
-
-            exactOwnedCount =
-              ownership?.length || 0;
-          }
+          exactOwnedCount =
+            ownership?.length || 0;
         }
       }
 
       setOwnedMissingCount(
         Math.min(
-          Math.max(
-            data?.length || 0,
-            exactOwnedCount
-          ),
+          exactOwnedCount,
           missingIndexes.length
         )
       );

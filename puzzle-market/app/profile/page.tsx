@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { supabase } from "@/lib/supabase";
-import { cleanPublicName } from "@/lib/public-identity";
+import { cleanPublicName } from "@/lib/display-name";
 
 type OwnedPiece = {
   pieceId: string;

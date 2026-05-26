@@ -71,35 +71,9 @@ export default function SetupPage() {
 
       }
 
-      const {
-        data: existingWallet,
-      } =
-        await supabase
-          .from("wallets")
-          .select("*")
-          .eq(
-            "username",
-            nickname
-          )
-          .single();
-
-      if (!existingWallet) {
-
-        await supabase
-          .from("wallets")
-          .insert([
-            {
-              username:
-                nickname,
-              balance: 10000,
-            },
-          ]);
-
-      }
-
       localStorage.setItem(
-        "puzzle-balance",
-        "10000"
+        "puzzle-username",
+        nickname
       );
 
       router.push(
@@ -135,11 +109,11 @@ export default function SetupPage() {
         <div className="bg-cyan-400/10 border border-cyan-400/20 rounded-3xl p-5 mt-8">
 
           <p className="text-cyan-400 text-sm font-black uppercase">
-            Starter Wallet
+            Secure Wallet
           </p>
 
           <h2 className="text-5xl font-black mt-3">
-            $10,000
+            Stripe Topup
           </h2>
 
         </div>
@@ -151,7 +125,7 @@ export default function SetupPage() {
               e.target.value
             )
           }
-          placeholder="ShadowUser"
+          placeholder="CollectorName"
           className="w-full mt-10 bg-black/40 border border-white/10 rounded-3xl px-6 py-5 text-lg outline-none focus:border-cyan-400"
         />
 
@@ -162,8 +136,8 @@ export default function SetupPage() {
         >
 
           {loading
-            ? "Creating Wallet..."
-            : "Create Profile"}
+            ? "Saving..."
+            : "Save Profile"}
 
         </button>
 

@@ -1,223 +1,29 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-
-type Fragment = {
-  id: number;
-  fragment_id: string;
-  title: string;
-  image: string;
-  piece: string;
-  price: number;
-  rarity: string;
-  seller_email: string;
-};
+import Link from "next/link";
 
 export default function FragmentPage() {
-
-  const params = useParams();
-
-  const [
-    fragment,
-    setFragment
-  ] =
-  useState<
-    Fragment | null
-  >(null);
-
-  const [
-    loading,
-    setLoading
-  ] =
-  useState(true);
-
-  useEffect(() => {
-
-    // eslint-disable-next-line react-hooks/immutability
-    loadFragment();
-
-  }, []);
-
-  async function loadFragment() {
-
-    const {
-      data
-    } =
-    await supabase
-      .from(
-        "marketplace"
-      )
-      .select("*")
-      .eq(
-        "fragment_id",
-        params.id
-      )
-      .limit(1);
-
-    setFragment(
-      data?.[0] ||
-      null
-    );
-
-    setLoading(
-      false
-    );
-
-  }
-
-  async function buyFragment() {
-
-    if (!fragment) return;
-
-    const {
-      data: {
-        session,
-      },
-    } =
-      await supabase.auth
-        .getSession();
-
-    if (!session) {
-
-      alert("Login required");
-
-      location.href =
-        "/login";
-
-      return;
-
-    }
-
-    const username =
-      localStorage.getItem(
-        "puzzle-username"
-      ) ||
-      session.user.email
-        ?.split("@")[0]
-        ?.replace(
-          /[^a-zA-Z0-9_-]/g,
-          ""
-        )
-        ?.slice(0, 40) ||
-      "PuzzleUser";
-
-    localStorage.setItem(
-      "puzzle-username",
-      username
-    );
-
-    const response =
-      await fetch(
-        "/api/purchase-marketplace",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Authorization:
-              `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            listingId:
-              fragment.id,
-            username,
-          }),
-        }
-      );
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-
-      alert(
-        data.error ||
-        "Purchase failed"
-      );
-
-      return;
-
-    }
-
-    alert("Fragment Purchased!");
-
-    location.href =
-      "/profile";
-
-  }
-
-  if (
-    loading
-  ) {
-
-    return (
-      <div>
-        Loading...
-      </div>
-    );
-
-  }
-
-  if (
-    !fragment
-  ) {
-
-    return (
-      <div>
-        Fragment not found
-      </div>
-    );
-
-  }
-
   return (
+    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
+      <section className="max-w-xl border border-cyan-400/20 rounded-[32px] bg-white/[0.03] p-8 text-center">
+        <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.3em]">
+          Legacy Listing Closed
+        </p>
 
-    <main className="min-h-screen bg-black text-white">
-
-      <div className="max-w-7xl mx-auto p-10">
-
-        <img
-          src={
-            fragment.image
-          }
-          className="rounded-3xl"
-        />
-
-        <h1 className="text-6xl font-black">
-
-          {
-            fragment.title
-          }
-
+        <h1 className="mt-4 text-4xl font-black">
+          This old fragment page is disabled.
         </h1>
 
-        <div>
+        <p className="mt-4 text-zinc-400">
+          Secure piece purchases now happen only through the verified
+          marketplace listing flow.
+        </p>
 
-          Price:
-          $
-          {
-            fragment.price
-          }
-
-        </div>
-
-        <button
-          onClick={
-            buyFragment
-          }
-          className="w-full bg-cyan-400 text-black p-5 rounded-3xl"
+        <Link
+          href="/marketplace"
+          className="mt-8 inline-flex rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black"
         >
-
-          Buy Fragment
-
-        </button>
-
-      </div>
-
+          Open Marketplace
+        </Link>
+      </section>
     </main>
-
   );
-
 }

@@ -112,60 +112,13 @@ export default function MarketplacePage() {
         pieceParam || ""
       );
     } else {
-      // eslint-disable-next-line react-hooks/immutability
       loadMarketplace();
     }
-
-    const channel =
-      supabase
-        .channel(
-          "live-marketplace"
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table:
-              "marketplace",
-          },
-          () => {
-
-            loadMarketplace();
-
-          }
-        )
-        .subscribe();
-
-    return () => {
-
-      supabase.removeChannel(
-        channel
-      );
-
-    };
 
   }, []);
 
   async function loadMarketplace() {
-
-      const { data, error } =
-        await supabase
-          .from("marketplace")
-          .select("*")
-          .order(
-            "created_at",
-            {
-              ascending: false,
-            }
-          );
-
-      if (!error && data) {
-
-        setMarketItems(data);
-
-      }
-
+      setMarketItems([]);
       setLoading(false);
 
     };
@@ -395,11 +348,20 @@ export default function MarketplacePage() {
           username
         );
 
+        if (
+          !fragment.exact_listing ||
+          typeof fragment.id !== "string"
+        ) {
+          alert(
+            "This old listing is no longer available."
+          );
+
+          return;
+        }
+
         const response =
           await fetch(
-            fragment.exact_listing
-              ? "/api/purchase-listing"
-              : "/api/purchase-marketplace",
+            "/api/purchase-listing",
             {
               method: "POST",
               headers: {

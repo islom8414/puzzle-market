@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
-import { cleanPublicName } from "@/lib/public-identity";
+import { cleanPublicName } from "@/lib/display-name";
 
 type ChatMessage = {
   id: number | string;

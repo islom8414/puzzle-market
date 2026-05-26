@@ -3,15 +3,11 @@
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
-import { cleanPublicName } from "@/lib/public-identity";
+import { cleanPublicName } from "@/lib/display-name";
 
 const initialNotifications = [
-  "Marketplace synced successfully",
+  "Verified wallet flow is online",
 ];
-
-type MarketplaceNotification = {
-  title: string;
-};
 
 export default function Navbar() {
 
@@ -25,7 +21,7 @@ export default function Navbar() {
     useState(false);
 
   const [balance, setBalance] =
-    useState(8000);
+    useState(0);
 
   const [username, setUsername] =
     useState("");
@@ -72,83 +68,7 @@ export default function Navbar() {
     // eslint-disable-next-line react-hooks/immutability
     loadUserProfile();
 
-    // eslint-disable-next-line react-hooks/immutability
-    loadNotifications();
-
-    const channel =
-      supabase
-        .channel(
-          "navbar-live"
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table:
-              "marketplace",
-          },
-          (payload) => {
-
-            const item =
-              payload.new as MarketplaceNotification;
-
-            setNotifications(
-              (prev) => [
-                `New fragment listed: ${item.title}`,
-                ...prev,
-              ]
-            );
-
-            setNotificationCount(
-              (prev) =>
-                prev + 1
-            );
-
-          }
-        )
-        .subscribe();
-
-    return () => {
-
-      supabase.removeChannel(
-        channel
-      );
-
-    };
-
   }, []);
-
-  const loadNotifications =
-    async () => {
-
-      const { data } =
-        await supabase
-          .from("marketplace")
-          .select("*")
-          .order(
-            "created_at",
-            {
-              ascending: false,
-            }
-          )
-          .limit(5);
-
-      if (data) {
-
-        const mapped =
-          data.map(
-            (item: MarketplaceNotification) =>
-              `New fragment listed: ${item.title}`
-          );
-
-        setNotifications(
-          mapped
-        );
-
-      }
-
-    };
 
   const loadUserProfile =
     async () => {
