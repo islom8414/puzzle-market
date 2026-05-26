@@ -39,6 +39,10 @@ export default function RegisterPage() {
         await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo:
+              `${window.location.origin}/setup`,
+          },
         });
 
       if (error) {
@@ -49,21 +53,27 @@ export default function RegisterPage() {
 
       } else {
 
-        localStorage.setItem(
-          "puzzle-user",
-          data.user?.email || ""
-        );
+        if (data.session) {
+          localStorage.setItem(
+            "puzzle-user",
+            data.user?.email || ""
+          );
 
-        setMessage(
-          "Account created successfully"
-        );
+          setMessage(
+            "Account created successfully"
+          );
 
-        setTimeout(() => {
+          setTimeout(() => {
 
-          window.location.href =
-            "/setup";
+            window.location.href =
+              "/setup";
 
-        }, 1200);
+          }, 1200);
+        } else {
+          setMessage(
+            "Check your email to confirm your account"
+          );
+        }
 
       }
 
@@ -79,7 +89,7 @@ export default function RegisterPage() {
           provider: "google",
           options: {
             redirectTo:
-              "https://puzzle-market.vercel.app/setup",
+              `${window.location.origin}/setup`,
           },
         });
 
