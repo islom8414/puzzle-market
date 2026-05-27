@@ -141,6 +141,14 @@ export default function AddFundsPage() {
         <div className="flex flex-col gap-4">
 
           <button
+            onClick={() => topup(1)}
+            disabled={loading}
+            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-5 text-3xl font-black"
+          >
+            $1
+          </button>
+
+          <button
             onClick={() => topup(10)}
             disabled={loading}
             className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-5 text-3xl font-black"
