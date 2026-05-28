@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -32,7 +32,10 @@ export default function ProfilePage() {
 
   const [savingUsername, setSavingUsername] =
     useState(false);
-
+  const [subscriptionTier, setSubscriptionTier] =
+    useState("free");
+  const [subscriptionStatus, setSubscriptionStatus] =
+    useState("inactive");
   const [loading, setLoading] =
     useState(true);
 
@@ -78,7 +81,7 @@ export default function ProfilePage() {
             "market_profiles"
           )
           .select(
-            "username"
+            "username, subscription_tier, subscription_status, subscription_current_period_end"
           )
           .eq(
             "id",
@@ -109,8 +112,18 @@ export default function ProfilePage() {
       );
 
       setEditUsername(
-        publicName
-      );
+          publicName
+        );
+
+        setSubscriptionTier(
+          profileData?.subscription_tier ||
+          "free"
+        );
+
+        setSubscriptionStatus(
+          profileData?.subscription_status ||
+          "inactive"
+        );
 
       localStorage.setItem(
         "puzzle-username",
@@ -276,6 +289,18 @@ export default function ProfilePage() {
         ).length,
       [ownedPieces]
     );
+  const planIsActive =
+    subscriptionStatus === "active" ||
+    subscriptionStatus === "trialing";
+
+  const planLabel =
+    subscriptionTier === "creator"
+      ? "CREATOR PLAN"
+      : subscriptionTier === "premium"
+        ? "PREMIUM PLAN"
+        : subscriptionTier === "starter"
+          ? "STARTER PLAN"
+          : "FREE PROFILE";
 
   return (
 
@@ -324,6 +349,12 @@ export default function ProfilePage() {
                   <div className="bg-cyan-400 text-black px-4 py-2 rounded-full text-xs font-black">
                     VERIFIED CREATOR
                   </div>
+              <Link
+                href="/subscribe"
+                className="bg-white text-black px-4 py-2 rounded-full text-xs font-black"
+              >
+                {planIsActive ? planLabel : "UPGRADE PLAN"}
+              </Link>
 
                   <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-full text-xs font-black">
                     LIVE MARKET MEMBER
@@ -513,3 +544,4 @@ export default function ProfilePage() {
   );
 
 }
+

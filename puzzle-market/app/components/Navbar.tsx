@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -220,7 +220,13 @@ export default function Navbar() {
                   className="hover:text-cyan-400 transition"
                 >
                   Profile
+                </a>                <a
+                  href="/subscribe"
+                  className="hover:text-cyan-400 transition"
+                >
+                  Plans
                 </a>
+
 
                 <a
                   href="/sell"
@@ -277,7 +283,7 @@ export default function Navbar() {
                   className="relative w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:border-cyan-400 transition"
                 >
 
-                  🔔
+                  ðŸ””
 
                   {notificationCount >
                     0 && (
@@ -399,7 +405,7 @@ export default function Navbar() {
                 className="xl:hidden w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center"
               >
 
-                {open ? "✕" : "☰"}
+                {open ? "âœ•" : "â˜°"}
 
               </button>
 
@@ -423,7 +429,10 @@ export default function Navbar() {
 
               <a href="/profile">
                 Profile
+              </a>              <a href="/subscribe">
+                Plans
               </a>
+
 
               <a href="/sell">
                 Sell
@@ -469,7 +478,7 @@ export default function Navbar() {
                 }
                 className="text-zinc-500 hover:text-white text-xl"
               >
-                ✕
+                âœ•
               </button>
 
             </div>
@@ -511,3 +520,4 @@ export default function Navbar() {
     </>
   );
 }
+
