@@ -2,6 +2,7 @@
 import Stripe from "stripe";
 
 import { createSupabaseAdmin, getBearerToken } from "@/lib/supabase-admin";
+import { getStripeConfig } from "@/lib/stripe-config";
 
 type PlanTier = "starter" | "premium" | "creator";
 
@@ -32,11 +33,18 @@ function fallbackUsername(email: string, userId: string) {
 }
 
 export async function POST(request: Request) {
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  let stripeConfig;
 
-  if (!stripeSecretKey) {
+  try {
+    stripeConfig = getStripeConfig();
+  } catch (error) {
     return NextResponse.json(
-      { error: "Stripe is not configured" },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Stripe is not configured",
+      },
       { status: 500 }
     );
   }
@@ -44,10 +52,7 @@ export async function POST(request: Request) {
   const token = getBearerToken(request);
 
   if (!token) {
-    return NextResponse.json(
-      { error: "Login required" },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "Login required" }, { status: 401 });
   }
 
   const admin = createSupabaseAdmin();
@@ -57,10 +62,7 @@ export async function POST(request: Request) {
   } = await admin.auth.getUser(token);
 
   if (userError || !user?.email) {
-    return NextResponse.json(
-      { error: "Invalid session" },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "Invalid session" }, { status: 401 });
   }
 
   const body = await request.json().catch(() => null);
@@ -68,10 +70,7 @@ export async function POST(request: Request) {
   const plan = tier ? plans[tier] : null;
 
   if (!tier || !plan) {
-    return NextResponse.json(
-      { error: "Invalid plan" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
   const { data: existingProfile } = await admin
@@ -93,7 +92,8 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      console.error(error);
+      console.error("Profile setup failed:", error);
+
       return NextResponse.json(
         { error: "Profile setup failed" },
         { status: 500 }
@@ -103,45 +103,60 @@ export async function POST(request: Request) {
     profile = data;
   }
 
-  const stripe = new Stripe(stripeSecretKey);
+  const stripe = new Stripe(stripeConfig.secretKey);
   const origin = new URL(request.url).origin;
-
   const customer = profile?.stripe_customer_id || undefined;
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    customer,
-    customer_email: customer ? undefined : user.email,
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: plan.name,
+  let session;
+
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer,
+      customer_email: customer ? undefined : user.email,
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: plan.name,
+            },
+            recurring: {
+              interval: "month",
+            },
+            unit_amount: plan.amount,
           },
-          recurring: {
-            interval: "month",
-          },
-          unit_amount: plan.amount,
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-    metadata: {
-      kind: "subscription",
-      user_id: user.id,
-      tier,
-    },
-    subscription_data: {
+      ],
       metadata: {
         kind: "subscription",
         user_id: user.id,
         tier,
       },
-    },
-    success_url: `${origin}/profile?subscription=success`,
-    cancel_url: `${origin}/subscribe?subscription=cancelled`,
-  });
+      subscription_data: {
+        metadata: {
+          kind: "subscription",
+          user_id: user.id,
+          tier,
+        },
+      },
+      success_url: `${origin}/profile?subscription=success`,
+      cancel_url: `${origin}/subscribe?subscription=cancelled`,
+    });
+  } catch (error) {
+    console.error("Stripe checkout failed:", error);
+
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Stripe checkout failed",
+      },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({ url: session.url });
 }

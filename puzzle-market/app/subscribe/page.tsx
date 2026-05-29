@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { supabase } from "@/lib/supabase";
 
@@ -54,39 +55,63 @@ const plans: Array<{
 ];
 
 export default function SubscribePage() {
+  const router = useRouter();
+
   const [loadingTier, setLoadingTier] =
     useState<PlanTier | null>(null);
 
+  const [errorMessage, setErrorMessage] =
+    useState("");
+
   async function startSubscription(tier: PlanTier) {
     setLoadingTier(tier);
+    setErrorMessage("");
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    if (!session?.access_token) {
-      location.href = "/login";
-      return;
-    }
+      if (!session?.access_token) {
+        router.push("/login");
+        return;
+      }
 
-    const response = await fetch("/api/create-subscription-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({ tier }),
-    });
+      const response = await fetch("/api/create-subscription-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ tier }),
+      });
 
-    const data = await response.json();
+      const text =
+        await response.text();
 
-    if (!response.ok || !data.url) {
-      alert(data.error || "Subscription checkout failed");
+      const data =
+        text
+          ? JSON.parse(text)
+          : {};
+
+      if (!response.ok || !data.url) {
+        throw new Error(
+          data.error ||
+            "Subscription checkout failed"
+        );
+      }
+
+      window.location.assign(data.url);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Subscription checkout failed";
+
+      setErrorMessage(message);
+      alert(message);
       setLoadingTier(null);
-      return;
     }
-
-    location.href = data.url;
   }
 
   return (
@@ -146,6 +171,12 @@ export default function SubscribePage() {
             </article>
           ))}
         </div>
+
+        {errorMessage && (
+          <div className="mt-6 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 font-bold text-red-300">
+            {errorMessage}
+          </div>
+        )}
 
         <div className="mt-8">
           <Link href="/profile" className="text-zinc-400 hover:text-white">

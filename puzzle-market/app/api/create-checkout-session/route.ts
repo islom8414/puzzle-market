@@ -5,6 +5,7 @@ import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
+import { getStripeConfig } from "@/lib/stripe-config";
 
 export async function POST(
   request: Request
@@ -12,25 +13,12 @@ export async function POST(
 
   try {
 
-    const stripeSecretKey =
-      process.env.STRIPE_SECRET_KEY;
-
-    if (!stripeSecretKey) {
-
-      return NextResponse.json(
-        {
-          error: "Stripe key missing",
-        },
-        {
-          status: 500,
-        }
-      );
-
-    }
+    const stripeConfig =
+      getStripeConfig();
 
     const stripe =
       new Stripe(
-        stripeSecretKey
+        stripeConfig.secretKey
       );
 
     const body =

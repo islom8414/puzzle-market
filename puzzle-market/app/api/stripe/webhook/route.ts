@@ -2,6 +2,10 @@
 import Stripe from "stripe";
 
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import {
+  assertStripeEventMode,
+  getStripeConfig,
+} from "@/lib/stripe-config";
 
 type SubscriptionTier = "starter" | "premium" | "creator";
 
@@ -74,12 +78,26 @@ async function syncSubscription(
 }
 
 export async function POST(request: Request) {
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  let stripeConfig;
 
-  if (!stripeSecretKey || !webhookSecret) {
+  try {
+    stripeConfig = getStripeConfig();
+  } catch (error) {
     return NextResponse.json(
-      { error: "Stripe webhook not configured" },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Stripe webhook not configured",
+      },
+      { status: 500 }
+    );
+  }
+
+  if (!webhookSecret) {
+    return NextResponse.json(
+      { error: "Stripe webhook secret is missing" },
       { status: 500 }
     );
   }
@@ -93,7 +111,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const stripe = new Stripe(stripeSecretKey);
+  const stripe = new Stripe(stripeConfig.secretKey);
   let event: Stripe.Event;
 
   try {
@@ -101,6 +119,11 @@ export async function POST(request: Request) {
       await request.text(),
       signature,
       webhookSecret
+    );
+
+    assertStripeEventMode(
+      event.livemode,
+      stripeConfig.mode
     );
   } catch (error) {
     console.error(error);
