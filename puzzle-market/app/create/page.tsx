@@ -5,6 +5,8 @@ import Link from "next/link";
 
 import { supabase } from "@/lib/supabase";
 
+const ADMIN_EMAIL = "islommatchanov888@gmail.com";
+
 export default function CreatePage() {
   const [loading, setLoading] = useState(true);
   const [allowed, setAllowed] = useState(false);
@@ -33,7 +35,14 @@ export default function CreatePage() {
       data?.subscription_status === "active" ||
       data?.subscription_status === "trialing";
 
-    setAllowed(active && data?.subscription_tier === "creator");
+    const isAdmin =
+      session.user.email?.toLowerCase() === ADMIN_EMAIL;
+
+    setAllowed(
+      isAdmin ||
+        (active && data?.subscription_tier === "creator")
+    );
+
     setLoading(false);
   }
 
