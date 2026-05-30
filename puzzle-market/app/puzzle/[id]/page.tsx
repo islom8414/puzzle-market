@@ -28,6 +28,15 @@ type SavedProgress = {
   tray: number[];
 };
 
+type CatalogPuzzle = {
+  title: string;
+  image_url: string;
+  rows: number;
+  columns: number;
+  missing_piece_index: number | null;
+  rarity: string | null;
+};
+
 const defaultRows = 5;
 const defaultColumns = 5;
 const pieceSize = 66;
@@ -98,28 +107,35 @@ export default function PuzzlePage() {
     String(params.id);
 
   const [catalogPuzzle, setCatalogPuzzle] =
-    useState<{
-      title: string;
-      image_url: string;
-      rows: number;
-      columns: number;
-      missing_piece_index: number | null;
-      rarity: string | null;
-    } | null>(null);
+    useState<CatalogPuzzle | null>(null);
+
+  const [catalogLoading, setCatalogLoading] =
+    useState(true);
 
   useEffect(() => {
     async function loadCatalog() {
-      const { data } =
-        await supabase
-          .from("puzzle_catalog")
-          .select(
-            "title,image_url,rows,columns,missing_piece_index,rarity"
-          )
-          .eq("slug", slug)
-          .maybeSingle();
+      setCatalogLoading(true);
 
-      if (data) {
-        setCatalogPuzzle(data);
+      try {
+        const response =
+          await fetch(
+            `/api/puzzle/${encodeURIComponent(slug)}`
+          );
+
+        const payload =
+          (await response.json()) as {
+            puzzle?: CatalogPuzzle;
+          };
+
+        if (response.ok && payload.puzzle) {
+          setCatalogPuzzle(payload.puzzle);
+        } else {
+          setCatalogPuzzle(null);
+        }
+      } catch {
+        setCatalogPuzzle(null);
+      } finally {
+        setCatalogLoading(false);
       }
     }
 
@@ -153,7 +169,9 @@ export default function PuzzlePage() {
             catalogPuzzle.image_url,
           price: 0,
           owner: "Puzzle Market Vault",
-          rarity: "Legendary",
+          rarity:
+            catalogPuzzle.rarity ||
+            "Rare",
           category: "official",
           pieces: `${totalPieces} / ${totalPieces}`,
           views: "0",
@@ -558,7 +576,18 @@ export default function PuzzlePage() {
     setSelected(null);
   }
 
-  if (!foundPuzzle) {
+  const hasPlayablePuzzle =
+    !!foundPuzzle || !!catalogPuzzle;
+
+  if (catalogLoading) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        Loading puzzle board...
+      </main>
+    );
+  }
+
+  if (!hasPlayablePuzzle || !puzzle.image) {
     return (
       <main className="min-h-screen bg-black text-white px-4 py-24">
         <div className="mx-auto max-w-3xl rounded-[28px] border border-white/10 bg-zinc-950 p-8">
@@ -570,22 +599,22 @@ export default function PuzzlePage() {
           </Link>
 
           <p className="mt-8 text-xs font-black uppercase tracking-[0.3em] text-cyan-400">
-            Hidden Puzzle Board
+            Puzzle Board
           </p>
 
           <h1 className="mt-4 text-4xl font-black md:text-6xl">
-            Puzzle removed
+            Puzzle not found
           </h1>
 
           <p className="mt-4 text-zinc-400">
-            This test collection was cleaned before launch. New real puzzle collections will appear here after the platform owner adds them.
+            This puzzle is not in the catalog yet. Choose another collection on the homepage.
           </p>
 
           <Link
-            href="/marketplace"
+            href="/"
             className="mt-8 inline-flex rounded-2xl bg-cyan-400 px-8 py-4 font-black text-black"
           >
-            Open Marketplace
+            Choose A Puzzle
           </Link>
         </div>
       </main>
@@ -605,7 +634,7 @@ export default function PuzzlePage() {
             </Link>
 
             <p className="text-cyan-400 text-xs tracking-[0.3em] uppercase font-black mt-6">
-              Hidden Puzzle Board
+              Assemble The Puzzle
             </p>
 
             <h1 className="text-4xl md:text-6xl font-black mt-2 leading-none">
@@ -613,7 +642,7 @@ export default function PuzzlePage() {
             </h1>
 
             <p className="text-zinc-400 mt-3 max-w-2xl">
-              Choose a piece, then choose a cell. Pieces snap perfectly into the grid and can be swapped anytime.
+              Place all pieces on the board. One cell stays missing — buy that exact fragment on the marketplace to complete the image.
             </p>
           </div>
 
@@ -658,12 +687,18 @@ export default function PuzzlePage() {
             </div>
 
             {lockedMissingIndexes.length > 0 && (
-              <Link
-                href={`/marketplace?puzzle=${puzzle.slug}&piece=${lockedMissingIndexes[0]}`}
-                className="mt-5 flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
-              >
-                Buy Missing Piece
-              </Link>
+              <div className="mt-5 space-y-3">
+                <p className="text-sm text-zinc-400">
+                  Missing piece #{lockedMissingIndexes[0] + 1} is marked in red on the board.
+                </p>
+
+                <Link
+                  href={`/marketplace?puzzle=${encodeURIComponent(puzzle.slug)}&piece=${lockedMissingIndexes[0]}`}
+                  className="flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
+                >
+                  Buy Missing Piece
+                </Link>
+              </div>
             )}
           </aside>
 

@@ -91,19 +91,12 @@ export function HomePuzzleGrid() {
                 {card.title}
               </h3>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-6">
                 <Link
                   href={`/puzzle/${card.slug}`}
-                  className="rounded-2xl bg-cyan-400 px-5 py-3 font-black text-black"
+                  className="inline-flex rounded-2xl bg-cyan-400 px-5 py-3 font-black text-black"
                 >
-                  Play
-                </Link>
-
-                <Link
-                  href={`/marketplace?puzzle=${encodeURIComponent(card.slug)}`}
-                  className="rounded-2xl border border-white/15 px-5 py-3 font-black"
-                >
-                  Buy Pieces
+                  Play — Assemble Puzzle
                 </Link>
               </div>
             </div>
