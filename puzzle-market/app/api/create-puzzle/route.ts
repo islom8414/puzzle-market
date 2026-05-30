@@ -111,6 +111,18 @@ export async function POST(
     const image =
       formData.get("image");
 
+    const priceValue = Number(
+      formData.get("price")
+    );
+
+    const priceCents =
+      Number.isFinite(priceValue) &&
+      priceValue > 0
+        ? Math.round(
+            priceValue * 100
+          )
+        : 10_000;
+
     if (!title) {
       return NextResponse.json(
         { error: "Puzzle title required" },
@@ -210,12 +222,14 @@ export async function POST(
     }));
 
     const {
+      data: insertedPieces,
       error: piecesError,
     } = await admin
       .from("puzzle_pieces")
-      .insert(pieces);
+      .insert(pieces)
+      .select("id, piece_index");
 
-    if (piecesError) {
+    if (piecesError || !insertedPieces) {
       await admin
         .from("puzzle_catalog")
         .delete()
@@ -227,16 +241,94 @@ export async function POST(
 
       return NextResponse.json(
         {
-          error: piecesError.message,
+          error:
+            piecesError?.message ||
+            "Pieces insert failed",
         },
         { status: 500 }
       );
+    }
+
+    const fallbackUsername =
+      user.email
+        ?.split("@")[0]
+        ?.replace(
+          /[^a-zA-Z0-9_-]/g,
+          ""
+        )
+        ?.slice(0, 40) ||
+      "creator";
+
+    if (!user.email) {
+      return NextResponse.json(
+        { error: "User email required" },
+        { status: 400 }
+      );
+    }
+
+    const {
+      error: profileError,
+    } = await admin
+      .from("market_profiles")
+      .upsert(
+        {
+          id: user.id,
+          email: user.email,
+          username: fallbackUsername,
+        },
+        { onConflict: "id" }
+      );
+
+    if (profileError) {
+      return NextResponse.json(
+        {
+          error: profileError.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    for (const piece of insertedPieces) {
+      await admin
+        .from("piece_ownership")
+        .upsert(
+          {
+            piece_id: piece.id,
+            owner_user_id: user.id,
+          },
+          {
+            onConflict: "piece_id",
+          }
+        );
+
+      const {
+        data: existingListing,
+      } = await admin
+        .from("piece_listings")
+        .select("id")
+        .eq("piece_id", piece.id)
+        .eq("status", "active")
+        .maybeSingle();
+
+      if (!existingListing) {
+        await admin
+          .from("piece_listings")
+          .insert({
+            piece_id: piece.id,
+            seller_user_id: user.id,
+            price_cents: priceCents,
+            status: "active",
+          });
+      }
     }
 
     return NextResponse.json({
       ok: true,
       puzzle,
       imageUrl,
+      listingsCreated:
+        insertedPieces.length,
+      priceCents,
     });
   } catch (error) {
     return NextResponse.json(

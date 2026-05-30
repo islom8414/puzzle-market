@@ -28,14 +28,13 @@ type SavedProgress = {
   tray: number[];
 };
 
-const rows = 5;
-const columns = 5;
-const totalPieces =
-  rows * columns;
+const defaultRows = 5;
+const defaultColumns = 5;
 const pieceSize = 66;
 
 function getMissingIndexes(
-  puzzleId: number
+  puzzleId: number,
+  totalPieces: number
 ) {
   const first =
     (puzzleId * 7) %
@@ -50,7 +49,9 @@ function getMissingIndexes(
     : [first];
 }
 
-function shuffledPieces() {
+function shuffledPieces(
+  totalPieces: number
+) {
   return Array.from(
     {
       length: totalPieces,
@@ -67,7 +68,9 @@ function shuffledPieces() {
 
 function pieceStyle(
   image: string,
-  piece: number
+  piece: number,
+  rows: number,
+  columns: number
 ) {
   const col =
     piece % columns;
@@ -94,6 +97,33 @@ export default function PuzzlePage() {
   const slug =
     String(params.id);
 
+  const [catalogPuzzle, setCatalogPuzzle] =
+    useState<{
+      title: string;
+      image_url: string;
+      rows: number;
+      columns: number;
+    } | null>(null);
+
+  useEffect(() => {
+    async function loadCatalog() {
+      const { data } =
+        await supabase
+          .from("puzzle_catalog")
+          .select(
+            "title,image_url,rows,columns"
+          )
+          .eq("slug", slug)
+          .maybeSingle();
+
+      if (data) {
+        setCatalogPuzzle(data);
+      }
+    }
+
+    loadCatalog();
+  }, [slug]);
+
   const foundPuzzle =
     puzzles.find(
       (item) =>
@@ -101,31 +131,68 @@ export default function PuzzlePage() {
         String(item.id) === slug
     );
 
+  const rows =
+    catalogPuzzle?.rows || defaultRows;
+
+  const columns =
+    catalogPuzzle?.columns ||
+    defaultColumns;
+
+  const totalPieces =
+    rows * columns;
+
   const puzzle =
-    foundPuzzle || {
-      id: 0,
-      slug,
-      title: "Puzzle Not Available",
-      image: "",
-      price: 0,
-      owner: "Puzzle Market Vault",
-      rarity: "PRIVATE",
-      category: "private",
-      pieces: "0 / 0",
-      views: "0",
-      likes: "0",
-      description:
-        "This test puzzle was removed before launch.",
-    };
+    catalogPuzzle
+      ? {
+          id: 1,
+          slug,
+          title: catalogPuzzle.title,
+          image:
+            catalogPuzzle.image_url,
+          price: 0,
+          owner: "Puzzle Market Vault",
+          rarity: "Legendary",
+          category: "official",
+          pieces: `${totalPieces} / ${totalPieces}`,
+          views: "0",
+          likes: "0",
+          description:
+            "Official uploaded puzzle collection.",
+        }
+      : foundPuzzle || {
+          id: 0,
+          slug,
+          title: "Puzzle Not Available",
+          image: "",
+          price: 0,
+          owner: "Puzzle Market Vault",
+          rarity: "PRIVATE",
+          category: "private",
+          pieces: "0 / 0",
+          views: "0",
+          likes: "0",
+          description:
+            "This puzzle was not found in the catalog.",
+        };
 
   const missingIndexes =
-    useMemo(
-      () =>
-        getMissingIndexes(
-          Number(puzzle.id)
-        ),
-      [puzzle.id]
-    );
+    useMemo(() => {
+      if (catalogPuzzle) {
+        return Array.from(
+          { length: totalPieces },
+          (_, index) => index
+        );
+      }
+
+      return getMissingIndexes(
+        Number(puzzle.id),
+        totalPieces
+      );
+    }, [
+      catalogPuzzle,
+      puzzle.id,
+      totalPieces,
+    ]);
 
   const storageKey =
     `puzzle-progress-${puzzle.slug}`;
@@ -136,9 +203,18 @@ export default function PuzzlePage() {
     );
 
   const [tray, setTray] =
-    useState<number[]>(
-      shuffledPieces
+    useState<number[]>(() =>
+      shuffledPieces(totalPieces)
     );
+
+  useEffect(() => {
+    setBoard(
+      Array(totalPieces).fill(null)
+    );
+    setTray(
+      shuffledPieces(totalPieces)
+    );
+  }, [slug, totalPieces]);
 
   const [selected, setSelected] =
     useState<Selection | null>(
@@ -253,7 +329,7 @@ export default function PuzzlePage() {
       setBoard(
         Array(totalPieces).fill(null)
       );
-      setTray(shuffledPieces());
+      setTray(shuffledPieces(totalPieces));
       return;
     }
 
@@ -276,7 +352,7 @@ export default function PuzzlePage() {
       setBoard(
         Array(totalPieces).fill(null)
       );
-      setTray(shuffledPieces());
+      setTray(shuffledPieces(totalPieces));
     }
   }, [storageKey]);
 
@@ -319,7 +395,7 @@ export default function PuzzlePage() {
           );
 
         const restoredPieces =
-          shuffledPieces().filter(
+          shuffledPieces(totalPieces).filter(
             (piece) =>
               !lockedSet.has(piece) &&
               !used.has(piece) &&
@@ -372,7 +448,7 @@ export default function PuzzlePage() {
     );
 
     setTray(
-      shuffledPieces().filter(
+      shuffledPieces(totalPieces).filter(
         (piece) =>
           !lockedMissingIndexes.includes(
             piece
@@ -644,7 +720,9 @@ export default function PuzzlePage() {
                           className={`absolute inset-0 bg-cover ${correct ? "outline outline-2 outline-green-400/70" : ""}`}
                           style={pieceStyle(
                             puzzle.image,
-                            piece
+                            piece,
+                            rows,
+                            columns
                           )}
                         />
                       )}
@@ -681,7 +759,9 @@ export default function PuzzlePage() {
                         className={`border border-white/30 bg-cover shadow-[0_8px_14px_rgba(0,0,0,0.45)] ${selectedPiece ? "ring-2 ring-cyan-400" : ""}`}
                         style={pieceStyle(
                           puzzle.image,
-                          piece
+                          piece,
+                          rows,
+                          columns
                         )}
                       />
                     );

@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { HomePuzzleGrid } from "@/components/home-puzzle-grid";
+
 export default function HomePage() {
 
   return (
@@ -213,22 +215,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-zinc-950/80 p-10 text-center">
-            <h3 className="text-3xl md:text-5xl font-black">
-              New puzzles coming soon
-            </h3>
-
-            <p className="mx-auto mt-4 max-w-2xl text-zinc-500">
-              The test collections were removed. Real puzzle collections will appear here after the platform owner adds them.
-            </p>
-
-            <Link
-              href="/marketplace"
-              className="mt-8 inline-flex rounded-2xl bg-cyan-400 px-8 py-4 font-black text-black transition hover:bg-cyan-300"
-            >
-              Open Marketplace
-            </Link>
-          </div>
+          <HomePuzzleGrid />
         </div>
       </section>
 

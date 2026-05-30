@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 
-import { puzzles } from "@/data/puzzles";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import {
   platformOwnerEmails,
@@ -9,9 +8,6 @@ import {
 
 const platformOwnerEmail =
   platformOwnerEmails[0];
-
-const rows = 5;
-const columns = 5;
 
 type PieceListingRow = {
   id: string;
@@ -33,21 +29,20 @@ export async function GET(
       searchParams.get("puzzle") || "";
 
     const pieceParam =
-      searchParams.get("piece") || "";
+      searchParams.get("piece");
 
-    const pieceIndex =
-      Number(pieceParam);
-
-    const puzzle =
-      puzzles.find(
-        (item) =>
-          item.slug === puzzleSlug
+    const hasPieceFilter =
+      pieceParam !== null &&
+      pieceParam.trim() !== "" &&
+      Number.isInteger(
+        Number(pieceParam)
       );
 
-    if (
-      !puzzle ||
-      !Number.isInteger(pieceIndex)
-    ) {
+    const pieceIndex = hasPieceFilter
+      ? Number(pieceParam)
+      : NaN;
+
+    if (!puzzleSlug) {
       return NextResponse.json({
         listings: [],
       });
@@ -55,6 +50,130 @@ export async function GET(
 
     const admin =
       createSupabaseAdmin();
+
+    const {
+      data: catalog,
+      error: catalogError,
+    } =
+      await admin
+        .from("puzzle_catalog")
+        .select("*")
+        .eq("slug", puzzleSlug)
+        .maybeSingle();
+
+    if (
+      catalogError ||
+      !catalog
+    ) {
+      return NextResponse.json({
+        listings: [],
+      });
+    }
+
+    if (!hasPieceFilter) {
+      const { data: pieces } =
+        await admin
+          .from("puzzle_pieces")
+          .select("id, piece_index")
+          .eq(
+            "puzzle_id",
+            catalog.id
+          );
+
+      const pieceIds =
+        pieces?.map(
+          (item) => item.id
+        ) || [];
+
+      if (pieceIds.length === 0) {
+        return NextResponse.json({
+          listings: [],
+        });
+      }
+
+      const { data: listings } =
+        await admin
+          .from("piece_listings")
+          .select(
+            "id, price_cents, created_at, seller_user_id, piece_id"
+          )
+          .eq("status", "active")
+          .in("piece_id", pieceIds);
+
+      const pieceMap = new Map(
+        (pieces || []).map(
+          (item) => [item.id, item]
+        )
+      );
+
+      const sellerIds = [
+        ...new Set(
+          (listings || []).map(
+            (item) =>
+              item.seller_user_id
+          )
+        ),
+      ];
+
+      const { data: sellers } =
+        await admin
+          .from("market_profiles")
+          .select(
+            "id,email,username"
+          )
+          .in("id", sellerIds);
+
+      const sellerMap = new Map(
+        (sellers || []).map(
+          (seller) => [
+            seller.id,
+            seller,
+          ]
+        )
+      );
+
+      const mapped = (listings || []).map(
+        (listing) => {
+          const piece =
+            pieceMap.get(
+              listing.piece_id
+            );
+
+          return {
+            id: listing.id,
+            seller_user_id:
+              listing.seller_user_id,
+            seller_email:
+              publicOwnerName(
+                sellerMap.get(
+                  listing.seller_user_id
+                )
+              ),
+            fragment_id:
+              catalog.slug,
+            title: catalog.title,
+            image: catalog.image_url,
+            piece: String(
+              piece?.piece_index ?? 0
+            ),
+            price:
+              listing.price_cents /
+              100,
+            rarity: "Legendary",
+            created_at:
+              listing.created_at,
+            exact_listing: true,
+            puzzle_rows: catalog.rows,
+            puzzle_columns:
+              catalog.columns,
+          };
+        }
+      );
+
+      return NextResponse.json({
+        listings: mapped,
+      });
+    }
 
     const {
       data: ownerProfile,
@@ -77,44 +196,6 @@ export async function GET(
     }
 
     const {
-      data: catalog,
-      error: catalogError,
-    } =
-      await admin
-        .from("puzzle_catalog")
-        .upsert(
-          {
-            slug: puzzle.slug,
-            title: puzzle.title,
-            image_url: puzzle.image,
-            rows,
-            columns,
-            missing_piece_count: 1,
-          },
-          {
-            onConflict: "slug",
-          }
-        )
-        .select("*")
-        .single();
-
-    if (
-      catalogError ||
-      !catalog
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            catalogError?.message ||
-            "Puzzle catalog failed",
-        },
-        {
-          status: 500,
-        }
-      );
-    }
-
-    const {
       data: piece,
       error: pieceError,
     } =
@@ -125,8 +206,7 @@ export async function GET(
             puzzle_id: catalog.id,
             piece_index: pieceIndex,
             shape_seed:
-              puzzle.id * 100 +
-              pieceIndex,
+              pieceIndex * 100 + 7,
             is_market_piece: true,
           },
           {
@@ -215,8 +295,7 @@ export async function GET(
             piece_id: piece.id,
             seller_user_id:
               ownerProfile.id,
-            price_cents:
-              puzzle.price * 100,
+            price_cents: 10_000,
             status: "active",
           })
           .select("*")
@@ -255,13 +334,13 @@ export async function GET(
             publicOwnerName(
               seller
             ),
-          fragment_id: puzzle.slug,
-          title: puzzle.title,
-          image: puzzle.image,
+          fragment_id: catalog.slug,
+          title: catalog.title,
+          image: catalog.image_url,
           piece: String(pieceIndex),
           price:
             listing.price_cents / 100,
-          rarity: puzzle.rarity,
+          rarity: "Legendary",
           created_at:
             listing.created_at,
           exact_listing: true,

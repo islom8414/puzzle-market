@@ -30,6 +30,10 @@ type MarketItem = {
 
   exact_listing?: boolean;
 
+  puzzle_rows?: number;
+
+  puzzle_columns?: number;
+
 };
 
 const puzzleColumns = 5;
@@ -118,10 +122,27 @@ export default function MarketplacePage() {
   }, []);
 
   async function loadMarketplace() {
-      setMarketItems([]);
-      setLoading(false);
+    setLoading(true);
 
-    };
+    try {
+      const response =
+        await fetch(
+          "/api/marketplace-listings"
+        );
+
+      const data =
+        await response.json();
+
+      setMarketItems(
+        data.listings || []
+      );
+    } catch (error) {
+      console.error(error);
+      setMarketItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const filteredFragments =
     useMemo(() => {
@@ -231,9 +252,21 @@ export default function MarketplacePage() {
         fragment
       );
 
-    if (!puzzle) {
+    const image =
+      fragment.image ||
+      puzzle?.image;
+
+    if (!image) {
       return null;
     }
+
+    const columns =
+      fragment.puzzle_columns ||
+      puzzleColumns;
+
+    const rows =
+      fragment.puzzle_rows ||
+      puzzleRows;
 
     const rawPiece =
       Number(fragment.piece);
@@ -241,29 +274,29 @@ export default function MarketplacePage() {
     const piece =
       Number.isFinite(rawPiece)
         ? ((rawPiece %
-            (puzzleRows *
-              puzzleColumns)) +
-            (puzzleRows *
-              puzzleColumns)) %
-          (puzzleRows *
-            puzzleColumns)
+            (rows * columns)) +
+            (rows * columns)) %
+          (rows * columns)
         : 0;
 
-    const col =
-      piece % puzzleColumns;
+    const col = piece % columns;
 
-    const row =
-      Math.floor(
-        piece / puzzleColumns
-      );
+    const row = Math.floor(
+      piece / columns
+    );
+
+    const colDenominator =
+      columns > 1 ? columns - 1 : 1;
+
+    const rowDenominator =
+      rows > 1 ? rows - 1 : 1;
 
     return {
-      backgroundImage:
-        `url(${puzzle.image})`,
+      backgroundImage: `url(${image})`,
       backgroundSize:
-        `${puzzleColumns * 100}% ${puzzleRows * 100}%`,
+        `${columns * 100}% ${rows * 100}%`,
       backgroundPosition:
-        `${(col / (puzzleColumns - 1)) * 100}% ${(row / (puzzleRows - 1)) * 100}%`,
+        `${(col / colDenominator) * 100}% ${(row / rowDenominator) * 100}%`,
     };
   };
 
@@ -284,8 +317,11 @@ export default function MarketplacePage() {
       const params =
         new URLSearchParams({
           puzzle: puzzleSlug,
-          piece,
         });
+
+      if (piece.trim()) {
+        params.set("piece", piece);
+      }
 
       const response =
         await fetch(

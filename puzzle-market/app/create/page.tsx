@@ -14,6 +14,8 @@ export default function CreatePage() {
   const [price, setPrice] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [message, setMessage] = useState("");
+  const [uploadedSlug, setUploadedSlug] =
+    useState("");
 
   useEffect(() => {
     checkCreatorAccess();
@@ -47,6 +49,7 @@ export default function CreatePage() {
 
   async function savePuzzle() {
     setMessage("");
+    setUploadedSlug("");
 
     if (!title.trim()) {
       setMessage("Enter puzzle title.");
@@ -90,8 +93,10 @@ export default function CreatePage() {
       );
 
       const rawBody = await response.text();
-      let payload: { error?: string } | null =
-        null;
+      let payload: {
+        error?: string;
+        puzzle?: { slug?: string };
+      } | null = null;
 
       if (rawBody) {
         try {
@@ -116,10 +121,42 @@ export default function CreatePage() {
         );
       }
 
+      const slug =
+        payload?.puzzle?.slug || "";
+
+      if (slug) {
+        setUploadedSlug(slug);
+
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (session?.access_token) {
+          await fetch(
+            "/api/backfill-puzzle-listings",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${session.access_token}`,
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify({
+                price: Number(price) || 100,
+              }),
+            }
+          );
+        }
+      }
+
       setTitle("");
       setPrice("");
       setImage(null);
-      setMessage("Puzzle uploaded successfully.");
+      setMessage(
+        slug
+          ? "Puzzle uploaded successfully. It is now visible on the homepage and marketplace."
+          : "Puzzle uploaded successfully."
+      );
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -225,6 +262,29 @@ export default function CreatePage() {
           {message && (
             <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 font-bold">
               {message}
+
+              {uploadedSlug && (
+                <div className="mt-4 flex flex-wrap gap-3 text-sm font-black">
+                  <Link
+                    href="/"
+                    className="rounded-xl bg-cyan-400 px-4 py-2 text-black"
+                  >
+                    View Homepage
+                  </Link>
+                  <Link
+                    href={`/puzzle/${uploadedSlug}`}
+                    className="rounded-xl border border-white/15 px-4 py-2"
+                  >
+                    Open Puzzle
+                  </Link>
+                  <Link
+                    href={`/marketplace?puzzle=${encodeURIComponent(uploadedSlug)}`}
+                    className="rounded-xl border border-white/15 px-4 py-2"
+                  >
+                    Marketplace
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>
