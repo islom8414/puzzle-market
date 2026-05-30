@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { PasswordInput } from "@/components/password-input";
+import { cleanPublicName } from "@/lib/display-name";
 import { supabase } from "@/lib/supabase";
 
 export default function RegisterPage() {
@@ -9,6 +11,9 @@ export default function RegisterPage() {
     useState("");
 
   const [password, setPassword] =
+    useState("");
+
+  const [username, setUsername] =
     useState("");
 
   const [loading, setLoading] =
@@ -20,14 +25,19 @@ export default function RegisterPage() {
   const handleRegister =
     async () => {
 
-      if (!email || !password) {
+      const cleanUsername =
+        cleanPublicName(username);
 
+      if (
+        !email ||
+        !password ||
+        cleanUsername.length < 3
+      ) {
         setMessage(
-          "Fill all fields"
+          "Fill email, password, and username (3+ characters)"
         );
 
         return;
-
       }
 
       setLoading(true);
@@ -53,21 +63,32 @@ export default function RegisterPage() {
 
       } else {
 
-        if (data.session) {
+        if (data.session && data.user) {
           localStorage.setItem(
             "puzzle-user",
-            data.user?.email || ""
+            data.user.email || ""
           );
+
+          localStorage.setItem(
+            "puzzle-username",
+            cleanUsername
+          );
+
+          await supabase
+            .from("market_profiles")
+            .upsert({
+              id: data.user.id,
+              email: data.user.email || email,
+              username: cleanUsername,
+            });
 
           setMessage(
             "Account created successfully"
           );
 
           setTimeout(() => {
-
             window.location.href =
-              "/setup";
-
+              "/profile";
           }, 1200);
         } else {
           setMessage(
@@ -134,13 +155,17 @@ export default function RegisterPage() {
           />
 
           <input
-            type="password"
-            placeholder="Password"
-            value={password}
+            value={username}
             onChange={(e) =>
-              setPassword(e.target.value)
+              setUsername(e.target.value)
             }
+            placeholder="Username"
             className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400"
+          />
+
+          <PasswordInput
+            value={password}
+            onChange={setPassword}
           />
 
           <button

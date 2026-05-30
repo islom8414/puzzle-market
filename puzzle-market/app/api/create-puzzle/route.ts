@@ -4,6 +4,11 @@ import {
   hasCreatorUploadAccess,
 } from "@/lib/market-access";
 import {
+  normalizeRarity,
+  pickMissingPieceIndex,
+  validateRarityPrice,
+} from "@/lib/rarity";
+import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
@@ -12,7 +17,7 @@ export const runtime = "nodejs";
 
 const ROWS = 4;
 const COLUMNS = 4;
-const PIECES = ROWS * COLUMNS;
+const TOTAL_PIECES = ROWS * COLUMNS;
 
 function makeSlug(title: string) {
   return (
@@ -111,17 +116,13 @@ export async function POST(
     const image =
       formData.get("image");
 
+    const rarity = normalizeRarity(
+      String(formData.get("rarity") || "")
+    );
+
     const priceValue = Number(
       formData.get("price")
     );
-
-    const priceCents =
-      Number.isFinite(priceValue) &&
-      priceValue > 0
-        ? Math.round(
-            priceValue * 100
-          )
-        : 10_000;
 
     if (!title) {
       return NextResponse.json(
@@ -129,6 +130,30 @@ export async function POST(
         { status: 400 }
       );
     }
+
+    if (!rarity) {
+      return NextResponse.json(
+        { error: "Choose rarity: Rare, Epic, or Legendary" },
+        { status: 400 }
+      );
+    }
+
+    const priceError =
+      validateRarityPrice(
+        rarity,
+        priceValue
+      );
+
+    if (priceError) {
+      return NextResponse.json(
+        { error: priceError },
+        { status: 400 }
+      );
+    }
+
+    const priceCents = Math.round(
+      priceValue * 100
+    );
 
     if (
       !(image instanceof File) ||
@@ -141,6 +166,12 @@ export async function POST(
     }
 
     const slug = makeSlug(title);
+    const missingPieceIndex =
+      pickMissingPieceIndex(
+        slug,
+        TOTAL_PIECES
+      );
+
     const fileExt =
       image.name.split(".").pop() ||
       "png";
@@ -190,9 +221,14 @@ export async function POST(
         image_url: imageUrl,
         rows: ROWS,
         columns: COLUMNS,
-        missing_piece_count: PIECES,
+        missing_piece_count: 1,
+        missing_piece_index:
+          missingPieceIndex,
+        rarity,
       })
-      .select("id, slug")
+      .select(
+        "id, slug, missing_piece_index, rarity"
+      )
       .single();
 
     if (puzzleError || !puzzle) {
@@ -211,14 +247,15 @@ export async function POST(
     }
 
     const pieces = Array.from({
-      length: PIECES,
+      length: TOTAL_PIECES,
     }).map((_, index) => ({
       puzzle_id: puzzle.id,
       piece_index: index,
       shape_seed: Math.floor(
         Math.random() * 1000000
       ),
-      is_market_piece: true,
+      is_market_piece:
+        index === missingPieceIndex,
     }));
 
     const {
@@ -227,7 +264,7 @@ export async function POST(
     } = await admin
       .from("puzzle_pieces")
       .insert(pieces)
-      .select("id, piece_index");
+      .select("id, piece_index, is_market_piece");
 
     if (piecesError || !insertedPieces) {
       await admin
@@ -249,22 +286,21 @@ export async function POST(
       );
     }
 
-    const fallbackUsername =
-      user.email
-        ?.split("@")[0]
-        ?.replace(
-          /[^a-zA-Z0-9_-]/g,
-          ""
-        )
-        ?.slice(0, 40) ||
-      "creator";
-
     if (!user.email) {
       return NextResponse.json(
         { error: "User email required" },
         { status: 400 }
       );
     }
+
+    const fallbackUsername =
+      user.email
+        .split("@")[0]
+        .replace(
+          /[^a-zA-Z0-9_-]/g,
+          ""
+        )
+        .slice(0, 40) || "creator";
 
     const {
       error: profileError,
@@ -288,17 +324,20 @@ export async function POST(
       );
     }
 
-    for (const piece of insertedPieces) {
+    const marketPiece =
+      insertedPieces.find(
+        (piece) => piece.is_market_piece
+      );
+
+    if (marketPiece) {
       await admin
         .from("piece_ownership")
         .upsert(
           {
-            piece_id: piece.id,
+            piece_id: marketPiece.id,
             owner_user_id: user.id,
           },
-          {
-            onConflict: "piece_id",
-          }
+          { onConflict: "piece_id" }
         );
 
       const {
@@ -306,7 +345,7 @@ export async function POST(
       } = await admin
         .from("piece_listings")
         .select("id")
-        .eq("piece_id", piece.id)
+        .eq("piece_id", marketPiece.id)
         .eq("status", "active")
         .maybeSingle();
 
@@ -314,7 +353,7 @@ export async function POST(
         await admin
           .from("piece_listings")
           .insert({
-            piece_id: piece.id,
+            piece_id: marketPiece.id,
             seller_user_id: user.id,
             price_cents: priceCents,
             status: "active",
@@ -324,11 +363,13 @@ export async function POST(
 
     return NextResponse.json({
       ok: true,
-      puzzle,
+      puzzle: {
+        ...puzzle,
+        missingPieceIndex,
+      },
       imageUrl,
-      listingsCreated:
-        insertedPieces.length,
       priceCents,
+      rarity,
     });
   } catch (error) {
     return NextResponse.json(

@@ -13,7 +13,7 @@ export async function GET() {
       await admin
         .from("puzzle_catalog")
         .select(
-          "id,slug,title,image_url,rows,columns,missing_piece_count,created_at"
+          "id,slug,title,image_url,rows,columns,missing_piece_count,missing_piece_index,rarity,created_at"
         )
         .order("created_at", {
           ascending: false,

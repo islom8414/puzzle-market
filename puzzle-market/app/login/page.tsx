@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PasswordInput } from "@/components/password-input";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
@@ -41,21 +42,28 @@ export default function LoginPage() {
           data.user.email || ""
         );
 
-        const nickname =
-          localStorage.getItem(
-            "puzzle-username"
+        const { data: profile } =
+          await supabase
+            .from("market_profiles")
+            .select("username")
+            .eq("id", data.user.id)
+            .maybeSingle();
+
+        const username =
+          profile?.username?.trim() ||
+          "";
+
+        if (username.length >= 3) {
+          localStorage.setItem(
+            "puzzle-username",
+            username
           );
-
-        if (!nickname) {
-
-          window.location.href =
-            "/setup";
-
-        } else {
 
           window.location.href =
             "/marketplace";
-
+        } else {
+          window.location.href =
+            "/setup";
         }
 
       }
@@ -116,14 +124,9 @@ export default function LoginPage() {
             className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400"
           />
 
-          <input
-            type="password"
-            placeholder="Password"
+          <PasswordInput
             value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400"
+            onChange={setPassword}
           />
 
           <button

@@ -84,7 +84,7 @@ export function HomePuzzleGrid() {
 
             <div className="p-6">
               <p className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
-                {card.pieces} pieces
+                {puzzle.rarity || "Rare"} · 1 missing piece
               </p>
 
               <h3 className="mt-3 text-2xl font-black">

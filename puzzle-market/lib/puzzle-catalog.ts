@@ -6,6 +6,8 @@ export type CatalogPuzzle = {
   rows: number;
   columns: number;
   missing_piece_count: number;
+  missing_piece_index?: number | null;
+  rarity?: string | null;
   created_at?: string;
 };
 

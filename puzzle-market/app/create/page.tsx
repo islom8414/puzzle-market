@@ -1,8 +1,13 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { hasCreatorUploadAccess } from "@/lib/market-access";
+import {
+  RARITY_OPTIONS,
+  type PuzzleRarity,
+  validateRarityPrice,
+} from "@/lib/rarity";
 import { supabase } from "@/lib/supabase";
 
 export default function CreatePage() {
@@ -11,11 +16,21 @@ export default function CreatePage() {
   const [saving, setSaving] = useState(false);
 
   const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
+  const [rarity, setRarity] =
+    useState<PuzzleRarity>("Rare");
+  const [price, setPrice] = useState("5");
   const [image, setImage] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [uploadedSlug, setUploadedSlug] =
     useState("");
+
+  const selectedTier = useMemo(
+    () =>
+      RARITY_OPTIONS.find(
+        (item) => item.value === rarity
+      ),
+    [rarity]
+  );
 
   useEffect(() => {
     checkCreatorAccess();
@@ -61,6 +76,16 @@ export default function CreatePage() {
       return;
     }
 
+    const priceError = validateRarityPrice(
+      rarity,
+      Number(price)
+    );
+
+    if (priceError) {
+      setMessage(priceError);
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -76,10 +101,8 @@ export default function CreatePage() {
       const formData = new FormData();
       formData.append("title", title.trim());
       formData.append("image", image);
-
-      if (price.trim()) {
-        formData.append("price", price.trim());
-      }
+      formData.append("rarity", rarity);
+      formData.append("price", price.trim());
 
       const response = await fetch(
         "/api/create-puzzle",
@@ -102,7 +125,10 @@ export default function CreatePage() {
         try {
           payload = JSON.parse(
             rawBody
-          ) as { error?: string };
+          ) as {
+            error?: string;
+            puzzle?: { slug?: string };
+          };
         } catch {
           payload = null;
         }
@@ -126,35 +152,20 @@ export default function CreatePage() {
 
       if (slug) {
         setUploadedSlug(slug);
-
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (session?.access_token) {
-          await fetch(
-            "/api/backfill-puzzle-listings",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${session.access_token}`,
-                "Content-Type":
-                  "application/json",
-              },
-              body: JSON.stringify({
-                price: Number(price) || 100,
-              }),
-            }
-          );
-        }
       }
 
       setTitle("");
-      setPrice("");
+      setPrice(
+        rarity === "Rare"
+          ? "5"
+          : rarity === "Epic"
+            ? "25"
+            : "150"
+      );
       setImage(null);
       setMessage(
         slug
-          ? "Puzzle uploaded successfully. It is now visible on the homepage and marketplace."
+          ? "Puzzle published. Only ONE missing piece is listed for sale — collectors complete the board and buy that single fragment."
           : "Puzzle uploaded successfully."
       );
     } catch (error) {
@@ -219,11 +230,13 @@ export default function CreatePage() {
         </p>
 
         <h1 className="mt-4 text-4xl md:text-6xl font-black">
-          Upload a puzzle collection.
+          Publish a missing piece puzzle.
         </h1>
 
         <p className="mt-5 text-zinc-400">
-          This creates a 4x4 puzzle with 16 market pieces.
+          Upload a 4×4 board. Players assemble the puzzle — one piece stays
+          missing. You sell only that single fragment; buyers can resell it
+          later at their own price.
         </p>
 
         <div className="mt-8 grid gap-4">
@@ -234,13 +247,55 @@ export default function CreatePage() {
             className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
           />
 
-          <input
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="Missing piece price"
-            type="number"
-            className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
-          />
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
+              Rarity tier
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {RARITY_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    setRarity(option.value);
+                    setPrice(
+                      option.value === "Rare"
+                        ? "5"
+                        : option.value === "Epic"
+                          ? "25"
+                          : "150"
+                    );
+                  }}
+                  className={`rounded-2xl border px-3 py-4 text-sm font-black transition ${
+                    rarity === option.value
+                      ? "border-cyan-400 bg-cyan-400/10 text-cyan-300"
+                      : "border-white/10 bg-black text-zinc-400"
+                  }`}
+                >
+                  {option.label}
+                  <span className="mt-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                    {option.hint}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <input
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Missing piece price (USD)"
+              type="number"
+              min={selectedTier?.minPrice}
+              max={selectedTier?.maxPrice ?? undefined}
+              step="0.01"
+              className="w-full rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
+            />
+            <p className="mt-2 text-sm text-zinc-500">
+              Allowed for {rarity}: {selectedTier?.hint}
+            </p>
+          </div>
 
           <input
             type="file"
@@ -256,7 +311,7 @@ export default function CreatePage() {
             disabled={saving}
             className="rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black disabled:opacity-60"
           >
-            {saving ? "Uploading..." : "Upload Puzzle"}
+            {saving ? "Publishing..." : "Publish Missing Piece"}
           </button>
 
           {message && (
@@ -281,7 +336,7 @@ export default function CreatePage() {
                     href={`/marketplace?puzzle=${encodeURIComponent(uploadedSlug)}`}
                     className="rounded-xl border border-white/15 px-4 py-2"
                   >
-                    Marketplace
+                    Sell Missing Piece
                   </Link>
                 </div>
               )}

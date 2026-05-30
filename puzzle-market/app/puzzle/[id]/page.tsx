@@ -103,6 +103,8 @@ export default function PuzzlePage() {
       image_url: string;
       rows: number;
       columns: number;
+      missing_piece_index: number | null;
+      rarity: string | null;
     } | null>(null);
 
   useEffect(() => {
@@ -111,7 +113,7 @@ export default function PuzzlePage() {
         await supabase
           .from("puzzle_catalog")
           .select(
-            "title,image_url,rows,columns"
+            "title,image_url,rows,columns,missing_piece_index,rarity"
           )
           .eq("slug", slug)
           .maybeSingle();
@@ -178,10 +180,11 @@ export default function PuzzlePage() {
   const missingIndexes =
     useMemo(() => {
       if (catalogPuzzle) {
-        return Array.from(
-          { length: totalPieces },
-          (_, index) => index
-        );
+        const missingIndex =
+          catalogPuzzle.missing_piece_index ??
+          0;
+
+        return [missingIndex];
       }
 
       return getMissingIndexes(

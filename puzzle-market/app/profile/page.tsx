@@ -89,23 +89,24 @@ export default function ProfilePage() {
           )
           .maybeSingle();
 
-      const publicName =
-        cleanPublicName(
-          profileData?.username ||
-          savedUser
-        );
+      const storedUsername =
+        profileData?.username?.trim() ||
+        "";
 
       if (
-        publicName ===
-        "Collector"
+        storedUsername.length < 3
       ) {
-
         window.location.href =
           "/setup";
 
         return;
-
       }
+
+      const publicName =
+        cleanPublicName(
+          storedUsername ||
+          savedUser
+        );
 
       setUsername(
         publicName
@@ -516,18 +517,21 @@ export default function ProfilePage() {
                     This missing piece belongs to you. You can keep it or list it for resale.
                   </p>
 
-                  <div className="mt-5 flex items-center justify-between">
-                    <span className="text-cyan-400 text-xl font-black">
-                      {item.listingPrice
-                        ? `Listed $${item.listingPrice}`
-                        : "Private"}
-                    </span>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    <Link
+                      href={`/puzzle/${item.puzzleSlug}`}
+                      className="rounded-xl border border-white/15 px-4 py-2 text-sm font-black"
+                    >
+                      Open Puzzle
+                    </Link>
 
                     <Link
                       href="/sell"
-                      className="bg-cyan-400 text-black font-black px-4 py-2 rounded-xl"
+                      className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-black text-black"
                     >
-                      Resell
+                      {item.listingPrice
+                        ? `Listed $${item.listingPrice}`
+                        : "Resell"}
                     </Link>
                   </div>
                 </div>

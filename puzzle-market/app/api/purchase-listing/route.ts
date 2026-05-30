@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { sendOwnershipEmail } from "@/lib/ownership-email";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -91,8 +92,54 @@ export async function POST(
       );
     }
 
+    const {
+      data: listing,
+    } = await admin
+      .from("piece_listings")
+      .select(
+        "piece_id, puzzle_pieces(piece_index, puzzle_catalog(slug, title))"
+      )
+      .eq("id", body.listingId)
+      .maybeSingle();
+
+    const piece = listing?.puzzle_pieces as
+      | {
+          piece_index: number;
+          puzzle_catalog: {
+            slug: string;
+            title: string;
+          };
+        }
+      | undefined;
+
+    const catalog =
+      piece?.puzzle_catalog;
+
+    let emailSent = false;
+
+    if (
+      catalog &&
+      userData.user.email
+    ) {
+      const origin = new URL(request.url)
+        .origin;
+
+      const emailResult =
+        await sendOwnershipEmail({
+          to: userData.user.email,
+          puzzleTitle: catalog.title,
+          puzzleSlug: catalog.slug,
+          pieceIndex: piece?.piece_index ?? 0,
+          origin,
+        });
+
+      emailSent = emailResult.sent;
+    }
+
     return NextResponse.json({
       tradeId,
+      emailSent,
+      puzzleSlug: catalog?.slug || null,
     });
   } catch (error) {
     console.error(error);

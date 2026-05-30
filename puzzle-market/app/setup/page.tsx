@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { cleanPublicName } from "@/lib/display-name";
 import { supabase } from "@/lib/supabase";
 
 export default function SetupPage() {
@@ -17,27 +18,55 @@ export default function SetupPage() {
   const router =
     useRouter();
 
+  useEffect(() => {
+    async function checkExistingProfile() {
+      const {
+        data: { user },
+      } =
+        await supabase.auth.getUser();
+
+      if (!user) {
+        return;
+      }
+
+      const { data: profile } =
+        await supabase
+          .from("market_profiles")
+          .select("username")
+          .eq("id", user.id)
+          .maybeSingle();
+
+      if (
+        profile?.username &&
+        profile.username.trim().length >=
+          3
+      ) {
+        localStorage.setItem(
+          "puzzle-username",
+          profile.username.trim()
+        );
+        router.replace("/profile");
+      }
+    }
+
+    checkExistingProfile();
+  }, [router]);
+
   const saveProfile =
     async () => {
 
-      if (
-        nickname.trim().length < 3
-      ) {
+      const cleanUsername =
+        cleanPublicName(nickname);
 
+      if (cleanUsername.length < 3) {
         alert(
-          "Nickname too short"
+          "Nickname must be at least 3 letters or numbers"
         );
 
         return;
-
       }
 
       setLoading(true);
-
-      localStorage.setItem(
-        "puzzle-username",
-        nickname
-      );
 
       const {
         data: {
@@ -59,8 +88,7 @@ export default function SetupPage() {
             .upsert({
               id: user.id,
               email: user.email,
-              username:
-                nickname,
+              username: cleanUsername,
             });
 
         if (profileError) {
@@ -73,7 +101,7 @@ export default function SetupPage() {
 
       localStorage.setItem(
         "puzzle-username",
-        nickname
+        cleanUsername
       );
 
       router.push(

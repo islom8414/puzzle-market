@@ -429,7 +429,9 @@ export default function MarketplacePage() {
         }
 
         alert(
-          "Purchase completed"
+          data.emailSent
+            ? "Purchase completed. Check your email for the puzzle ownership link."
+            : "Purchase completed. Open your profile to see your owned piece."
         );
 
         if (puzzleFilter) {

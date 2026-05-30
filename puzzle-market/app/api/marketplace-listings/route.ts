@@ -18,12 +18,14 @@ type ListingRow = {
       image_url: string;
       rows: number;
       columns: number;
+      rarity: string | null;
     } | {
       slug: string;
       title: string;
       image_url: string;
       rows: number;
       columns: number;
+      rarity: string | null;
     }[];
   } | {
     piece_index: number;
@@ -33,6 +35,7 @@ type ListingRow = {
       image_url: string;
       rows: number;
       columns: number;
+      rarity: string | null;
     };
   }[];
 };
@@ -58,7 +61,8 @@ export async function GET() {
               title,
               image_url,
               rows,
-              columns
+              columns,
+              rarity
             )
           )
         `
@@ -139,7 +143,9 @@ export async function GET() {
           ),
           price:
             row.price_cents / 100,
-          rarity: "Legendary",
+          rarity:
+            catalog.rarity ||
+            "Rare",
           created_at:
             row.created_at,
           exact_listing: true,
