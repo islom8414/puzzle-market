@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
 
+import { isAdminEmail } from "@/lib/market-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
-
-const adminEmails = [
-  "islommatchanov888@gmail.com",
-  "ismatchanov08@gmail.com",
-];
 
 export async function GET(
   request: Request
@@ -37,7 +33,6 @@ export async function GET(
     "";
 
   return NextResponse.json({
-    allowed:
-      adminEmails.includes(email),
+    allowed: isAdminEmail(email),
   });
 }

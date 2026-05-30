@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup:supabase": "node --env-file=.env.local scripts/setup-fragments-bucket.mjs"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.5.0",

@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
 
 import { puzzles } from "@/data/puzzles";
+import { isAdminEmail } from "@/lib/market-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
-
-const adminEmails = [
-  "islommatchanov888@gmail.com",
-  "ismatchanov08@gmail.com",
-];
 
 const rows = 5;
 const columns = 5;
@@ -98,7 +94,7 @@ export async function POST(
 
     if (
       userError ||
-      !adminEmails.includes(email)
+      !isAdminEmail(email)
     ) {
       return NextResponse.json(
         {

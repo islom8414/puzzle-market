@@ -2,24 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { hasCreatorUploadAccess } from "@/lib/market-access";
 import { supabase } from "@/lib/supabase";
-
-const ADMIN_EMAIL = "islommatchanov888@gmail.com";
-const ROWS = 4;
-const COLUMNS = 4;
-const PIECES = ROWS * COLUMNS;
-
-function makeSlug(title: string) {
-  return (
-    title
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") +
-    "-" +
-    Date.now()
-  );
-}
 
 export default function CreatePage() {
   const [loading, setLoading] = useState(true);
@@ -51,16 +35,11 @@ export default function CreatePage() {
       .eq("id", session.user.id)
       .maybeSingle();
 
-    const active =
-      data?.subscription_status === "active" ||
-      data?.subscription_status === "trialing";
-
-    const isAdmin =
-      session.user.email?.toLowerCase() === ADMIN_EMAIL;
-
     setAllowed(
-      isAdmin ||
-        (active && data?.subscription_tier === "creator")
+      hasCreatorUploadAccess(
+        session.user.email,
+        data
+      )
     );
 
     setLoading(false);
@@ -82,60 +61,59 @@ export default function CreatePage() {
     setSaving(true);
 
     try {
-      const slug = makeSlug(title);
-      const fileExt = image.name.split(".").pop() || "png";
-      const filePath = `puzzles/${slug}.${fileExt}`;
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      const upload = await supabase.storage
-        .from("fragments")
-        .upload(filePath, image, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (upload.error) {
-        throw upload.error;
+      if (!session?.access_token) {
+        setMessage("Login required.");
+        return;
       }
 
-      const { data: publicUrlData } = supabase.storage
-        .from("fragments")
-        .getPublicUrl(filePath);
+      const formData = new FormData();
+      formData.append("title", title.trim());
+      formData.append("image", image);
 
-      const imageUrl = publicUrlData.publicUrl;
-
-      const { data: puzzle, error: puzzleError } =
-        await supabase
-          .from("puzzle_catalog")
-          .insert({
-            slug,
-            title: title.trim(),
-            image_url: imageUrl,
-            rows: ROWS,
-            columns: COLUMNS,
-            missing_piece_count: PIECES,
-          })
-          .select("id")
-          .single();
-
-      if (puzzleError) {
-        throw puzzleError;
+      if (price.trim()) {
+        formData.append("price", price.trim());
       }
 
-      const pieces = Array.from({ length: PIECES }).map(
-        (_, index) => ({
-          puzzle_id: puzzle.id,
-          piece_index: index,
-          shape_seed: Math.floor(Math.random() * 1000000),
-          is_market_piece: true,
-        })
+      const response = await fetch(
+        "/api/create-puzzle",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: formData,
+        }
       );
 
-      const { error: piecesError } = await supabase
-        .from("puzzle_pieces")
-        .insert(pieces);
+      const rawBody = await response.text();
+      let payload: { error?: string } | null =
+        null;
 
-      if (piecesError) {
-        throw piecesError;
+      if (rawBody) {
+        try {
+          payload = JSON.parse(
+            rawBody
+          ) as { error?: string };
+        } catch {
+          payload = null;
+        }
+      }
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error(
+            "Upload API missing on server. Push latest code and redeploy on Vercel."
+          );
+        }
+
+        throw new Error(
+          payload?.error ||
+            `Upload failed (${response.status}).`
+        );
       }
 
       setTitle("");
