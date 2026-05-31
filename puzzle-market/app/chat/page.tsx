@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
 import { cleanPublicName } from "@/lib/display-name";
+import {
+  cacheUsername,
+  fetchMyProfile,
+} from "@/lib/client-profile";
 
 type ChatMessage = {
   id: number | string;
@@ -89,22 +93,20 @@ export default function ChatPage() {
         .getUser();
 
     if (user) {
-      const { data: profile } =
-        await supabase
-          .from("market_profiles")
-          .select("username")
-          .eq("id", user.id)
-          .maybeSingle();
+      const profile =
+        await fetchMyProfile();
 
-      const publicName =
-        cleanPublicName(
-          profile?.username ||
-          localStorage.getItem(
-            "puzzle-username"
-          )
+      if (
+        profile?.profileComplete &&
+        profile.username
+      ) {
+        setUsername(
+          profile.username
         );
-
-      setUsername(publicName);
+        cacheUsername(
+          profile.username
+        );
+      }
     }
 
     const response =

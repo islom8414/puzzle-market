@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
-import { cleanPublicName } from "@/lib/display-name";
+import {
+  cacheUsername,
+  fetchMyProfile,
+} from "@/lib/client-profile";
 
 const initialNotifications = [
   "Verified wallet flow is online",
@@ -41,11 +44,6 @@ export default function Navbar() {
         "puzzle-balance"
       );
 
-    const savedUser =
-      localStorage.getItem(
-        "puzzle-username"
-      );
-
     if (savedBalance) {
 
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -55,18 +53,23 @@ export default function Navbar() {
 
     }
 
-    if (savedUser) {
-
-      setUsername(
-        cleanPublicName(
-          savedUser
-        )
-      );
-
-    }
-
     // eslint-disable-next-line react-hooks/immutability
     loadUserProfile();
+
+    const {
+      data: {
+        subscription,
+      },
+    } =
+      supabase.auth.onAuthStateChange(
+        () => {
+          loadUserProfile();
+        }
+      );
+
+    return () => {
+      subscription.unsubscribe();
+    };
 
   }, []);
 
@@ -82,41 +85,27 @@ export default function Navbar() {
           .getUser();
 
       if (!user) {
+        setUsername("");
         return;
       }
 
-      const {
-        data: profile,
-      } =
-        await supabase
-          .from(
-            "market_profiles"
-          )
-          .select(
-            "username"
-          )
-          .eq(
-            "id",
-            user.id
-          )
-          .maybeSingle();
+      const profile =
+        await fetchMyProfile();
 
-      const publicName =
-        cleanPublicName(
-          profile?.username ||
-          localStorage.getItem(
-            "puzzle-username"
-          )
+      if (
+        profile?.profileComplete &&
+        profile.username
+      ) {
+        setUsername(
+          profile.username
         );
 
-      setUsername(
-        publicName
-      );
-
-      localStorage.setItem(
-        "puzzle-username",
-        publicName
-      );
+        cacheUsername(
+          profile.username
+        );
+      } else {
+        setUsername("");
+      }
 
       const {
         data: account,

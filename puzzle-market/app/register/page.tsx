@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { PasswordInput } from "@/components/password-input";
-import { cleanPublicName } from "@/lib/display-name";
+import {
+  cacheUsername,
+  saveMyUsername,
+} from "@/lib/client-profile";
+import { sanitizeUsername } from "@/lib/display-name";
 import { supabase } from "@/lib/supabase";
 
 export default function RegisterPage() {
@@ -26,7 +30,7 @@ export default function RegisterPage() {
     async () => {
 
       const cleanUsername =
-        cleanPublicName(username);
+        sanitizeUsername(username);
 
       if (
         !email ||
@@ -69,18 +73,27 @@ export default function RegisterPage() {
             data.user.email || ""
           );
 
-          localStorage.setItem(
-            "puzzle-username",
-            cleanUsername
-          );
+          const saved =
+            await saveMyUsername(
+              cleanUsername
+            );
 
-          await supabase
-            .from("market_profiles")
-            .upsert({
-              id: data.user.id,
-              email: data.user.email || email,
-              username: cleanUsername,
-            });
+          if (!saved.ok) {
+            setMessage(
+              saved.error ||
+              "Account created, but username was not saved. Finish setup after login."
+            );
+            setTimeout(() => {
+              window.location.href =
+                "/setup";
+            }, 1500);
+            setLoading(false);
+            return;
+          }
+
+          cacheUsername(
+            saved.username
+          );
 
           setMessage(
             "Account created successfully"
@@ -110,7 +123,7 @@ export default function RegisterPage() {
           provider: "google",
           options: {
             redirectTo:
-              `${window.location.origin}/setup`,
+              `${window.location.origin}/auth/callback`,
           },
         });
 

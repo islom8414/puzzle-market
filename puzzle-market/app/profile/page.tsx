@@ -4,8 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
 
+import {
+  cacheUsername,
+  fetchMyProfile,
+  saveMyUsername,
+} from "@/lib/client-profile";
 import { supabase } from "@/lib/supabase";
-import { cleanPublicName } from "@/lib/display-name";
+import { sanitizeUsername } from "@/lib/display-name";
 
 type OwnedPiece = {
   pieceId: string;
@@ -49,13 +54,6 @@ export default function ProfilePage() {
   const loadProfile =
     async () => {
 
-      const savedUser =
-        cleanPublicName(
-          localStorage.getItem(
-            "puzzle-username"
-          )
-        );
-
       const {
         data: {
           user,
@@ -73,6 +71,27 @@ export default function ProfilePage() {
 
       }
 
+      const profile =
+        await fetchMyProfile();
+
+      if (
+        !profile?.profileComplete ||
+        !profile.username
+      ) {
+        window.location.href =
+          "/setup";
+
+        return;
+      }
+
+      setUsername(
+        profile.username
+      );
+
+      setEditUsername(
+        profile.username
+      );
+
       const {
         data: profileData,
       } =
@@ -81,40 +100,13 @@ export default function ProfilePage() {
             "market_profiles"
           )
           .select(
-            "username, subscription_tier, subscription_status, subscription_current_period_end"
+            "subscription_tier, subscription_status, subscription_current_period_end"
           )
           .eq(
             "id",
             user.id
           )
           .maybeSingle();
-
-      const storedUsername =
-        profileData?.username?.trim() ||
-        "";
-
-      if (
-        storedUsername.length < 3
-      ) {
-        window.location.href =
-          "/setup";
-
-        return;
-      }
-
-      const publicName =
-        cleanPublicName(
-          storedUsername ||
-          savedUser
-        );
-
-      setUsername(
-        publicName
-      );
-
-      setEditUsername(
-          publicName
-        );
 
         setSubscriptionTier(
           profileData?.subscription_tier ||
@@ -126,9 +118,8 @@ export default function ProfilePage() {
           "inactive"
         );
 
-      localStorage.setItem(
-        "puzzle-username",
-        publicName
+      cacheUsername(
+        profile.username
       );
 
       if (user) {
@@ -197,13 +188,12 @@ export default function ProfilePage() {
     async () => {
 
       const nextName =
-        cleanPublicName(
+        sanitizeUsername(
           editUsername
         );
 
       if (
-        nextName.length < 3 ||
-        nextName === "Collector"
+        nextName.length < 3
       ) {
         alert(
           "Choose a username with at least 3 letters"
@@ -213,56 +203,24 @@ export default function ProfilePage() {
 
       setSavingUsername(true);
 
-      const {
-        data: {
-          user,
-        },
-      } =
-        await supabase.auth
-          .getUser();
-
-      if (!user?.email) {
-        alert("Login required");
-        setSavingUsername(false);
-        return;
-      }
-
-      const { error } =
-        await supabase
-          .from(
-            "market_profiles"
-          )
-          .upsert(
-            {
-              id: user.id,
-              email: user.email,
-              username: nextName,
-            },
-            {
-              onConflict: "id",
-            }
-          );
-
-      if (error) {
-        alert(
-          error.message.includes(
-            "duplicate"
-          )
-            ? "Username is already taken"
-            : error.message
+      const result =
+        await saveMyUsername(
+          nextName
         );
-        setSavingUsername(false);
+
+      setSavingUsername(false);
+
+      if (!result.ok) {
+        alert(result.error);
         return;
       }
 
-      localStorage.setItem(
-        "puzzle-username",
-        nextName
+      cacheUsername(
+        result.username
       );
 
-      setUsername(nextName);
-      setEditUsername(nextName);
-      setSavingUsername(false);
+      setUsername(result.username);
+      setEditUsername(result.username);
       alert("Username updated");
 
     };

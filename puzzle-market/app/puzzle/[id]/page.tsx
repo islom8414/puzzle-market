@@ -3,6 +3,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -26,7 +27,109 @@ type Selection =
 type SavedProgress = {
   board: Array<number | null>;
   tray: number[];
+  totalPieces: number;
 };
+
+function normalizeProgress(
+  board: Array<number | null>,
+  tray: number[],
+  totalPieces: number,
+  lockedCells: number[]
+) {
+  const lockedSet =
+    new Set(lockedCells);
+
+  const nextBoard =
+    Array.from(
+      { length: totalPieces },
+      (_, cell) => {
+        if (lockedSet.has(cell)) {
+          return null;
+        }
+
+        const piece =
+          board[cell] ?? null;
+
+        if (
+          piece !== null &&
+          lockedSet.has(piece)
+        ) {
+          return null;
+        }
+
+        return piece;
+      }
+    );
+
+  const onBoard =
+    new Set(
+      nextBoard.filter(
+        (
+          piece
+        ): piece is number =>
+          piece !== null
+      )
+    );
+
+  const nextTray =
+    tray.filter(
+      (piece) =>
+        !lockedSet.has(piece) &&
+        !onBoard.has(piece)
+    );
+
+  for (
+    let piece = 0;
+    piece < totalPieces;
+    piece += 1
+  ) {
+    if (
+      lockedSet.has(piece) ||
+      onBoard.has(piece) ||
+      nextTray.includes(piece)
+    ) {
+      continue;
+    }
+
+    nextTray.push(piece);
+  }
+
+  return {
+    board: nextBoard,
+    tray: nextTray,
+  };
+}
+
+function readSavedProgress(
+  storageKey: string,
+  totalPieces: number
+) {
+  const saved =
+    localStorage.getItem(storageKey);
+
+  if (!saved) {
+    return null;
+  }
+
+  try {
+    const parsed =
+      JSON.parse(saved) as SavedProgress;
+
+    if (
+      parsed.totalPieces !==
+        totalPieces ||
+      parsed.board?.length !==
+        totalPieces ||
+      !Array.isArray(parsed.tray)
+    ) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+}
 
 type CatalogPuzzle = {
   title: string;
@@ -216,26 +319,24 @@ export default function PuzzlePage() {
     ]);
 
   const storageKey =
-    `puzzle-progress-${puzzle.slug}`;
+    `puzzle-progress-${slug}`;
 
   const [board, setBoard] =
     useState<Array<number | null>>(
-      Array(totalPieces).fill(null)
+      []
     );
 
   const [tray, setTray] =
-    useState<number[]>(() =>
-      shuffledPieces(totalPieces)
-    );
+    useState<number[]>([]);
 
-  useEffect(() => {
-    setBoard(
-      Array(totalPieces).fill(null)
-    );
-    setTray(
-      shuffledPieces(totalPieces)
-    );
-  }, [slug, totalPieces]);
+  const [progressReady, setProgressReady] =
+    useState(false);
+
+  const hydratedSlugRef =
+    useRef<string | null>(null);
+
+  const previousLockedRef =
+    useRef<number[]>([]);
 
   const [selected, setSelected] =
     useState<Selection | null>(
@@ -245,94 +346,115 @@ export default function PuzzlePage() {
   const [ownedMissingCount, setOwnedMissingCount] =
     useState(0);
 
+  const [ownershipReady, setOwnershipReady] =
+    useState(false);
+
+  useEffect(() => {
+    setOwnershipReady(false);
+    setOwnedMissingCount(0);
+    setProgressReady(false);
+    hydratedSlugRef.current = null;
+    previousLockedRef.current = [];
+  }, [slug]);
+
   useEffect(() => {
     async function loadOwnership() {
-      const {
-        data: {
-          user,
-        },
-      } =
-        await supabase.auth
-          .getUser();
+      setOwnershipReady(false);
 
-      if (!user) {
-        return;
-      }
-
-      let exactOwnedCount = 0;
-
-      const {
-        data: catalog,
-      } =
-        await supabase
-          .from(
-            "puzzle_catalog"
-          )
-          .select("id")
-          .eq(
-            "slug",
-            puzzle.slug
-          )
-          .maybeSingle();
-
-      if (catalog) {
+      try {
         const {
-          data: pieces,
+          data: {
+            user,
+          },
+        } =
+          await supabase.auth
+            .getUser();
+
+        if (!user) {
+          setOwnedMissingCount(0);
+          return;
+        }
+
+        let exactOwnedCount = 0;
+
+        const {
+          data: catalog,
         } =
           await supabase
             .from(
-              "puzzle_pieces"
+              "puzzle_catalog"
             )
-            .select("id,piece_index")
+            .select("id")
             .eq(
-              "puzzle_id",
-              catalog.id
+              "slug",
+              slug
             )
-            .in(
-              "piece_index",
-              missingIndexes
-            );
+            .maybeSingle();
 
-        const pieceIds =
-          pieces?.map(
-            (piece) => piece.id
-          ) || [];
-
-        if (pieceIds.length > 0) {
+        if (catalog) {
           const {
-            data: ownership,
+            data: pieces,
           } =
             await supabase
               .from(
-                "piece_ownership"
+                "puzzle_pieces"
               )
-              .select("piece_id")
-              .in(
-                "piece_id",
-                pieceIds
-              )
+              .select("id,piece_index")
               .eq(
-                "owner_user_id",
-                user.id
+                "puzzle_id",
+                catalog.id
+              )
+              .in(
+                "piece_index",
+                missingIndexes
               );
 
-          exactOwnedCount =
-            ownership?.length || 0;
-        }
-      }
+          const pieceIds =
+            pieces?.map(
+              (piece) => piece.id
+            ) || [];
 
-      setOwnedMissingCount(
-        Math.min(
-          exactOwnedCount,
-          missingIndexes.length
-        )
-      );
+          if (pieceIds.length > 0) {
+            const {
+              data: ownership,
+            } =
+              await supabase
+                .from(
+                  "piece_ownership"
+                )
+                .select("piece_id")
+                .in(
+                  "piece_id",
+                  pieceIds
+                )
+                .eq(
+                  "owner_user_id",
+                  user.id
+                );
+
+            exactOwnedCount =
+              ownership?.length || 0;
+          }
+        }
+
+        setOwnedMissingCount(
+          Math.min(
+            exactOwnedCount,
+            missingIndexes.length
+          )
+        );
+      } finally {
+        setOwnershipReady(true);
+      }
     }
 
-    loadOwnership();
+    if (!catalogLoading) {
+      loadOwnership();
+    }
   }, [
-    puzzle.slug,
-    missingIndexes.length,
+    slug,
+    catalogLoading,
+    missingIndexes.join(","),
   ]);
 
   const lockedMissingIndexes =
@@ -340,113 +462,174 @@ export default function PuzzlePage() {
       ownedMissingCount
     );
 
-  useEffect(() => {
-    const saved =
-      localStorage.getItem(
-        storageKey
-      );
+  const lockedKey =
+    lockedMissingIndexes.join(",");
 
-    if (!saved) {
-      setBoard(
-        Array(totalPieces).fill(null)
-      );
-      setTray(shuffledPieces(totalPieces));
+  const hasPlayablePuzzle =
+    !!foundPuzzle || !!catalogPuzzle;
+
+  useEffect(() => {
+    if (catalogLoading) {
       return;
     }
 
-    try {
-      const parsed =
-        JSON.parse(saved) as
-          SavedProgress;
-
-      if (
-        parsed.board?.length ===
-          totalPieces &&
-        Array.isArray(
-          parsed.tray
-        )
-      ) {
-        setBoard(parsed.board);
-        setTray(parsed.tray);
-      }
-    } catch {
-      setBoard(
-        Array(totalPieces).fill(null)
-      );
-      setTray(shuffledPieces(totalPieces));
+    if (!hasPlayablePuzzle || totalPieces < 1) {
+      return;
     }
-  }, [storageKey]);
+
+    if (
+      catalogPuzzle &&
+      !ownershipReady
+    ) {
+      return;
+    }
+
+    if (hydratedSlugRef.current === slug) {
+      return;
+    }
+
+    hydratedSlugRef.current = slug;
+
+    const saved =
+      readSavedProgress(
+        storageKey,
+        totalPieces
+      );
+
+    const freshTray =
+      shuffledPieces(totalPieces).filter(
+        (piece) =>
+          !lockedMissingIndexes.includes(
+            piece
+          )
+      );
+
+    const base =
+      saved
+        ? normalizeProgress(
+            saved.board,
+            saved.tray,
+            totalPieces,
+            lockedMissingIndexes
+          )
+        : normalizeProgress(
+            Array(totalPieces).fill(
+              null
+            ),
+            freshTray,
+            totalPieces,
+            lockedMissingIndexes
+          );
+
+    setBoard(base.board);
+    setTray(base.tray);
+    previousLockedRef.current =
+      [...lockedMissingIndexes];
+    setProgressReady(true);
+  }, [
+    slug,
+    catalogLoading,
+    ownershipReady,
+    hasPlayablePuzzle,
+    totalPieces,
+    storageKey,
+    lockedKey,
+    catalogPuzzle,
+  ]);
 
   useEffect(() => {
-    const lockedSet =
-      new Set(
-        lockedMissingIndexes
+    if (!progressReady) {
+      return;
+    }
+
+    const previous =
+      previousLockedRef.current;
+
+    const previousSet =
+      new Set(previous);
+
+    const currentSet =
+      new Set(lockedMissingIndexes);
+
+    const unlockedCells =
+      previous.filter(
+        (cell) =>
+          !currentSet.has(cell)
       );
+
+    if (unlockedCells.length === 0) {
+      previousLockedRef.current =
+        [...lockedMissingIndexes];
+      return;
+    }
 
     setBoard((currentBoard) => {
       const nextBoard =
-        currentBoard.map(
-          (piece, cell) =>
-            lockedSet.has(cell)
-              ? null
-              : piece
+        [...currentBoard];
+
+      for (const cell of unlockedCells) {
+        nextBoard[cell] = null;
+      }
+
+      const onBoard =
+        new Set(
+          nextBoard.filter(
+            (
+              piece
+            ): piece is number =>
+              piece !== null
+          )
         );
 
       setTray((currentTray) => {
-        const used =
-          new Set(
-            nextBoard.filter(
-              (
-                piece
-              ): piece is number =>
-                piece !== null
-            )
-          );
-
-        const currentSet =
-          new Set(
-            currentTray
-          );
-
-        const cleanedTray =
+        const nextTray =
           currentTray.filter(
             (piece) =>
-              !lockedSet.has(piece) &&
-              !used.has(piece)
+              !unlockedCells.includes(
+                piece
+              )
           );
 
-        const restoredPieces =
-          shuffledPieces(totalPieces).filter(
-            (piece) =>
-              !lockedSet.has(piece) &&
-              !used.has(piece) &&
-              !currentSet.has(piece)
-          );
+        for (const cell of unlockedCells) {
+          if (
+            !onBoard.has(cell) &&
+            !nextTray.includes(cell)
+          ) {
+            nextTray.push(cell);
+          }
+        }
 
-        return [
-          ...cleanedTray,
-          ...restoredPieces,
-        ];
+        return nextTray;
       });
 
       return nextBoard;
     });
-  }, [
-    lockedMissingIndexes.join(","),
-  ]);
+
+    previousLockedRef.current =
+      [...lockedMissingIndexes];
+  }, [lockedKey, progressReady]);
 
   useEffect(() => {
+    if (!progressReady) {
+      return;
+    }
+
+    const payload: SavedProgress = {
+      board,
+      tray,
+      totalPieces,
+    };
+
     localStorage.setItem(
       storageKey,
-      JSON.stringify({
-        board,
-        tray,
-      })
+      JSON.stringify(payload)
     );
   }, [
     board,
     tray,
     storageKey,
+    totalPieces,
+    progressReady,
   ]);
 
   const solvedCount =
@@ -576,10 +759,12 @@ export default function PuzzlePage() {
     setSelected(null);
   }
 
-  const hasPlayablePuzzle =
-    !!foundPuzzle || !!catalogPuzzle;
-
-  if (catalogLoading) {
+  if (
+    catalogLoading ||
+    ((!!foundPuzzle || !!catalogPuzzle) &&
+      puzzle.image &&
+      !progressReady)
+  ) {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
         Loading puzzle board...

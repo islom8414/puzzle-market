@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { PasswordInput } from "@/components/password-input";
+import {
+  cacheUsername,
+  fetchMyProfile,
+} from "@/lib/client-profile";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
@@ -42,21 +46,15 @@ export default function LoginPage() {
           data.user.email || ""
         );
 
-        const { data: profile } =
-          await supabase
-            .from("market_profiles")
-            .select("username")
-            .eq("id", data.user.id)
-            .maybeSingle();
+        const profile =
+          await fetchMyProfile();
 
-        const username =
-          profile?.username?.trim() ||
-          "";
-
-        if (username.length >= 3) {
-          localStorage.setItem(
-            "puzzle-username",
-            username
+        if (
+          profile?.profileComplete &&
+          profile.username
+        ) {
+          cacheUsername(
+            profile.username
           );
 
           window.location.href =
@@ -80,7 +78,7 @@ export default function LoginPage() {
           provider: "google",
           options: {
             redirectTo:
-              `${window.location.origin}/setup`,
+              `${window.location.origin}/auth/callback`,
           },
         });
 

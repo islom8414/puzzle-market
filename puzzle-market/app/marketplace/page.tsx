@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 
 import { puzzles } from "@/data/puzzles";
+import { fetchMyProfile } from "@/lib/client-profile";
 import { supabase } from "@/lib/supabase";
 
 type MarketItem = {
@@ -366,10 +367,11 @@ export default function MarketplacePage() {
 
         }
 
+        const profile =
+          await fetchMyProfile();
+
         const username =
-          localStorage.getItem(
-            "puzzle-username"
-          ) ||
+          profile?.username ||
           session.user.email
             ?.split("@")[0]
             ?.replace(
@@ -378,11 +380,6 @@ export default function MarketplacePage() {
             )
             ?.slice(0, 40) ||
           "PuzzleUser";
-
-        localStorage.setItem(
-          "puzzle-username",
-          username
-        );
 
         if (
           !fragment.exact_listing ||
@@ -430,13 +427,13 @@ export default function MarketplacePage() {
 
         alert(
           data.emailSent
-            ? "Purchase completed. Check your email for the puzzle ownership link."
-            : "Purchase completed. Open your profile to see your owned piece."
+            ? "Purchase completed. Your puzzle progress is saved. Returning to assembly."
+            : "Purchase completed. Returning to your puzzle board with saved progress."
         );
 
         if (puzzleFilter) {
           location.href =
-            `/puzzle/${puzzleFilter}`;
+            `/puzzle/${encodeURIComponent(puzzleFilter)}`;
         } else {
           loadMarketplace();
         }
