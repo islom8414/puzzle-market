@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import { HomeTrustStats } from "@/components/home-trust-stats";
 import { HomePuzzleGrid } from "@/components/home-puzzle-grid";
+import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 
 export default function HomePage() {
 
@@ -65,55 +67,15 @@ export default function HomePage() {
                 </Link>
 
                 <Link
-                  href="/leaderboard"
+                  href={CHOOSE_PUZZLE_HREF}
                   className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-8 py-4 rounded-2xl transition text-lg"
                 >
-                  Top Collectors
+                  Choose A Puzzle
                 </Link>
 
               </div>
 
-              {/* STATS */}
-
-              <div className="grid grid-cols-3 gap-5 mt-14">
-
-                <div>
-
-                  <h3 className="text-4xl font-black text-cyan-400">
-                    8K+
-                  </h3>
-
-                  <p className="text-zinc-500 mt-2 text-sm">
-                    Rare Fragments
-                  </p>
-
-                </div>
-
-                <div>
-
-                  <h3 className="text-4xl font-black">
-                    2.4M
-                  </h3>
-
-                  <p className="text-zinc-500 mt-2 text-sm">
-                    Market Volume
-                  </p>
-
-                </div>
-
-                <div>
-
-                  <h3 className="text-4xl font-black">
-                    24K
-                  </h3>
-
-                  <p className="text-zinc-500 mt-2 text-sm">
-                    Collectors
-                  </p>
-
-                </div>
-
-              </div>
+              <HomeTrustStats />
 
             </div>
 
@@ -146,7 +108,7 @@ export default function HomePage() {
 
               {/* FLOATING CARD */}
 
-              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-zinc-950/90 backdrop-blur-xl border border-white/10 rounded-3xl p-6 w-[320px]">
+              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-zinc-950/90 backdrop-blur-xl border border-white/10 rounded-3xl p-6 w-[min(320px,calc(100vw-2rem))]">
 
                 <p className="text-zinc-500 text-sm">
                   Verified Ownership
@@ -194,7 +156,10 @@ export default function HomePage() {
 
       </section>
 
-      <section className="px-4 md:px-6 pb-24">
+      <section
+        id="choose-puzzle"
+        className="px-4 md:px-6 pb-24 scroll-mt-24"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
             <div>

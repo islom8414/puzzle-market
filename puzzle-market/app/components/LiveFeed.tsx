@@ -32,7 +32,7 @@ export default function LiveFeed() {
   }, []);
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-40 hidden sm:block">
 
       <div className="bg-zinc-950/90 backdrop-blur-xl border border-zinc-800 rounded-2xl px-5 py-4 shadow-2xl max-w-[320px] animate-pulse">
 

@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { puzzles } from "@/data/puzzles";
+import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
 
 type Selection =
@@ -142,7 +143,7 @@ type CatalogPuzzle = {
 
 const defaultRows = 5;
 const defaultColumns = 5;
-const pieceSize = 66;
+const defaultPieceSize = 66;
 
 function getMissingIndexes(
   puzzleId: number,
@@ -182,7 +183,8 @@ function pieceStyle(
   image: string,
   piece: number,
   rows: number,
-  columns: number
+  columns: number,
+  pieceSize: number
 ) {
   const col =
     piece % columns;
@@ -261,6 +263,47 @@ export default function PuzzlePage() {
 
   const totalPieces =
     rows * columns;
+
+  const [pieceSize, setPieceSize] =
+    useState(defaultPieceSize);
+
+  useEffect(() => {
+    function updatePieceSize() {
+      const sidePadding = 48;
+      const maxBoardWidth =
+        Math.min(
+          window.innerWidth - sidePadding,
+          420
+        );
+      const nextSize =
+        Math.floor(
+          maxBoardWidth / columns
+        );
+
+      setPieceSize(
+        Math.max(
+          44,
+          Math.min(
+            defaultPieceSize,
+            nextSize
+          )
+        )
+      );
+    }
+
+    updatePieceSize();
+    window.addEventListener(
+      "resize",
+      updatePieceSize
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        updatePieceSize
+      );
+    };
+  }, [columns]);
 
   const puzzle =
     catalogPuzzle
@@ -777,10 +820,10 @@ export default function PuzzlePage() {
       <main className="min-h-screen bg-black text-white px-4 py-24">
         <div className="mx-auto max-w-3xl rounded-[28px] border border-white/10 bg-zinc-950 p-8">
           <Link
-            href="/"
+            href={CHOOSE_PUZZLE_HREF}
             className="text-cyan-400 font-black"
           >
-            Back Home
+            Choose A Puzzle
           </Link>
 
           <p className="mt-8 text-xs font-black uppercase tracking-[0.3em] text-cyan-400">
@@ -796,7 +839,7 @@ export default function PuzzlePage() {
           </p>
 
           <Link
-            href="/"
+            href={CHOOSE_PUZZLE_HREF}
             className="mt-8 inline-flex rounded-2xl bg-cyan-400 px-8 py-4 font-black text-black"
           >
             Choose A Puzzle
@@ -812,10 +855,10 @@ export default function PuzzlePage() {
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-6">
           <div>
             <Link
-              href="/"
-              className="text-cyan-400 font-black"
+              href={CHOOSE_PUZZLE_HREF}
+              className="inline-flex items-center gap-2 rounded-2xl bg-cyan-400 px-5 py-3 font-black text-black"
             >
-              Back Home
+              Choose A Puzzle
             </Link>
 
             <p className="text-cyan-400 text-xs tracking-[0.3em] uppercase font-black mt-6">
@@ -887,10 +930,10 @@ export default function PuzzlePage() {
             )}
           </aside>
 
-          <section className="bg-white/[0.03] border border-white/10 rounded-[28px] p-4 md:p-5">
-            <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-5 items-start">
+          <section className="bg-white/[0.03] border border-white/10 rounded-[28px] p-4 md:p-5 overflow-x-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-5 items-start min-w-0">
               <div
-                className="grid rounded-2xl border border-white/10 bg-black/50 overflow-hidden"
+                className="grid rounded-2xl border border-white/10 bg-black/50 overflow-hidden mx-auto lg:mx-0"
                 style={{
                   gridTemplateColumns:
                     `repeat(${columns}, ${pieceSize}px)`,
@@ -945,7 +988,8 @@ export default function PuzzlePage() {
                             puzzle.image,
                             piece,
                             rows,
-                            columns
+                            columns,
+                            pieceSize
                           )}
                         />
                       )}
@@ -984,7 +1028,8 @@ export default function PuzzlePage() {
                           puzzle.image,
                           piece,
                           rows,
-                          columns
+                          columns,
+                          pieceSize
                         )}
                       />
                     );

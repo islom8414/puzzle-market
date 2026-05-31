@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import Link from "next/link";
 
 import { puzzles } from "@/data/puzzles";
 import { fetchMyProfile } from "@/lib/client-profile";
+import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
 
 type MarketItem = {
@@ -477,6 +479,15 @@ export default function MarketplacePage() {
               ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
               : "Real-time collectible economy powered by live cloud ownership, instant marketplace sync and premium fragment trading."}
           </p>
+
+          <div className="flex flex-wrap gap-4 mt-10">
+            <Link
+              href={CHOOSE_PUZZLE_HREF}
+              className="inline-flex rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300"
+            >
+              Choose A Puzzle
+            </Link>
+          </div>
 
           {/* STATS */}
 

@@ -7,6 +7,7 @@ import {
   cacheUsername,
   fetchMyProfile,
 } from "@/lib/client-profile";
+import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 
 const initialNotifications = [
   "Verified wallet flow is online",
@@ -198,6 +199,13 @@ export default function Navbar() {
               <nav className="hidden xl:flex items-center gap-6 text-sm font-semibold">
 
                 <a
+                  href={CHOOSE_PUZZLE_HREF}
+                  className="hover:text-cyan-400 transition"
+                >
+                  Play
+                </a>
+
+                <a
                   href="/marketplace"
                   className="hover:text-cyan-400 transition"
                 >
@@ -269,11 +277,9 @@ export default function Navbar() {
                     );
 
                   }}
-                  className="relative w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:border-cyan-400 transition"
+                  className="relative w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:border-cyan-400 transition text-[10px] font-black"
                 >
-
-                  ðŸ””
-
+                  ALR
                   {notificationCount >
                     0 && (
 
@@ -391,11 +397,10 @@ export default function Navbar() {
                 onClick={() =>
                   setOpen(!open)
                 }
-                className="xl:hidden w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center"
+                className="xl:hidden w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-sm font-black"
               >
 
-                {open ? "âœ•" : "â˜°"}
-
+                {open ? "X" : "Menu"}
               </button>
 
             </div>
@@ -411,6 +416,10 @@ export default function Navbar() {
           <div className="xl:hidden border-t border-white/5 bg-black/95 backdrop-blur-xl">
 
             <div className="px-4 py-5 flex flex-col gap-4 text-sm font-semibold">
+
+              <a href={CHOOSE_PUZZLE_HREF}>
+                Play
+              </a>
 
               <a href="/marketplace">
                 Explore
@@ -439,6 +448,33 @@ export default function Navbar() {
                 About
               </a>
 
+              <div className="border-t border-white/10 pt-4 mt-2 flex flex-col gap-3">
+                {username ? (
+                  <>
+                    <a
+                      href="/profile"
+                      className="rounded-2xl bg-white/5 border border-white/10 px-4 py-3 font-black"
+                    >
+                      {username}
+                    </a>
+
+                    <button
+                      onClick={handleLogout}
+                      className="rounded-2xl bg-red-500/20 border border-red-500/30 px-4 py-3 font-black text-red-300 text-left"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <a
+                    href="/login"
+                    className="rounded-2xl bg-cyan-400 px-4 py-3 font-black text-black text-center"
+                  >
+                    Login
+                  </a>
+                )}
+              </div>
+
             </div>
 
           </div>
@@ -465,9 +501,9 @@ export default function Navbar() {
                 onClick={() =>
                   setWalletOpen(false)
                 }
-                className="text-zinc-500 hover:text-white text-xl"
+                className="text-zinc-500 hover:text-white text-xl font-black"
               >
-                âœ•
+                X
               </button>
 
             </div>
