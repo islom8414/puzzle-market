@@ -401,6 +401,22 @@ export default function ProfilePage() {
               ${balance}
             </h2>
 
+            <div className="mt-5 flex gap-3">
+              <Link
+                href="/add-funds"
+                className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-black text-black"
+              >
+                Add
+              </Link>
+
+              <Link
+                href="/withdraw"
+                className="rounded-xl border border-white/15 px-4 py-2 text-sm font-black"
+              >
+                Withdraw
+              </Link>
+            </div>
+
           </div>
 
           <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6 backdrop-blur-xl">

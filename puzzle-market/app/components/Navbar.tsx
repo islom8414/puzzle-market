@@ -233,6 +233,13 @@ export default function Navbar() {
                 </a>
 
                 <a
+                  href="/withdraw"
+                  className="hover:text-cyan-400 transition"
+                >
+                  Withdraw
+                </a>
+
+                <a
                   href="/chat"
                   className="hover:text-cyan-400 transition"
                 >
@@ -436,6 +443,10 @@ export default function Navbar() {
                 Sell
               </a>
 
+              <a href="/withdraw">
+                Withdraw
+              </a>
+
               <a href="/chat">
                 Chat
               </a>
@@ -525,6 +536,13 @@ export default function Navbar() {
               className="flex items-center justify-center w-full mt-6 bg-cyan-400 hover:bg-cyan-300 text-black font-black py-4 rounded-2xl transition"
             >
               Add Funds
+            </a>
+
+            <a
+              href="/withdraw"
+              className="flex items-center justify-center w-full mt-3 bg-white text-black font-black py-4 rounded-2xl transition hover:bg-zinc-200"
+            >
+              Withdraw Funds
             </a>
 
             <button
