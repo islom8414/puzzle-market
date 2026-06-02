@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { sendOwnershipEmail } from "@/lib/ownership-email";
+import { createOwnershipCode } from "@/lib/ownership-certificate";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -119,17 +120,36 @@ export async function POST(
 
     if (
       catalog &&
-      userData.user.email
+      userData.user.email &&
+      listing?.piece_id &&
+      tradeId
     ) {
       const origin = new URL(request.url)
         .origin;
+      const certificateCode =
+        createOwnershipCode({
+          tradeId: String(tradeId),
+          pieceId: String(
+            listing.piece_id
+          ),
+          ownerId:
+            userData.user.id,
+        });
+      const certificateUrl =
+        `${origin}/ownership/${encodeURIComponent(certificateCode)}`;
 
       const emailResult =
         await sendOwnershipEmail({
           to: userData.user.email,
           puzzleTitle: catalog.title,
           puzzleSlug: catalog.slug,
+          tradeId: String(tradeId),
+          pieceId: String(
+            listing.piece_id
+          ),
           pieceIndex: piece?.piece_index ?? 0,
+          certificateCode,
+          certificateUrl,
           origin,
         });
 
