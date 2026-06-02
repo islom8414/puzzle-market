@@ -116,6 +116,30 @@ export default function SellPage() {
     };
   }
 
+  function salePreview(
+    pieceId: string
+  ) {
+    const price =
+      Number(prices[pieceId]);
+
+    if (
+      !Number.isFinite(price) ||
+      price <= 0
+    ) {
+      return null;
+    }
+
+    const fee =
+      Math.round(price * 10) / 100;
+    const net =
+      Math.max(0, price - fee);
+
+    return {
+      fee: fee.toFixed(2),
+      net: net.toFixed(2),
+    };
+  }
+
   async function listPiece(
     piece: OwnedPiece
   ) {
@@ -310,6 +334,39 @@ export default function SellPage() {
                   placeholder="Write price, example: 5"
                   className="w-full mt-6 bg-black/80 border border-cyan-400/40 rounded-2xl px-5 py-4 text-lg md:text-xl font-black text-cyan-300 placeholder:text-zinc-500 outline-none focus:border-cyan-300"
                 />
+
+                {salePreview(
+                  piece.pieceId
+                ) && (
+                  <div className="mt-3 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm">
+                    <div className="flex items-center justify-between gap-3 text-zinc-400">
+                      <span>
+                        Platform fee 10%
+                      </span>
+                      <span className="font-black text-amber-300">
+                        $
+                        {
+                          salePreview(
+                            piece.pieceId
+                          )?.fee
+                        }
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-3">
+                      <span className="text-zinc-400">
+                        You receive
+                      </span>
+                      <span className="font-black text-green-300">
+                        $
+                        {
+                          salePreview(
+                            piece.pieceId
+                          )?.net
+                        }
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 <button
                   onClick={() =>
