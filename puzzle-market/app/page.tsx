@@ -12,7 +12,7 @@ export default function HomePage() {
 
       {/* HERO */}
 
-      <section className="relative px-4 md:px-6 pt-24 pb-28">
+      <section className="relative px-4 md:px-6 pt-16 md:pt-24 pb-20 md:pb-28">
 
         {/* BG */}
 
@@ -26,17 +26,17 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto">
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 xl:gap-16 items-center">
 
             {/* LEFT */}
 
             <div>
 
-              <p className="text-cyan-400 font-black uppercase tracking-[0.25em] text-sm">
+              <p className="text-cyan-400 font-black uppercase tracking-[0.18em] md:tracking-[0.25em] text-xs md:text-sm">
                 PREMIUM FRAGMENT MARKETPLACE
               </p>
 
-              <h1 className="text-5xl md:text-7xl font-black leading-[0.95] mt-6">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.95] mt-5 md:mt-6">
 
                 Collect
                 <br />
@@ -48,7 +48,7 @@ export default function HomePage() {
 
               </h1>
 
-              <p className="text-zinc-400 text-lg leading-relaxed mt-8 max-w-2xl">
+              <p className="text-zinc-400 text-base md:text-lg leading-relaxed mt-6 md:mt-8 max-w-2xl">
 
                 Trade rare hidden puzzle fragments, complete premium artwork collections,
                 unlock legendary rewards and build your collector empire.
@@ -57,18 +57,18 @@ export default function HomePage() {
 
               {/* BUTTONS */}
 
-              <div className="flex flex-wrap gap-4 mt-10">
+              <div className="grid gap-3 sm:flex sm:flex-wrap sm:gap-4 mt-8 md:mt-10">
 
                 <Link
                   href="/marketplace"
-                  className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-8 py-4 rounded-2xl transition text-lg"
+                  className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-6 md:px-8 py-4 rounded-2xl transition text-center text-base md:text-lg"
                 >
                   Explore Marketplace
                 </Link>
 
                 <Link
                   href={CHOOSE_PUZZLE_HREF}
-                  className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-8 py-4 rounded-2xl transition text-lg"
+                  className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-6 md:px-8 py-4 rounded-2xl transition text-center text-base md:text-lg"
                 >
                   Choose A Puzzle
                 </Link>
@@ -81,16 +81,16 @@ export default function HomePage() {
 
             {/* RIGHT */}
 
-            <div className="relative">
+            <div className="relative mt-4 xl:mt-0">
 
-              <div className="grid grid-cols-3 gap-4 rotate-6">
+              <div className="grid grid-cols-3 gap-3 sm:gap-4 rotate-3 sm:rotate-6 max-w-md mx-auto xl:max-w-none">
 
                 {Array.from({ length: 9 }).map((_, index) => (
 
                   <div
                     key={index}
                     className={`
-                      aspect-square rounded-3xl border
+                      aspect-square rounded-2xl sm:rounded-3xl border
 
                       ${
                         index === 1 ||
@@ -108,13 +108,13 @@ export default function HomePage() {
 
               {/* FLOATING CARD */}
 
-              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-zinc-950/90 backdrop-blur-xl border border-white/10 rounded-3xl p-6 w-[min(320px,calc(100vw-2rem))]">
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-zinc-950/90 backdrop-blur-xl border border-white/10 rounded-3xl p-5 md:p-6 w-[min(320px,calc(100vw-2rem))]">
 
                 <p className="text-zinc-500 text-sm">
                   Verified Ownership
                 </p>
 
-                <h3 className="text-3xl font-black mt-3">
+                <h3 className="text-2xl md:text-3xl font-black mt-3">
                   Launch Ready
                 </h3>
 
@@ -126,7 +126,7 @@ export default function HomePage() {
                       Piece
                     </p>
 
-                    <h4 className="text-2xl font-black">
+                    <h4 className="text-xl md:text-2xl font-black">
                       Hidden
                     </h4>
 
@@ -138,7 +138,7 @@ export default function HomePage() {
                       Status
                     </p>
 
-                    <h4 className="text-cyan-400 text-2xl font-black">
+                    <h4 className="text-cyan-400 text-xl md:text-2xl font-black">
                       Online
                     </h4>
 
@@ -163,11 +163,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
             <div>
-              <p className="text-cyan-400 font-black uppercase tracking-widest text-sm">
+              <p className="text-cyan-400 font-black uppercase tracking-[0.18em] text-xs md:text-sm">
                 Start Collecting
               </p>
 
-              <h2 className="text-4xl md:text-6xl font-black mt-4">
+              <h2 className="text-4xl md:text-6xl font-black mt-3 md:mt-4">
                 Choose A Puzzle
               </h2>
             </div>
@@ -192,11 +192,11 @@ export default function HomePage() {
 
           <div className="text-center mb-16">
 
-            <p className="text-cyan-400 font-black uppercase tracking-widest text-sm">
+            <p className="text-cyan-400 font-black uppercase tracking-[0.18em] text-xs md:text-sm">
               PLATFORM FEATURES
             </p>
 
-            <h2 className="text-4xl md:text-6xl font-black mt-5">
+            <h2 className="text-4xl md:text-6xl font-black mt-4 md:mt-5">
               Built For
               <br />
               Collectors
@@ -208,13 +208,13 @@ export default function HomePage() {
 
             {/* CARD */}
 
-            <div className="bg-zinc-950 border border-white/10 rounded-3xl p-8">
+            <div className="bg-zinc-950 border border-white/10 rounded-3xl p-6 md:p-8">
 
               <div className="w-14 h-14 rounded-2xl bg-cyan-400 text-black flex items-center justify-center text-2xl font-black">
                 ⚡
               </div>
 
-              <h3 className="text-3xl font-black mt-8">
+              <h3 className="text-2xl md:text-3xl font-black mt-7 md:mt-8">
                 Live Marketplace
               </h3>
 
@@ -226,13 +226,13 @@ export default function HomePage() {
 
             {/* CARD */}
 
-            <div className="bg-zinc-950 border border-white/10 rounded-3xl p-8">
+            <div className="bg-zinc-950 border border-white/10 rounded-3xl p-6 md:p-8">
 
               <div className="w-14 h-14 rounded-2xl bg-cyan-400 text-black flex items-center justify-center text-2xl font-black">
                 🧩
               </div>
 
-              <h3 className="text-3xl font-black mt-8">
+              <h3 className="text-2xl md:text-3xl font-black mt-7 md:mt-8">
                 Puzzle Progression
               </h3>
 
@@ -244,13 +244,13 @@ export default function HomePage() {
 
             {/* CARD */}
 
-            <div className="bg-zinc-950 border border-white/10 rounded-3xl p-8">
+            <div className="bg-zinc-950 border border-white/10 rounded-3xl p-6 md:p-8">
 
               <div className="w-14 h-14 rounded-2xl bg-cyan-400 text-black flex items-center justify-center text-2xl font-black">
                 👑
               </div>
 
-              <h3 className="text-3xl font-black mt-8">
+              <h3 className="text-2xl md:text-3xl font-black mt-7 md:mt-8">
                 Collector Rankings
               </h3>
 

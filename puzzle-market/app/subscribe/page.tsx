@@ -115,39 +115,39 @@ export default function SubscribePage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white px-6 py-10">
+    <main className="min-h-screen bg-black text-white px-4 md:px-6 py-8 md:py-10">
       <section className="mx-auto max-w-6xl">
-        <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.35em]">
+        <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.18em] md:tracking-[0.35em]">
           Collector Plans
         </p>
 
-        <h1 className="mt-4 text-5xl md:text-7xl font-black leading-none">
+        <h1 className="mt-4 text-5xl sm:text-6xl md:text-7xl font-black leading-none">
           Choose your access.
         </h1>
 
-        <p className="mt-5 max-w-2xl text-zinc-400 text-lg">
+        <p className="mt-5 max-w-2xl text-zinc-400 text-base md:text-lg leading-relaxed">
           A plan unlocks your Puzzle Market profile. Upgrade any time when you want more visibility or creator tools.
         </p>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-8 md:mt-10 grid gap-5 md:grid-cols-3">
           {plans.map((plan) => (
             <article
               key={plan.tier}
-              className="rounded-[28px] border border-cyan-400/20 bg-white/[0.03] p-6"
+              className="rounded-[24px] md:rounded-[28px] border border-cyan-400/20 bg-white/[0.03] p-5 md:p-6"
             >
-              <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.25em]">
+              <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.16em] md:tracking-[0.25em]">
                 {plan.badge}
               </p>
 
-              <h2 className="mt-4 text-4xl font-black">
+              <h2 className="mt-4 text-3xl md:text-4xl font-black">
                 {plan.name}
               </h2>
 
-              <div className="mt-3 text-5xl font-black text-cyan-400">
+              <div className="mt-3 text-4xl md:text-5xl font-black text-cyan-400">
                 {plan.price}
               </div>
 
-              <p className="mt-4 text-zinc-400 min-h-[76px]">
+              <p className="mt-4 text-zinc-400 md:min-h-[76px] leading-relaxed">
                 {plan.description}
               </p>
 

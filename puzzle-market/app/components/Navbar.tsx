@@ -167,18 +167,18 @@ export default function Navbar() {
 
         <div className="max-w-7xl mx-auto px-4 md:px-6">
 
-          <div className="h-16 flex items-center justify-between">
+          <div className="h-16 flex items-center justify-between gap-3">
 
             {/* LEFT */}
 
-            <div className="flex items-center gap-10">
+            <div className="flex min-w-0 items-center gap-10">
 
               <a
                 href="/marketplace"
-                className="flex items-center gap-3"
+                className="flex min-w-0 items-center gap-3"
               >
 
-                <div className="w-10 h-10 rounded-2xl bg-cyan-400 text-black flex items-center justify-center font-black">
+                <div className="w-10 h-10 shrink-0 rounded-2xl bg-cyan-400 text-black flex items-center justify-center font-black">
                   P
                 </div>
 
@@ -266,7 +266,7 @@ export default function Navbar() {
 
             {/* RIGHT */}
 
-            <div className="flex items-center gap-3">
+            <div className="flex shrink-0 items-center gap-2 md:gap-3">
 
               {/* NOTIFICATIONS */}
 
@@ -380,7 +380,7 @@ export default function Navbar() {
                 onClick={() =>
                   setWalletOpen(true)
                 }
-                className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-4 py-2 rounded-2xl transition"
+                className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-3 md:px-4 py-2 rounded-2xl transition text-sm md:text-base"
               >
                 ${balance}
               </button>
@@ -404,10 +404,10 @@ export default function Navbar() {
                 onClick={() =>
                   setOpen(!open)
                 }
-                className="xl:hidden w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-sm font-black"
+                className="xl:hidden h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center px-3 text-xs font-black"
               >
 
-                {open ? "X" : "Menu"}
+                {open ? "Close" : "Menu"}
               </button>
 
             </div>
@@ -422,44 +422,46 @@ export default function Navbar() {
 
           <div className="xl:hidden border-t border-white/5 bg-black/95 backdrop-blur-xl">
 
-            <div className="px-4 py-5 flex flex-col gap-4 text-sm font-semibold">
+            <div className="px-4 py-5 grid grid-cols-2 gap-3 text-sm font-semibold">
 
-              <a href={CHOOSE_PUZZLE_HREF}>
+              <a href={CHOOSE_PUZZLE_HREF} className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 Play
               </a>
 
-              <a href="/marketplace">
+              <a href="/marketplace" className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 Explore
               </a>
 
-              <a href="/profile">
+              <a href="/profile" className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 Profile
-              </a>              <a href="/subscribe">
+              </a>
+
+              <a href="/subscribe" className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 Plans
               </a>
 
 
-              <a href="/sell">
+              <a href="/sell" className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 Sell
               </a>
 
-              <a href="/withdraw">
+              <a href="/withdraw" className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 Withdraw
               </a>
 
-              <a href="/chat">
+              <a href="/chat" className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 Chat
               </a>
 
-              <a href="/support">
+              <a href="/support" className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 Support
               </a>
 
-              <a href="/about">
+              <a href="/about" className="rounded-2xl bg-white/[0.04] px-4 py-3">
                 About
               </a>
 
-              <div className="border-t border-white/10 pt-4 mt-2 flex flex-col gap-3">
+              <div className="col-span-2 border-t border-white/10 pt-4 mt-2 flex flex-col gap-3">
                 {username ? (
                   <>
                     <a
@@ -498,13 +500,13 @@ export default function Navbar() {
 
       {walletOpen && (
 
-        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4 py-6">
 
-          <div className="w-full max-w-md bg-zinc-950 border border-white/10 rounded-3xl p-6">
+          <div className="w-full max-w-md bg-zinc-950 border border-white/10 rounded-[24px] md:rounded-3xl p-5 md:p-6">
 
             <div className="flex items-center justify-between">
 
-              <h2 className="text-3xl font-black">
+              <h2 className="text-2xl md:text-3xl font-black">
                 Wallet
               </h2>
 
@@ -519,13 +521,13 @@ export default function Navbar() {
 
             </div>
 
-            <div className="mt-6 bg-white/5 border border-white/10 rounded-3xl p-5 text-center">
+            <div className="mt-6 bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl p-5 text-center">
 
               <p className="text-zinc-500 text-sm">
                 Current Balance
               </p>
 
-              <h3 className="text-cyan-400 text-5xl font-black mt-3">
+              <h3 className="text-cyan-400 text-4xl md:text-5xl font-black mt-3">
                 ${balance}
               </h3>
 

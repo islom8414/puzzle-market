@@ -269,19 +269,19 @@ export default function ProfilePage() {
 
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.14),transparent_35%)] pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-10">
+      <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10">
 
         {/* HERO */}
 
-        <section className="bg-white/[0.03] border border-white/10 rounded-[36px] p-8 md:p-10 backdrop-blur-xl overflow-hidden relative">
+        <section className="bg-white/[0.03] border border-white/10 rounded-[24px] md:rounded-[36px] p-5 md:p-10 backdrop-blur-xl overflow-hidden relative">
 
           <div className="absolute top-0 right-0 w-72 h-72 bg-cyan-400/10 blur-3xl rounded-full" />
 
           <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-10 relative">
 
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5 md:gap-6">
 
-              <div className="w-28 h-28 rounded-full bg-cyan-400 text-black flex items-center justify-center text-5xl font-black shadow-[0_0_50px_rgba(34,211,238,0.45)]">
+              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-cyan-400 text-black flex shrink-0 items-center justify-center text-4xl md:text-5xl font-black shadow-[0_0_50px_rgba(34,211,238,0.45)]">
 
                 {username
                   .charAt(0)
@@ -291,11 +291,11 @@ export default function ProfilePage() {
 
               <div>
 
-                <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
+                <p className="text-cyan-400 uppercase tracking-[0.18em] md:tracking-[0.3em] text-xs font-black">
                   Creator Dashboard
                 </p>
 
-                <h1 className="text-4xl md:text-6xl font-black mt-3 break-all">
+                <h1 className="text-4xl md:text-6xl font-black mt-3 break-words">
                   {username}
                 </h1>
 
@@ -354,7 +354,7 @@ export default function ProfilePage() {
 
             <Link
               href="/sell"
-              className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-8 py-5 rounded-3xl transition text-center text-lg shadow-[0_0_40px_rgba(34,211,238,0.35)]"
+              className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-3xl transition text-center text-base md:text-lg shadow-[0_0_40px_rgba(34,211,238,0.35)]"
             >
               Resell My Pieces
             </Link>
@@ -365,39 +365,39 @@ export default function ProfilePage() {
 
         {/* STATS */}
 
-        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mt-8 md:mt-10">
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6 backdrop-blur-xl">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[22px] md:rounded-[30px] p-5 md:p-6 backdrop-blur-xl">
 
             <p className="text-zinc-500 text-sm">
               Owned Fragments
             </p>
 
-            <h2 className="text-5xl font-black mt-4">
+            <h2 className="text-4xl md:text-5xl font-black mt-4">
               {ownedPieces.length}
             </h2>
 
           </div>
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6 backdrop-blur-xl">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[22px] md:rounded-[30px] p-5 md:p-6 backdrop-blur-xl">
 
             <p className="text-zinc-500 text-sm">
               Active Listings
             </p>
 
-            <h2 className="text-5xl font-black mt-4">
+            <h2 className="text-4xl md:text-5xl font-black mt-4">
               {activeListings}
             </h2>
 
           </div>
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6 backdrop-blur-xl">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[22px] md:rounded-[30px] p-5 md:p-6 backdrop-blur-xl">
 
             <p className="text-zinc-500 text-sm">
               Wallet Balance
             </p>
 
-            <h2 className="text-5xl font-black mt-4 text-cyan-400">
+            <h2 className="text-4xl md:text-5xl font-black mt-4 text-cyan-400">
               ${balance}
             </h2>
 
@@ -419,13 +419,13 @@ export default function ProfilePage() {
 
           </div>
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6 backdrop-blur-xl">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[22px] md:rounded-[30px] p-5 md:p-6 backdrop-blur-xl">
 
             <p className="text-zinc-500 text-sm">
               Listed Value
             </p>
 
-            <h2 className="text-5xl font-black mt-4 text-green-400">
+            <h2 className="text-4xl md:text-5xl font-black mt-4 text-green-400">
               ${totalValue}
             </h2>
 
@@ -437,11 +437,11 @@ export default function ProfilePage() {
 
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
+              <p className="text-cyan-400 uppercase tracking-[0.18em] md:tracking-[0.3em] text-xs font-black">
                 Inventory
               </p>
 
-              <h2 className="text-4xl md:text-5xl font-black mt-3">
+              <h2 className="text-3xl md:text-5xl font-black mt-3">
                 Owned Pieces
               </h2>
             </div>
@@ -455,7 +455,7 @@ export default function ProfilePage() {
           </div>
 
           {ownedPieces.length === 0 && (
-            <div className="mt-8 bg-white/[0.03] border border-white/10 rounded-[30px] p-10 text-center">
+            <div className="mt-8 bg-white/[0.03] border border-white/10 rounded-[24px] md:rounded-[30px] p-6 md:p-10 text-center">
               <h3 className="text-3xl font-black">
                 No owned pieces yet
               </h3>
@@ -470,12 +470,12 @@ export default function ProfilePage() {
             {ownedPieces.map((item) => (
               <div
                 key={item.pieceId}
-                className="overflow-hidden rounded-[30px] border border-cyan-400/25 bg-cyan-400/[0.04]"
+                className="overflow-hidden rounded-[24px] md:rounded-[30px] border border-cyan-400/25 bg-cyan-400/[0.04]"
               >
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="h-56 w-full object-cover blur-sm scale-105"
+                  className="h-48 md:h-56 w-full object-cover blur-sm scale-105"
                 />
 
                 <div className="p-5">
@@ -483,7 +483,7 @@ export default function ProfilePage() {
                     Ownership Certificate
                   </p>
 
-                  <h3 className="text-3xl font-black mt-2">
+                  <h3 className="text-2xl md:text-3xl font-black mt-2">
                     {item.title} #{item.pieceIndex}
                   </h3>
 

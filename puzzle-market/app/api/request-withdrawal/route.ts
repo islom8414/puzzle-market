@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
+import Stripe from "stripe";
 
 import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
+import { getStripeConfig } from "@/lib/stripe-config";
 
 const withdrawalMethods = [
-  "visa_card",
-  "bank_transfer",
-  "paypal",
-  "usdt",
+  "stripe_instant",
+  "stripe_standard",
 ] as const;
 
 type WithdrawalMethod =
@@ -82,27 +82,6 @@ export async function POST(
       );
     }
 
-    const destinationLabel =
-      typeof body.destination ===
-      "string"
-        ? body.destination.trim()
-        : "";
-
-    if (
-      destinationLabel.length < 4 ||
-      destinationLabel.length > 120
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "Add valid payout details",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
     const admin =
       createSupabaseAdmin();
 
@@ -128,8 +107,73 @@ export async function POST(
       );
     }
 
+    const {
+      data: profile,
+      error: profileError,
+    } =
+      await admin
+        .from("market_profiles")
+        .select(
+          "stripe_account_id"
+        )
+        .eq("id", userData.user.id)
+        .maybeSingle();
+
+    const stripeAccountId =
+      profile?.stripe_account_id as
+        | string
+        | null
+        | undefined;
+
+    if (
+      profileError ||
+      !stripeAccountId
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Connect your Stripe payout account first",
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
+    const stripeConfig =
+      getStripeConfig();
+    const stripe =
+      new Stripe(
+        stripeConfig.secretKey
+      );
+
+    const connectedAccount =
+      await stripe.accounts.retrieve(
+        stripeAccountId
+      );
+
+    if (
+      connectedAccount.payouts_enabled !==
+      true
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Finish Stripe payout onboarding first",
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
     const amountCents =
       Math.round(amount * 100);
+    const destinationLabel =
+      body.method ===
+      "stripe_instant"
+        ? "Stripe Instant Payout"
+        : "Stripe Standard Payout";
 
     const {
       data: withdrawalId,
@@ -160,9 +204,163 @@ export async function POST(
       );
     }
 
-    return NextResponse.json({
-      withdrawalId,
-    });
+    await admin
+      .from(
+        "wallet_withdrawal_requests"
+      )
+      .update({
+        status: "processing",
+      })
+      .eq("id", withdrawalId);
+
+    let transferId = "";
+
+    try {
+      const transfer =
+        await stripe.transfers.create(
+          {
+            amount: amountCents,
+            currency: "usd",
+            destination:
+              stripeAccountId,
+            transfer_group:
+              `withdrawal_${withdrawalId}`,
+            metadata: {
+              withdrawal_id:
+                String(withdrawalId),
+              user_id:
+                userData.user.id,
+            },
+          },
+          {
+            idempotencyKey:
+              `withdrawal_transfer_${withdrawalId}`,
+          }
+        );
+
+      transferId = transfer.id;
+
+      const payout =
+        await stripe.payouts.create(
+          {
+            amount: amountCents,
+            currency: "usd",
+            method:
+              body.method ===
+              "stripe_instant"
+                ? "instant"
+                : "standard",
+            metadata: {
+              withdrawal_id:
+                String(withdrawalId),
+              user_id:
+                userData.user.id,
+            },
+          },
+          {
+            stripeAccount:
+              stripeAccountId,
+            idempotencyKey:
+              `withdrawal_payout_${withdrawalId}`,
+          }
+        );
+
+      const {
+        error: completeError,
+      } =
+        await admin.rpc(
+          "complete_wallet_withdrawal",
+          {
+            p_withdrawal_id:
+              withdrawalId,
+            p_provider_reference:
+              payout.id,
+            p_provider_transfer_reference:
+              transfer.id,
+          }
+        );
+
+      if (completeError) {
+        throw completeError;
+      }
+
+      return NextResponse.json({
+        withdrawalId,
+        payoutId: payout.id,
+        transferId: transfer.id,
+        status: "paid",
+      });
+    } catch (stripeError) {
+      const message =
+        stripeError instanceof Error
+          ? stripeError.message
+          : "Stripe payout failed";
+
+      if (transferId) {
+        try {
+          await stripe.transfers.createReversal(
+            transferId,
+            {
+              amount: amountCents,
+            },
+            {
+              idempotencyKey:
+                `withdrawal_reversal_${withdrawalId}`,
+            }
+          );
+        } catch (reversalError) {
+          console.error(
+            reversalError
+          );
+
+          await admin
+            .from(
+              "wallet_withdrawal_requests"
+            )
+            .update({
+              status: "failed",
+              provider_error:
+                "Stripe payout failed and transfer reversal needs admin review",
+              provider_transfer_reference:
+                transferId,
+            })
+            .eq(
+              "id",
+              withdrawalId
+            );
+
+          return NextResponse.json(
+            {
+              error:
+                "Payout failed after transfer. Admin review required.",
+            },
+            {
+              status: 500,
+            }
+          );
+        }
+      }
+
+      await admin.rpc(
+        "fail_wallet_withdrawal_and_refund",
+        {
+          p_withdrawal_id:
+            withdrawalId,
+          p_provider_error:
+            message,
+        }
+      );
+
+      return NextResponse.json(
+        {
+          error: message,
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
   } catch (error) {
     console.error(error);
 

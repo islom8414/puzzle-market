@@ -82,6 +82,7 @@ export default function MarketplacePage() {
       params.get("piece");
 
     if (searchParam) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearch(searchParam);
     }
 
@@ -462,28 +463,28 @@ export default function MarketplacePage() {
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.15),transparent_35%)]" />
 
-        <div className="relative max-w-7xl mx-auto px-4 md:px-6 pt-16 pb-14">
+        <div className="relative max-w-7xl mx-auto px-4 md:px-6 pt-12 md:pt-16 pb-12 md:pb-14">
 
-          <p className="text-cyan-400 font-black uppercase tracking-[0.3em] text-xs">
+          <p className="text-cyan-400 font-black uppercase tracking-[0.18em] md:tracking-[0.3em] text-xs">
             LIVE CLOUD MARKETPLACE
           </p>
 
-          <h1 className="text-5xl md:text-7xl font-black mt-5 leading-[0.95] max-w-5xl">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black mt-4 md:mt-5 leading-[0.95] max-w-5xl">
             Trade Rare
             <br />
             Puzzle Fragments
           </h1>
 
-          <p className="text-zinc-400 text-lg mt-8 max-w-2xl leading-relaxed">
+          <p className="text-zinc-400 text-base md:text-lg mt-6 md:mt-8 max-w-2xl leading-relaxed">
             {puzzleFilter
               ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
               : "Real-time collectible economy powered by live cloud ownership, instant marketplace sync and premium fragment trading."}
           </p>
 
-          <div className="flex flex-wrap gap-4 mt-10">
+          <div className="flex flex-wrap gap-3 md:gap-4 mt-8 md:mt-10">
             <Link
               href={CHOOSE_PUZZLE_HREF}
-              className="inline-flex rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300"
+              className="inline-flex w-full sm:w-auto justify-center rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300"
             >
               Choose A Puzzle
             </Link>
@@ -491,15 +492,15 @@ export default function MarketplacePage() {
 
           {/* STATS */}
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-10 md:mt-12">
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-5 backdrop-blur-xl">
+            <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
                 Live Listings
               </p>
 
-              <h3 className="text-4xl font-black mt-3">
+              <h3 className="text-3xl md:text-4xl font-black mt-3">
                 {
                   marketItems.length
                 }
@@ -507,37 +508,37 @@ export default function MarketplacePage() {
 
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-5 backdrop-blur-xl">
+            <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
                 Marketplace
               </p>
 
-              <h3 className="text-cyan-400 text-4xl font-black mt-3">
+              <h3 className="text-cyan-400 text-3xl md:text-4xl font-black mt-3">
                 LIVE
               </h3>
 
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-5 backdrop-blur-xl">
+            <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
                 Cloud Sync
               </p>
 
-              <h3 className="text-4xl font-black mt-3">
+              <h3 className="text-3xl md:text-4xl font-black mt-3">
                 24/7
               </h3>
 
             </div>
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-5 backdrop-blur-xl">
+            <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
                 Status
               </p>
 
-              <h3 className="text-green-400 text-4xl font-black mt-3">
+              <h3 className="text-green-400 text-3xl md:text-4xl font-black mt-3">
                 ONLINE
               </h3>
 
@@ -555,7 +556,7 @@ export default function MarketplacePage() {
 
         {/* FILTERS */}
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-4 md:gap-5 mb-10 md:mb-12">
 
           <input
             value={search}
@@ -569,7 +570,7 @@ export default function MarketplacePage() {
                 ? "Exact puzzle filter is active"
                 : "Search rare fragments..."
             }
-            className="bg-white/[0.03] border border-white/10 rounded-3xl px-6 py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
+            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           />
 
           <select
@@ -579,7 +580,7 @@ export default function MarketplacePage() {
                 e.target.value
               )
             }
-            className="bg-white/[0.03] border border-white/10 rounded-3xl px-6 py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
+            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           >
 
             <option value="ALL">
@@ -606,9 +607,9 @@ export default function MarketplacePage() {
 
         {loading && (
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[32px] p-20 text-center backdrop-blur-xl">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[28px] md:rounded-[32px] p-8 md:p-20 text-center backdrop-blur-xl">
 
-            <h2 className="text-5xl font-black">
+            <h2 className="text-3xl md:text-5xl font-black">
               Loading Marketplace...
             </h2>
 
@@ -618,14 +619,14 @@ export default function MarketplacePage() {
 
         {/* GRID */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-8">
 
           {filteredFragments.map(
             (fragment) => (
 
               <div
                 key={fragment.id}
-                className={`group relative rounded-[32px] overflow-hidden border bg-white/[0.03] backdrop-blur-xl transition duration-500 hover:-translate-y-2 ${rarityGlow(fragment.rarity)}`}
+                className={`group relative rounded-[24px] md:rounded-[32px] overflow-hidden border bg-white/[0.03] backdrop-blur-xl transition duration-500 hover:-translate-y-2 ${rarityGlow(fragment.rarity)}`}
               >
 
                 {/* IMAGE */}
@@ -635,9 +636,9 @@ export default function MarketplacePage() {
                   {piecePreviewStyle(
                     fragment
                   ) ? (
-                    <div className="h-[340px] bg-black flex items-center justify-center">
+                    <div className="h-[260px] md:h-[340px] bg-black flex items-center justify-center">
                       <div
-                        className="w-[260px] h-[260px] border border-cyan-400/40 shadow-[0_0_40px_rgba(34,211,238,0.18)] transition duration-700 group-hover:scale-105"
+                        className="w-[200px] h-[200px] md:w-[260px] md:h-[260px] border border-cyan-400/40 shadow-[0_0_40px_rgba(34,211,238,0.18)] transition duration-700 group-hover:scale-105"
                         style={
                           piecePreviewStyle(
                             fragment
@@ -653,7 +654,7 @@ export default function MarketplacePage() {
                       alt={
                         fragment.title
                       }
-                      className="w-full h-[340px] object-cover transition duration-700 group-hover:scale-110"
+                      className="w-full h-[260px] md:h-[340px] object-cover transition duration-700 group-hover:scale-110"
                     />
                   )}
 
@@ -663,13 +664,13 @@ export default function MarketplacePage() {
 
                   <div className="absolute top-5 left-5 flex gap-3">
 
-                    <div className="bg-black/70 backdrop-blur-xl px-4 py-2 rounded-full text-xs font-black text-cyan-400 border border-cyan-400/20">
+                    <div className="bg-black/70 backdrop-blur-xl px-3 md:px-4 py-2 rounded-full text-[11px] md:text-xs font-black text-cyan-400 border border-cyan-400/20">
                       {
                         fragment.rarity
                       }
                     </div>
 
-                    <div className="bg-green-400 text-black px-4 py-2 rounded-full text-xs font-black">
+                    <div className="bg-green-400 text-black px-3 md:px-4 py-2 rounded-full text-[11px] md:text-xs font-black">
                       LIVE
                     </div>
 
@@ -677,13 +678,13 @@ export default function MarketplacePage() {
 
                   {/* PRICE FLOAT */}
 
-                  <div className="absolute bottom-5 right-5 bg-black/70 backdrop-blur-xl border border-white/10 rounded-2xl px-5 py-3">
+                  <div className="absolute bottom-4 md:bottom-5 right-4 md:right-5 bg-black/70 backdrop-blur-xl border border-white/10 rounded-2xl px-4 md:px-5 py-3">
 
                     <p className="text-zinc-500 text-xs">
                       PRICE
                     </p>
 
-                    <h3 className="text-cyan-400 text-3xl font-black">
+                    <h3 className="text-cyan-400 text-2xl md:text-3xl font-black">
                       $
                       {
                         fragment.price
@@ -696,7 +697,7 @@ export default function MarketplacePage() {
 
                 {/* CONTENT */}
 
-                <div className="p-6">
+                <div className="p-5 md:p-6">
 
                   <p className="text-zinc-500 text-sm uppercase tracking-wider">
                     {
@@ -704,7 +705,7 @@ export default function MarketplacePage() {
                     }
                   </p>
 
-                  <h2 className="text-4xl font-black mt-2">
+                  <h2 className="text-3xl md:text-4xl font-black mt-2">
                     Piece #
                     {
                       fragment.piece
@@ -783,9 +784,9 @@ duration-300
           filteredFragments.length ===
             0 && (
 
-          <div className="mt-16 bg-white/[0.03] border border-white/10 rounded-[32px] p-20 text-center backdrop-blur-xl">
+          <div className="mt-12 md:mt-16 bg-white/[0.03] border border-white/10 rounded-[28px] md:rounded-[32px] p-8 md:p-20 text-center backdrop-blur-xl">
 
-            <h2 className="text-5xl font-black">
+            <h2 className="text-3xl md:text-5xl font-black">
               No Fragments Found
             </h2>
 

@@ -364,27 +364,27 @@ export default function AdminPage() {
 
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.14),transparent_35%)] pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-10">
+      <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10">
 
         {/* HERO */}
 
-        <section className="bg-white/[0.03] border border-white/10 rounded-[36px] p-8 md:p-10 backdrop-blur-xl overflow-hidden relative">
+        <section className="bg-white/[0.03] border border-white/10 rounded-[24px] md:rounded-[36px] p-5 md:p-10 backdrop-blur-xl overflow-hidden relative">
 
           <div className="absolute top-0 right-0 w-72 h-72 bg-cyan-400/10 blur-3xl rounded-full" />
 
           <div className="relative">
 
-            <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
+            <p className="text-cyan-400 uppercase tracking-[0.18em] md:tracking-[0.3em] text-xs font-black">
               MARKETPLACE ADMIN
             </p>
 
-            <h1 className="text-5xl md:text-7xl font-black mt-5 leading-[0.95]">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black mt-4 md:mt-5 leading-[0.95]">
               Admin
               <br />
               Dashboard
             </h1>
 
-            <p className="text-zinc-400 text-lg mt-8 max-w-2xl leading-relaxed">
+            <p className="text-zinc-400 text-base md:text-lg mt-6 md:mt-8 max-w-2xl leading-relaxed">
               Realtime marketplace monitoring, transaction analytics and platform statistics.
             </p>
 
@@ -394,51 +394,51 @@ export default function AdminPage() {
 
         {/* STATS */}
 
-        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mt-8 md:mt-10">
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[22px] md:rounded-[30px] p-5 md:p-6">
 
             <p className="text-zinc-500 text-sm">
               Total Revenue
             </p>
 
-            <h2 className="text-cyan-400 text-5xl font-black mt-4">
+            <h2 className="text-cyan-400 text-4xl md:text-5xl font-black mt-4">
               ${totalRevenue}
             </h2>
 
           </div>
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[22px] md:rounded-[30px] p-5 md:p-6">
 
             <p className="text-zinc-500 text-sm">
               Transactions
             </p>
 
-            <h2 className="text-5xl font-black mt-4">
+            <h2 className="text-4xl md:text-5xl font-black mt-4">
               {transactions.length}
             </h2>
 
           </div>
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[22px] md:rounded-[30px] p-5 md:p-6">
 
             <p className="text-zinc-500 text-sm">
               Active Users
             </p>
 
-            <h2 className="text-5xl font-black mt-4">
+            <h2 className="text-4xl md:text-5xl font-black mt-4">
               {uniqueUsers}
             </h2>
 
           </div>
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-[30px] p-6">
+          <div className="bg-white/[0.03] border border-white/10 rounded-[22px] md:rounded-[30px] p-5 md:p-6">
 
             <p className="text-zinc-500 text-sm">
               Legendary Listings
             </p>
 
-            <h2 className="text-yellow-400 text-5xl font-black mt-4">
+            <h2 className="text-yellow-400 text-4xl md:text-5xl font-black mt-4">
               {legendaryCount}
             </h2>
 
@@ -448,13 +448,13 @@ export default function AdminPage() {
 
         {/* MISSING PIECE PRICE */}
 
-        <section className="mt-16 bg-white/[0.03] border border-cyan-400/20 rounded-[36px] p-8 md:p-10 backdrop-blur-xl">
+        <section className="mt-12 md:mt-16 bg-white/[0.03] border border-cyan-400/20 rounded-[24px] md:rounded-[36px] p-5 md:p-10 backdrop-blur-xl">
 
-          <p className="text-cyan-400 uppercase tracking-[0.3em] text-xs font-black">
+          <p className="text-cyan-400 uppercase tracking-[0.18em] md:tracking-[0.3em] text-xs font-black">
             OWNER CONTROLS
           </p>
 
-          <h2 className="text-5xl font-black mt-3">
+          <h2 className="text-3xl md:text-5xl font-black mt-3">
             Missing Piece Price
           </h2>
 

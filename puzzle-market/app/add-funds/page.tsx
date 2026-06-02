@@ -122,15 +122,15 @@ export default function AddFundsPage() {
 
   return (
 
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+    <main className="min-h-screen bg-black text-white flex items-center justify-center px-4 py-8">
 
-      <div className="w-full max-w-md bg-zinc-950 border border-cyan-500/30 rounded-3xl p-8 shadow-2xl">
+      <div className="w-full max-w-md bg-zinc-950 border border-cyan-500/30 rounded-[24px] md:rounded-3xl p-5 md:p-8 shadow-2xl">
 
-        <p className="text-cyan-400 text-xs tracking-[5px] mb-2 uppercase">
+        <p className="text-cyan-400 text-xs tracking-[0.18em] md:tracking-[5px] mb-2 uppercase">
           Wallet Topup
         </p>
 
-        <h1 className="text-5xl font-black mb-3">
+        <h1 className="text-4xl md:text-5xl font-black mb-3">
           Add Funds
         </h1>
 
@@ -143,7 +143,7 @@ export default function AddFundsPage() {
           <button
             onClick={() => topup(1)}
             disabled={loading}
-            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-5 text-3xl font-black"
+            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-4 md:py-5 text-2xl md:text-3xl font-black"
           >
             $1
           </button>
@@ -151,7 +151,7 @@ export default function AddFundsPage() {
           <button
             onClick={() => topup(10)}
             disabled={loading}
-            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-5 text-3xl font-black"
+            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-4 md:py-5 text-2xl md:text-3xl font-black"
           >
             $10
           </button>
@@ -159,7 +159,7 @@ export default function AddFundsPage() {
           <button
             onClick={() => topup(50)}
             disabled={loading}
-            className="bg-cyan-500 hover:bg-cyan-400 text-black transition-all rounded-2xl py-5 text-3xl font-black"
+            className="bg-cyan-500 hover:bg-cyan-400 text-black transition-all rounded-2xl py-4 md:py-5 text-2xl md:text-3xl font-black"
           >
             $50
           </button>
@@ -167,7 +167,7 @@ export default function AddFundsPage() {
           <button
             onClick={() => topup(100)}
             disabled={loading}
-            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-5 text-3xl font-black"
+            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-4 md:py-5 text-2xl md:text-3xl font-black"
           >
             $100
           </button>
