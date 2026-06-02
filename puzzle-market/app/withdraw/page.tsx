@@ -296,36 +296,50 @@ export default function WithdrawPage() {
         : "Stripe payout account required";
 
   return (
-    <main className="min-h-screen bg-black px-4 py-8 md:py-10 text-white">
-      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_0.85fr]">
-        <section className="rounded-[24px] md:rounded-[30px] border border-white/10 bg-white/[0.03] p-5 md:p-8">
-          <p className="text-xs font-black uppercase tracking-[0.18em] md:tracking-[0.3em] text-cyan-400">
-            Wallet Payout
-          </p>
+    <main className="min-h-screen bg-black px-4 py-8 text-white md:py-12">
+      <div
+        className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]"
+        style={{
+          width: "min(100%, 1180px)",
+          margin: "0 auto",
+        }}
+      >
+        <section className="rounded-[24px] border border-white/10 bg-zinc-950/80 p-5 shadow-2xl shadow-cyan-950/10 md:p-7">
+          <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">
+                Wallet Payout
+              </p>
 
-          <h1 className="mt-3 text-4xl font-black md:text-6xl">
-            Withdraw Funds
-          </h1>
+              <h1 className="mt-3 text-4xl font-black leading-none md:text-5xl">
+                Withdraw Funds
+              </h1>
 
-          <div className="mt-6 md:mt-8 rounded-2xl md:rounded-3xl border border-cyan-400/20 bg-cyan-400/[0.06] p-5">
-            <p className="text-sm text-zinc-400">
-              Available Balance
-            </p>
-            <h2 className="mt-2 text-4xl md:text-5xl font-black text-cyan-300">
-              ${balance.toFixed(2)}
-            </h2>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400 md:text-base">
+                Connect Stripe once, then send eligible wallet balance to your Visa debit card or bank account.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] px-5 py-4 md:min-w-48">
+              <p className="text-sm text-zinc-400">
+                Available Balance
+              </p>
+              <h2 className="mt-1 text-4xl font-black text-cyan-300">
+                ${balance.toFixed(2)}
+              </h2>
+            </div>
           </div>
 
-          <div className="mt-6 rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-950 p-5">
+          <div className="mt-6 rounded-2xl border border-white/10 bg-black/60 p-5">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm font-black uppercase text-cyan-300">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
                   Stripe Connect
                 </p>
-                <h2 className="mt-2 text-xl md:text-2xl font-black">
+                <h2 className="mt-2 text-2xl font-black">
                   {readyLabel}
                 </h2>
-                <p className="mt-2 text-sm text-zinc-400">
+                <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
                   Add your Visa debit card or bank account inside Stripe. Puzzle Market never stores card numbers.
                 </p>
               </div>
@@ -344,7 +358,7 @@ export default function WithdrawPage() {
             </div>
           </div>
 
-          <div className="mt-6 md:mt-8 grid gap-4 sm:grid-cols-2">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {methods.map((item) => (
               <button
                 key={item.id}
@@ -353,7 +367,7 @@ export default function WithdrawPage() {
                 }
                 className={`rounded-2xl border p-4 text-left transition ${
                   method === item.id
-                    ? "border-cyan-400 bg-cyan-400 text-black"
+                    ? "border-cyan-400 bg-cyan-400 text-black shadow-lg shadow-cyan-400/15"
                     : "border-white/10 bg-white/[0.04] hover:border-cyan-400"
                 }`}
               >
@@ -361,7 +375,7 @@ export default function WithdrawPage() {
                   {item.label}
                 </span>
                 <span
-                  className={`mt-1 block text-sm ${
+                  className={`mt-2 block text-sm leading-5 ${
                     method === item.id
                       ? "text-black/70"
                       : "text-zinc-500"
@@ -373,39 +387,41 @@ export default function WithdrawPage() {
             ))}
           </div>
 
-          <label className="mt-6 md:mt-8 block">
-            <span className="text-sm font-bold text-zinc-400">
-              Amount
-            </span>
-            <input
-              value={amount}
-              onChange={(event) =>
-                setAmount(
-                  event.target.value
-                )
-              }
-              inputMode="decimal"
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-4 text-xl md:text-2xl font-black outline-none focus:border-cyan-400"
-            />
-          </label>
+          <div className="mt-5 grid gap-4 md:grid-cols-[180px_1fr] md:items-end">
+            <label className="block">
+              <span className="text-sm font-bold text-zinc-400">
+                Amount
+              </span>
+              <input
+                value={amount}
+                onChange={(event) =>
+                  setAmount(
+                    event.target.value
+                  )
+                }
+                inputMode="decimal"
+                className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-4 text-xl font-black outline-none focus:border-cyan-400"
+              />
+            </label>
 
-          <button
-            onClick={submitWithdrawal}
-            disabled={
-              submitting ||
-              loading ||
-              !connectStatus.ready
-            }
-            className="mt-6 w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-50"
-          >
-            {submitting
-              ? "Sending Payout..."
-              : "Send Automatic Payout"}
-          </button>
+            <button
+              onClick={submitWithdrawal}
+              disabled={
+                submitting ||
+                loading ||
+                !connectStatus.ready
+              }
+              className="w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:bg-cyan-400/25 disabled:text-cyan-950"
+            >
+              {submitting
+                ? "Sending Payout..."
+                : "Send Automatic Payout"}
+            </button>
+          </div>
         </section>
 
-        <section className="rounded-[24px] md:rounded-[30px] border border-white/10 bg-zinc-950 p-5 md:p-8">
-          <h2 className="text-2xl md:text-3xl font-black">
+        <section className="rounded-[24px] border border-white/10 bg-zinc-950/80 p-5 md:p-7">
+          <h2 className="text-2xl font-black md:text-3xl">
             Withdrawal History
           </h2>
 
