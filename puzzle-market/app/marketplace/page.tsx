@@ -469,13 +469,13 @@ export default function MarketplacePage() {
             LIVE CLOUD MARKETPLACE
           </p>
 
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black mt-4 md:mt-5 leading-[0.95] max-w-5xl">
+          <h1 className="translate-safe-title font-black mt-4 md:mt-5 max-w-5xl">
             Trade Rare
             <br />
             Puzzle Fragments
           </h1>
 
-          <p className="text-zinc-400 text-base md:text-lg mt-6 md:mt-8 max-w-2xl leading-relaxed">
+          <p className="translate-safe-copy text-zinc-400 text-base md:text-lg mt-6 md:mt-8 leading-relaxed">
             {puzzleFilter
               ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
               : "Real-time collectible economy powered by live cloud ownership, instant marketplace sync and premium fragment trading."}
@@ -500,7 +500,7 @@ export default function MarketplacePage() {
                 Live Listings
               </p>
 
-              <h3 className="text-3xl md:text-4xl font-black mt-3">
+              <h3 className="translate-safe-stat font-black mt-3">
                 {
                   marketItems.length
                 }
@@ -514,7 +514,7 @@ export default function MarketplacePage() {
                 Marketplace
               </p>
 
-              <h3 className="text-cyan-400 text-3xl md:text-4xl font-black mt-3">
+              <h3 className="translate-safe-stat text-cyan-400 font-black mt-3">
                 LIVE
               </h3>
 
@@ -526,7 +526,7 @@ export default function MarketplacePage() {
                 Cloud Sync
               </p>
 
-              <h3 className="text-3xl md:text-4xl font-black mt-3">
+              <h3 className="translate-safe-stat font-black mt-3">
                 24/7
               </h3>
 
@@ -538,7 +538,7 @@ export default function MarketplacePage() {
                 Status
               </p>
 
-              <h3 className="text-green-400 text-3xl md:text-4xl font-black mt-3">
+              <h3 className="translate-safe-stat text-green-400 font-black mt-3">
                 ONLINE
               </h3>
 

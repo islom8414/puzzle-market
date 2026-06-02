@@ -36,7 +36,7 @@ export default function HomePage() {
                 PREMIUM FRAGMENT MARKETPLACE
               </p>
 
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.95] mt-5 md:mt-6">
+              <h1 className="translate-safe-title font-black mt-5 md:mt-6">
 
                 Collect
                 <br />
@@ -48,7 +48,7 @@ export default function HomePage() {
 
               </h1>
 
-              <p className="text-zinc-400 text-base md:text-lg leading-relaxed mt-6 md:mt-8 max-w-2xl">
+              <p className="translate-safe-copy text-zinc-400 text-base md:text-lg leading-relaxed mt-6 md:mt-8">
 
                 Trade rare hidden puzzle fragments, complete premium artwork collections,
                 unlock legendary rewards and build your collector empire.
@@ -114,7 +114,7 @@ export default function HomePage() {
                   Verified Ownership
                 </p>
 
-                <h3 className="text-2xl md:text-3xl font-black mt-3">
+                <h3 className="text-xl md:text-2xl font-black mt-3 leading-tight">
                   Launch Ready
                 </h3>
 
@@ -126,7 +126,7 @@ export default function HomePage() {
                       Piece
                     </p>
 
-                    <h4 className="text-xl md:text-2xl font-black">
+                    <h4 className="text-lg md:text-xl font-black leading-tight">
                       Hidden
                     </h4>
 
@@ -138,7 +138,7 @@ export default function HomePage() {
                       Status
                     </p>
 
-                    <h4 className="text-cyan-400 text-xl md:text-2xl font-black">
+                    <h4 className="text-cyan-400 text-lg md:text-xl font-black leading-tight">
                       Online
                     </h4>
 
@@ -167,7 +167,7 @@ export default function HomePage() {
                 Start Collecting
               </p>
 
-              <h2 className="text-4xl md:text-6xl font-black mt-3 md:mt-4">
+              <h2 className="translate-safe-heading font-black mt-3 md:mt-4">
                 Choose A Puzzle
               </h2>
             </div>
@@ -196,7 +196,7 @@ export default function HomePage() {
               PLATFORM FEATURES
             </p>
 
-            <h2 className="text-4xl md:text-6xl font-black mt-4 md:mt-5">
+            <h2 className="translate-safe-heading font-black mt-4 md:mt-5">
               Built For
               <br />
               Collectors
