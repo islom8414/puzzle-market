@@ -13,6 +13,26 @@ export async function POST(
   request: Request
 ) {
   try {
+    const body =
+      await request.json().catch(
+        () => ({})
+      );
+    const requestedCountry =
+      typeof body.country ===
+      "string"
+        ? body.country
+            .trim()
+            .toUpperCase()
+        : "";
+    const accountCountry =
+      /^[A-Z]{2}$/.test(
+        requestedCountry
+      )
+        ? requestedCountry
+        : process.env
+            .STRIPE_CONNECT_COUNTRY ||
+          "US";
+
     const token =
       getBearerToken(request);
 
@@ -81,14 +101,29 @@ export async function POST(
         | string
         | null;
 
-    if (!accountId) {
+    if (accountId) {
+      const existingAccount =
+        await stripe.accounts.retrieve(
+          accountId
+        );
+
+      if (
+        existingAccount.country &&
+        existingAccount.country !==
+          accountCountry
+      ) {
+        return NextResponse.json(
+          {
+            error: `This Stripe payout account is already set up for ${existingAccount.country}. Stripe does not allow changing the country after account creation. Use that country or ask support to reset the payout account before creating a new one.`,
+          },
+          { status: 409 }
+        );
+      }
+    } else {
       const account =
         await stripe.accounts.create({
           type: "express",
-          country:
-            process.env
-              .STRIPE_CONNECT_COUNTRY ||
-            "US",
+          country: accountCountry,
           email:
             profile.email ||
             userData.user.email ||

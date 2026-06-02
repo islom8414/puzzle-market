@@ -88,6 +88,9 @@ export async function GET(
 
     return NextResponse.json({
       connected: true,
+      country: account.country,
+      defaultCurrency:
+        account.default_currency,
       ready:
         account.payouts_enabled ===
         true,

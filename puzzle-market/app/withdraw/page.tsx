@@ -7,13 +7,84 @@ import { supabase } from "@/lib/supabase";
 const methods = [
   {
     id: "stripe_instant",
-    label: "Instant to Visa",
-    hint: "Stripe sends to an eligible debit card or bank account.",
+    label: "Instant payout",
+    hint: "Fast payout if Stripe says the user's card or bank is eligible.",
   },
   {
     id: "stripe_standard",
     label: "Standard Payout",
     hint: "Stripe sends to the connected payout account on normal timing.",
+  },
+] as const;
+
+const payoutCountries = [
+  {
+    code: "JP",
+    label: "Japan",
+  },
+  {
+    code: "UZ",
+    label: "Uzbekistan",
+  },
+  {
+    code: "US",
+    label: "United States",
+  },
+  {
+    code: "GB",
+    label: "United Kingdom",
+  },
+  {
+    code: "KZ",
+    label: "Kazakhstan",
+  },
+  {
+    code: "KG",
+    label: "Kyrgyzstan",
+  },
+  {
+    code: "TJ",
+    label: "Tajikistan",
+  },
+  {
+    code: "AE",
+    label: "United Arab Emirates",
+  },
+  {
+    code: "TR",
+    label: "Turkey",
+  },
+  {
+    code: "DE",
+    label: "Germany",
+  },
+  {
+    code: "FR",
+    label: "France",
+  },
+  {
+    code: "NL",
+    label: "Netherlands",
+  },
+  {
+    code: "SG",
+    label: "Singapore",
+  },
+  {
+    code: "KR",
+    label: "South Korea",
+  },
+  {
+    code: "CA",
+    label: "Canada",
+  },
+  {
+    code: "AU",
+    label: "Australia",
+  },
+  {
+    code: "OTHER",
+    label: "Other country code",
   },
 ] as const;
 
@@ -23,6 +94,8 @@ type WithdrawalMethod =
 type ConnectStatus = {
   connected: boolean;
   ready: boolean;
+  country?: string;
+  defaultCurrency?: string;
   payoutsEnabled?: boolean;
   detailsSubmitted?: boolean;
   requirementsDue?: string[];
@@ -65,6 +138,14 @@ export default function WithdrawPage() {
     useState<WithdrawalMethod>(
       "stripe_instant"
     );
+  const [
+    payoutCountry,
+    setPayoutCountry,
+  ] = useState("JP");
+  const [
+    customPayoutCountry,
+    setCustomPayoutCountry,
+  ] = useState("");
   const [connectStatus, setConnectStatus] =
     useState<ConnectStatus>({
       connected: false,
@@ -184,15 +265,40 @@ export default function WithdrawPage() {
       return;
     }
 
+    const selectedCountry =
+      payoutCountry === "OTHER"
+        ? customPayoutCountry
+            .trim()
+            .toUpperCase()
+        : payoutCountry;
+
+    if (
+      !/^[A-Z]{2}$/.test(
+        selectedCountry
+      )
+    ) {
+      alert(
+        "Enter a valid 2-letter country code, for example JP or UZ"
+      );
+      setConnecting(false);
+      return;
+    }
+
     const response =
       await fetch(
         "/api/stripe/connect-onboarding",
         {
           method: "POST",
           headers: {
+            "Content-Type":
+              "application/json",
             Authorization:
               `Bearer ${session.access_token}`,
           },
+          body: JSON.stringify({
+            country:
+              selectedCountry,
+          }),
         }
       );
 
@@ -294,6 +400,8 @@ export default function WithdrawPage() {
       : connectStatus.connected
         ? "Finish payout setup"
         : "Stripe payout account required";
+  const connectedCountry =
+    connectStatus.country;
 
   return (
     <main className="min-h-screen bg-black px-4 py-8 text-white md:py-10">
@@ -342,6 +450,84 @@ export default function WithdrawPage() {
                 <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
                   Add your Visa debit card or bank account inside Stripe. Puzzle Market never stores card numbers.
                 </p>
+
+                <label className="mt-4 block max-w-xs">
+                  <span className="text-sm font-bold text-zinc-400">
+                    Payout country
+                  </span>
+                  <select
+                    value={
+                      connectedCountry ||
+                      payoutCountry
+                    }
+                    onChange={(event) =>
+                      setPayoutCountry(
+                        event.target.value
+                      )
+                    }
+                    disabled={
+                      connectStatus.connected
+                    }
+                    className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-base font-black text-white outline-none focus:border-cyan-400 disabled:opacity-60"
+                  >
+                    {payoutCountries.map(
+                      (country) => (
+                        <option
+                          key={
+                            country.code
+                          }
+                          value={
+                            country.code
+                          }
+                        >
+                          {country.label}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </label>
+
+                {!connectStatus.connected &&
+                  payoutCountry ===
+                    "OTHER" && (
+                    <label className="mt-3 block max-w-xs">
+                      <span className="text-sm font-bold text-zinc-400">
+                        ISO country code
+                      </span>
+                      <input
+                        value={
+                          customPayoutCountry
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setCustomPayoutCountry(
+                            event.target.value
+                              .toUpperCase()
+                              .slice(
+                                0,
+                                2
+                              )
+                          )
+                        }
+                        placeholder="UZ"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-base font-black text-white outline-none focus:border-cyan-400"
+                      />
+                    </label>
+                  )}
+
+                {connectedCountry && (
+                  <p className="mt-3 text-sm text-zinc-500">
+                    Connected as{" "}
+                    <span className="font-bold text-zinc-300">
+                      {connectedCountry}
+                    </span>
+                    {connectStatus.defaultCurrency
+                      ? ` / ${connectStatus.defaultCurrency.toUpperCase()}`
+                      : ""}
+                    . Stripe account country cannot be changed after setup.
+                  </p>
+                )}
               </div>
 
               <button
