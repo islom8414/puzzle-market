@@ -47,6 +47,10 @@ img{
   background:rgba(34,211,238,.35);
 }
 
+.weglot-container{
+  display:none !important;
+}
+
 @media (max-width: 640px){
   main h1{
     font-size:clamp(2.35rem, 13vw, 3.75rem) !important;
