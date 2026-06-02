@@ -8,6 +8,10 @@ import {
 import { getStripeConfig } from "@/lib/stripe-config";
 
 const withdrawalMethods = [
+  "visa_card",
+  "bank_transfer",
+  "paypal",
+  "usdt",
   "stripe_instant",
   "stripe_standard",
 ] as const;
@@ -107,6 +111,77 @@ export async function POST(
       );
     }
 
+    const amountCents =
+      Math.round(amount * 100);
+    const isStripeMethod =
+      body.method ===
+        "stripe_instant" ||
+      body.method ===
+        "stripe_standard";
+    const destinationLabel =
+      isStripeMethod
+        ? body.method ===
+          "stripe_instant"
+          ? "Stripe Instant Payout"
+          : "Stripe Standard Payout"
+        : typeof body.destinationLabel ===
+            "string"
+          ? body.destinationLabel
+              .trim()
+              .slice(0, 200)
+          : "";
+
+    if (
+      !isStripeMethod &&
+      destinationLabel.length < 4
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Enter payout destination details",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const {
+      data: withdrawalId,
+      error: withdrawalError,
+    } =
+      await admin.rpc(
+        "request_wallet_withdrawal",
+        {
+          p_user_id:
+            userData.user.id,
+          p_amount_cents:
+            amountCents,
+          p_method: body.method,
+          p_destination_label:
+            destinationLabel,
+        }
+      );
+
+    if (withdrawalError) {
+      return NextResponse.json(
+        {
+          error:
+            withdrawalError.message,
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
+    if (!isStripeMethod) {
+      return NextResponse.json({
+        withdrawalId,
+        status: "pending",
+      });
+    }
+
     const {
       data: profile,
       error: profileError,
@@ -129,6 +204,16 @@ export async function POST(
       profileError ||
       !stripeAccountId
     ) {
+      await admin.rpc(
+        "fail_wallet_withdrawal_and_refund",
+        {
+          p_withdrawal_id:
+            withdrawalId,
+          p_provider_error:
+            "Stripe payout account is not connected",
+        }
+      );
+
       return NextResponse.json(
         {
           error:
@@ -156,47 +241,20 @@ export async function POST(
       connectedAccount.payouts_enabled !==
       true
     ) {
+      await admin.rpc(
+        "fail_wallet_withdrawal_and_refund",
+        {
+          p_withdrawal_id:
+            withdrawalId,
+          p_provider_error:
+            "Stripe payout onboarding is not finished",
+        }
+      );
+
       return NextResponse.json(
         {
           error:
             "Finish Stripe payout onboarding first",
-        },
-        {
-          status: 409,
-        }
-      );
-    }
-
-    const amountCents =
-      Math.round(amount * 100);
-    const destinationLabel =
-      body.method ===
-      "stripe_instant"
-        ? "Stripe Instant Payout"
-        : "Stripe Standard Payout";
-
-    const {
-      data: withdrawalId,
-      error: withdrawalError,
-    } =
-      await admin.rpc(
-        "request_wallet_withdrawal",
-        {
-          p_user_id:
-            userData.user.id,
-          p_amount_cents:
-            amountCents,
-          p_method: body.method,
-          p_destination_label:
-            destinationLabel,
-        }
-      );
-
-    if (withdrawalError) {
-      return NextResponse.json(
-        {
-          error:
-            withdrawalError.message,
         },
         {
           status: 409,

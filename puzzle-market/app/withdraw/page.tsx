@@ -17,6 +17,30 @@ const methods = [
   },
 ] as const;
 
+const manualMethods = [
+  {
+    id: "visa_card",
+    label: "Visa card request",
+    hint: "For countries Stripe does not support. Admin reviews and pays outside Stripe.",
+    placeholder:
+      "Visa last 4 digits + your Telegram/email for secure payout confirmation",
+  },
+  {
+    id: "bank_transfer",
+    label: "Bank transfer request",
+    hint: "Admin reviews bank details and pays outside Stripe.",
+    placeholder:
+      "Bank name + account holder + contact",
+  },
+  {
+    id: "usdt",
+    label: "USDT request",
+    hint: "Admin reviews wallet address and network before sending.",
+    placeholder:
+      "USDT address + network, for example TRC20",
+  },
+] as const;
+
 const payoutCountries = [
   {
     code: "JP",
@@ -89,7 +113,11 @@ const payoutCountries = [
 ] as const;
 
 type WithdrawalMethod =
-  (typeof methods)[number]["id"];
+  | (typeof methods)[number]["id"]
+  | (typeof manualMethods)[number]["id"];
+
+const unsupportedStripeCountries =
+  new Set(["UZ"]);
 
 type ConnectStatus = {
   connected: boolean;
@@ -138,6 +166,10 @@ export default function WithdrawPage() {
     useState<WithdrawalMethod>(
       "stripe_instant"
     );
+  const [
+    destinationLabel,
+    setDestinationLabel,
+  ] = useState("");
   const [
     payoutCountry,
     setPayoutCountry,
@@ -340,7 +372,27 @@ export default function WithdrawPage() {
       return;
     }
 
-    if (!connectStatus.ready) {
+    const isStripeMethod =
+      method ===
+        "stripe_instant" ||
+      method ===
+        "stripe_standard";
+
+    if (
+      !isStripeMethod &&
+      destinationLabel.trim()
+        .length < 4
+    ) {
+      alert(
+        "Enter payout destination details"
+      );
+      return;
+    }
+
+    if (
+      isStripeMethod &&
+      !connectStatus.ready
+    ) {
       alert(
         "Connect and finish Stripe payout setup first"
       );
@@ -370,6 +422,7 @@ export default function WithdrawPage() {
           body: JSON.stringify({
             amount: value,
             method,
+            destinationLabel,
           }),
         }
       );
@@ -389,7 +442,12 @@ export default function WithdrawPage() {
     }
 
     alert(
-      "Payout sent through Stripe"
+      method ===
+        "stripe_instant" ||
+        method ===
+          "stripe_standard"
+        ? "Payout sent through Stripe"
+        : "Withdrawal request created. Admin will review it."
     );
     await loadWithdrawals();
   }
@@ -402,6 +460,17 @@ export default function WithdrawPage() {
         : "Stripe payout account required";
   const connectedCountry =
     connectStatus.country;
+  const selectedCountry =
+    connectedCountry ||
+    payoutCountry;
+  const stripeUnsupported =
+    unsupportedStripeCountries.has(
+      selectedCountry
+    );
+  const activeMethods =
+    stripeUnsupported
+      ? manualMethods
+      : methods;
 
   return (
     <main className="min-h-screen bg-black px-4 py-8 text-white md:py-10">
@@ -445,10 +514,14 @@ export default function WithdrawPage() {
                   Stripe Connect
                 </p>
                 <h2 className="mt-2 text-[1.65rem] font-black leading-tight md:text-3xl">
-                  {readyLabel}
+                  {stripeUnsupported
+                    ? "Manual payout request"
+                    : readyLabel}
                 </h2>
                 <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
-                  Add your Visa debit card or bank account inside Stripe. Puzzle Market never stores card numbers.
+                  {stripeUnsupported
+                    ? "Stripe does not currently support this payout country. Create a request and admin will process it outside Stripe."
+                    : "Add your Visa debit card or bank account inside Stripe. Puzzle Market never stores card numbers."}
                 </p>
 
                 <label className="mt-4 block max-w-xs">
@@ -516,7 +589,14 @@ export default function WithdrawPage() {
                     </label>
                   )}
 
-                {connectedCountry && (
+                {stripeUnsupported && (
+                  <p className="mt-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3 text-sm text-amber-100">
+                    Uzbekistan is not supported by Stripe Connect right now, so automatic Stripe payout is unavailable for UZ users.
+                  </p>
+                )}
+
+                {connectedCountry &&
+                  !stripeUnsupported && (
                   <p className="mt-3 text-sm text-zinc-500">
                     Connected as{" "}
                     <span className="font-bold text-zinc-300">
@@ -530,22 +610,26 @@ export default function WithdrawPage() {
                 )}
               </div>
 
-              <button
-                onClick={connectStripe}
-                disabled={connecting}
-                className="inline-flex min-w-40 shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-white px-5 py-3 font-black text-black transition hover:bg-zinc-200 disabled:opacity-50"
-              >
-                {connecting
-                  ? "Opening..."
-                  : connectStatus.connected
-                    ? "Update Stripe"
-                    : "Connect Stripe"}
-              </button>
+              {!stripeUnsupported && (
+                <button
+                  onClick={
+                    connectStripe
+                  }
+                  disabled={connecting}
+                  className="inline-flex min-w-40 shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-white px-5 py-3 font-black text-black transition hover:bg-zinc-200 disabled:opacity-50"
+                >
+                  {connecting
+                    ? "Opening..."
+                    : connectStatus.connected
+                      ? "Update Stripe"
+                      : "Connect Stripe"}
+                </button>
+              )}
             </div>
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {methods.map((item) => (
+            {activeMethods.map((item) => (
               <button
                 key={item.id}
                 onClick={() =>
@@ -573,6 +657,34 @@ export default function WithdrawPage() {
             ))}
           </div>
 
+          {stripeUnsupported && (
+            <label className="mt-5 block">
+              <span className="text-sm font-bold text-zinc-400">
+                Payout details
+              </span>
+              <input
+                value={destinationLabel}
+                onChange={(event) =>
+                  setDestinationLabel(
+                    event.target.value
+                  )
+                }
+                placeholder={
+                  manualMethods.find(
+                    (item) =>
+                      item.id ===
+                      method
+                  )?.placeholder ||
+                  "Payout destination"
+                }
+                className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
+              />
+              <p className="mt-2 text-xs leading-5 text-zinc-500">
+                Do not enter a full card number here. Use contact details so admin can confirm the secure payout method.
+              </p>
+            </label>
+          )}
+
           <div className="mt-5 grid gap-3 md:grid-cols-[160px_1fr] md:items-end">
             <label className="block">
               <span className="text-sm font-bold text-zinc-400">
@@ -595,13 +707,16 @@ export default function WithdrawPage() {
               disabled={
                 submitting ||
                 loading ||
-                !connectStatus.ready
+                (!stripeUnsupported &&
+                  !connectStatus.ready)
               }
               className="w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:bg-white/10 disabled:text-zinc-500"
             >
               {submitting
                 ? "Sending Payout..."
-                : "Send Automatic Payout"}
+                : stripeUnsupported
+                  ? "Create Withdrawal Request"
+                  : "Send Automatic Payout"}
             </button>
           </div>
         </section>
