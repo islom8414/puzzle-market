@@ -141,6 +141,13 @@ type WithdrawalRequest = {
   created_at: string;
 };
 
+type MontraCard = {
+  token: string;
+  pan: string;
+  bank?: string;
+  type?: string;
+};
+
 function formatMoney(
   cents: number
 ) {
@@ -153,7 +160,11 @@ function methodLabel(
   return (
     methods.find(
       (item) => item.id === method
-    )?.label || method
+    )?.label ||
+    manualMethods.find(
+      (item) => item.id === method
+    )?.label ||
+    method
   );
 }
 
@@ -170,6 +181,18 @@ export default function WithdrawPage() {
     destinationLabel,
     setDestinationLabel,
   ] = useState("");
+  const [montraPhone, setMontraPhone] =
+    useState("");
+  const [montraCards, setMontraCards] =
+    useState<MontraCard[]>([]);
+  const [
+    selectedMontraCardToken,
+    setSelectedMontraCardToken,
+  ] = useState("");
+  const [
+    loadingMontraCards,
+    setLoadingMontraCards,
+  ] = useState(false);
   const [
     payoutCountry,
     setPayoutCountry,
@@ -377,9 +400,14 @@ export default function WithdrawPage() {
         "stripe_instant" ||
       method ===
         "stripe_standard";
+    const isMontraMethod =
+      stripeUnsupported &&
+      method === "visa_card" &&
+      selectedMontraCardToken;
 
     if (
       !isStripeMethod &&
+      !isMontraMethod &&
       destinationLabel.trim()
         .length < 4
     ) {
@@ -423,6 +451,11 @@ export default function WithdrawPage() {
             amount: value,
             method,
             destinationLabel,
+            provider: isMontraMethod
+              ? "montra"
+              : undefined,
+            montraCardToken:
+              selectedMontraCardToken,
           }),
         }
       );
@@ -447,9 +480,78 @@ export default function WithdrawPage() {
         method ===
           "stripe_standard"
         ? "Payout sent through Stripe"
+        : isMontraMethod
+          ? "Payout sent through Montra"
         : "Withdrawal request created. Admin will review it."
     );
     await loadWithdrawals();
+  }
+
+  async function loadMontraCards() {
+    const phone =
+      montraPhone.trim();
+
+    if (phone.length < 7) {
+      alert(
+        "Enter recipient phone number"
+      );
+      return;
+    }
+
+    setLoadingMontraCards(true);
+    setSelectedMontraCardToken("");
+    setMontraCards([]);
+
+    const session =
+      await getSessionOrLogin();
+
+    if (!session) {
+      setLoadingMontraCards(false);
+      return;
+    }
+
+    const response =
+      await fetch(
+        "/api/montra/cards",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Authorization:
+              `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            phone,
+          }),
+        }
+      );
+
+    const data =
+      await response.json();
+
+    setLoadingMontraCards(false);
+
+    if (!response.ok) {
+      alert(
+        data.error ||
+          "Montra cards are not ready yet"
+      );
+      return;
+    }
+
+    setMontraCards(
+      data.cards || []
+    );
+
+    if (
+      !data.cards ||
+      data.cards.length === 0
+    ) {
+      alert(
+        "No cards found for this phone"
+      );
+    }
   }
 
   const readyLabel =
@@ -658,31 +760,150 @@ export default function WithdrawPage() {
           </div>
 
           {stripeUnsupported && (
-            <label className="mt-5 block">
-              <span className="text-sm font-bold text-zinc-400">
-                Payout details
-              </span>
-              <input
-                value={destinationLabel}
-                onChange={(event) =>
-                  setDestinationLabel(
-                    event.target.value
-                  )
-                }
-                placeholder={
-                  manualMethods.find(
-                    (item) =>
-                      item.id ===
-                      method
-                  )?.placeholder ||
-                  "Payout destination"
-                }
-                className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
-              />
-              <p className="mt-2 text-xs leading-5 text-zinc-500">
-                Do not enter a full card number here. Use contact details so admin can confirm the secure payout method.
+            <div className="mt-5 rounded-2xl border border-white/10 bg-black/50 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">
+                Uzbekistan payouts
               </p>
-            </label>
+
+              {method ===
+              "visa_card" ? (
+                <div className="mt-3 space-y-3">
+                  <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                    <label className="block">
+                      <span className="text-sm font-bold text-zinc-400">
+                        Phone linked to card
+                      </span>
+                      <input
+                        value={
+                          montraPhone
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setMontraPhone(
+                            event.target
+                              .value
+                          )
+                        }
+                        placeholder="+998901234567"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={
+                        loadMontraCards
+                      }
+                      disabled={
+                        loadingMontraCards
+                      }
+                      className="self-end rounded-2xl bg-white px-5 py-3.5 font-black text-black transition hover:bg-zinc-200 disabled:opacity-50"
+                    >
+                      {loadingMontraCards
+                        ? "Loading..."
+                        : "Find Cards"}
+                    </button>
+                  </div>
+
+                  {montraCards.length >
+                    0 && (
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {montraCards.map(
+                        (card) => (
+                          <button
+                            key={
+                              card.token
+                            }
+                            type="button"
+                            onClick={() => {
+                              setSelectedMontraCardToken(
+                                card.token
+                              );
+                              setDestinationLabel(
+                                `Montra ${card.pan}`
+                              );
+                            }}
+                            className={`rounded-2xl border p-3 text-left transition ${
+                              selectedMontraCardToken ===
+                              card.token
+                                ? "border-cyan-400 bg-cyan-400 text-black"
+                                : "border-white/10 bg-white/[0.04]"
+                            }`}
+                          >
+                            <span className="block font-black">
+                              {card.pan}
+                            </span>
+                            <span className="mt-1 block text-xs opacity-70">
+                              {card.bank ||
+                                card.type ||
+                                "Card"}
+                            </span>
+                          </button>
+                        )
+                      )}
+                    </div>
+                  )}
+
+                  <p className="text-xs leading-5 text-zinc-500">
+                    Montra returns tokenized cards by phone. Full card numbers are not stored on Puzzle Market.
+                  </p>
+
+                  {!selectedMontraCardToken && (
+                    <label className="block">
+                      <span className="text-sm font-bold text-zinc-400">
+                        Fallback contact details
+                      </span>
+                      <input
+                        value={
+                          destinationLabel
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setDestinationLabel(
+                            event.target
+                              .value
+                          )
+                        }
+                        placeholder="Telegram/email + card last 4 digits for manual review"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
+                      />
+                    </label>
+                  )}
+                </div>
+              ) : (
+                <label className="mt-3 block">
+                  <span className="text-sm font-bold text-zinc-400">
+                    Payout details
+                  </span>
+                  <input
+                    value={
+                      destinationLabel
+                    }
+                    onChange={(
+                      event
+                    ) =>
+                      setDestinationLabel(
+                        event.target.value
+                      )
+                    }
+                    placeholder={
+                      manualMethods.find(
+                        (item) =>
+                          item.id ===
+                          method
+                      )?.placeholder ||
+                      "Payout destination"
+                    }
+                    className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
+                  />
+                  <p className="mt-2 text-xs leading-5 text-zinc-500">
+                    Do not enter a full card number here. Use contact details so admin can confirm the secure payout method.
+                  </p>
+                </label>
+              )}
+            </div>
           )}
 
           <div className="mt-5 grid gap-3 md:grid-cols-[160px_1fr] md:items-end">
@@ -715,7 +936,12 @@ export default function WithdrawPage() {
               {submitting
                 ? "Sending Payout..."
                 : stripeUnsupported
-                  ? "Create Withdrawal Request"
+                  ? method ===
+                    "visa_card"
+                    ? selectedMontraCardToken
+                      ? "Send Montra Payout"
+                      : "Create Withdrawal Request"
+                    : "Create Withdrawal Request"
                   : "Send Automatic Payout"}
             </button>
           </div>

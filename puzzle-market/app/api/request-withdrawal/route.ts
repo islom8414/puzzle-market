@@ -5,6 +5,10 @@ import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
+import {
+  createPayoutByToken,
+  usdCentsToUzs,
+} from "@/lib/montra";
 import { getStripeConfig } from "@/lib/stripe-config";
 
 const withdrawalMethods = [
@@ -113,6 +117,12 @@ export async function POST(
 
     const amountCents =
       Math.round(amount * 100);
+    const isMontraPayout =
+      body.provider === "montra" &&
+      typeof body.montraCardToken ===
+        "string" &&
+      body.montraCardToken.trim()
+        .length > 0;
     const isStripeMethod =
       body.method ===
         "stripe_instant" ||
@@ -176,6 +186,86 @@ export async function POST(
     }
 
     if (!isStripeMethod) {
+      if (isMontraPayout) {
+        await admin
+          .from(
+            "wallet_withdrawal_requests"
+          )
+          .update({
+            status: "processing",
+          })
+          .eq("id", withdrawalId);
+
+        try {
+          const amountUzs =
+            usdCentsToUzs(
+              amountCents
+            );
+          const payout =
+            await createPayoutByToken({
+              token:
+                body.montraCardToken.trim(),
+              amountUzs,
+              referenceId:
+                `OUT-${String(
+                  withdrawalId
+                ).slice(0, 8)}`,
+              withdrawalId:
+                String(withdrawalId),
+              userId:
+                userData.user.id,
+            });
+
+          await admin
+            .from(
+              "wallet_withdrawal_requests"
+            )
+            .update({
+              status:
+                payout.status ===
+                  "PAID" ||
+                payout.payment?.status ===
+                  "CAPTURED"
+                  ? "paid"
+                  : "processing",
+              provider_reference:
+                payout.id,
+              provider_transfer_reference:
+                payout.referenceId ||
+                null,
+            })
+            .eq("id", withdrawalId);
+
+          return NextResponse.json({
+            withdrawalId,
+            payoutId: payout.id,
+            referenceId:
+              payout.referenceId,
+            status: payout.status,
+          });
+        } catch (montraError) {
+          const message =
+            montraError instanceof Error
+              ? montraError.message
+              : "Montra payout failed";
+
+          await admin.rpc(
+            "fail_wallet_withdrawal_and_refund",
+            {
+              p_withdrawal_id:
+                withdrawalId,
+              p_provider_error:
+                message,
+            }
+          );
+
+          return NextResponse.json(
+            { error: message },
+            { status: 409 }
+          );
+        }
+      }
+
       return NextResponse.json({
         withdrawalId,
         status: "pending",
