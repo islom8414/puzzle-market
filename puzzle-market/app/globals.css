@@ -47,10 +47,6 @@ img{
   background:rgba(34,211,238,.35);
 }
 
-.weglot-container{
-  display:none !important;
-}
-
 .translate-safe-title{
   font-size:clamp(3rem, 8vw, 5.5rem);
   line-height:1;
