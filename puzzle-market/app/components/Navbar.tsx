@@ -8,6 +8,7 @@ import {
   fetchMyProfile,
 } from "@/lib/client-profile";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const initialNotifications = [
   "Verified wallet flow is online",
@@ -267,6 +268,8 @@ export default function Navbar() {
             {/* RIGHT */}
 
             <div className="flex shrink-0 items-center gap-2 md:gap-3">
+
+              <LanguageSwitcher />
 
               {/* NOTIFICATIONS */}
 
