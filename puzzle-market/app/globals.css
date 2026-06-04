@@ -63,45 +63,68 @@ img{
 }
 
 .translate-safe-title{
-  font-size:clamp(2.75rem, 6.2vw, 4.75rem);
-  line-height:1.02;
+  font-size:clamp(2.6rem, 5.8vw, 4.8rem);
+  line-height:1.04;
   letter-spacing:0;
-  max-width:100%;
+  max-inline-size:min(100%, 13ch);
+  text-wrap:balance;
   overflow-wrap:anywhere;
-  word-break:auto-phrase;
+  word-break:normal;
 }
 
 .translate-safe-heading{
-  font-size:clamp(2.15rem, 4.4vw, 3.65rem);
-  line-height:1.05;
+  font-size:clamp(2rem, 4.2vw, 3.4rem);
+  line-height:1.08;
+  letter-spacing:0;
+  max-inline-size:min(100%, 16ch);
+  text-wrap:balance;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+
+.translate-safe-panel-title{
+  font-size:clamp(1.45rem, 3vw, 2.35rem);
+  line-height:1.1;
   letter-spacing:0;
   max-width:100%;
+  text-wrap:balance;
   overflow-wrap:anywhere;
-  word-break:auto-phrase;
+  word-break:normal;
 }
 
 .translate-safe-stat{
-  font-size:clamp(1.75rem, 3vw, 2.5rem);
-  line-height:1.05;
+  font-size:clamp(1.5rem, 2.8vw, 2.35rem);
+  line-height:1.08;
   letter-spacing:0;
+  max-width:100%;
   overflow-wrap:anywhere;
+  word-break:normal;
 }
 
 .translate-safe-copy{
-  max-width:42rem;
+  max-inline-size:min(100%, 42rem);
   overflow-wrap:anywhere;
+  word-break:normal;
 }
 
+.translate-safe-ui,
 .translate-safe-action,
 .translate-safe-nav,
 .translate-safe-label{
   max-width:100%;
+  min-width:0;
   overflow-wrap:anywhere;
-  word-break:auto-phrase;
+  word-break:normal;
 }
 
 .translate-safe-action{
+  min-height:2.75rem;
   line-height:1.15;
+  white-space:normal;
+  text-align:center;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .translate-safe-nav{
@@ -109,27 +132,52 @@ img{
   white-space:normal;
 }
 
+main h1,
+main h2,
+main h3,
+main p,
+main a,
+main button,
+main input,
+main select{
+  min-width:0;
+}
+
 html:lang(ru) .translate-safe-title,
 html[lang^="ru"] .translate-safe-title{
-  font-size:clamp(2.35rem, 5vw, 3.95rem);
-  line-height:1.08;
+  font-size:clamp(2.05rem, 4.2vw, 3.45rem);
+  line-height:1.14;
+  max-inline-size:min(100%, 10ch);
 }
 
 html:lang(ru) .translate-safe-heading,
 html[lang^="ru"] .translate-safe-heading{
-  font-size:clamp(1.95rem, 3.8vw, 3.05rem);
-  line-height:1.1;
+  font-size:clamp(1.75rem, 3.5vw, 2.65rem);
+  line-height:1.14;
+  max-inline-size:min(100%, 12ch);
+}
+
+html:lang(ru) .translate-safe-panel-title,
+html[lang^="ru"] .translate-safe-panel-title{
+  font-size:clamp(1.25rem, 2.6vw, 1.85rem);
+  line-height:1.16;
 }
 
 html:lang(ru) .translate-safe-stat,
 html[lang^="ru"] .translate-safe-stat{
-  font-size:clamp(1.45rem, 2.35vw, 2.1rem);
+  font-size:clamp(1.35rem, 2.2vw, 1.9rem);
   line-height:1.12;
+}
+
+html:lang(ru) .translate-safe-copy,
+html[lang^="ru"] .translate-safe-copy{
+  line-height:1.7;
 }
 
 html:lang(ru) .translate-safe-action,
 html[lang^="ru"] .translate-safe-action{
-  font-size:clamp(.95rem, 1.2vw, 1.05rem);
+  font-size:clamp(.86rem, 1.05vw, 1rem);
+  line-height:1.22;
 }
 
 html:lang(ru) .translate-safe-nav,
@@ -148,8 +196,9 @@ html:lang(ko) .translate-safe-title,
 html[lang^="ja"] .translate-safe-title,
 html[lang^="zh"] .translate-safe-title,
 html[lang^="ko"] .translate-safe-title{
-  font-size:clamp(2.25rem, 4.8vw, 3.45rem);
-  line-height:1.12;
+  font-size:clamp(2.05rem, 4.2vw, 3.45rem);
+  line-height:1.14;
+  max-inline-size:min(100%, 10ch);
 }
 
 html:lang(ja) .translate-safe-heading,
@@ -158,8 +207,19 @@ html:lang(ko) .translate-safe-heading,
 html[lang^="ja"] .translate-safe-heading,
 html[lang^="zh"] .translate-safe-heading,
 html[lang^="ko"] .translate-safe-heading{
-  font-size:clamp(1.9rem, 3.6vw, 2.85rem);
-  line-height:1.1;
+  font-size:clamp(1.75rem, 3.5vw, 2.65rem);
+  line-height:1.14;
+  max-inline-size:min(100%, 12ch);
+}
+
+html:lang(ja) .translate-safe-panel-title,
+html:lang(zh) .translate-safe-panel-title,
+html:lang(ko) .translate-safe-panel-title,
+html[lang^="ja"] .translate-safe-panel-title,
+html[lang^="zh"] .translate-safe-panel-title,
+html[lang^="ko"] .translate-safe-panel-title{
+  font-size:clamp(1.25rem, 2.6vw, 1.85rem);
+  line-height:1.16;
 }
 
 html:lang(ja) .translate-safe-stat,
@@ -168,7 +228,7 @@ html:lang(ko) .translate-safe-stat,
 html[lang^="ja"] .translate-safe-stat,
 html[lang^="zh"] .translate-safe-stat,
 html[lang^="ko"] .translate-safe-stat{
-  font-size:clamp(1.5rem, 2.4vw, 2rem);
+  font-size:clamp(1.35rem, 2.2vw, 1.9rem);
   line-height:1.12;
 }
 
@@ -187,8 +247,8 @@ html:lang(ko) .translate-safe-action,
 html[lang^="ja"] .translate-safe-action,
 html[lang^="zh"] .translate-safe-action,
 html[lang^="ko"] .translate-safe-action{
-  font-size:clamp(.95rem, 1.2vw, 1.05rem);
-  line-height:1.25;
+  font-size:clamp(.86rem, 1.05vw, 1rem);
+  line-height:1.22;
 }
 
 html:lang(ja) .translate-safe-nav,
@@ -197,7 +257,7 @@ html:lang(ko) .translate-safe-nav,
 html[lang^="ja"] .translate-safe-nav,
 html[lang^="zh"] .translate-safe-nav,
 html[lang^="ko"] .translate-safe-nav{
-  font-size:.82rem;
+  font-size:.74rem;
 }
 
 html:lang(ja) main [class*="tracking-["],
@@ -211,14 +271,14 @@ html[lang^="ko"] main [class*="tracking-["]{
 
 @media (max-width: 640px){
   main h1{
-    font-size:clamp(2.35rem, 13vw, 3.75rem) !important;
-    line-height:.98 !important;
+    font-size:clamp(2rem, 10vw, 3rem) !important;
+    line-height:1.06 !important;
     letter-spacing:0 !important;
   }
 
   main h2{
-    font-size:clamp(1.85rem, 9vw, 2.75rem) !important;
-    line-height:1.03 !important;
+    font-size:clamp(1.6rem, 7.5vw, 2.25rem) !important;
+    line-height:1.08 !important;
     letter-spacing:0 !important;
   }
 
@@ -261,13 +321,13 @@ html[lang^="ko"] main [class*="tracking-["]{
 
   html:lang(ru) main h1,
   html[lang^="ru"] main h1{
-    font-size:clamp(2rem, 10.5vw, 3rem) !important;
-    line-height:1.06 !important;
+    font-size:clamp(1.75rem, 8.5vw, 2.45rem) !important;
+    line-height:1.12 !important;
   }
 
   html:lang(ru) main h2,
   html[lang^="ru"] main h2{
-    font-size:clamp(1.7rem, 8vw, 2.35rem) !important;
+    font-size:clamp(1.45rem, 7vw, 2rem) !important;
     line-height:1.08 !important;
   }
 
@@ -277,7 +337,7 @@ html[lang^="ko"] main [class*="tracking-["]{
   html[lang^="ja"] main h1,
   html[lang^="zh"] main h1,
   html[lang^="ko"] main h1{
-    font-size:clamp(2rem, 9.2vw, 2.8rem) !important;
+    font-size:clamp(1.75rem, 8.5vw, 2.45rem) !important;
     line-height:1.12 !important;
   }
 
@@ -287,7 +347,7 @@ html[lang^="ko"] main [class*="tracking-["]{
   html[lang^="ja"] main h2,
   html[lang^="zh"] main h2,
   html[lang^="ko"] main h2{
-    font-size:clamp(1.65rem, 7.5vw, 2.25rem) !important;
+    font-size:clamp(1.45rem, 7vw, 2rem) !important;
     line-height:1.12 !important;
   }
 

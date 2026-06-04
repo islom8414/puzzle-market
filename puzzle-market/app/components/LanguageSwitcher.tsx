@@ -149,11 +149,33 @@ export default function LanguageSwitcher() {
     setTitle(languageNames[next]);
   }, []);
 
+  const handleClick = (
+    event: React.MouseEvent<HTMLAnchorElement>
+  ) => {
+    event.preventDefault();
+
+    const current =
+      getCurrentLanguage(
+        window.location.hostname,
+        window.location.pathname
+      );
+    const next =
+      getNextLanguage(current);
+
+    window.location.assign(
+      getLanguageUrl(next)
+    );
+  };
+
   return (
     <a
       href={href}
       title={title}
       aria-label={title}
+      onClick={handleClick}
+      translate="no"
+      data-no-translation="true"
+      data-linguise-ignore="true"
       className="notranslate translate-safe-action flex h-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 text-xs font-black transition hover:border-cyan-400 md:px-4"
     >
       {label}
