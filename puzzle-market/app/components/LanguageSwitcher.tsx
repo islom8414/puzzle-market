@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type LanguageCode =
   | "en"
@@ -12,58 +12,81 @@ const primaryDomain =
   process.env.NEXT_PUBLIC_PRIMARY_DOMAIN ||
   "puzzle-market.com";
 
-const languages: {
-  code: LanguageCode;
-  label: string;
-  shortLabel: string;
-}[] = [
-  {
-    code: "en",
-    label: "English",
-    shortLabel: "EN",
-  },
-  {
-    code: "ru",
-    label: "Русский",
-    shortLabel: "RU",
-  },
-  {
-    code: "ja",
-    label: "日本語",
-    shortLabel: "JA",
-  },
-  {
-    code: "zh-cn",
-    label: "中文",
-    shortLabel: "ZH",
-  },
+const languageOrder: LanguageCode[] = [
+  "en",
+  "ru",
+  "ja",
+  "zh-cn",
 ];
 
+const languageLabels:
+  Record<LanguageCode, string> = {
+    en: "EN",
+    ru: "RU",
+    ja: "JA",
+    "zh-cn": "ZH",
+  };
+
+const languageNames:
+  Record<LanguageCode, string> = {
+    en: "Switch language",
+    ru: "Switch to Russian",
+    ja: "Switch to Japanese",
+    "zh-cn": "Switch to Chinese",
+  };
+
 function getCurrentLanguage(
-  hostname: string
+  hostname: string,
+  pathname: string
 ): LanguageCode {
-  const normalized =
+  const host =
     hostname.toLowerCase();
+  const path =
+    pathname.toLowerCase();
 
   if (
-    normalized.startsWith("zh-cn.")
+    host.startsWith("zh-cn.") ||
+    path.startsWith("/zh-cn/")
   ) {
     return "zh-cn";
   }
 
   if (
-    normalized.startsWith("ru.")
+    host.startsWith("ru.") ||
+    path.startsWith("/ru/")
   ) {
     return "ru";
   }
 
   if (
-    normalized.startsWith("ja.")
+    host.startsWith("ja.") ||
+    path.startsWith("/ja/")
   ) {
     return "ja";
   }
 
   return "en";
+}
+
+function getNextLanguage(
+  current: LanguageCode
+): LanguageCode {
+  const currentIndex =
+    languageOrder.indexOf(current);
+  const nextIndex =
+    (currentIndex + 1) %
+    languageOrder.length;
+
+  return languageOrder[nextIndex];
+}
+
+function cleanPathname(
+  pathname: string
+) {
+  return pathname.replace(
+    /^\/(zh-cn|ru|ja)(?=\/|$)/,
+    ""
+  ) || "/";
 }
 
 function getLanguageUrl(
@@ -73,13 +96,11 @@ function getLanguageUrl(
     pathname,
     search,
     hash,
-    protocol,
     hostname,
   } = window.location;
 
   const host =
     hostname.toLowerCase();
-
   const localHost =
     host === "localhost" ||
     host === "127.0.0.1";
@@ -99,115 +120,43 @@ function getLanguageUrl(
       ? baseDomain
       : `${code}.${baseDomain}`;
 
-  const nextProtocol =
-    localHost
-      ? "https:"
-      : protocol;
-
-  return `${nextProtocol}//${nextHost}${pathname}${search}${hash}`;
+  return `https://${nextHost}${cleanPathname(
+    pathname
+  )}${search}${hash}`;
 }
 
 export default function LanguageSwitcher() {
-  const [open, setOpen] =
-    useState(false);
-  const [current, setCurrent] =
-    useState<LanguageCode>("en");
-  const containerRef =
-    useRef<HTMLDivElement>(null);
+  const [label, setLabel] =
+    useState("RU");
+  const [href, setHref] =
+    useState(
+      `https://ru.${primaryDomain}/`
+    );
+  const [title, setTitle] =
+    useState(languageNames.ru);
 
   useEffect(() => {
-    setCurrent(
+    const current =
       getCurrentLanguage(
-        window.location.hostname
-      )
-    );
-  }, []);
-
-  useEffect(() => {
-    function closeOnOutsideClick(
-      event: MouseEvent
-    ) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(
-          event.target as Node
-        )
-      ) {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener(
-      "mousedown",
-      closeOnOutsideClick
-    );
-
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        closeOnOutsideClick
+        window.location.hostname,
+        window.location.pathname
       );
-    };
-  }, []);
+    const next =
+      getNextLanguage(current);
 
-  const currentLanguage =
-    languages.find(
-      (language) =>
-        language.code === current
-    ) || languages[0];
+    setLabel(languageLabels[next]);
+    setHref(getLanguageUrl(next));
+    setTitle(languageNames[next]);
+  }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="notranslate relative"
+    <a
+      href={href}
+      title={title}
+      aria-label={title}
+      className="notranslate translate-safe-action flex h-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 text-xs font-black transition hover:border-cyan-400 md:px-4"
     >
-      <button
-        type="button"
-        onClick={() =>
-          setOpen(!open)
-        }
-        className="translate-safe-action notranslate h-11 rounded-2xl border border-white/10 bg-white/5 px-3 text-xs font-black transition hover:border-cyan-400 md:px-4"
-        aria-expanded={open}
-        aria-haspopup="menu"
-      >
-        {currentLanguage.shortLabel}
-      </button>
-
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 top-14 z-[80] w-40 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl"
-        >
-          {languages.map(
-            (language) => (
-              <button
-                key={language.code}
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  window.location.href =
-                    getLanguageUrl(
-                      language.code
-                    );
-                }}
-                className={`translate-safe-action notranslate flex w-full items-center justify-between px-4 py-3 text-left text-sm font-black transition hover:bg-white/10 ${
-                  language.code ===
-                  current
-                    ? "text-cyan-400"
-                    : "text-white"
-                }`}
-              >
-                <span>
-                  {language.label}
-                </span>
-                <span className="text-[10px] text-zinc-500">
-                  {language.shortLabel}
-                </span>
-              </button>
-            )
-          )}
-        </div>
-      )}
-    </div>
+      {label}
+    </a>
   );
 }
