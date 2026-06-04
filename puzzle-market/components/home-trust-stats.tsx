@@ -11,15 +11,15 @@ export function HomeTrustStats() {
         {trustStats.map((stat) => (
           <div
             key={stat.label}
-            className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+            className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.03] p-4"
           >
             <h3
-              className={`text-3xl md:text-4xl font-black ${stat.accent ? "text-cyan-400" : ""}`}
+              className={`translate-safe-stat font-black ${stat.accent ? "text-cyan-400" : ""}`}
             >
               {stat.value}
             </h3>
 
-            <p className="text-zinc-500 mt-2 text-sm">
+            <p className="text-zinc-500 mt-2 text-sm [overflow-wrap:anywhere]">
               {stat.label}
             </p>
           </div>

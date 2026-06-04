@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -171,7 +171,7 @@ export default function Navbar() {
 
             {/* LEFT */}
 
-            <div className="flex min-w-0 items-center gap-10">
+            <div className="flex min-w-0 items-center gap-6 2xl:gap-10">
 
               <a
                 href="/marketplace"
@@ -196,30 +196,30 @@ export default function Navbar() {
 
               </a>
 
-              <nav className="hidden xl:flex items-center gap-6 text-sm font-semibold">
+              <nav className="hidden xl:flex min-w-0 items-center gap-3 2xl:gap-6 text-sm font-semibold">
 
                 <a
                   href={CHOOSE_PUZZLE_HREF}
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   Play
                 </a>
 
                 <a
                   href="/marketplace"
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   Explore
                 </a>
 
                 <a
                   href="/profile"
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   Profile
                 </a>                <a
                   href="/subscribe"
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   Plans
                 </a>
@@ -227,35 +227,35 @@ export default function Navbar() {
 
                 <a
                   href="/sell"
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   Sell
                 </a>
 
                 <a
                   href="/withdraw"
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   Withdraw
                 </a>
 
                 <a
                   href="/chat"
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   Chat
                 </a>
 
                 <a
                   href="/support"
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   Support
                 </a>
 
                 <a
                   href="/about"
-                  className="hover:text-cyan-400 transition"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
                 >
                   About
                 </a>
@@ -367,7 +367,7 @@ export default function Navbar() {
 
                 <a
                   href="/login"
-                  className="hidden md:flex bg-white/5 border border-white/10 rounded-2xl px-4 py-2 text-sm font-black hover:border-cyan-400 transition"
+                  className="translate-safe-action hidden md:flex bg-white/5 border border-white/10 rounded-2xl px-4 py-2 text-sm font-black hover:border-cyan-400 transition"
                 >
                   Login
                 </a>
@@ -404,7 +404,7 @@ export default function Navbar() {
                 onClick={() =>
                   setOpen(!open)
                 }
-                className="xl:hidden h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center px-3 text-xs font-black"
+                className="translate-safe-action xl:hidden h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center px-3 text-xs font-black"
               >
 
                 {open ? "Close" : "Menu"}
@@ -424,40 +424,40 @@ export default function Navbar() {
 
             <div className="px-4 py-5 grid grid-cols-2 gap-3 text-sm font-semibold">
 
-              <a href={CHOOSE_PUZZLE_HREF} className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href={CHOOSE_PUZZLE_HREF} className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Play
               </a>
 
-              <a href="/marketplace" className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href="/marketplace" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Explore
               </a>
 
-              <a href="/profile" className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href="/profile" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Profile
               </a>
 
-              <a href="/subscribe" className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href="/subscribe" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Plans
               </a>
 
 
-              <a href="/sell" className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href="/sell" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Sell
               </a>
 
-              <a href="/withdraw" className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href="/withdraw" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Withdraw
               </a>
 
-              <a href="/chat" className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href="/chat" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Chat
               </a>
 
-              <a href="/support" className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href="/support" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Support
               </a>
 
-              <a href="/about" className="rounded-2xl bg-white/[0.04] px-4 py-3">
+              <a href="/about" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 About
               </a>
 
@@ -481,7 +481,7 @@ export default function Navbar() {
                 ) : (
                   <a
                     href="/login"
-                    className="rounded-2xl bg-cyan-400 px-4 py-3 font-black text-black text-center"
+                    className="translate-safe-action rounded-2xl bg-cyan-400 px-4 py-3 font-black text-black text-center"
                   >
                     Login
                   </a>
@@ -565,4 +565,5 @@ export default function Navbar() {
     </>
   );
 }
+
 

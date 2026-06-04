@@ -26,26 +26,18 @@ export default function HomePage() {
 
         <div className="max-w-7xl mx-auto">
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 xl:gap-16 items-center">
+          <div className="grid grid-cols-1 2xl:grid-cols-[minmax(0,0.95fr)_minmax(420px,1.05fr)] gap-12 2xl:gap-16 items-center">
 
             {/* LEFT */}
 
-            <div>
+            <div className="min-w-0">
 
               <p className="text-cyan-400 font-black uppercase tracking-[0.18em] md:tracking-[0.25em] text-xs md:text-sm">
                 PREMIUM FRAGMENT MARKETPLACE
               </p>
 
               <h1 className="translate-safe-title font-black mt-5 md:mt-6">
-
-                Collect
-                <br />
-
-                Missing
-                <br />
-
-                Puzzle Pieces
-
+                Collect Missing Puzzle Pieces
               </h1>
 
               <p className="translate-safe-copy text-zinc-400 text-base md:text-lg leading-relaxed mt-6 md:mt-8">
@@ -61,14 +53,14 @@ export default function HomePage() {
 
                 <Link
                   href="/marketplace"
-                  className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-6 md:px-8 py-4 rounded-2xl transition text-center text-base md:text-lg"
+                  className="translate-safe-action bg-cyan-400 hover:bg-cyan-300 text-black font-black px-6 md:px-8 py-4 rounded-2xl transition text-center text-base md:text-lg"
                 >
                   Explore Marketplace
                 </Link>
 
                 <Link
                   href={CHOOSE_PUZZLE_HREF}
-                  className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-6 md:px-8 py-4 rounded-2xl transition text-center text-base md:text-lg"
+                  className="translate-safe-action bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-6 md:px-8 py-4 rounded-2xl transition text-center text-base md:text-lg"
                 >
                   Choose A Puzzle
                 </Link>
@@ -81,7 +73,7 @@ export default function HomePage() {
 
             {/* RIGHT */}
 
-            <div className="relative mt-4 xl:mt-0">
+            <div className="relative min-w-0 mt-4 2xl:mt-0">
 
               <div className="grid grid-cols-3 gap-3 sm:gap-4 rotate-3 sm:rotate-6 max-w-md mx-auto xl:max-w-none">
 
@@ -162,7 +154,7 @@ export default function HomePage() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
-            <div>
+            <div className="min-w-0">
               <p className="text-cyan-400 font-black uppercase tracking-[0.18em] text-xs md:text-sm">
                 Start Collecting
               </p>
@@ -174,7 +166,7 @@ export default function HomePage() {
 
             <Link
               href="/marketplace"
-              className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-6 py-4 rounded-2xl transition text-center"
+              className="translate-safe-action shrink-0 bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-6 py-4 rounded-2xl transition text-center"
             >
               Missing Pieces Market
             </Link>
@@ -197,9 +189,7 @@ export default function HomePage() {
             </p>
 
             <h2 className="translate-safe-heading font-black mt-4 md:mt-5">
-              Built For
-              <br />
-              Collectors
+              Built For Collectors
             </h2>
 
           </div>
