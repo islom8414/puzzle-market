@@ -10,6 +10,15 @@ type OwnershipEmailInput = {
   origin: string;
 };
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function sendOwnershipEmail(
   input: OwnershipEmailInput
 ) {
@@ -22,8 +31,31 @@ export async function sendOwnershipEmail(
 
   const puzzleUrl = `${input.origin}/puzzle/${encodeURIComponent(input.puzzleSlug)}`;
   const profileUrl = `${input.origin}/profile`;
+  const puzzleTitle = escapeHtml(
+    input.puzzleTitle
+  );
+  const certificateCode = escapeHtml(
+    input.certificateCode
+  );
+  const certificateUrl = escapeHtml(
+    input.certificateUrl
+  );
+  const safePuzzleUrl = escapeHtml(
+    puzzleUrl
+  );
+  const safeProfileUrl = escapeHtml(
+    profileUrl
+  );
+  const tradeId = escapeHtml(
+    input.tradeId
+  );
+  const pieceId = escapeHtml(
+    input.pieceId
+  );
   const shortCode =
     input.certificateCode.slice(0, 18);
+  const pieceNumber =
+    input.pieceIndex + 1;
 
   if (!apiKey) {
     return {
@@ -45,36 +77,53 @@ export async function sendOwnershipEmail(
       body: JSON.stringify({
         from: fromEmail,
         to: [input.to],
-        subject: `Ownership confirmed: ${input.puzzleTitle}`,
+        subject: `You now own a Puzzle Market piece: ${input.puzzleTitle}`,
+        text:
+          `Puzzle Market ownership confirmed\n\n` +
+          `You are now the current verified owner of ${input.puzzleTitle}, piece #${pieceNumber}.\n\n` +
+          `Your signed ownership code:\n${input.certificateCode}\n\n` +
+          `Verify certificate: ${input.certificateUrl}\n` +
+          `Open puzzle: ${puzzleUrl}\n` +
+          `Inventory: ${profileUrl}\n\n` +
+          `If you resell this piece, this certificate remains authentic but will no longer verify as current ownership.`,
         html: `
-          <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111;background:#f6f8fb;padding:28px">
-            <div style="max-width:640px;margin:0 auto;background:#fff;border:1px solid #e5e7eb;border-radius:18px;overflow:hidden">
-              <div style="background:#050505;color:#fff;padding:24px">
-                <p style="margin:0;color:#22d3ee;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase">Puzzle Market Ownership</p>
-                <h1 style="margin:10px 0 0;font-size:28px;line-height:1.1">You successfully bought this puzzle piece</h1>
+          <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111;background:#050505;padding:28px">
+            <div style="max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #dbeafe;border-radius:22px;overflow:hidden">
+              <div style="background:#050505;color:#fff;padding:28px;border-bottom:4px solid #22d3ee">
+                <p style="margin:0;color:#22d3ee;font-size:12px;font-weight:900;letter-spacing:2px;text-transform:uppercase">Puzzle Market Ownership Certificate</p>
+                <h1 style="margin:12px 0 0;font-size:30px;line-height:1.1">You are now the verified owner</h1>
+                <p style="margin:14px 0 0;color:#cbd5e1;font-size:15px">This signed certificate proves that this puzzle fragment is currently assigned to your Puzzle Market account.</p>
               </div>
 
-              <div style="padding:24px">
-                <p style="margin:0 0 14px"><strong>${input.puzzleTitle}</strong> - piece #${input.pieceIndex + 1}</p>
-                <p style="margin:0 0 18px">This fragment is now assigned to your Puzzle Market account. If you resell it later, this certificate will no longer verify as current ownership because the new buyer becomes the active owner.</p>
-
-                <div style="border:1px solid #d1d5db;border-radius:14px;padding:16px;background:#f9fafb;margin:18px 0">
-                  <p style="margin:0 0 8px;color:#6b7280;font-size:12px;font-weight:700;text-transform:uppercase">Ownership code</p>
-                  <code style="display:block;word-break:break-all;font-size:13px;color:#111">${input.certificateCode}</code>
-                  <p style="margin:10px 0 0;color:#6b7280;font-size:12px">Short reference: ${shortCode}...</p>
+              <div style="padding:26px">
+                <div style="border:1px solid #bae6fd;border-radius:18px;padding:18px;background:#ecfeff;margin:0 0 20px">
+                  <p style="margin:0;color:#0891b2;font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase">Current Owner Status</p>
+                  <h2 style="margin:8px 0 0;font-size:24px;line-height:1.15;color:#0f172a">${puzzleTitle}</h2>
+                  <p style="margin:8px 0 0;color:#334155;font-size:15px">Piece #${pieceNumber} is now yours unless you list and resell it later.</p>
                 </div>
 
-                <p style="margin:18px 0">
-                  <a href="${input.certificateUrl}" style="display:inline-block;padding:12px 18px;background:#22d3ee;color:#000;text-decoration:none;font-weight:800;border-radius:10px">Verify ownership certificate</a>
+                <p style="margin:0 0 18px;color:#334155">Keep this email as your receipt and ownership proof. The code below is unique, signed by Puzzle Market, and can be checked on the certificate page.</p>
+
+                <div style="border:1px solid #d1d5db;border-radius:16px;padding:18px;background:#f8fafc;margin:18px 0">
+                  <p style="margin:0 0 8px;color:#64748b;font-size:12px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase">Signed Ownership Code</p>
+                  <code style="display:block;word-break:break-all;font-size:13px;line-height:1.6;color:#0f172a;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px">${certificateCode}</code>
+                  <p style="margin:10px 0 0;color:#64748b;font-size:12px">Short reference: ${escapeHtml(shortCode)}...</p>
+                </div>
+
+                <p style="margin:22px 0">
+                  <a href="${certificateUrl}" style="display:inline-block;padding:14px 20px;background:#22d3ee;color:#000;text-decoration:none;font-weight:900;border-radius:12px">Verify certificate</a>
                 </p>
 
                 <p style="margin:18px 0">
-                  <a href="${puzzleUrl}" style="color:#0f766e;font-weight:700">Open your puzzle</a>
+                  <a href="${safePuzzleUrl}" style="color:#0e7490;font-weight:800">Open your puzzle</a>
                   &nbsp;|&nbsp;
-                  <a href="${profileUrl}" style="color:#0f766e;font-weight:700">View inventory</a>
+                  <a href="${safeProfileUrl}" style="color:#0e7490;font-weight:800">View inventory</a>
                 </p>
 
-                <p style="margin:18px 0 0;color:#6b7280;font-size:12px">Trade ID: ${input.tradeId}<br/>Piece ID: ${input.pieceId}</p>
+                <div style="margin:22px 0 0;border-top:1px solid #e5e7eb;padding-top:16px;color:#64748b;font-size:12px">
+                  <p style="margin:0">If this piece is resold later, this certificate remains authentic, but the verification page will show that ownership has transferred to a newer buyer.</p>
+                  <p style="margin:12px 0 0">Trade ID: ${tradeId}<br/>Piece ID: ${pieceId}</p>
+                </div>
               </div>
             </div>
           </div>

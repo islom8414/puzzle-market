@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { sendOwnershipEmail } from "@/lib/ownership-email";
 import { createOwnershipCode } from "@/lib/ownership-certificate";
+import { getCanonicalSiteUrl } from "@/lib/site-url";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -124,8 +125,8 @@ export async function POST(
       listing?.piece_id &&
       tradeId
     ) {
-      const origin = new URL(request.url)
-        .origin;
+      const origin =
+        getCanonicalSiteUrl();
       const certificateCode =
         createOwnershipCode({
           tradeId: String(tradeId),
