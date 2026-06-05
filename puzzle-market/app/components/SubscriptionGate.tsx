@@ -7,8 +7,6 @@ import { fetchMyProfile } from "@/lib/client-profile";
 import { supabase } from "@/lib/supabase";
 
 const protectedPrefixes = [
-  "/",
-  "/marketplace",
   "/puzzle",
   "/sell",
   "/withdraw",
@@ -41,9 +39,7 @@ function isProtectedPath(pathname: string) {
   }
 
   return protectedPrefixes.some((prefix) =>
-    prefix === "/"
-      ? pathname === "/"
-      : pathname.startsWith(prefix)
+    pathname.startsWith(prefix)
   );
 }
 
@@ -151,7 +147,7 @@ export default function SubscriptionGate() {
           }
         : {
             title: "Starter plan required",
-            body: "A Starter subscription unlocks puzzle assembly, buying pieces, reselling, wallet actions, and chat.",
+            body: "A Starter subscription unlocks puzzle assembly, buying pieces, reselling, wallet actions, and chat. You can still browse available puzzles before upgrading.",
             href: "/subscribe",
             action: "Choose Starter",
           };
