@@ -99,7 +99,7 @@ export async function sendOwnershipEmail(
                 <div style="border:1px solid #bae6fd;border-radius:18px;padding:18px;background:#ecfeff;margin:0 0 20px">
                   <p style="margin:0;color:#0891b2;font-size:12px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase">Current Owner Status</p>
                   <h2 style="margin:8px 0 0;font-size:24px;line-height:1.15;color:#0f172a">${puzzleTitle}</h2>
-                  <p style="margin:8px 0 0;color:#334155;font-size:15px">Piece #${pieceNumber} is now yours unless you list and resell it later.</p>
+                  <p style="margin:8px 0 0;color:#334155;font-size:15px">Piece #${pieceNumber} is now yours unless you list and resell it later. Any previous owner certificate is no longer valid as current ownership.</p>
                 </div>
 
                 <p style="margin:0 0 18px;color:#334155">Keep this email as your receipt and ownership proof. The code below is unique, signed by Puzzle Market, and can be checked on the certificate page.</p>
@@ -121,7 +121,7 @@ export async function sendOwnershipEmail(
                 </p>
 
                 <div style="margin:22px 0 0;border-top:1px solid #e5e7eb;padding-top:16px;color:#64748b;font-size:12px">
-                  <p style="margin:0">If this piece is resold later, this certificate remains authentic, but the verification page will show that ownership has transferred to a newer buyer.</p>
+                  <p style="margin:0">If this piece is resold later, this certificate remains authentic as purchase history, but it will no longer be valid as current ownership. The newest buyer receives the active certificate.</p>
                   <p style="margin:12px 0 0">Trade ID: ${tradeId}<br/>Piece ID: ${pieceId}</p>
                 </div>
               </div>

@@ -87,7 +87,7 @@ export default async function OwnershipPage({
       status={
         isCurrentOwner
           ? "Current ownership verified"
-          : "Ownership transferred"
+          : "No longer valid for current ownership"
       }
       tone={
         isCurrentOwner
@@ -97,7 +97,7 @@ export default async function OwnershipPage({
       message={
         isCurrentOwner
           ? "This certificate matches the current Puzzle Market owner."
-          : "This certificate is authentic, but this piece now belongs to a newer owner."
+          : "This certificate is authentic as purchase history, but it is no longer valid as current ownership because this piece belongs to a newer owner."
       }
     >
       <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5">
