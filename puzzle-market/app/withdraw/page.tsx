@@ -20,10 +20,10 @@ const methods = [
 const manualMethods = [
   {
     id: "visa_card",
-    label: "Visa card request",
-    hint: "For countries Stripe does not support. Admin reviews and pays outside Stripe.",
+    label: "Paysend card request",
+    hint: "Manual review now. Paysend-ready for Uzcard, Humo, Visa and Mastercard payouts.",
     placeholder:
-      "Visa last 4 digits + your Telegram/email for secure payout confirmation",
+      "Recipient name + card type + last 4 digits + Telegram/email",
   },
   {
     id: "bank_transfer",
@@ -148,6 +148,12 @@ type MontraCard = {
   type?: string;
 };
 
+type PaysendCardType =
+  | "Uzcard"
+  | "Humo"
+  | "Visa"
+  | "Mastercard";
+
 function formatMoney(
   cents: number
 ) {
@@ -197,6 +203,25 @@ export default function WithdrawPage() {
     payoutCountry,
     setPayoutCountry,
   ] = useState("JP");
+  const [
+    paysendCardType,
+    setPaysendCardType,
+  ] =
+    useState<PaysendCardType>(
+      "Uzcard"
+    );
+  const [
+    paysendRecipientName,
+    setPaysendRecipientName,
+  ] = useState("");
+  const [
+    paysendCardLast4,
+    setPaysendCardLast4,
+  ] = useState("");
+  const [
+    paysendContact,
+    setPaysendContact,
+  ] = useState("");
   const [
     customPayoutCountry,
     setCustomPayoutCountry,
@@ -404,17 +429,47 @@ export default function WithdrawPage() {
       stripeUnsupported &&
       method === "visa_card" &&
       selectedMontraCardToken;
+    const isPaysendManualCard =
+      stripeUnsupported &&
+      method === "visa_card" &&
+      !selectedMontraCardToken;
+    const paysendDestinationLabel =
+      [
+        `Paysend manual card payout`,
+        `Country: ${selectedCountry}`,
+        `Card: ${paysendCardType}`,
+        `Recipient: ${paysendRecipientName.trim() || "not provided"}`,
+        `Last4: ${paysendCardLast4.trim() || "not provided"}`,
+        `Contact: ${paysendContact.trim() || "not provided"}`,
+      ].join(" | ");
 
     if (
       !isStripeMethod &&
       !isMontraMethod &&
-      destinationLabel.trim()
-        .length < 4
+      !isPaysendManualCard &&
+      destinationLabel.trim().length < 4
     ) {
       alert(
         "Enter payout destination details"
       );
       return;
+    }
+
+    if (isPaysendManualCard) {
+      if (
+        paysendRecipientName.trim()
+          .length < 2 ||
+        paysendContact.trim().length <
+          4 ||
+        !/^\d{4}$/.test(
+          paysendCardLast4.trim()
+        )
+      ) {
+        alert(
+          "Enter recipient name, card last 4 digits, and Telegram/email for manual payout confirmation"
+        );
+        return;
+      }
     }
 
     if (
@@ -450,7 +505,10 @@ export default function WithdrawPage() {
           body: JSON.stringify({
             amount: value,
             method,
-            destinationLabel,
+            destinationLabel:
+              isPaysendManualCard
+                ? paysendDestinationLabel
+                : destinationLabel,
             provider: isMontraMethod
               ? "montra"
               : undefined,
@@ -595,7 +653,7 @@ export default function WithdrawPage() {
               </h1>
 
               <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-400 md:text-base">
-                Connect Stripe once, then send eligible wallet balance to your Visa debit card or bank account.
+                Stripe automatic payouts stay available for supported countries. Uzbekistan and unsupported countries can create a manual card payout request while Paysend approval is pending.
               </p>
             </div>
 
@@ -622,7 +680,7 @@ export default function WithdrawPage() {
                 </h2>
                 <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
                   {stripeUnsupported
-                    ? "Stripe does not currently support this payout country. Create a request and admin will process it outside Stripe."
+                    ? "Stripe does not currently support this payout country. Create a Paysend-ready manual payout request. Admin will process it outside Stripe until Paysend API approval is complete."
                     : "Add your Visa debit card or bank account inside Stripe. Puzzle Market never stores card numbers."}
                 </p>
 
@@ -693,7 +751,7 @@ export default function WithdrawPage() {
 
                 {stripeUnsupported && (
                   <p className="mt-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3 text-sm text-amber-100">
-                    Uzbekistan is not supported by Stripe Connect right now, so automatic Stripe payout is unavailable for UZ users.
+                    Uzbekistan is not supported by Stripe Connect right now. Use manual Paysend-ready card payout for Uzcard, Humo, Visa or Mastercard.
                   </p>
                 )}
 
@@ -762,16 +820,128 @@ export default function WithdrawPage() {
           {stripeUnsupported && (
             <div className="mt-5 rounded-2xl border border-white/10 bg-black/50 p-4">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">
-                Uzbekistan payouts
+                Paysend-ready manual payout
               </p>
 
               {method ===
               "visa_card" ? (
                 <div className="mt-3 space-y-3">
+                  <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 text-sm leading-6 text-zinc-300">
+                    Paysend Enterprise is pending approval. For now we collect safe confirmation details only and admin completes the payout manually. Do not enter a full card number here.
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="text-sm font-bold text-zinc-400">
+                        Card rail
+                      </span>
+                      <select
+                        value={
+                          paysendCardType
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setPaysendCardType(
+                            event.target
+                              .value as PaysendCardType
+                          )
+                        }
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-black outline-none focus:border-cyan-400"
+                      >
+                        <option value="Uzcard">
+                          Uzcard
+                        </option>
+                        <option value="Humo">
+                          Humo
+                        </option>
+                        <option value="Visa">
+                          Visa
+                        </option>
+                        <option value="Mastercard">
+                          Mastercard
+                        </option>
+                      </select>
+                    </label>
+
+                    <label className="block">
+                      <span className="text-sm font-bold text-zinc-400">
+                        Card last 4 digits
+                      </span>
+                      <input
+                        value={
+                          paysendCardLast4
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setPaysendCardLast4(
+                            event.target
+                              .value.replace(
+                                /\D/g,
+                                ""
+                              )
+                              .slice(
+                                0,
+                                4
+                              )
+                          )
+                        }
+                        inputMode="numeric"
+                        placeholder="1234"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="text-sm font-bold text-zinc-400">
+                        Recipient full name
+                      </span>
+                      <input
+                        value={
+                          paysendRecipientName
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setPaysendRecipientName(
+                            event.target
+                              .value
+                          )
+                        }
+                        placeholder="Name as shown on card"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="text-sm font-bold text-zinc-400">
+                        Telegram or email
+                      </span>
+                      <input
+                        value={
+                          paysendContact
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setPaysendContact(
+                            event.target
+                              .value
+                          )
+                        }
+                        placeholder="@username or email"
+                        className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
+                      />
+                    </label>
+                  </div>
+
                   <div className="grid gap-3 md:grid-cols-[1fr_auto]">
                     <label className="block">
                       <span className="text-sm font-bold text-zinc-400">
-                        Phone linked to card
+                        Optional phone lookup
                       </span>
                       <input
                         value={
@@ -846,31 +1016,9 @@ export default function WithdrawPage() {
                   )}
 
                   <p className="text-xs leading-5 text-zinc-500">
-                    Montra returns tokenized cards by phone. Full card numbers are not stored on Puzzle Market.
+                    Optional automated-card lookup stays disabled until payout provider keys are approved. Full card numbers are not stored on Puzzle Market.
                   </p>
 
-                  {!selectedMontraCardToken && (
-                    <label className="block">
-                      <span className="text-sm font-bold text-zinc-400">
-                        Fallback contact details
-                      </span>
-                      <input
-                        value={
-                          destinationLabel
-                        }
-                        onChange={(
-                          event
-                        ) =>
-                          setDestinationLabel(
-                            event.target
-                              .value
-                          )
-                        }
-                        placeholder="Telegram/email + card last 4 digits for manual review"
-                        className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-base font-bold outline-none focus:border-cyan-400"
-                      />
-                    </label>
-                  )}
                 </div>
               ) : (
                 <label className="mt-3 block">

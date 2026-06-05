@@ -47,6 +47,23 @@ type InventoryItem = {
 
 };
 
+type WithdrawalRequest = {
+  id: string;
+  user_id: string;
+  amount_cents: number;
+  method: string;
+  destination_label: string;
+  status: string;
+  provider_reference?: string | null;
+  provider_transfer_reference?: string | null;
+  provider_error?: string | null;
+  created_at: string;
+  market_profiles?: {
+    email?: string | null;
+    username?: string | null;
+  } | null;
+};
+
 export default function AdminPage() {
 
   const [transactions, setTransactions] =
@@ -57,6 +74,13 @@ export default function AdminPage() {
 
   const [inventory, setInventory] =
     useState<InventoryItem[]>([]);
+
+  const [
+    withdrawals,
+    setWithdrawals,
+  ] = useState<WithdrawalRequest[]>(
+    []
+  );
 
   const [loading, setLoading] =
     useState(true);
@@ -195,6 +219,27 @@ export default function AdminPage() {
           .from("inventory")
           .select("*");
 
+      const withdrawalResponse =
+        await fetch(
+          "/api/admin/withdrawals",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${session.access_token}`,
+            },
+          }
+        );
+
+      if (withdrawalResponse.ok) {
+        const withdrawalJson =
+          await withdrawalResponse.json();
+
+        setWithdrawals(
+          withdrawalJson.withdrawals ||
+            []
+        );
+      }
+
       if (txData) {
 
         setTransactions(
@@ -221,6 +266,82 @@ export default function AdminPage() {
 
       setLoading(false);
 
+    };
+
+  const updateWithdrawal =
+    async (
+      withdrawalId: string,
+      action:
+        | "processing"
+        | "paid"
+        | "failed_refund"
+    ) => {
+      const {
+        data: {
+          session,
+        },
+      } =
+        await supabase.auth
+          .getSession();
+
+      if (!session) {
+        alert("Login first");
+        return;
+      }
+
+      const reference =
+        action === "paid"
+          ? window.prompt(
+              "Provider reference, for example Paysend transaction ID",
+              "manual_paysend"
+            ) || ""
+          : "";
+      const note =
+        action !== "paid"
+          ? window.prompt(
+              "Admin note",
+              action ===
+                "failed_refund"
+                ? "Manual payout failed and was refunded"
+                : "Manual payout is being processed"
+            ) || ""
+          : window.prompt(
+              "Optional transfer note",
+              ""
+            ) || "";
+
+      const response =
+        await fetch(
+          "/api/admin/withdrawals",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+              Authorization:
+                `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              withdrawalId,
+              action,
+              reference,
+              note,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        alert(
+          data.error ||
+            "Withdrawal update failed"
+        );
+        return;
+      }
+
+      await loadAdmin();
     };
 
   const saveMissingPiecePrice =
@@ -534,6 +655,150 @@ export default function AdminPage() {
             />
             Reset this puzzle test ownership back to admin before saving price
           </label>
+
+        </section>
+
+        {/* WITHDRAWALS */}
+
+        <section className="mt-12 md:mt-16 bg-white/[0.03] border border-white/10 rounded-[24px] md:rounded-[36px] p-5 md:p-10 backdrop-blur-xl">
+
+          <p className="text-cyan-400 uppercase tracking-[0.18em] md:tracking-[0.3em] text-xs font-black">
+            PAYOUT OPERATIONS
+          </p>
+
+          <h2 className="text-3xl md:text-5xl font-black mt-3">
+            Withdrawal Requests
+          </h2>
+
+          <p className="text-zinc-400 mt-5 max-w-3xl">
+            Manual card payouts can be processed through Paysend, bank tools, or another provider while the Paysend Enterprise API is pending approval. Mark paid only after the transfer is actually sent.
+          </p>
+
+          <div className="mt-8 space-y-4">
+            {withdrawals.length ===
+              0 && (
+              <div className="rounded-2xl border border-white/10 bg-black/40 p-5 text-zinc-400">
+                No withdrawal requests yet.
+              </div>
+            )}
+
+            {withdrawals.map(
+              (item) => (
+                <div
+                  key={item.id}
+                  className="rounded-3xl border border-white/10 bg-black/50 p-5"
+                >
+                  <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap gap-2">
+                        <span className="rounded-full bg-cyan-400 px-3 py-1 text-xs font-black text-black">
+                          {item.status}
+                        </span>
+                        <span className="rounded-full border border-white/10 px-3 py-1 text-xs font-black text-zinc-300">
+                          {item.method}
+                        </span>
+                      </div>
+
+                      <h3 className="mt-4 text-2xl font-black md:text-3xl">
+                        $
+                        {(
+                          item.amount_cents /
+                          100
+                        ).toFixed(2)}
+                      </h3>
+
+                      <p className="mt-3 break-words text-sm leading-6 text-zinc-300">
+                        {
+                          item.destination_label
+                        }
+                      </p>
+
+                      <p className="mt-3 text-sm text-zinc-500">
+                        User:{" "}
+                        <span className="text-zinc-300">
+                          {item.market_profiles
+                            ?.email ||
+                            item.market_profiles
+                              ?.username ||
+                            item.user_id}
+                        </span>
+                      </p>
+
+                      {item.provider_error && (
+                        <p className="mt-3 rounded-2xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">
+                          {
+                            item.provider_error
+                          }
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="grid shrink-0 gap-2 sm:grid-cols-3 xl:w-[420px]">
+                      <button
+                        onClick={() =>
+                          updateWithdrawal(
+                            item.id,
+                            "processing"
+                          )
+                        }
+                        disabled={
+                          ![
+                            "pending",
+                            "processing",
+                          ].includes(
+                            item.status
+                          )
+                        }
+                        className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 font-black text-white disabled:opacity-40"
+                      >
+                        Processing
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          updateWithdrawal(
+                            item.id,
+                            "paid"
+                          )
+                        }
+                        disabled={
+                          ![
+                            "pending",
+                            "processing",
+                          ].includes(
+                            item.status
+                          )
+                        }
+                        className="rounded-2xl bg-cyan-400 px-4 py-3 font-black text-black disabled:opacity-40"
+                      >
+                        Paid
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          updateWithdrawal(
+                            item.id,
+                            "failed_refund"
+                          )
+                        }
+                        disabled={
+                          ![
+                            "pending",
+                            "processing",
+                          ].includes(
+                            item.status
+                          )
+                        }
+                        className="rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 font-black text-red-200 disabled:opacity-40"
+                      >
+                        Fail + Refund
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
 
         </section>
 
