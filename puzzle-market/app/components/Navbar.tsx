@@ -197,7 +197,7 @@ export default function Navbar() {
 
               </a>
 
-              <nav className="hidden xl:flex min-w-0 items-center gap-3 2xl:gap-6 text-sm font-semibold">
+              <nav className="hidden 2xl:flex min-w-0 items-center gap-5 text-sm font-semibold">
 
                 <a
                   href={CHOOSE_PUZZLE_HREF}
@@ -407,7 +407,7 @@ export default function Navbar() {
                 onClick={() =>
                   setOpen(!open)
                 }
-                className="translate-safe-action xl:hidden h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center px-3 text-xs font-black"
+                className="translate-safe-action 2xl:hidden h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center px-3 text-xs font-black"
               >
 
                 {open ? "Close" : "Menu"}
@@ -423,7 +423,7 @@ export default function Navbar() {
 
         {open && (
 
-          <div className="xl:hidden border-t border-white/5 bg-black/95 backdrop-blur-xl">
+          <div className="2xl:hidden border-t border-white/5 bg-black/95 backdrop-blur-xl">
 
             <div className="px-4 py-5 grid grid-cols-2 gap-3 text-sm font-semibold">
 

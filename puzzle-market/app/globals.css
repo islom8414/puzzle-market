@@ -129,7 +129,105 @@ img{
 
 .translate-safe-nav{
   line-height:1.2;
-  white-space:normal;
+  white-space:nowrap;
+}
+
+.language-switcher{
+  position:relative;
+  flex:0 0 auto;
+}
+
+.language-switcher summary{
+  list-style:none;
+}
+
+.language-switcher summary::-webkit-details-marker{
+  display:none;
+}
+
+.language-switcher-trigger{
+  height:2.75rem;
+  min-width:2.75rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:1rem;
+  background:rgba(255,255,255,.05);
+  color:#fff;
+  font-size:.78rem;
+  font-weight:900;
+  cursor:pointer;
+  transition:border-color .2s ease;
+}
+
+.language-switcher-trigger:hover{
+  border-color:#22d3ee;
+}
+
+.language-current::before{
+  content:"EN";
+}
+
+html:lang(ru) .language-current::before,
+html[lang^="ru"] .language-current::before{
+  content:"RU";
+}
+
+html:lang(ja) .language-current::before,
+html[lang^="ja"] .language-current::before{
+  content:"JA";
+}
+
+html:lang(zh) .language-current::before,
+html[lang^="zh"] .language-current::before{
+  content:"ZH";
+}
+
+.language-switcher-menu{
+  position:absolute;
+  top:3.25rem;
+  right:0;
+  z-index:90;
+  min-width:4.5rem;
+  padding:.35rem;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:1rem;
+  background:#09090b;
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+}
+
+.language-switcher-option{
+  min-height:2.35rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:.75rem;
+  color:#fff;
+  font-size:.78rem;
+  font-weight:900;
+  text-decoration:none;
+}
+
+.language-switcher-option:hover{
+  background:rgba(255,255,255,.08);
+  color:#22d3ee;
+}
+
+.language-switcher-option-en::before{
+  content:"EN";
+}
+
+.language-switcher-option-ru::before{
+  content:"RU";
+}
+
+.language-switcher-option-ja::before{
+  content:"JA";
+}
+
+.language-switcher-option-zh::before{
+  content:"ZH";
 }
 
 main h1,
@@ -145,9 +243,9 @@ main select{
 
 html:lang(ru) .translate-safe-title,
 html[lang^="ru"] .translate-safe-title{
-  font-size:clamp(2.05rem, 4.2vw, 3.45rem);
+  font-size:clamp(2.2rem, 4.6vw, 3.75rem);
   line-height:1.14;
-  max-inline-size:min(100%, 10ch);
+  max-inline-size:min(100%, 13ch);
 }
 
 html:lang(ru) .translate-safe-heading,
@@ -182,7 +280,7 @@ html[lang^="ru"] .translate-safe-action{
 
 html:lang(ru) .translate-safe-nav,
 html[lang^="ru"] .translate-safe-nav{
-  font-size:.78rem;
+  font-size:.74rem;
 }
 
 html:lang(ru) main [class*="tracking-["],
@@ -196,9 +294,9 @@ html:lang(ko) .translate-safe-title,
 html[lang^="ja"] .translate-safe-title,
 html[lang^="zh"] .translate-safe-title,
 html[lang^="ko"] .translate-safe-title{
-  font-size:clamp(2.05rem, 4.2vw, 3.45rem);
+  font-size:clamp(2.15rem, 4.4vw, 3.65rem);
   line-height:1.14;
-  max-inline-size:min(100%, 10ch);
+  max-inline-size:min(100%, 12ch);
 }
 
 html:lang(ja) .translate-safe-heading,
@@ -257,7 +355,7 @@ html:lang(ko) .translate-safe-nav,
 html[lang^="ja"] .translate-safe-nav,
 html[lang^="zh"] .translate-safe-nav,
 html[lang^="ko"] .translate-safe-nav{
-  font-size:.74rem;
+  font-size:.72rem;
 }
 
 html:lang(ja) main [class*="tracking-["],
@@ -270,6 +368,50 @@ html[lang^="ko"] main [class*="tracking-["]{
 }
 
 @media (max-width: 640px){
+  header .max-w-7xl{
+    padding-left:.75rem !important;
+    padding-right:.75rem !important;
+  }
+
+  header .h-16{
+    min-height:4rem;
+    height:auto;
+    padding-top:.5rem;
+    padding-bottom:.5rem;
+  }
+
+  header .w-10.h-10{
+    width:2.5rem;
+    height:2.5rem;
+    border-radius:.9rem;
+  }
+
+  header .gap-2{
+    gap:.4rem !important;
+  }
+
+  .language-switcher-trigger{
+    height:2.5rem;
+    min-width:2.5rem;
+    border-radius:.85rem;
+    font-size:.72rem;
+  }
+
+  .language-switcher-menu{
+    top:3rem;
+    right:-.25rem;
+  }
+
+  header button,
+  header a{
+    flex-shrink:0;
+  }
+
+  header [class*="px-3"]{
+    padding-left:.6rem !important;
+    padding-right:.6rem !important;
+  }
+
   main h1{
     font-size:clamp(2rem, 10vw, 3rem) !important;
     line-height:1.06 !important;
