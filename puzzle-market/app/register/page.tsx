@@ -7,6 +7,7 @@ import {
   saveMyUsername,
 } from "@/lib/client-profile";
 import { sanitizeUsername } from "@/lib/display-name";
+import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 
 export default function RegisterPage() {
@@ -55,7 +56,7 @@ export default function RegisterPage() {
           password,
           options: {
             emailRedirectTo:
-              `${window.location.origin}/setup`,
+              getAuthRedirectUrl("/setup"),
           },
         });
 
@@ -123,7 +124,7 @@ export default function RegisterPage() {
           provider: "google",
           options: {
             redirectTo:
-              `${window.location.origin}/auth/callback`,
+              getAuthRedirectUrl(),
           },
         });
 
@@ -161,6 +162,7 @@ export default function RegisterPage() {
             type="email"
             placeholder="Email"
             value={email}
+            autoComplete="email"
             onChange={(e) =>
               setEmail(e.target.value)
             }
@@ -169,6 +171,7 @@ export default function RegisterPage() {
 
           <input
             value={username}
+            autoComplete="username"
             onChange={(e) =>
               setUsername(e.target.value)
             }
@@ -182,6 +185,7 @@ export default function RegisterPage() {
           />
 
           <button
+            type="button"
             onClick={handleRegister}
             disabled={loading}
             className="w-full bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 text-black font-black py-4 rounded-2xl transition"
@@ -194,6 +198,7 @@ export default function RegisterPage() {
           </button>
 
           <button
+            type="button"
             onClick={handleGoogleRegister}
             className="w-full bg-white hover:bg-zinc-200 text-black font-black py-4 rounded-2xl transition"
           >

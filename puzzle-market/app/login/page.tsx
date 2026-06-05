@@ -6,6 +6,7 @@ import {
   cacheUsername,
   fetchMyProfile,
 } from "@/lib/client-profile";
+import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
@@ -78,7 +79,7 @@ export default function LoginPage() {
           provider: "google",
           options: {
             redirectTo:
-              `${window.location.origin}/auth/callback`,
+              getAuthRedirectUrl(),
           },
         });
 
@@ -116,6 +117,7 @@ export default function LoginPage() {
             type="email"
             placeholder="Email"
             value={email}
+            autoComplete="email"
             onChange={(e) =>
               setEmail(e.target.value)
             }
@@ -128,6 +130,7 @@ export default function LoginPage() {
           />
 
           <button
+            type="button"
             onClick={handleLogin}
             disabled={loading}
             className="w-full bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 text-black font-black py-4 rounded-2xl transition"
@@ -140,6 +143,7 @@ export default function LoginPage() {
           </button>
 
           <button
+            type="button"
             onClick={handleGoogleLogin}
             className="w-full bg-white hover:bg-zinc-200 text-black font-black py-4 rounded-2xl transition"
           >

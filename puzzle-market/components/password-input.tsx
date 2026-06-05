@@ -26,6 +26,7 @@ export function PasswordInput({
         }
         placeholder={placeholder}
         value={value}
+        autoComplete="current-password"
         onChange={(event) =>
           onChange(event.target.value)
         }
