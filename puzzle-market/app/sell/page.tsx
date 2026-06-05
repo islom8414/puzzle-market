@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
+import { apiFetch } from "@/lib/api-client";
 
 type OwnedPiece = {
   pieceId: string;
@@ -50,7 +51,7 @@ export default function SellPage() {
     }
 
     const response =
-      await fetch(
+      await apiFetch(
         "/api/owned-pieces",
         {
           headers: {
@@ -176,7 +177,7 @@ export default function SellPage() {
     }
 
     const response =
-      await fetch(
+      await apiFetch(
         "/api/list-owned-piece",
         {
           method: "POST",

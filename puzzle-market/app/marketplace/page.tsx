@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { puzzles } from "@/data/puzzles";
+import { apiFetch } from "@/lib/api-client";
 import { fetchMyProfile } from "@/lib/client-profile";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
@@ -130,7 +131,7 @@ export default function MarketplacePage() {
 
     try {
       const response =
-        await fetch(
+        await apiFetch(
           "/api/marketplace-listings"
         );
 
@@ -328,7 +329,7 @@ export default function MarketplacePage() {
       }
 
       const response =
-        await fetch(
+        await apiFetch(
           `/api/puzzle-market-listings?${params.toString()}`
         );
 
@@ -396,7 +397,7 @@ export default function MarketplacePage() {
         }
 
         const response =
-          await fetch(
+          await apiFetch(
             "/api/purchase-listing",
             {
               method: "POST",

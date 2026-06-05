@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
+import { apiFetch } from "@/lib/api-client";
 import { cleanPublicName } from "@/lib/display-name";
 import {
   cacheUsername,
@@ -110,7 +111,7 @@ export default function ChatPage() {
     }
 
     const response =
-      await fetch(
+      await apiFetch(
         "/api/chat-messages"
       );
 
@@ -157,7 +158,7 @@ export default function ChatPage() {
         .getSession();
 
     const response =
-      await fetch(
+      await apiFetch(
         "/api/chat-messages",
         {
           method: "POST",

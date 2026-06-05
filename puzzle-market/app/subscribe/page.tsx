@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
 
 type PlanTier = "starter" | "premium" | "creator";
@@ -77,7 +78,7 @@ export default function SubscribePage() {
         return;
       }
 
-      const response = await fetch("/api/create-subscription-session", {
+      const response = await apiFetch("/api/create-subscription-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

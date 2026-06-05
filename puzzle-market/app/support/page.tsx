@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
 
 type SupportMessage = {
@@ -88,7 +89,7 @@ export default function SupportPage() {
     }
 
     const response =
-      await fetch(
+      await apiFetch(
         "/api/support-private",
         {
           headers: {
@@ -160,7 +161,7 @@ export default function SupportPage() {
     }
 
     const response =
-      await fetch(
+      await apiFetch(
         "/api/support-private",
         {
           method: "POST",

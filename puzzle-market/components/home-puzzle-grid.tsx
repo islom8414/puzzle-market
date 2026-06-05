@@ -7,6 +7,7 @@ import {
   catalogToCard,
   type CatalogPuzzle,
 } from "@/lib/puzzle-catalog";
+import { apiFetch } from "@/lib/api-client";
 
 export function HomePuzzleGrid() {
   const [puzzles, setPuzzles] =
@@ -18,7 +19,7 @@ export function HomePuzzleGrid() {
     async function load() {
       try {
         const response =
-          await fetch("/api/puzzles");
+          await apiFetch("/api/puzzles");
 
         const data =
           await response.json();

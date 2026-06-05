@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
 
 const methods = [
@@ -286,7 +287,7 @@ export default function WithdrawPage() {
           .order("created_at", {
             ascending: false,
           }),
-        fetch(
+        apiFetch(
           "/api/stripe/connect-status",
           {
             headers: {
@@ -346,7 +347,7 @@ export default function WithdrawPage() {
     }
 
     const response =
-      await fetch(
+      await apiFetch(
         "/api/stripe/connect-onboarding",
         {
           method: "POST",
@@ -467,7 +468,7 @@ export default function WithdrawPage() {
     }
 
     const response =
-      await fetch(
+      await apiFetch(
         "/api/request-withdrawal",
         {
           method: "POST",

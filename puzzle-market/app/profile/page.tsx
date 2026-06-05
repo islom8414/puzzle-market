@@ -9,6 +9,7 @@ import {
   fetchMyProfile,
   saveMyUsername,
 } from "@/lib/client-profile";
+import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
 import { sanitizeUsername } from "@/lib/display-name";
 
@@ -162,7 +163,7 @@ export default function ProfilePage() {
         sessionData.session
       ) {
         const response =
-          await fetch(
+          await apiFetch(
             "/api/owned-pieces",
             {
               headers: {

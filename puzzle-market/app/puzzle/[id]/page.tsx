@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { puzzles } from "@/data/puzzles";
+import { apiFetch } from "@/lib/api-client";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
 
@@ -223,7 +224,7 @@ export default function PuzzlePage() {
 
       try {
         const response =
-          await fetch(
+          await apiFetch(
             `/api/puzzle/${encodeURIComponent(slug)}`
           );
 

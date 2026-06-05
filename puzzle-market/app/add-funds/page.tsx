@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
 
 export default function AddFundsPage() {
@@ -58,7 +59,7 @@ export default function AddFundsPage() {
       );
 
       const response =
-        await fetch(
+        await apiFetch(
           "/api/create-checkout-session",
           {
             method: "POST",

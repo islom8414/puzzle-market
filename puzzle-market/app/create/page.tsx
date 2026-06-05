@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api-client";
 import { hasCreatorUploadAccess } from "@/lib/market-access";
 import {
   RARITY_OPTIONS,
@@ -104,7 +105,7 @@ export default function CreatePage() {
       formData.append("rarity", rarity);
       formData.append("price", price.trim());
 
-      const response = await fetch(
+      const response = await apiFetch(
         "/api/create-puzzle",
         {
           method: "POST",

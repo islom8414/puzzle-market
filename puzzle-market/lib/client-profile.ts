@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { apiFetch } from "@/lib/api-client";
 
 export type UserProfile = {
   username: string;
@@ -27,7 +28,7 @@ export async function fetchMyProfile() {
   }
 
   const response =
-    await fetch("/api/profile", {
+    await apiFetch("/api/profile", {
       headers: {
         Authorization:
           `Bearer ${token}`,
@@ -56,7 +57,7 @@ export async function saveMyUsername(
   }
 
   const response =
-    await fetch("/api/profile", {
+    await apiFetch("/api/profile", {
       method: "PUT",
       headers: {
         "Content-Type":

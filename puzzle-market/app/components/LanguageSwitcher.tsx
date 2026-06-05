@@ -1,27 +1,40 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 const primaryDomain =
   process.env.NEXT_PUBLIC_PRIMARY_DOMAIN ||
   "puzzle-market.com";
 
-const languageLinks = [
+const languages = [
   {
     code: "en",
-    href: `https://${primaryDomain}/`,
+    host: primaryDomain,
   },
   {
     code: "ru",
-    href: `https://ru.${primaryDomain}/`,
+    host: `ru.${primaryDomain}`,
   },
   {
     code: "ja",
-    href: `https://ja.${primaryDomain}/`,
+    host: `ja.${primaryDomain}`,
   },
   {
     code: "zh",
-    href: `https://zh-cn.${primaryDomain}/`,
+    host: `zh-cn.${primaryDomain}`,
   },
 ];
 
 export default function LanguageSwitcher() {
+  const [path, setPath] =
+    useState("/");
+
+  useEffect(() => {
+    setPath(
+      `${window.location.pathname}${window.location.search}${window.location.hash}`
+    );
+  }, []);
+
   return (
     <details
       className="language-switcher notranslate"
@@ -40,11 +53,11 @@ export default function LanguageSwitcher() {
       </summary>
 
       <div className="language-switcher-menu">
-        {languageLinks.map(
+        {languages.map(
           (language) => (
             <a
               key={language.code}
-              href={language.href}
+              href={`https://${language.host}${path}`}
               className={`language-switcher-option language-switcher-option-${language.code}`}
               translate="no"
               data-no-translation="true"
