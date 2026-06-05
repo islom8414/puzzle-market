@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { findFallbackPuzzle } from "@/lib/fallback-puzzles";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
@@ -40,6 +41,15 @@ export async function GET(
     }
 
     if (!data) {
+      const fallback =
+        findFallbackPuzzle(slug);
+
+      if (fallback) {
+        return NextResponse.json({
+          puzzle: fallback,
+        });
+      }
+
       return NextResponse.json(
         { error: "Puzzle not found" },
         { status: 404 }

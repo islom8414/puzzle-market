@@ -31,6 +31,9 @@ export default function Navbar() {
   const [authenticated, setAuthenticated] =
     useState(false);
 
+  const [profileReady, setProfileReady] =
+    useState(false);
+
   const [username, setUsername] =
     useState("");
 
@@ -77,6 +80,7 @@ export default function Navbar() {
 
       if (!user) {
         setAuthenticated(false);
+        setProfileReady(false);
         setUsername("");
         setBalance(0);
         localStorage.removeItem(
@@ -105,6 +109,10 @@ export default function Navbar() {
         setUsername("");
       }
 
+      setProfileReady(
+        Boolean(profile)
+      );
+
       const {
         data: account,
       } =
@@ -131,6 +139,11 @@ export default function Navbar() {
         localStorage.setItem(
           "puzzle-balance",
           String(dollars)
+        );
+      } else {
+        setBalance(0);
+        localStorage.removeItem(
+          "puzzle-balance"
         );
       }
 
@@ -375,7 +388,7 @@ export default function Navbar() {
 
               {/* WALLET */}
 
-              {authenticated && (
+              {authenticated && profileReady && username && (
                 <button
                   onClick={() =>
                     setWalletOpen(true)

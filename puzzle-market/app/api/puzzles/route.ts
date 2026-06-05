@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { fallbackPuzzles } from "@/lib/fallback-puzzles";
 
 export const runtime = "nodejs";
 
@@ -27,7 +28,10 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      puzzles: data || [],
+      puzzles:
+        data && data.length > 0
+          ? data
+          : fallbackPuzzles,
     });
   } catch (error) {
     return NextResponse.json(
