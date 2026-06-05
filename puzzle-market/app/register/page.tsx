@@ -27,6 +27,9 @@ export default function RegisterPage() {
   const [message, setMessage] =
     useState("");
 
+  const [confirmationPending, setConfirmationPending] =
+    useState(false);
+
   const handleRegister =
     async () => {
 
@@ -46,6 +49,7 @@ export default function RegisterPage() {
       }
 
       setLoading(true);
+      setConfirmationPending(false);
 
       const {
         data,
@@ -106,13 +110,52 @@ export default function RegisterPage() {
           }, 1200);
         } else {
           setMessage(
-            "Check your email to confirm your account"
+            "Check your email to confirm your account. Check spam too."
           );
+          setConfirmationPending(true);
         }
 
       }
 
       setLoading(false);
+
+    };
+
+  const handleResendConfirmation =
+    async () => {
+
+      if (!email) {
+        setMessage(
+          "Enter your email first"
+        );
+        return;
+      }
+
+      setLoading(true);
+
+      const { error } =
+        await supabase.auth.resend({
+          type: "signup",
+          email,
+          options: {
+            emailRedirectTo:
+              getAuthRedirectUrl("/setup"),
+          },
+        });
+
+      setLoading(false);
+
+      if (error) {
+        setMessage(
+          error.message
+        );
+        return;
+      }
+
+      setMessage(
+        "Confirmation email sent again. Check inbox and spam."
+      );
+      setConfirmationPending(true);
 
     };
 
@@ -204,6 +247,17 @@ export default function RegisterPage() {
           >
             Continue with Google
           </button>
+
+          {confirmationPending && (
+            <button
+              type="button"
+              onClick={handleResendConfirmation}
+              disabled={loading}
+              className="w-full border border-cyan-400/40 text-cyan-300 hover:bg-cyan-400/10 disabled:opacity-50 font-black py-4 rounded-2xl transition"
+            >
+              Resend confirmation email
+            </button>
+          )}
 
         </div>
 
