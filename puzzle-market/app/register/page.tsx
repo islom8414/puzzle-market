@@ -60,7 +60,11 @@ export default function RegisterPage() {
           password,
           options: {
             emailRedirectTo:
-              getAuthRedirectUrl("/setup"),
+              getAuthRedirectUrl("/login?confirmed=1"),
+            data: {
+              username:
+                cleanUsername,
+            },
           },
         });
 
@@ -109,8 +113,12 @@ export default function RegisterPage() {
               "/profile";
           }, 1200);
         } else {
+          localStorage.setItem(
+            "puzzle-pending-username",
+            cleanUsername
+          );
           setMessage(
-            "Check your email to confirm your account. Check spam too."
+            "Check your email to confirm your account. After confirmation, sign in with this email."
           );
           setConfirmationPending(true);
         }
@@ -139,7 +147,7 @@ export default function RegisterPage() {
           email,
           options: {
             emailRedirectTo:
-              getAuthRedirectUrl("/setup"),
+              getAuthRedirectUrl("/login?confirmed=1"),
           },
         });
 

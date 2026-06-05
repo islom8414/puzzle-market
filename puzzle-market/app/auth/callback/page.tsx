@@ -33,7 +33,9 @@ export default function AuthCallbackPage() {
           profile.username
         );
         router.replace(
-          "/marketplace"
+          profile.hasActiveSubscription
+            ? "/marketplace"
+            : "/subscribe"
         );
         return;
       }

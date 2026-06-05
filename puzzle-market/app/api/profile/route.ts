@@ -4,6 +4,7 @@ import {
   isCompleteUsername,
   sanitizeUsername,
 } from "@/lib/display-name";
+import { hasActivePaidSubscription } from "@/lib/subscription-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -68,12 +69,47 @@ export async function GET(
 
     const { admin, user } = auth;
 
-    const { data: profile } =
+    const metadataUsername =
+      sanitizeUsername(
+        typeof user.user_metadata
+          ?.username === "string"
+          ? user.user_metadata.username
+          : ""
+      );
+
+    let { data: profile } =
       await admin
         .from("market_profiles")
-        .select("username, email")
+        .select(
+          "username, email, subscription_tier, subscription_status"
+        )
         .eq("id", user.id)
         .maybeSingle();
+
+    if (
+      !profile &&
+      metadataUsername &&
+      user.email
+    ) {
+      const { data: created } =
+        await admin
+          .from("market_profiles")
+          .upsert(
+            {
+              id: user.id,
+              email: user.email,
+              username:
+                metadataUsername,
+            },
+            { onConflict: "id" }
+          )
+          .select(
+            "username, email, subscription_tier, subscription_status"
+          )
+          .maybeSingle();
+
+      profile = created;
+    }
 
     const username =
       sanitizeUsername(
@@ -89,6 +125,17 @@ export async function GET(
       profileComplete:
         isCompleteUsername(
           username
+        ),
+      subscriptionTier:
+        profile?.subscription_tier ||
+        null,
+      subscriptionStatus:
+        profile?.subscription_status ||
+        null,
+      hasActiveSubscription:
+        hasActivePaidSubscription(
+          profile,
+          user.email
         ),
     });
   } catch (error) {

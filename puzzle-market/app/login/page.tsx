@@ -59,7 +59,9 @@ export default function LoginPage() {
           );
 
           window.location.href =
-            "/marketplace";
+            profile.hasActiveSubscription
+              ? "/marketplace"
+              : "/subscribe";
         } else {
           window.location.href =
             "/setup";

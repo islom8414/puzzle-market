@@ -28,6 +28,9 @@ export default function Navbar() {
   const [balance, setBalance] =
     useState(0);
 
+  const [authenticated, setAuthenticated] =
+    useState(false);
+
   const [username, setUsername] =
     useState("");
 
@@ -40,20 +43,6 @@ export default function Navbar() {
     useState(0);
 
   useEffect(() => {
-
-    const savedBalance =
-      localStorage.getItem(
-        "puzzle-balance"
-      );
-
-    if (savedBalance) {
-
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBalance(
-        Number(savedBalance)
-      );
-
-    }
 
     // eslint-disable-next-line react-hooks/immutability
     loadUserProfile();
@@ -87,9 +76,16 @@ export default function Navbar() {
           .getUser();
 
       if (!user) {
+        setAuthenticated(false);
         setUsername("");
+        setBalance(0);
+        localStorage.removeItem(
+          "puzzle-balance"
+        );
         return;
       }
+
+      setAuthenticated(true);
 
       const profile =
         await fetchMyProfile();
@@ -379,14 +375,16 @@ export default function Navbar() {
 
               {/* WALLET */}
 
-              <button
-                onClick={() =>
-                  setWalletOpen(true)
-                }
-                className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-3 md:px-4 py-2 rounded-2xl transition text-sm md:text-base"
-              >
-                ${balance}
-              </button>
+              {authenticated && (
+                <button
+                  onClick={() =>
+                    setWalletOpen(true)
+                  }
+                  className="bg-cyan-400 hover:bg-cyan-300 text-black font-black px-3 md:px-4 py-2 rounded-2xl transition text-sm md:text-base"
+                >
+                  ${balance}
+                </button>
+              )}
 
               {/* LOGOUT */}
 
@@ -501,7 +499,7 @@ export default function Navbar() {
 
       {/* WALLET MODAL */}
 
-      {walletOpen && (
+      {walletOpen && authenticated && (
 
         <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4 py-6">
 

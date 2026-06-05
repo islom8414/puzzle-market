@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { sendOwnershipEmail } from "@/lib/ownership-email";
 import { createOwnershipCode } from "@/lib/ownership-certificate";
 import { getCanonicalSiteUrl } from "@/lib/site-url";
+import { requireActivePaidSubscription } from "@/lib/subscription-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -64,6 +65,28 @@ export async function POST(
         },
         {
           status: 401,
+        }
+      );
+    }
+
+    const allowed =
+      await requireActivePaidSubscription(
+        admin,
+        {
+          id: userData.user.id,
+          email:
+            userData.user.email,
+        }
+      );
+
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          error:
+            "Starter subscription required to buy puzzle pieces",
+        },
+        {
+          status: 402,
         }
       );
     }

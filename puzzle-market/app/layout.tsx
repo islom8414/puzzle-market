@@ -5,6 +5,7 @@ import "./globals.css";
 import ConditionalNavbar from "./components/ConditionalNavbar";
 import LiveFeed from "./components/LiveFeed";
 import LinguiseScript from "./components/LinguiseScript";
+import SubscriptionGate from "./components/SubscriptionGate";
 
 export const metadata: Metadata = {
   title: "Puzzle Market",
@@ -44,6 +45,8 @@ export default function RootLayout({
         <LiveFeed />
 
         <LinguiseScript />
+
+        <SubscriptionGate />
 
         {/* PAGE */}
 

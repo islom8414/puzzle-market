@@ -4,6 +4,7 @@ import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
+import { requireActivePaidSubscription } from "@/lib/subscription-access";
 
 export async function POST(
   request: Request
@@ -69,6 +70,28 @@ export async function POST(
         },
         {
           status: 401,
+        }
+      );
+    }
+
+    const allowed =
+      await requireActivePaidSubscription(
+        admin,
+        {
+          id: userData.user.id,
+          email:
+            userData.user.email,
+        }
+      );
+
+    if (!allowed) {
+      return NextResponse.json(
+        {
+          error:
+            "Starter subscription required to resell puzzle pieces",
+        },
+        {
+          status: 402,
         }
       );
     }

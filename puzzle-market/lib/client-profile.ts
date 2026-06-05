@@ -4,6 +4,9 @@ export type UserProfile = {
   username: string;
   email: string;
   profileComplete: boolean;
+  subscriptionTier?: string | null;
+  subscriptionStatus?: string | null;
+  hasActiveSubscription?: boolean;
 };
 
 async function getAccessToken() {
