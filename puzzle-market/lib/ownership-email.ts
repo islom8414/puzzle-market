@@ -18,7 +18,7 @@ export async function sendOwnershipEmail(
 
   const fromEmail =
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    "Puzzle Market <onboarding@resend.dev>";
+    "Puzzle Market <support@puzzle-market.com>";
 
   const puzzleUrl = `${input.origin}/puzzle/${encodeURIComponent(input.puzzleSlug)}`;
   const profileUrl = `${input.origin}/profile`;
