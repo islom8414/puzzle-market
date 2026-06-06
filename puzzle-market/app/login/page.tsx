@@ -10,7 +10,6 @@ import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
-
   const [email, setEmail] =
     useState("");
 

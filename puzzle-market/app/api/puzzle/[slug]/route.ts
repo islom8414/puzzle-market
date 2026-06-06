@@ -34,6 +34,16 @@ export async function GET(
         .maybeSingle();
 
     if (error) {
+      const fallback =
+        findFallbackPuzzle(slug);
+
+      if (fallback) {
+        return NextResponse.json({
+          puzzle: fallback,
+          warning: error.message,
+        });
+      }
+
       return NextResponse.json(
         { error: error.message },
         { status: 500 }
@@ -60,6 +70,21 @@ export async function GET(
       puzzle: data,
     });
   } catch (error) {
+    const fallback =
+      findFallbackPuzzle(
+        (await context.params).slug
+      );
+
+    if (fallback) {
+      return NextResponse.json({
+        puzzle: fallback,
+        warning:
+          error instanceof Error
+            ? error.message
+            : "Failed to load puzzle",
+      });
+    }
+
     return NextResponse.json(
       {
         error:

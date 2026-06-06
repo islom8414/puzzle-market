@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const primaryDomain =
   process.env.NEXT_PUBLIC_PRIMARY_DOMAIN ||
@@ -26,14 +26,8 @@ const languages = [
 ];
 
 export default function LanguageSwitcher() {
-  const [path, setPath] =
-    useState("/");
-
-  useEffect(() => {
-    setPath(
-      `${window.location.pathname}${window.location.search}${window.location.hash}`
-    );
-  }, []);
+  const path =
+    usePathname() || "/";
 
   return (
     <details

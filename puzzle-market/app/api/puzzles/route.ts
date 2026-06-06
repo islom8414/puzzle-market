@@ -22,8 +22,10 @@ export async function GET() {
 
     if (error) {
       return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
+        {
+          puzzles: fallbackPuzzles,
+          warning: error.message,
+        }
       );
     }
 
@@ -36,12 +38,12 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       {
-        error:
+        puzzles: fallbackPuzzles,
+        warning:
           error instanceof Error
             ? error.message
             : "Failed to load puzzles",
-      },
-      { status: 500 }
+      }
     );
   }
 }

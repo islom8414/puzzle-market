@@ -10,6 +10,11 @@ import { sanitizeUsername } from "@/lib/display-name";
 import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 
+const confirmationRedirect =
+  getAuthRedirectUrl(
+    "/auth/callback?next=/login?confirmed=1"
+  );
+
 export default function RegisterPage() {
 
   const [email, setEmail] =
@@ -60,7 +65,7 @@ export default function RegisterPage() {
           password,
           options: {
             emailRedirectTo:
-              getAuthRedirectUrl("/login?confirmed=1"),
+              confirmationRedirect,
             data: {
               username:
                 cleanUsername,
@@ -147,7 +152,7 @@ export default function RegisterPage() {
           email,
           options: {
             emailRedirectTo:
-              getAuthRedirectUrl("/login?confirmed=1"),
+              confirmationRedirect,
           },
         });
 

@@ -16,6 +16,12 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     let active = true;
+    const searchParams =
+      new URLSearchParams(
+        window.location.search
+      );
+    const next =
+      searchParams.get("next");
 
     async function finishLogin() {
       const profile =
@@ -50,8 +56,33 @@ export default function AuthCallbackPage() {
         await supabase.auth.getSession();
 
       if (session) {
+        if (next) {
+          router.replace(next);
+          return;
+        }
+
         await finishLogin();
         return;
+      }
+
+      const code =
+        searchParams.get("code");
+
+      if (code) {
+        const { error } =
+          await supabase.auth.exchangeCodeForSession(
+            code
+          );
+
+        if (!error) {
+          if (next) {
+            router.replace(next);
+            return;
+          }
+
+          await finishLogin();
+          return;
+        }
       }
 
       const {
@@ -68,6 +99,11 @@ export default function AuthCallbackPage() {
               nextSession &&
               active
             ) {
+              if (next) {
+                router.replace(next);
+                return;
+              }
+
               await finishLogin();
             }
           }

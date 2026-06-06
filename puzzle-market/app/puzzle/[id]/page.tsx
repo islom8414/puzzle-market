@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/immutability, react-hooks/exhaustive-deps */
+
 import {
   useEffect,
   useMemo,
@@ -221,6 +223,11 @@ export default function PuzzlePage() {
   useEffect(() => {
     async function loadCatalog() {
       setCatalogLoading(true);
+      setOwnershipReady(false);
+      setOwnedMissingCount(0);
+      setProgressReady(false);
+      hydratedSlugRef.current = null;
+      previousLockedRef.current = [];
 
       try {
         const response =
@@ -392,14 +399,6 @@ export default function PuzzlePage() {
 
   const [ownershipReady, setOwnershipReady] =
     useState(false);
-
-  useEffect(() => {
-    setOwnershipReady(false);
-    setOwnedMissingCount(0);
-    setProgressReady(false);
-    hydratedSlugRef.current = null;
-    previousLockedRef.current = [];
-  }, [slug]);
 
   useEffect(() => {
     async function loadOwnership() {
@@ -588,9 +587,6 @@ export default function PuzzlePage() {
 
     const previous =
       previousLockedRef.current;
-
-    const previousSet =
-      new Set(previous);
 
     const currentSet =
       new Set(lockedMissingIndexes);

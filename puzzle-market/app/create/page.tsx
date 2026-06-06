@@ -34,34 +34,34 @@ export default function CreatePage() {
   );
 
   useEffect(() => {
-    checkCreatorAccess();
-  }, []);
+    async function checkCreatorAccess() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-  async function checkCreatorAccess() {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      if (!session?.user) {
+        setLoading(false);
+        return;
+      }
 
-    if (!session?.user) {
+      const { data } = await supabase
+        .from("market_profiles")
+        .select("subscription_tier, subscription_status")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      setAllowed(
+        hasCreatorUploadAccess(
+          session.user.email,
+          data
+        )
+      );
+
       setLoading(false);
-      return;
     }
 
-    const { data } = await supabase
-      .from("market_profiles")
-      .select("subscription_tier, subscription_status")
-      .eq("id", session.user.id)
-      .maybeSingle();
-
-    setAllowed(
-      hasCreatorUploadAccess(
-        session.user.email,
-        data
-      )
-    );
-
-    setLoading(false);
-  }
+    checkCreatorAccess();
+  }, []);
 
   async function savePuzzle() {
     setMessage("");

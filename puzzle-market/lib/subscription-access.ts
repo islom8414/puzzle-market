@@ -1,4 +1,5 @@
 import { isAdminEmail } from "@/lib/market-access";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 const activeStatuses = new Set(["active", "trialing"]);
 const paidTiers = new Set(["starter", "premium", "creator"]);
@@ -25,7 +26,7 @@ export function hasActivePaidSubscription(
 
 export async function requireActivePaidSubscription(
   // Supabase's generated client type can recurse heavily in Next builds here.
-  admin: any,
+  admin: SupabaseClient,
   user: {
     id: string;
     email?: string | null;
