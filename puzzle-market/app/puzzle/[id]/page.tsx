@@ -14,6 +14,7 @@ import { useParams } from "next/navigation";
 
 import { puzzles } from "@/data/puzzles";
 import { apiFetch } from "@/lib/api-client";
+import { fetchMyProfile } from "@/lib/client-profile";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
 
@@ -144,6 +145,12 @@ type CatalogPuzzle = {
   rarity: string | null;
 };
 
+type PlayPrompt =
+  | "login"
+  | "profile"
+  | "subscription"
+  | null;
+
 const defaultRows = 5;
 const defaultColumns = 5;
 const defaultPieceSize = 66;
@@ -219,6 +226,15 @@ export default function PuzzlePage() {
 
   const [catalogLoading, setCatalogLoading] =
     useState(true);
+
+  const [playUnlocked, setPlayUnlocked] =
+    useState(false);
+
+  const [playPrompt, setPlayPrompt] =
+    useState<PlayPrompt>(null);
+
+  const [checkingAccess, setCheckingAccess] =
+    useState(false);
 
   useEffect(() => {
     async function loadCatalog() {
@@ -703,6 +719,39 @@ export default function PuzzlePage() {
     setSelected(null);
   }
 
+  async function requestPlayAccess() {
+    setCheckingAccess(true);
+
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        setPlayPrompt("login");
+        return;
+      }
+
+      const profile =
+        await fetchMyProfile();
+
+      if (!profile?.profileComplete) {
+        setPlayPrompt("profile");
+        return;
+      }
+
+      if (!profile.hasActiveSubscription) {
+        setPlayPrompt("subscription");
+        return;
+      }
+
+      setPlayPrompt(null);
+      setPlayUnlocked(true);
+    } finally {
+      setCheckingAccess(false);
+    }
+  }
+
   function selectTrayPiece(
     piece: number
   ) {
@@ -842,6 +891,123 @@ export default function PuzzlePage() {
             Choose A Puzzle
           </Link>
         </div>
+      </main>
+    );
+  }
+
+  if (!playUnlocked) {
+    const promptCopy =
+      playPrompt === "login"
+        ? {
+            title: "Sign in to start playing",
+            body: "You can browse every puzzle for free. Sign in when you are ready to assemble this one.",
+            href: `/login?next=${encodeURIComponent(`/puzzle/${slug}`)}`,
+            action: "Sign in",
+          }
+        : playPrompt === "profile"
+          ? {
+              title: "Finish your collector profile",
+              body: "Choose your public username before starting your first puzzle.",
+              href: "/setup",
+              action: "Finish profile",
+            }
+          : {
+              title: "Starter unlocks puzzle play",
+              body: "Keep browsing for free. Starter is only required when you begin assembling, buying, or reselling pieces.",
+              href: "/subscribe",
+              action: "View Starter",
+            };
+
+    return (
+      <main className="min-h-screen bg-black px-4 py-6 text-white md:px-6 md:py-10">
+        <section className="mx-auto max-w-6xl">
+          <Link
+            href={CHOOSE_PUZZLE_HREF}
+            className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-black transition hover:border-cyan-400"
+          >
+            Browse Puzzles
+          </Link>
+
+          <div className="mt-6 grid overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="relative min-h-[320px] bg-black sm:min-h-[460px]">
+              <img
+                src={puzzle.image}
+                alt={puzzle.title}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+            </div>
+
+            <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-10">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">
+                Puzzle Preview
+              </p>
+
+              <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl">
+                {puzzle.title}
+              </h1>
+
+              <p className="mt-4 text-zinc-400">
+                {puzzle.rarity} collection / {rows} x {columns} board / one hidden market piece
+              </p>
+
+              <p className="mt-6 leading-relaxed text-zinc-300">
+                Look through the artwork first. Your subscription is checked only when you decide to start assembling it.
+              </p>
+
+              <button
+                type="button"
+                onClick={requestPlayAccess}
+                disabled={checkingAccess}
+                className="mt-8 flex min-h-14 w-full items-center justify-center rounded-2xl bg-cyan-400 px-6 py-4 text-lg font-black text-black transition hover:bg-cyan-300 disabled:opacity-60"
+              >
+                {checkingAccess
+                  ? "Checking access..."
+                  : "Start Playing"}
+              </button>
+
+              <Link
+                href="/marketplace"
+                className="mt-3 flex min-h-12 items-center justify-center rounded-2xl border border-white/10 px-5 py-3 font-black text-zinc-200 transition hover:border-cyan-400"
+              >
+                View Missing Pieces
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {playPrompt && (
+          <div className="fixed inset-0 z-[210] flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-md">
+            <section className="w-full max-w-md rounded-[24px] border border-cyan-400/25 bg-zinc-950 p-6 shadow-2xl sm:p-8">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">
+                Ready When You Are
+              </p>
+
+              <h2 className="mt-4 text-3xl font-black leading-tight">
+                {promptCopy.title}
+              </h2>
+
+              <p className="mt-4 leading-relaxed text-zinc-400">
+                {promptCopy.body}
+              </p>
+
+              <a
+                href={promptCopy.href}
+                className="mt-7 flex min-h-13 w-full items-center justify-center rounded-2xl bg-cyan-400 px-5 py-4 font-black text-black"
+              >
+                {promptCopy.action}
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setPlayPrompt(null)}
+                className="mt-3 flex min-h-12 w-full items-center justify-center rounded-2xl border border-white/10 px-5 py-3 font-black"
+              >
+                Keep Browsing
+              </button>
+            </section>
+          </div>
+        )}
       </main>
     );
   }

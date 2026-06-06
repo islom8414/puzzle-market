@@ -206,7 +206,7 @@ export default function Navbar() {
 
               </a>
 
-              <nav className="hidden 2xl:flex min-w-0 items-center gap-5 text-sm font-semibold">
+              <nav className="hidden xl:flex min-w-0 items-center gap-5 text-sm font-semibold">
 
                 <a
                   href={CHOOSE_PUZZLE_HREF}
@@ -223,51 +223,17 @@ export default function Navbar() {
                 </a>
 
                 <a
-                  href="/profile"
+                  href="/leaderboard"
                   className="translate-safe-nav hover:text-cyan-400 transition"
                 >
-                  Profile
-                </a>                <a
-                  href="/subscribe"
-                  className="translate-safe-nav hover:text-cyan-400 transition"
-                >
-                  Plans
-                </a>
-
-
-                <a
-                  href="/sell"
-                  className="translate-safe-nav hover:text-cyan-400 transition"
-                >
-                  Sell
+                  Rankings
                 </a>
 
                 <a
-                  href="/withdraw"
+                  href="/auctions"
                   className="translate-safe-nav hover:text-cyan-400 transition"
                 >
-                  Withdraw
-                </a>
-
-                <a
-                  href="/chat"
-                  className="translate-safe-nav hover:text-cyan-400 transition"
-                >
-                  Chat
-                </a>
-
-                <a
-                  href="/support"
-                  className="translate-safe-nav hover:text-cyan-400 transition"
-                >
-                  Support
-                </a>
-
-                <a
-                  href="/about"
-                  className="translate-safe-nav hover:text-cyan-400 transition"
-                >
-                  About
+                  Auctions
                 </a>
 
               </nav>
@@ -418,7 +384,7 @@ export default function Navbar() {
                 onClick={() =>
                   setOpen(!open)
                 }
-                className="translate-safe-action 2xl:hidden h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center px-3 text-xs font-black"
+                className="translate-safe-action h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center px-3 text-xs font-black"
               >
 
                 {open ? "Close" : "Menu"}
@@ -434,7 +400,7 @@ export default function Navbar() {
 
         {open && (
 
-          <div className="2xl:hidden border-t border-white/5 bg-black/95 backdrop-blur-xl">
+          <div className="border-t border-white/5 bg-black/95 backdrop-blur-xl">
 
             <div className="px-4 py-5 grid grid-cols-2 gap-3 text-sm font-semibold">
 
@@ -473,6 +439,14 @@ export default function Navbar() {
 
               <a href="/about" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 About
+              </a>
+
+              <a href="/leaderboard" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                Rankings
+              </a>
+
+              <a href="/auctions" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                Auctions
               </a>
 
               <div className="col-span-2 border-t border-white/10 pt-4 mt-2 flex flex-col gap-3">

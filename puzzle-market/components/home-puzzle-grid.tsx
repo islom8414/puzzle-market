@@ -85,7 +85,7 @@ export function HomePuzzleGrid() {
 
             <div className="p-6">
               <p className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
-                {puzzle.rarity || "Rare"} · 1 missing piece
+                {puzzle.rarity || "Rare"} / 1 missing piece
               </p>
 
               <h3 className="mt-3 text-2xl font-black">
@@ -97,7 +97,7 @@ export function HomePuzzleGrid() {
                   href={`/puzzle/${card.slug}`}
                   className="inline-flex rounded-2xl bg-cyan-400 px-5 py-3 font-black text-black"
                 >
-                  Play — Assemble Puzzle
+                  View Puzzle
                 </Link>
               </div>
             </div>

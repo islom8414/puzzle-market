@@ -29,6 +29,16 @@ export default function LoginPage() {
       setMessage("");
 
       try {
+        const requestedNext =
+          new URLSearchParams(
+            window.location.search
+          ).get("next");
+        const nextPath =
+          requestedNext?.startsWith("/") &&
+          !requestedNext.startsWith("//")
+            ? requestedNext
+            : "/marketplace";
+
         const { data, error } =
           await supabase.auth.signInWithPassword({
             email: email.trim(),
@@ -65,9 +75,7 @@ export default function LoginPage() {
           );
 
           window.location.assign(
-            profile.hasActiveSubscription
-              ? "/marketplace"
-              : "/subscribe"
+            nextPath
           );
           return;
         }
@@ -78,9 +86,16 @@ export default function LoginPage() {
             ? data.user.user_metadata.username
             : "";
 
+        if (!metadataUsername) {
+          localStorage.setItem(
+            "puzzle-next-path",
+            nextPath
+          );
+        }
+
         window.location.assign(
           metadataUsername
-            ? "/subscribe"
+            ? nextPath
             : "/setup"
         );
       } catch (error) {

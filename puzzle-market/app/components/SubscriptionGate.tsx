@@ -7,14 +7,8 @@ import { fetchMyProfile } from "@/lib/client-profile";
 import { supabase } from "@/lib/supabase";
 
 const protectedPrefixes = [
-  "/puzzle",
   "/sell",
-  "/withdraw",
-  "/add-funds",
   "/chat",
-  "/collection",
-  "/activity",
-  "/fragment",
 ];
 
 const publicPrefixes = [

@@ -40,11 +40,7 @@ export default function SetupPage() {
         profile.username
       ) {
         cacheUsername(profile.username);
-        router.replace(
-          profile.hasActiveSubscription
-            ? "/profile"
-            : "/subscribe"
-        );
+        router.replace("/profile");
         return;
       }
 
@@ -97,7 +93,16 @@ export default function SetupPage() {
       "puzzle-pending-username"
     );
 
-    router.push("/subscribe");
+    const nextPath =
+      localStorage.getItem(
+        "puzzle-next-path"
+      ) || "/marketplace";
+
+    localStorage.removeItem(
+      "puzzle-next-path"
+    );
+
+    router.push(nextPath);
   };
 
   if (checking) {

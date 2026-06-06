@@ -374,6 +374,26 @@ export default function MarketplacePage() {
         const profile =
           await fetchMyProfile();
 
+        if (!profile?.profileComplete) {
+          location.href =
+            "/setup";
+          return;
+        }
+
+        if (!profile.hasActiveSubscription) {
+          const upgrade =
+            window.confirm(
+              "A Starter plan is required only when you buy or resell a puzzle piece. Open plans now?"
+            );
+
+          if (upgrade) {
+            location.href =
+              "/subscribe";
+          }
+
+          return;
+        }
+
         const username =
           profile?.username ||
           session.user.email

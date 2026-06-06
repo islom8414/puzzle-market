@@ -38,11 +38,7 @@ export default function AuthCallbackPage() {
         cacheUsername(
           profile.username
         );
-        router.replace(
-          profile.hasActiveSubscription
-            ? "/marketplace"
-            : "/subscribe"
-        );
+        router.replace("/marketplace");
         return;
       }
 
