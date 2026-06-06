@@ -20,27 +20,31 @@ async function getAccessToken() {
 }
 
 export async function fetchMyProfile() {
-  const token =
-    await getAccessToken();
+  try {
+    const token =
+      await getAccessToken();
 
-  if (!token) {
+    if (!token) {
+      return null;
+    }
+
+    const response =
+      await apiFetch("/api/profile", {
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+        },
+        cache: "no-store",
+      });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return (await response.json()) as UserProfile;
+  } catch {
     return null;
   }
-
-  const response =
-    await apiFetch("/api/profile", {
-      headers: {
-        Authorization:
-          `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  return (await response.json()) as UserProfile;
 }
 
 export async function saveMyUsername(

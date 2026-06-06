@@ -1,15 +1,16 @@
-import { getCanonicalSiteUrl } from "@/lib/site-url";
+const translatedHosts = new Set([
+  "ru.puzzle-market.com",
+  "ja.puzzle-market.com",
+  "zh-cn.puzzle-market.com",
+]);
 
-function shouldUseCanonicalApi() {
+function shouldUsePrimaryApi() {
   if (typeof window === "undefined") {
     return false;
   }
 
-  const host = window.location.hostname;
-
-  return (
-    host.endsWith(".puzzle-market.com") &&
-    host !== "puzzle-market.com"
+  return translatedHosts.has(
+    window.location.hostname
   );
 }
 
@@ -18,11 +19,11 @@ export function apiUrl(path: string) {
     return path;
   }
 
-  if (!shouldUseCanonicalApi()) {
+  if (!shouldUsePrimaryApi()) {
     return path;
   }
 
-  return `${getCanonicalSiteUrl()}${path}`;
+  return `https://www.puzzle-market.com${path}`;
 }
 
 export function apiFetch(

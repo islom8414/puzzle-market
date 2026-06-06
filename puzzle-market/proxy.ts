@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 
 const allowedOrigins = new Set([
   "https://puzzle-market.com",
+  "https://www.puzzle-market.com",
   "https://ru.puzzle-market.com",
   "https://ja.puzzle-market.com",
   "https://zh-cn.puzzle-market.com",
