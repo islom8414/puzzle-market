@@ -26,20 +26,19 @@ export default function LoginPage() {
     async () => {
 
       setLoading(true);
+      setMessage("");
 
-      const { data, error } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      try {
+        const { data, error } =
+          await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
 
-      if (error) {
-
-        setMessage(
-          error.message
-        );
-
-      } else {
+        if (error) {
+          setMessage(error.message);
+          return;
+        }
 
         localStorage.setItem(
           "puzzle-user",
@@ -47,7 +46,15 @@ export default function LoginPage() {
         );
 
         const profile =
-          await fetchMyProfile();
+          await Promise.race([
+            fetchMyProfile(),
+            new Promise<null>((resolve) => {
+              window.setTimeout(
+                () => resolve(null),
+                5000
+              );
+            }),
+          ]);
 
         if (
           profile?.profileComplete &&
@@ -57,18 +64,34 @@ export default function LoginPage() {
             profile.username
           );
 
-          window.location.href =
+          window.location.assign(
             profile.hasActiveSubscription
               ? "/marketplace"
-              : "/subscribe";
-        } else {
-          window.location.href =
-            "/setup";
+              : "/subscribe"
+          );
+          return;
         }
 
-      }
+        const metadataUsername =
+          typeof data.user.user_metadata
+            ?.username === "string"
+            ? data.user.user_metadata.username
+            : "";
 
-      setLoading(false);
+        window.location.assign(
+          metadataUsername
+            ? "/subscribe"
+            : "/setup"
+        );
+      } catch (error) {
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "Login failed. Please try again."
+        );
+      } finally {
+        setLoading(false);
+      }
 
     };
 
