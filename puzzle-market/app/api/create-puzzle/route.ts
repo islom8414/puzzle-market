@@ -4,6 +4,11 @@ import {
   hasCreatorUploadAccess,
 } from "@/lib/market-access";
 import {
+  normalizeBrandCategory,
+  normalizeBrandCountry,
+  normalizeBrandName,
+} from "@/lib/brand-metadata";
+import {
   normalizeRarity,
   pickMissingPieceIndex,
   validateRarityPrice,
@@ -116,6 +121,19 @@ export async function POST(
     const image =
       formData.get("image");
 
+    const brandName =
+      normalizeBrandName(
+        String(formData.get("brandName") || "")
+      );
+    const brandCountry =
+      normalizeBrandCountry(
+        String(formData.get("brandCountry") || "")
+      );
+    const category =
+      normalizeBrandCategory(
+        String(formData.get("category") || "")
+      );
+
     const rarity = normalizeRarity(
       String(formData.get("rarity") || "")
     );
@@ -127,6 +145,27 @@ export async function POST(
     if (!title) {
       return NextResponse.json(
         { error: "Puzzle title required" },
+        { status: 400 }
+      );
+    }
+
+    if (!brandName) {
+      return NextResponse.json(
+        { error: "Brand name required" },
+        { status: 400 }
+      );
+    }
+
+    if (!brandCountry) {
+      return NextResponse.json(
+        { error: "Choose a valid brand country" },
+        { status: 400 }
+      );
+    }
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Choose a valid brand category" },
         { status: 400 }
       );
     }
@@ -225,9 +264,13 @@ export async function POST(
         missing_piece_index:
           missingPieceIndex,
         rarity,
+        brand_name: brandName,
+        brand_country_code:
+          brandCountry,
+        category,
       })
       .select(
-        "id, slug, missing_piece_index, rarity"
+        "id, slug, missing_piece_index, rarity, brand_name, brand_country_code, category"
       )
       .single();
 
@@ -370,6 +413,9 @@ export async function POST(
       imageUrl,
       priceCents,
       rarity,
+      brandName,
+      brandCountry,
+      category,
     });
   } catch (error) {
     return NextResponse.json(

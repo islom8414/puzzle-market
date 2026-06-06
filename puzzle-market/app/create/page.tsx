@@ -3,6 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api-client";
+import {
+  BRAND_CATEGORIES,
+  BRAND_COUNTRIES,
+} from "@/lib/brand-metadata";
 import { hasCreatorUploadAccess } from "@/lib/market-access";
 import {
   RARITY_OPTIONS,
@@ -17,6 +21,10 @@ export default function CreatePage() {
   const [saving, setSaving] = useState(false);
 
   const [title, setTitle] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [brandCountry, setBrandCountry] = useState("UZ");
+  const [customCountry, setCustomCountry] = useState("");
+  const [category, setCategory] = useState("Technology");
   const [rarity, setRarity] =
     useState<PuzzleRarity>("Rare");
   const [price, setPrice] = useState("5");
@@ -77,6 +85,11 @@ export default function CreatePage() {
       return;
     }
 
+    if (!brandName.trim()) {
+      setMessage("Enter the brand shown in this puzzle.");
+      return;
+    }
+
     const priceError = validateRarityPrice(
       rarity,
       Number(price)
@@ -101,6 +114,14 @@ export default function CreatePage() {
 
       const formData = new FormData();
       formData.append("title", title.trim());
+      formData.append("brandName", brandName.trim());
+      formData.append(
+        "brandCountry",
+        brandCountry === "OTHER"
+          ? customCountry
+          : brandCountry
+      );
+      formData.append("category", category);
       formData.append("image", image);
       formData.append("rarity", rarity);
       formData.append("price", price.trim());
@@ -156,6 +177,7 @@ export default function CreatePage() {
       }
 
       setTitle("");
+      setBrandName("");
       setPrice(
         rarity === "Rare"
           ? "5"
@@ -247,6 +269,77 @@ export default function CreatePage() {
             placeholder="Puzzle title"
             className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
           />
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="grid gap-2">
+              <span className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
+                Brand
+              </span>
+              <input
+                value={brandName}
+                onChange={(event) =>
+                  setBrandName(event.target.value)
+                }
+                placeholder="Nintendo, Nike, Artel..."
+                maxLength={80}
+                className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
+              />
+            </label>
+
+            <label className="grid gap-2">
+              <span className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
+                Brand country
+              </span>
+              <select
+                value={brandCountry}
+                onChange={(event) =>
+                  setBrandCountry(event.target.value)
+                }
+                className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
+              >
+                {BRAND_COUNTRIES.map((country) => (
+                  <option key={country.code} value={country.code}>
+                    {country.label}
+                  </option>
+                ))}
+              </select>
+              {brandCountry === "OTHER" && (
+                <input
+                  value={customCountry}
+                  onChange={(event) =>
+                    setCustomCountry(
+                      event.target.value
+                        .toUpperCase()
+                        .replace(/[^A-Z]/g, "")
+                        .slice(0, 2)
+                    )
+                  }
+                  placeholder="Two-letter code, for example BR"
+                  maxLength={2}
+                  className="rounded-2xl border border-white/10 bg-black px-5 py-4 uppercase text-white"
+                />
+              )}
+            </label>
+          </div>
+
+          <label className="grid gap-2">
+            <span className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
+              Category
+            </span>
+            <select
+              value={category}
+              onChange={(event) =>
+                setCategory(event.target.value)
+              }
+              className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
+            >
+              {BRAND_CATEGORIES.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
 
           <div>
             <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
