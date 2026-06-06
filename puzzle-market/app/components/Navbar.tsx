@@ -7,6 +7,7 @@ import {
   cacheUsername,
   fetchMyProfile,
 } from "@/lib/client-profile";
+import { hasCreatorUploadAccess } from "@/lib/market-access";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -32,6 +33,9 @@ export default function Navbar() {
     useState(false);
 
   const [profileReady, setProfileReady] =
+    useState(false);
+
+  const [creatorAccess, setCreatorAccess] =
     useState(false);
 
   const [username, setUsername] =
@@ -81,6 +85,7 @@ export default function Navbar() {
       if (!user) {
         setAuthenticated(false);
         setProfileReady(false);
+        setCreatorAccess(false);
         setUsername("");
         setBalance(0);
         localStorage.removeItem(
@@ -111,6 +116,19 @@ export default function Navbar() {
 
       setProfileReady(
         Boolean(profile)
+      );
+      setCreatorAccess(
+        hasCreatorUploadAccess(
+          user.email,
+          profile
+            ? {
+                subscription_tier:
+                  profile.subscriptionTier,
+                subscription_status:
+                  profile.subscriptionStatus,
+              }
+            : null
+        )
       );
 
       const {
@@ -420,6 +438,11 @@ export default function Navbar() {
                 Plans
               </a>
 
+              {creatorAccess && (
+                <a href="/create" className="translate-safe-action rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-cyan-300">
+                  Create
+                </a>
+              )}
 
               <a href="/sell" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Sell
