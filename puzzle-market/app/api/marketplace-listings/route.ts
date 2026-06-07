@@ -19,6 +19,8 @@ type ListingRow = {
       rows: number;
       columns: number;
       rarity: string | null;
+      category: string | null;
+      brand_name: string | null;
     } | {
       slug: string;
       title: string;
@@ -26,6 +28,8 @@ type ListingRow = {
       rows: number;
       columns: number;
       rarity: string | null;
+      category: string | null;
+      brand_name: string | null;
     }[];
   } | {
     piece_index: number;
@@ -36,6 +40,8 @@ type ListingRow = {
       rows: number;
       columns: number;
       rarity: string | null;
+      category: string | null;
+      brand_name: string | null;
     };
   }[];
 };
@@ -45,8 +51,37 @@ export async function GET() {
     const admin =
       createSupabaseAdmin();
 
-    const { data, error } =
+    let { data, error } =
       await admin
+        .from("piece_listings")
+        .select(
+          `
+          id,
+          price_cents,
+          created_at,
+          seller_user_id,
+          puzzle_pieces!inner (
+            piece_index,
+            puzzle_catalog!inner (
+              slug,
+              title,
+              image_url,
+              rows,
+              columns,
+              rarity,
+              category,
+              brand_name
+            )
+          )
+        `
+        )
+        .eq("status", "active")
+        .order("created_at", {
+          ascending: false,
+        });
+
+    if (error?.code === "42703") {
+      const legacyResult = await admin
         .from("piece_listings")
         .select(
           `
@@ -71,6 +106,42 @@ export async function GET() {
         .order("created_at", {
           ascending: false,
         });
+
+      data = legacyResult.data?.map(
+        (row) => {
+          const pieces = Array.isArray(
+            row.puzzle_pieces
+          )
+            ? row.puzzle_pieces
+            : [row.puzzle_pieces];
+
+          return {
+            ...row,
+            puzzle_pieces: pieces.map(
+              (piece) => {
+                const catalogs = Array.isArray(
+                  piece.puzzle_catalog
+                )
+                  ? piece.puzzle_catalog
+                  : [piece.puzzle_catalog];
+
+                return {
+                  ...piece,
+                  puzzle_catalog: catalogs.map(
+                    (catalog) => ({
+                      ...catalog,
+                      category: null,
+                      brand_name: null,
+                    })
+                  ),
+                };
+              }
+            ),
+          };
+        }
+      ) || null;
+      error = legacyResult.error;
+    }
 
     if (error) {
       return NextResponse.json(
@@ -146,6 +217,12 @@ export async function GET() {
           rarity:
             catalog.rarity ||
             "Rare",
+          category:
+            catalog.category ||
+            "Other",
+          brand:
+            catalog.brand_name ||
+            null,
           created_at:
             row.created_at,
           exact_listing: true,

@@ -160,6 +160,12 @@ export async function GET(
               listing.price_cents /
               100,
             rarity: "Legendary",
+            category:
+              catalog.category ||
+              "Other",
+            brand:
+              catalog.brand_name ||
+              null,
             created_at:
               listing.created_at,
             exact_listing: true,
@@ -341,6 +347,12 @@ export async function GET(
           price:
             listing.price_cents / 100,
           rarity: "Legendary",
+          category:
+            catalog.category ||
+            "Other",
+          brand:
+            catalog.brand_name ||
+            null,
           created_at:
             listing.created_at,
           exact_listing: true,

@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api-client";
 import {
-  BRAND_CATEGORIES,
   BRAND_COUNTRIES,
+  PUZZLE_CATEGORIES,
 } from "@/lib/brand-metadata";
 import { hasCreatorUploadAccess } from "@/lib/market-access";
 import {
@@ -24,7 +24,7 @@ export default function CreatePage() {
   const [brandName, setBrandName] = useState("");
   const [brandCountry, setBrandCountry] = useState("UZ");
   const [customCountry, setCustomCountry] = useState("");
-  const [category, setCategory] = useState("Technology");
+  const [category, setCategory] = useState("Football");
   const [rarity, setRarity] =
     useState<PuzzleRarity>("Rare");
   const [price, setPrice] = useState("5");
@@ -324,7 +324,7 @@ export default function CreatePage() {
 
           <label className="grid gap-2">
             <span className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
-              Category
+              Puzzle category
             </span>
             <select
               value={category}
@@ -333,7 +333,7 @@ export default function CreatePage() {
               }
               className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
             >
-              {BRAND_CATEGORIES.map((item) => (
+              {PUZZLE_CATEGORIES.map((item) => (
                 <option key={item} value={item}>
                   {item}
                 </option>

@@ -8,6 +8,9 @@ export type CatalogPuzzle = {
   missing_piece_count: number;
   missing_piece_index?: number | null;
   rarity?: string | null;
+  brand_name?: string | null;
+  brand_country_code?: string | null;
+  category?: string | null;
   created_at?: string;
 };
 

@@ -11,6 +11,7 @@ export const fallbackPuzzles: CatalogPuzzle[] = [
     missing_piece_count: 1,
     missing_piece_index: 7,
     rarity: "Legendary",
+    category: "Landmarks",
   },
   {
     id: "starter-sunset",
@@ -22,6 +23,7 @@ export const fallbackPuzzles: CatalogPuzzle[] = [
     missing_piece_count: 1,
     missing_piece_index: 12,
     rarity: "Rare",
+    category: "Nature",
   },
   {
     id: "starter-gallery",
@@ -33,6 +35,7 @@ export const fallbackPuzzles: CatalogPuzzle[] = [
     missing_piece_count: 1,
     missing_piece_index: 18,
     rarity: "Epic",
+    category: "Art",
   },
 ];
 

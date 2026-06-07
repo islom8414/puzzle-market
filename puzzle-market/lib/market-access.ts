@@ -40,3 +40,28 @@ export function hasCreatorUploadAccess(
       "creator"
   );
 }
+
+export function hasAuctionListingAccess(
+  email: string | null | undefined,
+  profile:
+    | {
+        subscription_tier?: string | null;
+        subscription_status?: string | null;
+      }
+    | null
+    | undefined
+) {
+  if (isAdminEmail(email)) {
+    return true;
+  }
+
+  const active =
+    profile?.subscription_status === "active" ||
+    profile?.subscription_status === "trialing";
+
+  return (
+    active &&
+    (profile?.subscription_tier === "premium" ||
+      profile?.subscription_tier === "creator")
+  );
+}

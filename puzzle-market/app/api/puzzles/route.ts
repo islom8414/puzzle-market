@@ -10,8 +10,18 @@ export async function GET() {
     const admin =
       createSupabaseAdmin();
 
-    const { data, error } =
+    let { data, error } =
       await admin
+        .from("puzzle_catalog")
+        .select(
+          "id,slug,title,image_url,rows,columns,missing_piece_count,missing_piece_index,rarity,brand_name,brand_country_code,category,created_at"
+        )
+        .order("created_at", {
+          ascending: false,
+        });
+
+    if (error?.code === "42703") {
+      const legacyResult = await admin
         .from("puzzle_catalog")
         .select(
           "id,slug,title,image_url,rows,columns,missing_piece_count,missing_piece_index,rarity,created_at"
@@ -19,6 +29,17 @@ export async function GET() {
         .order("created_at", {
           ascending: false,
         });
+
+      data = legacyResult.data?.map(
+        (puzzle) => ({
+          ...puzzle,
+          brand_name: null,
+          brand_country_code: null,
+          category: null,
+        })
+      ) || null;
+      error = legacyResult.error;
+    }
 
     if (error) {
       return NextResponse.json(

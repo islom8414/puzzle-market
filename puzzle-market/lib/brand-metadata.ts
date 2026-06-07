@@ -17,18 +17,44 @@ export const BRAND_COUNTRIES = [
   { code: "OTHER", label: "Other country" },
 ] as const;
 
-export const BRAND_CATEGORIES = [
+export const PUZZLE_CATEGORIES = [
+  "Actors",
+  "Animals",
+  "Anime",
+  "Art",
   "Automotive",
+  "Baseball",
+  "Basketball",
   "Beauty",
+  "Bloggers",
+  "Cars",
+  "Cartoons",
+  "Celebrities",
+  "Cities",
   "Electronics",
   "Entertainment",
   "Fashion",
   "Food & Drink",
+  "Football",
+  "Flowers",
   "Gaming",
+  "History",
+  "Landmarks",
+  "Movies",
+  "Mountains",
+  "Music",
+  "Nature",
+  "Photography",
+  "Singers",
+  "Space",
   "Sports",
   "Technology",
   "Travel",
+  "Watches",
+  "Other",
 ] as const;
+
+export const BRAND_CATEGORIES = PUZZLE_CATEGORIES;
 
 export function normalizeBrandName(value: string) {
   return value.trim().replace(/\s+/g, " ").slice(0, 80);
@@ -46,8 +72,8 @@ export function normalizeBrandCountry(value: string) {
 export function normalizeBrandCategory(value: string) {
   const normalized = value.trim();
 
-  return BRAND_CATEGORIES.includes(
-    normalized as (typeof BRAND_CATEGORIES)[number]
+  return PUZZLE_CATEGORIES.includes(
+    normalized as (typeof PUZZLE_CATEGORIES)[number]
   )
     ? normalized
     : null;

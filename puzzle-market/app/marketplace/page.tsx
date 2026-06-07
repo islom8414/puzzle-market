@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import { puzzles } from "@/data/puzzles";
 import { apiFetch } from "@/lib/api-client";
+import { PUZZLE_CATEGORIES } from "@/lib/brand-metadata";
 import { fetchMyProfile } from "@/lib/client-profile";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
@@ -29,6 +30,10 @@ type MarketItem = {
   price: number;
 
   rarity: string;
+
+  category?: string;
+
+  brand?: string | null;
 
   created_at?: string;
 
@@ -55,6 +60,9 @@ export default function MarketplacePage() {
     useState("");
 
   const [rarityFilter, setRarityFilter] =
+    useState("ALL");
+
+  const [categoryFilter, setCategoryFilter] =
     useState("ALL");
 
   const [puzzleFilter, setPuzzleFilter] =
@@ -199,9 +207,16 @@ export default function MarketplacePage() {
               : fragment.rarity ===
                 rarityFilter;
 
+          const matchesCategory =
+            categoryFilter === "ALL"
+              ? true
+              : (fragment.category || "Other") ===
+                categoryFilter;
+
           return (
             matchesSearch &&
-            matchesRarity
+            matchesRarity &&
+            matchesCategory
           );
 
         }
@@ -211,6 +226,7 @@ export default function MarketplacePage() {
       marketItems,
       search,
       rarityFilter,
+      categoryFilter,
       puzzleFilter,
       pieceFilter,
     ]);
@@ -577,7 +593,7 @@ export default function MarketplacePage() {
 
         {/* FILTERS */}
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-4 md:gap-5 mb-10 md:mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_220px_220px] gap-4 md:gap-5 mb-10 md:mb-12">
 
           <input
             value={search}
@@ -620,6 +636,21 @@ export default function MarketplacePage() {
               Rare
             </option>
 
+          </select>
+
+          <select
+            value={categoryFilter}
+            onChange={(event) =>
+              setCategoryFilter(event.target.value)
+            }
+            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
+          >
+            <option value="ALL">All Categories</option>
+            {PUZZLE_CATEGORIES.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
           </select>
 
         </div>
@@ -726,6 +757,13 @@ export default function MarketplacePage() {
                     }
                   </p>
 
+                  <p className="mt-2 text-sm font-bold text-cyan-400">
+                    {fragment.category || "Other"}
+                    {fragment.brand
+                      ? ` / ${fragment.brand}`
+                      : ""}
+                  </p>
+
                   <h2 className="text-3xl md:text-4xl font-black mt-2">
                     Piece #
                     {
@@ -817,13 +855,15 @@ duration-300
 
             {(search ||
               puzzleFilter ||
-              rarityFilter !== "ALL") && (
+              rarityFilter !== "ALL" ||
+              categoryFilter !== "ALL") && (
               <button
                 onClick={() => {
                   setSearch("");
                   setPuzzleFilter("");
                   setPieceFilter("");
                   setRarityFilter("ALL");
+                  setCategoryFilter("ALL");
                   window.history.replaceState(
                     null,
                     "",

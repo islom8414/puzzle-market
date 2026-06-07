@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { PUZZLE_CATEGORIES } from "@/lib/brand-metadata";
 import {
   catalogToCard,
   type CatalogPuzzle,
@@ -14,6 +15,19 @@ export function HomePuzzleGrid() {
     useState<CatalogPuzzle[]>([]);
   const [loading, setLoading] =
     useState(true);
+  const [category, setCategory] =
+    useState("ALL");
+
+  const filteredPuzzles = useMemo(
+    () =>
+      category === "ALL"
+        ? puzzles
+        : puzzles.filter(
+            (puzzle) =>
+              (puzzle.category || "Other") === category
+          ),
+    [category, puzzles]
+  );
 
   useEffect(() => {
     async function load() {
@@ -65,8 +79,48 @@ export function HomePuzzleGrid() {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {puzzles.map((puzzle) => {
+    <div>
+      <div className="mb-6 flex items-center gap-3 overflow-x-auto pb-2">
+        <button
+          type="button"
+          onClick={() => setCategory("ALL")}
+          className={`shrink-0 rounded-2xl border px-5 py-3 text-sm font-black transition ${
+            category === "ALL"
+              ? "border-cyan-400 bg-cyan-400 text-black"
+              : "border-white/10 bg-zinc-950 text-zinc-300"
+          }`}
+        >
+          All
+        </button>
+
+        {PUZZLE_CATEGORIES.map((item) => (
+          <button
+            key={item}
+            type="button"
+            onClick={() => setCategory(item)}
+            className={`shrink-0 rounded-2xl border px-5 py-3 text-sm font-black transition ${
+              category === item
+                ? "border-cyan-400 bg-cyan-400 text-black"
+                : "border-white/10 bg-zinc-950 text-zinc-300"
+            }`}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+
+      {filteredPuzzles.length === 0 ? (
+        <div className="rounded-3xl border border-white/10 bg-zinc-950/80 p-10 text-center">
+          <h3 className="text-3xl font-black">
+            No puzzles in this category yet
+          </h3>
+          <p className="mt-3 text-zinc-500">
+            Choose another category or check again after new releases.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {filteredPuzzles.map((puzzle) => {
         const card =
           catalogToCard(puzzle);
 
@@ -88,6 +142,13 @@ export function HomePuzzleGrid() {
                 {puzzle.rarity || "Rare"} / 1 missing piece
               </p>
 
+              <p className="mt-3 text-sm font-bold text-zinc-500">
+                {puzzle.category || "Other"}
+                {puzzle.brand_name
+                  ? ` / ${puzzle.brand_name}`
+                  : ""}
+              </p>
+
               <h3 className="mt-3 text-2xl font-black">
                 {card.title}
               </h3>
@@ -104,6 +165,8 @@ export function HomePuzzleGrid() {
           </article>
         );
       })}
+        </div>
+      )}
     </div>
   );
 }

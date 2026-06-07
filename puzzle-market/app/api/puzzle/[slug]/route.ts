@@ -24,14 +24,34 @@ export async function GET(
     const admin =
       createSupabaseAdmin();
 
-    const { data, error } =
+    let { data, error } =
       await admin
+        .from("puzzle_catalog")
+        .select(
+          "slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count,brand_name,brand_country_code,category"
+        )
+        .eq("slug", slug)
+        .maybeSingle();
+
+    if (error?.code === "42703") {
+      const legacyResult = await admin
         .from("puzzle_catalog")
         .select(
           "slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count"
         )
         .eq("slug", slug)
         .maybeSingle();
+
+      data = legacyResult.data
+        ? {
+            ...legacyResult.data,
+            brand_name: null,
+            brand_country_code: null,
+            category: null,
+          }
+        : null;
+      error = legacyResult.error;
+    }
 
     if (error) {
       const fallback =
