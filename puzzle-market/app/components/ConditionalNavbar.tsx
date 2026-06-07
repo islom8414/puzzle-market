@@ -9,7 +9,9 @@ export default function ConditionalNavbar() {
 
   if (
     pathname === "/login" ||
-    pathname === "/register"
+    pathname === "/register" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password"
   ) {
     return null;
   }

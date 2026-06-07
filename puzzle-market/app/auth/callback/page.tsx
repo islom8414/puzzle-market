@@ -22,6 +22,11 @@ export default function AuthCallbackPage() {
       );
     const next =
       searchParams.get("next");
+    const safeNext =
+      next?.startsWith("/") &&
+      !next.startsWith("//")
+        ? next
+        : null;
 
     async function finishLogin() {
       const profile =
@@ -52,8 +57,8 @@ export default function AuthCallbackPage() {
         await supabase.auth.getSession();
 
       if (session) {
-        if (next) {
-          router.replace(next);
+        if (safeNext) {
+          router.replace(safeNext);
           return;
         }
 
@@ -71,8 +76,8 @@ export default function AuthCallbackPage() {
           );
 
         if (!error) {
-          if (next) {
-            router.replace(next);
+          if (safeNext) {
+            router.replace(safeNext);
             return;
           }
 
@@ -95,8 +100,8 @@ export default function AuthCallbackPage() {
               nextSession &&
               active
             ) {
-              if (next) {
-                router.replace(next);
+              if (safeNext) {
+                router.replace(safeNext);
                 return;
               }
 

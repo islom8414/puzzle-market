@@ -14,6 +14,8 @@ const protectedPrefixes = [
 const publicPrefixes = [
   "/login",
   "/register",
+  "/forgot-password",
+  "/reset-password",
   "/auth",
   "/setup",
   "/subscribe",
