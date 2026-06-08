@@ -143,6 +143,9 @@ type CatalogPuzzle = {
   columns: number;
   missing_piece_index: number | null;
   rarity: string | null;
+  brand_name?: string | null;
+  brand_country_code?: string | null;
+  category?: string | null;
 };
 
 type PlayPrompt =
@@ -342,7 +345,9 @@ export default function PuzzlePage() {
           rarity:
             catalogPuzzle.rarity ||
             "Rare",
-          category: "official",
+          category:
+            catalogPuzzle.category ||
+            "Other",
           pieces: `${totalPieces} / ${totalPieces}`,
           views: "0",
           likes: "0",
@@ -919,37 +924,52 @@ export default function PuzzlePage() {
             };
 
     return (
-      <main className="min-h-screen bg-black px-4 py-6 text-white md:px-6 md:py-10">
-        <section className="mx-auto max-w-6xl">
+      <main className="min-h-[calc(100svh-4rem)] bg-black px-4 py-8 text-white md:px-6 md:py-12">
+        <section className="mx-auto flex w-full max-w-7xl flex-col gap-5">
           <Link
             href={CHOOSE_PUZZLE_HREF}
-            className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-black transition hover:border-cyan-400"
+            className="inline-flex w-fit rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-black transition hover:border-cyan-400"
           >
             Browse Puzzles
           </Link>
 
-          <div className="mt-6 grid overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="relative min-h-[320px] bg-black sm:min-h-[460px]">
+          <div className="grid w-full overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950 shadow-2xl lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
+            <div className="relative aspect-[16/10] min-h-[280px] bg-black lg:aspect-auto lg:min-h-[560px]">
               <img
                 src={puzzle.image}
                 alt={puzzle.title}
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-black/10 lg:to-zinc-950/70" />
             </div>
 
-            <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-10">
+            <div className="flex min-h-[360px] flex-col justify-center p-6 sm:p-9 lg:p-12">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">
                 Puzzle Preview
               </p>
 
-              <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl">
+              <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
                 {puzzle.title}
               </h1>
 
               <p className="mt-4 text-zinc-400">
                 {puzzle.rarity} collection / {rows} x {columns} board / one hidden market piece
               </p>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-2 text-sm font-black text-cyan-300">
+                  {puzzle.category}
+                </span>
+
+                {catalogPuzzle?.brand_name && (
+                  <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-black text-zinc-200">
+                    {catalogPuzzle.brand_name}
+                    {catalogPuzzle.brand_country_code
+                      ? ` / ${catalogPuzzle.brand_country_code}`
+                      : ""}
+                  </span>
+                )}
+              </div>
 
               <p className="mt-6 leading-relaxed text-zinc-300">
                 Look through the artwork first. Your subscription is checked only when you decide to start assembling it.
@@ -967,7 +987,7 @@ export default function PuzzlePage() {
               </button>
 
               <Link
-                href="/marketplace"
+                href={`/marketplace?puzzle=${encodeURIComponent(slug)}`}
                 className="mt-3 flex min-h-12 items-center justify-center rounded-2xl border border-white/10 px-5 py-3 font-black text-zinc-200 transition hover:border-cyan-400"
               >
                 View Missing Pieces
