@@ -85,7 +85,17 @@ export function validateRarityPrice(
 
 export function pickMissingPieceIndex(
   slug: string,
-  totalPieces: number
+  totalPieces: number,
+  rows = Math.round(
+    Math.sqrt(totalPieces)
+  ),
+  columns = Math.max(
+    1,
+    Math.round(
+      totalPieces /
+        Math.max(1, rows)
+    )
+  )
 ) {
   let hash = 0;
 
@@ -96,9 +106,85 @@ export function pickMissingPieceIndex(
   ) {
     hash =
       (hash * 31 +
-        slug.charCodeAt(index)) %
-      totalPieces;
+        slug.charCodeAt(index)) >>>
+      0;
   }
 
-  return hash;
+  const centerRow =
+    (rows - 1) / 2;
+  const centerColumn =
+    (columns - 1) / 2;
+  const maxDistance =
+    Math.hypot(
+      centerRow,
+      centerColumn
+    ) || 1;
+
+  const candidates =
+    Array.from(
+      { length: totalPieces },
+      (_, pieceIndex) => {
+        const row = Math.floor(
+          pieceIndex / columns
+        );
+        const column =
+          pieceIndex % columns;
+        const isCorner =
+          (row === 0 ||
+            row === rows - 1) &&
+          (column === 0 ||
+            column ===
+              columns - 1);
+        const isEdge =
+          row === 0 ||
+          row === rows - 1 ||
+          column === 0 ||
+          column ===
+            columns - 1;
+        const distance =
+          Math.hypot(
+            row - centerRow,
+            column - centerColumn
+          );
+        const centerWeight =
+          1 -
+          distance /
+            maxDistance;
+
+        return {
+          pieceIndex,
+          weight:
+            1 +
+            centerWeight * 8 +
+            (isEdge ? -0.8 : 1.5) +
+            (isCorner ? -1.5 : 0),
+        };
+      }
+    ).filter(
+      (candidate) =>
+        candidate.weight > 0
+    );
+
+  const totalWeight =
+    candidates.reduce(
+      (sum, candidate) =>
+        sum + candidate.weight,
+      0
+    );
+
+  let cursor =
+    (hash / 0xffffffff) *
+    totalWeight;
+
+  for (const candidate of candidates) {
+    cursor -= candidate.weight;
+
+    if (cursor <= 0) {
+      return candidate.pieceIndex;
+    }
+  }
+
+  return (
+    candidates.at(-1)?.pieceIndex || 0
+  );
 }

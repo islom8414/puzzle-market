@@ -212,7 +212,9 @@ export async function POST(
     const missingPieceIndex =
       pickMissingPieceIndex(
         slug,
-        TOTAL_PIECES
+        TOTAL_PIECES,
+        ROWS,
+        COLUMNS
       );
 
     const fileExt =
