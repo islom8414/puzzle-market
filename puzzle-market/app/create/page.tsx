@@ -21,6 +21,7 @@ export default function CreatePage() {
   const [saving, setSaving] = useState(false);
 
   const [title, setTitle] = useState("");
+  const [branded, setBranded] = useState(true);
   const [brandName, setBrandName] = useState("");
   const [brandCountry, setBrandCountry] = useState("UZ");
   const [customCountry, setCustomCountry] = useState("");
@@ -85,7 +86,7 @@ export default function CreatePage() {
       return;
     }
 
-    if (!brandName.trim()) {
+    if (branded && !brandName.trim()) {
       setMessage("Enter the brand shown in this puzzle.");
       return;
     }
@@ -114,7 +115,11 @@ export default function CreatePage() {
 
       const formData = new FormData();
       formData.append("title", title.trim());
-      formData.append("brandName", brandName.trim());
+      formData.append("branded", String(branded));
+      formData.append(
+        "brandName",
+        branded ? brandName.trim() : ""
+      );
       formData.append(
         "brandCountry",
         brandCountry === "OTHER"
@@ -177,6 +182,7 @@ export default function CreatePage() {
       }
 
       setTitle("");
+      setBranded(true);
       setBrandName("");
       setPrice(
         rarity === "Rare"
@@ -270,8 +276,40 @@ export default function CreatePage() {
             className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
           />
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="grid gap-2">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
+              Puzzle type
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setBranded(true)}
+                className={`rounded-2xl border px-4 py-4 font-black transition ${
+                  branded
+                    ? "border-cyan-400 bg-cyan-400/10 text-cyan-300"
+                    : "border-white/10 bg-black text-zinc-400"
+                }`}
+              >
+                Branded
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setBranded(false)}
+                className={`rounded-2xl border px-4 py-4 font-black transition ${
+                  !branded
+                    ? "border-cyan-400 bg-cyan-400/10 text-cyan-300"
+                    : "border-white/10 bg-black text-zinc-400"
+                }`}
+              >
+                Regular
+              </button>
+            </div>
+          </div>
+
+          <div className={`grid gap-4 ${branded ? "md:grid-cols-2" : ""}`}>
+            {branded ? (
+              <label className="grid gap-2">
               <span className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
                 Brand
               </span>
@@ -284,9 +322,15 @@ export default function CreatePage() {
                 maxLength={80}
                 className="rounded-2xl border border-white/10 bg-black px-5 py-4 text-white"
               />
-            </label>
+              </label>
+            ) : (
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-zinc-400">
+                Regular puzzle - no brand will be attached.
+              </div>
+            )}
 
-            <label className="grid gap-2">
+            {branded && (
+              <label className="grid gap-2">
               <span className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
                 Brand country
               </span>
@@ -319,7 +363,8 @@ export default function CreatePage() {
                   className="rounded-2xl border border-white/10 bg-black px-5 py-4 uppercase text-white"
                 />
               )}
-            </label>
+              </label>
+            )}
           </div>
 
           <label className="grid gap-2">

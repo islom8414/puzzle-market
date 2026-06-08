@@ -121,6 +121,10 @@ export async function POST(
     const image =
       formData.get("image");
 
+    const branded =
+      String(formData.get("branded") || "true") !==
+      "false";
+
     const brandName =
       normalizeBrandName(
         String(formData.get("brandName") || "")
@@ -149,7 +153,7 @@ export async function POST(
       );
     }
 
-    if (!brandName) {
+    if (branded && !brandName) {
       return NextResponse.json(
         { error: "Brand name required" },
         { status: 400 }
@@ -264,9 +268,10 @@ export async function POST(
         missing_piece_index:
           missingPieceIndex,
         rarity,
-        brand_name: brandName,
+        brand_name:
+          branded ? brandName : null,
         brand_country_code:
-          brandCountry,
+          branded ? brandCountry : null,
         category,
       })
       .select(
@@ -413,8 +418,10 @@ export async function POST(
       imageUrl,
       priceCents,
       rarity,
-      brandName,
-      brandCountry,
+      brandName:
+        branded ? brandName : null,
+      brandCountry:
+        branded ? brandCountry : null,
       category,
     });
   } catch (error) {
