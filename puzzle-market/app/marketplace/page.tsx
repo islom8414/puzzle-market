@@ -6,7 +6,10 @@ import Link from "next/link";
 
 import { puzzles } from "@/data/puzzles";
 import { apiFetch } from "@/lib/api-client";
-import { PUZZLE_CATEGORIES } from "@/lib/brand-metadata";
+import {
+  normalizePuzzleCategory,
+  PUZZLE_CATEGORIES,
+} from "@/lib/brand-metadata";
 import { fetchMyProfile } from "@/lib/client-profile";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
@@ -210,7 +213,7 @@ export default function MarketplacePage() {
           const matchesCategory =
             categoryFilter === "ALL"
               ? true
-              : (fragment.category || "Other") ===
+              : normalizePuzzleCategory(fragment.category) ===
                 categoryFilter;
 
           return (
@@ -758,7 +761,7 @@ export default function MarketplacePage() {
                   </p>
 
                   <p className="mt-2 text-sm font-bold text-cyan-400">
-                    {fragment.category || "Other"}
+                    {normalizePuzzleCategory(fragment.category)}
                     {fragment.brand
                       ? ` / ${fragment.brand}`
                       : ""}

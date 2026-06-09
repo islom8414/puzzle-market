@@ -14,6 +14,7 @@ import { useParams } from "next/navigation";
 
 import { puzzles } from "@/data/puzzles";
 import { apiFetch } from "@/lib/api-client";
+import { normalizePuzzleCategory } from "@/lib/brand-metadata";
 import { fetchMyProfile } from "@/lib/client-profile";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
@@ -346,8 +347,9 @@ export default function PuzzlePage() {
             catalogPuzzle.rarity ||
             "Rare",
           category:
-            catalogPuzzle.category ||
-            "Other",
+            normalizePuzzleCategory(
+              catalogPuzzle.category
+            ),
           pieces: `${totalPieces} / ${totalPieces}`,
           views: "0",
           likes: "0",

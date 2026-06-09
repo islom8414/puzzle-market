@@ -18,34 +18,22 @@ export const BRAND_COUNTRIES = [
 ] as const;
 
 export const PUZZLE_CATEGORIES = [
-  "Actors",
   "Animals",
   "Anime",
   "Art",
-  "Automotive",
   "Baseball",
-  "Basketball",
-  "Beauty",
-  "Bloggers",
   "Cars",
-  "Cartoons",
-  "Celebrities",
-  "Cities",
-  "Electronics",
-  "Entertainment",
   "Fashion",
   "Food & Drink",
   "Football",
   "Flowers",
   "Gaming",
-  "History",
+  "Golf",
   "Landmarks",
   "Movies",
   "Mountains",
   "Music",
   "Nature",
-  "Photography",
-  "Singers",
   "Space",
   "Sports",
   "Technology",
@@ -55,6 +43,27 @@ export const PUZZLE_CATEGORIES = [
 ] as const;
 
 export const BRAND_CATEGORIES = PUZZLE_CATEGORIES;
+
+const CATEGORY_ALIASES: Record<string, (typeof PUZZLE_CATEGORIES)[number]> = {
+  actors: "Movies",
+  automotive: "Cars",
+  baseball: "Baseball",
+  basketball: "Sports",
+  beauty: "Fashion",
+  bloggers: "Other",
+  cartoons: "Movies",
+  celebration: "Other",
+  celebrations: "Other",
+  celebrities: "Movies",
+  cities: "Travel",
+  electronics: "Technology",
+  entertainment: "Movies",
+  football: "Football",
+  golf: "Golf",
+  history: "Landmarks",
+  photography: "Art",
+  singers: "Music",
+};
 
 export function normalizeBrandName(value: string) {
   return value.trim().replace(/\s+/g, " ").slice(0, 80);
@@ -69,12 +78,23 @@ export function normalizeBrandCountry(value: string) {
     : null;
 }
 
-export function normalizeBrandCategory(value: string) {
-  const normalized = value.trim();
+export function normalizePuzzleCategory(value: string | null | undefined) {
+  const normalized = value?.trim() || "";
+  const direct = PUZZLE_CATEGORIES.find(
+    (category) => category.toLowerCase() === normalized.toLowerCase()
+  );
 
-  return PUZZLE_CATEGORIES.includes(
-    normalized as (typeof PUZZLE_CATEGORIES)[number]
-  )
-    ? normalized
-    : null;
+  if (direct) {
+    return direct;
+  }
+
+  return CATEGORY_ALIASES[normalized.toLowerCase()] || "Other";
+}
+
+export function normalizeBrandCategory(value: string) {
+  if (!value.trim()) {
+    return null;
+  }
+
+  return normalizePuzzleCategory(value);
 }

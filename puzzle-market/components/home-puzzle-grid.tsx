@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-import { PUZZLE_CATEGORIES } from "@/lib/brand-metadata";
+import {
+  normalizePuzzleCategory,
+  PUZZLE_CATEGORIES,
+} from "@/lib/brand-metadata";
 import {
   catalogToCard,
   type CatalogPuzzle,
@@ -24,7 +27,7 @@ export function HomePuzzleGrid() {
         ? puzzles
         : puzzles.filter(
             (puzzle) =>
-              (puzzle.category || "Other") === category
+              normalizePuzzleCategory(puzzle.category) === category
           ),
     [category, puzzles]
   );
@@ -143,7 +146,7 @@ export function HomePuzzleGrid() {
               </p>
 
               <p className="mt-3 text-sm font-bold text-zinc-500">
-                {puzzle.category || "Other"}
+                {normalizePuzzleCategory(puzzle.category)}
                 {puzzle.brand_name
                   ? ` / ${puzzle.brand_name}`
                   : ""}
