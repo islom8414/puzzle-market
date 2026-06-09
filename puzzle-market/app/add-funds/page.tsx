@@ -37,27 +37,6 @@ export default function AddFundsPage() {
         return;
       }
 
-      const fallbackUsername =
-        session.user.email
-          ?.split("@")[0]
-          ?.replace(
-            /[^a-zA-Z0-9_-]/g,
-            ""
-          )
-          ?.slice(0, 40) ||
-        "PuzzleUser";
-
-      const username =
-        localStorage.getItem(
-          "puzzle-username"
-        ) ||
-        fallbackUsername;
-
-      localStorage.setItem(
-        "puzzle-username",
-        username
-      );
-
       const response =
         await apiFetch(
           "/api/create-checkout-session",
@@ -73,7 +52,6 @@ export default function AddFundsPage() {
 
             body: JSON.stringify({
               amount,
-              username,
             }),
           }
         );

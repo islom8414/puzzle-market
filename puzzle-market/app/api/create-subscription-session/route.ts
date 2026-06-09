@@ -21,17 +21,6 @@ const plans: Record<PlanTier, { name: string; amount: number }> = {
   },
 };
 
-function fallbackUsername(email: string, userId: string) {
-  const base = email
-    .split("@")[0]
-    ?.replace(/[^a-zA-Z0-9_]/g, "")
-    .slice(0, 18);
-
-  return base
-    ? `${base}_${userId.slice(0, 6)}`
-    : `collector_${userId.slice(0, 6)}`;
-}
-
 export async function POST(request: Request) {
   let stripeConfig;
 
@@ -73,34 +62,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
-  const { data: existingProfile } = await admin
+  const { data: profile, error: profileError } = await admin
     .from("market_profiles")
     .select("id, username, stripe_customer_id")
     .eq("id", user.id)
     .maybeSingle();
 
-  let profile = existingProfile;
+  if (profileError || !profile?.username) {
+    console.error("Profile lookup failed:", profileError);
 
-  if (!profile) {
-    const { data, error } = await admin
-      .from("market_profiles")
-      .insert({
-        id: user.id,
-        username: fallbackUsername(user.email, user.id),
-      })
-      .select("id, username, stripe_customer_id")
-      .single();
-
-    if (error) {
-      console.error("Profile setup failed:", error);
-
-      return NextResponse.json(
-        { error: "Profile setup failed" },
-        { status: 500 }
-      );
-    }
-
-    profile = data;
+    return NextResponse.json(
+      { error: "Complete profile setup first" },
+      { status: 409 }
+    );
   }
 
   const stripe = new Stripe(stripeConfig.secretKey);

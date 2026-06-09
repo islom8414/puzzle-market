@@ -81,26 +81,7 @@ export async function POST(
       );
     }
 
-    const fallbackUsername =
-      userData.user.email
-        ?.split("@")[0]
-        ?.replace(
-          /[^a-zA-Z0-9_-]/g,
-          ""
-        )
-        ?.slice(0, 40) ||
-      "PuzzleUser";
-
-    const rawUsername =
-      typeof body.username ===
-        "string"
-        ? body.username.trim()
-        : fallbackUsername;
-
-    if (
-      !userData.user.email ||
-      rawUsername.length < 3
-    ) {
+    if (!userData.user.email) {
       return NextResponse.json(
         {
           error:
@@ -112,59 +93,29 @@ export async function POST(
       );
     }
 
-    const cleanUsername =
-      rawUsername
-        .replace(
-          /[^a-zA-Z0-9_-]/g,
-          ""
-        )
-        .slice(0, 40) ||
-      fallbackUsername;
-
     const {
-      data: existingUsername,
-    } =
-      await admin
-        .from("market_profiles")
-        .select("id")
-        .eq(
-          "username",
-          cleanUsername
-        )
-        .maybeSingle();
-
-    const username =
-      existingUsername &&
-      existingUsername.id !==
-        userData.user.id
-        ? `${cleanUsername.slice(0, 31)}_${userData.user.id.slice(0, 8)}`
-        : cleanUsername;
-
-    const {
+      data: profile,
       error: profileError,
     } =
       await admin
         .from("market_profiles")
-        .upsert(
-          {
-            id: userData.user.id,
-            email:
-              userData.user.email,
-            username,
-          },
-          {
-            onConflict: "id",
-          }
-        );
+        .select("username")
+        .eq(
+          "id",
+          userData.user.id
+        )
+        .maybeSingle();
 
-    if (profileError) {
+    if (
+      profileError ||
+      !profile?.username
+    ) {
       console.error(profileError);
 
       return NextResponse.json(
         {
           error:
-            profileError.message ||
-            "Profile setup required",
+            "Complete profile setup first",
         },
         {
           status: 409,

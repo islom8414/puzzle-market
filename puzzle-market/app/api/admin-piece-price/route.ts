@@ -112,26 +112,9 @@ export async function POST(
     } =
       await admin
         .from("market_profiles")
-        .upsert(
-          {
-            id: userData.user!.id,
-            email,
-            username:
-              email
-                .split("@")[0]
-                .replace(
-                  /[^a-zA-Z0-9_-]/g,
-                  ""
-                )
-                .slice(0, 40) ||
-              "admin",
-          },
-          {
-            onConflict: "id",
-          }
-        )
         .select("*")
-        .single();
+        .eq("id", userData.user!.id)
+        .maybeSingle();
 
     if (
       profileError ||

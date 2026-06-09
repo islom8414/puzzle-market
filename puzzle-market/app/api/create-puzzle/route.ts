@@ -91,10 +91,20 @@ export async function POST(
     } = await admin
       .from("market_profiles")
       .select(
-        "subscription_tier, subscription_status"
+        "username, subscription_tier, subscription_status"
       )
       .eq("id", user.id)
       .maybeSingle();
+
+    if (!profile?.username) {
+      return NextResponse.json(
+        {
+          error:
+            "Complete profile setup before publishing a puzzle",
+        },
+        { status: 409 }
+      );
+    }
 
     if (
       !hasCreatorUploadAccess(
@@ -340,37 +350,6 @@ export async function POST(
       return NextResponse.json(
         { error: "User email required" },
         { status: 400 }
-      );
-    }
-
-    const fallbackUsername =
-      user.email
-        .split("@")[0]
-        .replace(
-          /[^a-zA-Z0-9_-]/g,
-          ""
-        )
-        .slice(0, 40) || "creator";
-
-    const {
-      error: profileError,
-    } = await admin
-      .from("market_profiles")
-      .upsert(
-        {
-          id: user.id,
-          email: user.email,
-          username: fallbackUsername,
-        },
-        { onConflict: "id" }
-      );
-
-    if (profileError) {
-      return NextResponse.json(
-        {
-          error: profileError.message,
-        },
-        { status: 500 }
       );
     }
 
