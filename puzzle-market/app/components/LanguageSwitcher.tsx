@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import {
+  useEffect,
   useState,
   type MouseEvent,
 } from "react";
@@ -37,6 +38,87 @@ export default function LanguageSwitcher() {
     usePathname() || "/";
   const [switchingTo, setSwitchingTo] =
     useState<string | null>(null);
+  const [restoring, setRestoring] =
+    useState(false);
+
+  useEffect(() => {
+    const hash = new URLSearchParams(
+      window.location.hash.slice(1)
+    );
+    const token = hash.get(
+      "pm-language-token"
+    );
+
+    if (!token) {
+      return;
+    }
+
+    let active = true;
+
+    async function restoreSession() {
+      try {
+        await Promise.resolve();
+
+        if (active) {
+          setRestoring(true);
+        }
+
+        const response = await apiFetch(
+          "/api/auth/language-bridge",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              token,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Language session expired"
+          );
+        }
+
+        const data = (await response.json()) as {
+          accessToken: string;
+          refreshToken: string;
+        };
+        const { error } =
+          await supabase.auth.setSession({
+            access_token:
+              data.accessToken,
+            refresh_token:
+              data.refreshToken,
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        const cleanUrl = `${window.location.pathname}${window.location.search}`;
+        window.location.replace(cleanUrl);
+      } catch {
+        if (active) {
+          setRestoring(false);
+          window.history.replaceState(
+            null,
+            "",
+            `${window.location.pathname}${window.location.search}`
+          );
+        }
+      }
+    }
+
+    restoreSession();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function switchLanguage(
     event: MouseEvent<HTMLAnchorElement>,
@@ -96,10 +178,11 @@ export default function LanguageSwitcher() {
       };
 
       const bridgeUrl = new URL(
-        `https://${targetHost}/auth/language`
+        targetUrl
       );
       bridgeUrl.hash = new URLSearchParams({
-        token: data.token,
+        "pm-language-token":
+          data.token,
       }).toString();
 
       window.location.assign(
@@ -111,47 +194,65 @@ export default function LanguageSwitcher() {
   }
 
   return (
-    <details
-      className="language-switcher notranslate"
-      translate="no"
-      data-no-translation="true"
-      data-linguise-ignore="true"
-    >
-      <summary
-        aria-label="Language"
-        className="language-switcher-trigger"
-      >
-        <span
-          aria-hidden="true"
-          className="language-current"
-        />
-      </summary>
+    <>
+      {(restoring || switchingTo) && (
+        <div
+          className="notranslate fixed inset-0 z-[300] flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm"
+          translate="no"
+          data-no-translation="true"
+          data-linguise-ignore="true"
+        >
+          <div className="rounded-2xl border border-cyan-400/30 bg-zinc-950 px-8 py-6 text-center shadow-2xl">
+            <div className="mx-auto h-8 w-8 animate-pulse rounded-full bg-cyan-400" />
+            <p className="mt-4 font-black text-white">
+              Switching language...
+            </p>
+          </div>
+        </div>
+      )}
 
-      <div className="language-switcher-menu">
-        {languages.map(
-          (language) => (
-            <a
-              key={language.code}
-              href={`https://${language.host}${path}`}
-              onClick={(event) =>
-                switchLanguage(
-                  event,
+      <details
+        className="language-switcher notranslate"
+        translate="no"
+        data-no-translation="true"
+        data-linguise-ignore="true"
+      >
+        <summary
+          aria-label="Language"
+          className="language-switcher-trigger"
+        >
+          <span
+            aria-hidden="true"
+            className="language-current"
+          />
+        </summary>
+
+        <div className="language-switcher-menu">
+          {languages.map(
+            (language) => (
+              <a
+                key={language.code}
+                href={`https://${language.host}${path}`}
+                onClick={(event) =>
+                  switchLanguage(
+                    event,
+                    language.host
+                  )
+                }
+                className={`language-switcher-option language-switcher-option-${language.code}`}
+                translate="no"
+                data-no-translation="true"
+                data-linguise-ignore="true"
+                aria-label={language.code}
+                aria-busy={
+                  switchingTo ===
                   language.host
-                )
-              }
-              className={`language-switcher-option language-switcher-option-${language.code}`}
-              translate="no"
-              data-no-translation="true"
-              data-linguise-ignore="true"
-              aria-label={language.code}
-              aria-busy={
-                switchingTo ===
-                language.host
-              }
-            />
-          )
-        )}
-      </div>
-    </details>
+                }
+              />
+            )
+          )}
+        </div>
+      </details>
+    </>
   );
 }
