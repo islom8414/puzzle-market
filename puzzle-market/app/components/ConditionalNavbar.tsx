@@ -11,7 +11,8 @@ export default function ConditionalNavbar() {
     pathname === "/login" ||
     pathname === "/register" ||
     pathname === "/forgot-password" ||
-    pathname === "/reset-password"
+    pathname === "/reset-password" ||
+    pathname === "/auth/language"
   ) {
     return null;
   }

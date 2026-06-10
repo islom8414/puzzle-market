@@ -4,6 +4,12 @@ const translatedHosts = new Set([
   "zh-cn.puzzle-market.com",
 ]);
 
+const primaryApiOrigin =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(
+    /\/$/,
+    ""
+  ) || "https://puzzle-market.com";
+
 function shouldUsePrimaryApi() {
   if (typeof window === "undefined") {
     return false;
@@ -23,7 +29,7 @@ export function apiUrl(path: string) {
     return path;
   }
 
-  return `https://www.puzzle-market.com${path}`;
+  return `${primaryApiOrigin}${path}`;
 }
 
 export function apiFetch(
