@@ -10,13 +10,38 @@ export default function AddFundsPage() {
   const [loading, setLoading] =
     useState(false);
 
+  const [amount, setAmount] =
+    useState("");
+
+  const [message, setMessage] =
+    useState("");
+
   async function topup(
-    amount: number
+    requestedAmount?: number
   ) {
+
+    const topupAmount =
+      requestedAmount ??
+      Number(amount);
+
+    if (
+      !Number.isFinite(topupAmount) ||
+      topupAmount < 1 ||
+      topupAmount > 10000 ||
+      !Number.isInteger(
+        topupAmount * 100
+      )
+    ) {
+      setMessage(
+        "Enter an amount from $1 to $10,000 with no more than 2 decimal places."
+      );
+      return;
+    }
 
     try {
 
       setLoading(true);
+      setMessage("");
 
       const {
         data: {
@@ -51,7 +76,8 @@ export default function AddFundsPage() {
             },
 
             body: JSON.stringify({
-              amount,
+              amount:
+                topupAmount,
             }),
           }
         );
@@ -61,9 +87,9 @@ export default function AddFundsPage() {
 
       if (!response.ok) {
 
-        alert(
+        setMessage(
           data.error ||
-          "Stripe checkout failed"
+            "Stripe checkout failed"
         );
 
         return;
@@ -77,7 +103,7 @@ export default function AddFundsPage() {
 
       } else {
 
-        alert(
+        setMessage(
           "Stripe checkout failed"
         );
 
@@ -87,7 +113,7 @@ export default function AddFundsPage() {
 
       console.log(error);
 
-      alert(
+      setMessage(
         "Something went wrong"
       );
 
@@ -117,48 +143,99 @@ export default function AddFundsPage() {
           Securely top up your Puzzle Market wallet using Visa or Mastercard.
         </p>
 
-        <div className="flex flex-col gap-4">
+        <label className="block">
+          <span className="text-sm font-bold text-zinc-300">
+            Amount in USD
+          </span>
 
+          <div className="mt-2 flex h-16 items-center rounded-lg border border-white/15 bg-black px-5 focus-within:border-cyan-400">
+            <span className="text-2xl font-black text-cyan-400">
+              $
+            </span>
+
+            <input
+              type="number"
+              min="1"
+              max="10000"
+              step="0.01"
+              inputMode="decimal"
+              value={amount}
+              onChange={(event) => {
+                setAmount(
+                  event.target.value
+                );
+                setMessage("");
+              }}
+              placeholder="25.00"
+              className="h-full min-w-0 flex-1 bg-transparent px-3 text-2xl font-black text-white outline-none"
+            />
+          </div>
+        </label>
+
+        <div className="mt-4 grid grid-cols-4 gap-2">
           <button
-            onClick={() => topup(1)}
+            type="button"
+            onClick={() =>
+              setAmount("5")
+            }
             disabled={loading}
-            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-4 md:py-5 text-2xl md:text-3xl font-black"
+            className="h-11 rounded-lg border border-white/10 bg-zinc-900 text-sm font-black hover:border-cyan-400"
           >
-            $1
+            $5
           </button>
 
           <button
-            onClick={() => topup(10)}
+            type="button"
+            onClick={() =>
+              setAmount("10")
+            }
             disabled={loading}
-            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-4 md:py-5 text-2xl md:text-3xl font-black"
+            className="h-11 rounded-lg border border-white/10 bg-zinc-900 text-sm font-black hover:border-cyan-400"
           >
             $10
           </button>
 
           <button
-            onClick={() => topup(50)}
+            type="button"
+            onClick={() =>
+              setAmount("50")
+            }
             disabled={loading}
-            className="bg-cyan-500 hover:bg-cyan-400 text-black transition-all rounded-2xl py-4 md:py-5 text-2xl md:text-3xl font-black"
+            className="h-11 rounded-lg border border-white/10 bg-zinc-900 text-sm font-black hover:border-cyan-400"
           >
             $50
           </button>
 
           <button
-            onClick={() => topup(100)}
+            type="button"
+            onClick={() =>
+              setAmount("100")
+            }
             disabled={loading}
-            className="bg-zinc-900 hover:bg-cyan-500 transition-all rounded-2xl py-4 md:py-5 text-2xl md:text-3xl font-black"
+            className="h-11 rounded-lg border border-white/10 bg-zinc-900 text-sm font-black hover:border-cyan-400"
           >
             $100
           </button>
-
         </div>
 
-        {loading && (
+        <button
+          type="button"
+          onClick={() => topup()}
+          disabled={loading}
+          className="mt-5 h-14 w-full rounded-lg bg-cyan-400 text-lg font-black text-black transition hover:bg-cyan-300 disabled:opacity-60"
+        >
+          {loading
+            ? "Redirecting to Stripe..."
+            : amount &&
+                Number(amount) >= 1
+              ? `Add $${amount}`
+              : "Continue To Payment"}
+        </button>
 
-          <p className="text-center text-cyan-400 mt-6 text-sm">
-            Redirecting to Stripe...
+        {message && (
+          <p className="mt-4 rounded-lg border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm font-bold text-red-200">
+            {message}
           </p>
-
         )}
 
       </div>

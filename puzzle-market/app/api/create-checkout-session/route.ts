@@ -41,14 +41,22 @@ export async function POST(
     const amount =
       Number(body.amount);
 
+    const amountCents =
+      Math.round(amount * 100);
+
     if (
-      !Number.isInteger(amount) ||
-      amount < 1 ||
-      amount > 10000
+      !Number.isFinite(amount) ||
+      amountCents < 100 ||
+      amountCents > 1000000 ||
+      Math.abs(
+        amount * 100 -
+          amountCents
+      ) > 0.000001
     ) {
       return NextResponse.json(
         {
-          error: "Invalid topup amount",
+          error:
+            "Enter an amount from $1 to $10,000 with no more than 2 decimal places",
         },
         {
           status: 400,
@@ -150,7 +158,7 @@ export async function POST(
               },
 
               unit_amount:
-                amount * 100,
+                amountCents,
 
             },
 
