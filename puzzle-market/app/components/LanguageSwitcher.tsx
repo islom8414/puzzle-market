@@ -13,11 +13,15 @@ import { supabase } from "@/lib/supabase";
 const primaryDomain =
   process.env.NEXT_PUBLIC_PRIMARY_DOMAIN ||
   "puzzle-market.com";
+const primaryHost =
+  primaryDomain.startsWith("www.")
+    ? primaryDomain
+    : `www.${primaryDomain}`;
 
 const languages = [
   {
     code: "en",
-    host: primaryDomain,
+    host: primaryHost,
   },
   {
     code: "ru",

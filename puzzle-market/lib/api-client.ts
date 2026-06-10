@@ -4,11 +4,25 @@ const translatedHosts = new Set([
   "zh-cn.puzzle-market.com",
 ]);
 
+function getPrimaryApiOrigin() {
+  const configured =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://www.puzzle-market.com";
+  const url = new URL(configured);
+
+  if (
+    url.hostname ===
+    "puzzle-market.com"
+  ) {
+    url.hostname =
+      "www.puzzle-market.com";
+  }
+
+  return url.toString().replace(/\/$/, "");
+}
+
 const primaryApiOrigin =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(
-    /\/$/,
-    ""
-  ) || "https://puzzle-market.com";
+  getPrimaryApiOrigin();
 
 function shouldUsePrimaryApi() {
   if (typeof window === "undefined") {

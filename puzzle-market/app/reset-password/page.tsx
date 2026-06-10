@@ -79,7 +79,12 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black px-4 text-white flex items-center justify-center">
+    <main
+      className="notranslate min-h-screen bg-black px-4 text-white flex items-center justify-center"
+      translate="no"
+      data-no-translation="true"
+      data-linguise-ignore="true"
+    >
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
 
       <section className="relative w-full max-w-md rounded-3xl border border-white/10 bg-zinc-950 p-6 backdrop-blur-xl sm:p-8">
