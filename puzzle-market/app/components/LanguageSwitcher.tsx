@@ -2,12 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import {
-  useEffect,
   useState,
   type MouseEvent,
 } from "react";
 
-import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
 
 const primaryDomain =
@@ -42,87 +40,6 @@ export default function LanguageSwitcher() {
     usePathname() || "/";
   const [switchingTo, setSwitchingTo] =
     useState<string | null>(null);
-  const [restoring, setRestoring] =
-    useState(false);
-
-  useEffect(() => {
-    const hash = new URLSearchParams(
-      window.location.hash.slice(1)
-    );
-    const token = hash.get(
-      "pm-language-token"
-    );
-
-    if (!token) {
-      return;
-    }
-
-    let active = true;
-
-    async function restoreSession() {
-      try {
-        await Promise.resolve();
-
-        if (active) {
-          setRestoring(true);
-        }
-
-        const response = await apiFetch(
-          "/api/auth/language-bridge",
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-            body: JSON.stringify({
-              token,
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            "Language session expired"
-          );
-        }
-
-        const data = (await response.json()) as {
-          accessToken: string;
-          refreshToken: string;
-        };
-        const { error } =
-          await supabase.auth.setSession({
-            access_token:
-              data.accessToken,
-            refresh_token:
-              data.refreshToken,
-          });
-
-        if (error) {
-          throw error;
-        }
-
-        const cleanUrl = `${window.location.pathname}${window.location.search}`;
-        window.location.replace(cleanUrl);
-      } catch {
-        if (active) {
-          setRestoring(false);
-          window.history.replaceState(
-            null,
-            "",
-            `${window.location.pathname}${window.location.search}`
-          );
-        }
-      }
-    }
-
-    restoreSession();
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   async function switchLanguage(
     event: MouseEvent<HTMLAnchorElement>,
@@ -148,58 +65,23 @@ export default function LanguageSwitcher() {
         data: { session },
       } = await supabase.auth.getSession();
 
-      if (!session) {
-        window.location.assign(targetUrl);
-        return;
+      if (session) {
+        await supabase.auth.refreshSession();
       }
-
-      const response = await apiFetch(
-        "/api/auth/language-bridge",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            refreshToken:
-              session.refresh_token,
-            targetHost,
-            nextPath,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          "Could not transfer session"
-        );
-      }
-
-      const data = (await response.json()) as {
-        token: string;
-      };
-
-      const bridgeUrl = new URL(
-        targetUrl
-      );
-      bridgeUrl.hash = new URLSearchParams({
-        "pm-language-token":
-          data.token,
-      }).toString();
 
       window.location.assign(
-        bridgeUrl.toString()
+        targetUrl
       );
     } catch {
-      setSwitchingTo(null);
+      window.location.assign(
+        targetUrl
+      );
     }
   }
 
   return (
     <>
-      {(restoring || switchingTo) && (
+      {switchingTo && (
         <div
           className="notranslate fixed inset-0 z-[300] flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm"
           translate="no"

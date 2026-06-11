@@ -34,3 +34,24 @@ export function getCanonicalSiteUrl() {
 export function getAuthRedirectUrl(path = "/auth/callback") {
   return `${getCanonicalSiteUrl()}${path}`;
 }
+
+export function getCanonicalLoginUrl(
+  nextPath?: string
+) {
+  const loginUrl = new URL(
+    "/login",
+    getCanonicalSiteUrl()
+  );
+
+  if (
+    nextPath?.startsWith("/") &&
+    !nextPath.startsWith("//")
+  ) {
+    loginUrl.searchParams.set(
+      "next",
+      nextPath
+    );
+  }
+
+  return loginUrl.toString();
+}

@@ -8,6 +8,7 @@ import {
   fetchMyProfile,
 } from "@/lib/client-profile";
 import { hasCreatorUploadAccess } from "@/lib/market-access";
+import { getCanonicalLoginUrl } from "@/lib/site-url";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -16,6 +17,8 @@ const initialNotifications = [
 ];
 
 export default function Navbar() {
+  const loginUrl =
+    getCanonicalLoginUrl();
 
   const [open, setOpen] =
     useState(false);
@@ -184,7 +187,7 @@ export default function Navbar() {
     supabase.auth.signOut();
 
     window.location.href =
-      "/login";
+      loginUrl;
 
   };
 
@@ -362,7 +365,10 @@ export default function Navbar() {
               ) : (
 
                 <a
-                  href="/login"
+                  href={loginUrl}
+                  translate="no"
+                  data-no-translation="true"
+                  data-linguise-ignore="true"
                   className="translate-safe-action hidden md:flex bg-white/5 border border-white/10 rounded-2xl px-4 py-2 text-sm font-black hover:border-cyan-400 transition"
                 >
                   Login
@@ -491,7 +497,10 @@ export default function Navbar() {
                   </>
                 ) : (
                   <a
-                    href="/login"
+                    href={loginUrl}
+                    translate="no"
+                    data-no-translation="true"
+                    data-linguise-ignore="true"
                     className="translate-safe-action rounded-2xl bg-cyan-400 px-4 py-3 font-black text-black text-center"
                   >
                     Login

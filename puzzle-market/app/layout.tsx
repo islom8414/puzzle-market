@@ -5,6 +5,7 @@ import "./globals.css";
 import ConditionalNavbar from "./components/ConditionalNavbar";
 import LiveFeed from "./components/LiveFeed";
 import LinguiseScript from "./components/LinguiseScript";
+import OriginalPathGuard from "./components/OriginalPathGuard";
 import SubscriptionGate from "./components/SubscriptionGate";
 
 export const metadata: Metadata = {
@@ -25,6 +26,8 @@ export default function RootLayout({
     >
 
       <body className="bg-black text-white min-h-screen overflow-x-hidden antialiased">
+
+        <OriginalPathGuard />
 
         {/* GLOBAL BACKGROUND */}
 

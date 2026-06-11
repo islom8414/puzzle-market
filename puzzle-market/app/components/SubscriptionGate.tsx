@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { fetchMyProfile } from "@/lib/client-profile";
+import { getCanonicalLoginUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 
 const protectedPrefixes = [
@@ -131,7 +132,9 @@ export default function SubscriptionGate() {
       ? {
           title: "Sign in to enter Puzzle Market",
           body: "Create an account or sign in before collecting, buying, selling, or chatting.",
-          href: "/login",
+          href: getCanonicalLoginUrl(
+            pathname
+          ),
           action: "Sign in",
         }
       : state === "profile"
