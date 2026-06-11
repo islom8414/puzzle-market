@@ -23,11 +23,16 @@ export default function RootLayout({
     <html
       lang="en"
       className="dark"
+      suppressHydrationWarning
     >
-
-      <body className="bg-black text-white min-h-screen overflow-x-hidden antialiased">
-
+      <head>
         <OriginalPathGuard />
+      </head>
+
+      <body
+        className="bg-black text-white min-h-screen overflow-x-hidden antialiased"
+        suppressHydrationWarning
+      >
 
         {/* GLOBAL BACKGROUND */}
 
