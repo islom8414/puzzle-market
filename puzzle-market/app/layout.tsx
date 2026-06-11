@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import ConditionalNavbar from "./components/ConditionalNavbar";
+import EnableDynamicTranslation from "./components/EnableDynamicTranslation";
 import LiveFeed from "./components/LiveFeed";
 import LinguiseScript from "./components/LinguiseScript";
 import OriginalPathGuard from "./components/OriginalPathGuard";
@@ -22,7 +23,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="dark"
+      className="dark notranslate"
+      translate="no"
+      data-no-translation="true"
+      data-linguise-ignore="true"
       suppressHydrationWarning
     >
       <head>
@@ -30,9 +34,13 @@ export default function RootLayout({
       </head>
 
       <body
-        className="bg-black text-white min-h-screen overflow-x-hidden antialiased"
+        className="notranslate bg-black text-white min-h-screen overflow-x-hidden antialiased"
+        translate="no"
+        data-no-translation="true"
+        data-linguise-ignore="true"
         suppressHydrationWarning
       >
+        <EnableDynamicTranslation />
 
         {/* GLOBAL BACKGROUND */}
 

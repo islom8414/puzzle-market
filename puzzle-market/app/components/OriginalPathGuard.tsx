@@ -1,11 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Script from "next/script";
 
 export default function OriginalPathGuard() {
-  const pathname =
-    usePathname() || "/";
+  const pathname = usePathname() || "/";
   const script = `
     (() => {
       const originalPath = ${JSON.stringify(pathname)};
@@ -23,9 +21,8 @@ export default function OriginalPathGuard() {
   `;
 
   return (
-    <Script
+    <script
       id="puzzle-market-original-path"
-      strategy="beforeInteractive"
       className="notranslate"
       translate="no"
       data-no-translation="true"

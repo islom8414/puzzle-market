@@ -189,10 +189,7 @@ export default function RegisterPage() {
   return (
 
     <main
-      className="notranslate min-h-screen flex items-center justify-center px-4 bg-black text-white overflow-hidden"
-      translate="no"
-      data-no-translation="true"
-      data-linguise-ignore="true"
+      className="min-h-screen flex items-center justify-center px-4 bg-black text-white overflow-hidden"
     >
 
       {/* BG */}
