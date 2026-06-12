@@ -6,77 +6,86 @@ import {
   type MouseEvent,
 } from "react";
 
-import { supabase } from "@/lib/supabase";
-
-const primaryDomain =
-  process.env.NEXT_PUBLIC_PRIMARY_DOMAIN ||
-  "puzzle-market.com";
-const primaryHost =
-  primaryDomain.startsWith("www.")
-    ? primaryDomain
-    : `www.${primaryDomain}`;
-
 const languages = [
   {
     code: "en",
-    host: primaryHost,
+    value: "en",
   },
   {
     code: "ru",
-    host: `ru.${primaryDomain}`,
+    value: "ru",
   },
   {
     code: "ja",
-    host: `ja.${primaryDomain}`,
+    value: "ja",
   },
   {
     code: "zh",
-    host: `zh-cn.${primaryDomain}`,
+    value: "zh-cn",
   },
 ];
 
 export default function LanguageSwitcher() {
-  const path =
-    usePathname() || "/";
+  const path = usePathname() || "/";
   const [switchingTo, setSwitchingTo] =
     useState<string | null>(null);
 
-  async function switchLanguage(
+  function getTargetUrl(
+    language: string
+  ) {
+    const targetUrl = new URL(
+      path,
+      window.location.origin
+    );
+    const currentParams =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    for (const [key, value] of currentParams) {
+      targetUrl.searchParams.append(
+        key,
+        value
+      );
+    }
+
+    if (language === "en") {
+      targetUrl.searchParams.delete(
+        "lang"
+      );
+    } else {
+      targetUrl.searchParams.set(
+        "lang",
+        language
+      );
+    }
+
+    targetUrl.hash =
+      window.location.hash;
+
+    return targetUrl;
+  }
+
+  function switchLanguage(
     event: MouseEvent<HTMLAnchorElement>,
-    targetHost: string
+    language: string
   ) {
     event.preventDefault();
 
-    const nextPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    const targetUrl = `https://${targetHost}${nextPath}`;
-
-    if (
-      window.location.hostname ===
-        targetHost ||
-      switchingTo
-    ) {
+    if (switchingTo) {
       return;
     }
 
-    setSwitchingTo(targetHost);
-
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (session) {
-        await supabase.auth.refreshSession();
-      }
-
-      window.location.assign(
-        targetUrl
-      );
-    } catch {
-      window.location.assign(
-        targetUrl
-      );
-    }
+    setSwitchingTo(language);
+    window.localStorage.setItem(
+      "puzzle-language",
+      language
+    );
+    window.location.assign(
+      getTargetUrl(
+        language
+      ).toString()
+    );
   }
 
   return (
@@ -118,11 +127,15 @@ export default function LanguageSwitcher() {
             (language) => (
               <a
                 key={language.code}
-                href={`https://${language.host}${path}`}
+                href={
+                  language.value === "en"
+                    ? path
+                    : `${path}?lang=${language.value}`
+                }
                 onClick={(event) =>
                   switchLanguage(
                     event,
-                    language.host
+                    language.value
                   )
                 }
                 className={`language-switcher-option language-switcher-option-${language.code}`}
@@ -132,7 +145,7 @@ export default function LanguageSwitcher() {
                 aria-label={language.code}
                 aria-busy={
                   switchingTo ===
-                  language.host
+                  language.value
                 }
               />
             )
