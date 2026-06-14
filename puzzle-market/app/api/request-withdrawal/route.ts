@@ -34,6 +34,14 @@ function isWithdrawalMethod(
   );
 }
 
+function containsPossibleCardNumber(
+  value: string
+) {
+  return /\d(?:[\s-]?\d){11,18}/.test(
+    value
+  );
+}
+
 export async function POST(
   request: Request
 ) {
@@ -149,6 +157,23 @@ export async function POST(
         {
           error:
             "Enter payout destination details",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (
+      !isStripeMethod &&
+      containsPossibleCardNumber(
+        destinationLabel
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Do not enter a full card number. Submit only the card type, last 4 digits, recipient name and contact.",
         },
         {
           status: 400,

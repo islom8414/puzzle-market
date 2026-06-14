@@ -671,7 +671,7 @@ export default function AdminPage() {
           </h2>
 
           <p className="text-zinc-400 mt-5 max-w-3xl">
-            Manual card payouts can be processed through Paysend, bank tools, or another provider while the Paysend Enterprise API is pending approval. Mark paid only after the transfer is actually sent.
+            Manual card payouts should be reviewed within 3 business days. The requested amount is already reserved from the user balance. Mark Paid only after sending the transfer; Fail + Refund automatically returns the full amount to the user balance.
           </p>
 
           <div className="mt-8 space-y-4">
@@ -791,7 +791,7 @@ export default function AdminPage() {
                         }
                         className="rounded-2xl border border-red-400/30 bg-red-500/10 px-4 py-3 font-black text-red-200 disabled:opacity-40"
                       >
-                        Fail + Refund
+                        Reject + Refund
                       </button>
                     </div>
                   </div>

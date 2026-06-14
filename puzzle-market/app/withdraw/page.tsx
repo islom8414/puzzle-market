@@ -21,8 +21,8 @@ const methods = [
 const manualMethods = [
   {
     id: "visa_card",
-    label: "Paysend card request",
-    hint: "Manual review now. Paysend-ready for Uzcard, Humo, Visa and Mastercard payouts.",
+    label: "Manual card payout",
+    hint: "Request a payout to an eligible Visa, Mastercard, Uzcard or Humo card. Reviewed within 3 business days.",
     placeholder:
       "Recipient name + card type + last 4 digits + Telegram/email",
   },
@@ -117,8 +117,61 @@ type WithdrawalMethod =
   | (typeof methods)[number]["id"]
   | (typeof manualMethods)[number]["id"];
 
-const unsupportedStripeCountries =
-  new Set(["UZ"]);
+const stripeSupportedCountries = new Set([
+  "AT",
+  "AU",
+  "BE",
+  "BG",
+  "BR",
+  "CA",
+  "CH",
+  "CY",
+  "CZ",
+  "DE",
+  "DK",
+  "EE",
+  "ES",
+  "FI",
+  "FR",
+  "GB",
+  "GI",
+  "GR",
+  "HK",
+  "HR",
+  "HU",
+  "ID",
+  "IE",
+  "IN",
+  "IT",
+  "JP",
+  "LI",
+  "LT",
+  "LU",
+  "MT",
+  "MX",
+  "MY",
+  "NL",
+  "NO",
+  "NZ",
+  "PL",
+  "PT",
+  "RO",
+  "SE",
+  "SG",
+  "SI",
+  "SK",
+  "TH",
+  "US",
+  "AE",
+]);
+
+function isStripeSupportedCountry(
+  country: string
+) {
+  return stripeSupportedCountries.has(
+    country.trim().toUpperCase()
+  );
+}
 
 type ConnectStatus = {
   connected: boolean;
@@ -204,6 +257,10 @@ export default function WithdrawPage() {
     paysendContact,
     setPaysendContact,
   ] = useState("");
+  const [
+    manualPayoutConfirmed,
+    setManualPayoutConfirmed,
+  ] = useState(false);
   const [
     customPayoutCountry,
     setCustomPayoutCountry,
@@ -412,7 +469,7 @@ export default function WithdrawPage() {
       method === "visa_card";
     const paysendDestinationLabel =
       [
-        `Paysend manual card payout`,
+        `Manual card payout`,
         `Country: ${selectedCountry}`,
         `Card: ${paysendCardType}`,
         `Recipient: ${paysendRecipientName.trim() || "not provided"}`,
@@ -443,6 +500,13 @@ export default function WithdrawPage() {
       ) {
         alert(
           "Enter recipient name, card last 4 digits, and Telegram/email for manual payout confirmation"
+        );
+        return;
+      }
+
+      if (!manualPayoutConfirmed) {
+        alert(
+          "Confirm that the payout details are correct and that processing may take up to 3 business days"
         );
         return;
       }
@@ -509,8 +573,9 @@ export default function WithdrawPage() {
         method ===
           "stripe_standard"
         ? "Payout sent through Stripe"
-        : "Withdrawal request created. Admin will review it."
+        : "Withdrawal request created. The amount is reserved while admin reviews it. Processing may take up to 3 business days."
     );
+    setManualPayoutConfirmed(false);
     await loadWithdrawals();
   }
 
@@ -524,9 +589,13 @@ export default function WithdrawPage() {
     connectStatus.country;
   const selectedCountry =
     connectedCountry ||
-    payoutCountry;
+    (payoutCountry === "OTHER"
+      ? customPayoutCountry
+          .trim()
+          .toUpperCase()
+      : payoutCountry);
   const stripeUnsupported =
-    unsupportedStripeCountries.has(
+    !isStripeSupportedCountry(
       selectedCountry
     );
   const activeMethods =
@@ -595,11 +664,29 @@ export default function WithdrawPage() {
                       connectedCountry ||
                       payoutCountry
                     }
-                    onChange={(event) =>
+                    onChange={(event) => {
+                      const country =
+                        event.target.value;
                       setPayoutCountry(
-                        event.target.value
-                      )
-                    }
+                        country
+                      );
+                      const supportsStripe =
+                        country !==
+                          "OTHER" &&
+                        isStripeSupportedCountry(
+                          country
+                        );
+                      setMethod(
+                        supportsStripe
+                          ? "stripe_standard"
+                          : "visa_card"
+                      );
+                      setPaysendCardType(
+                        country === "UZ"
+                          ? "Uzcard"
+                          : "Visa"
+                      );
+                    }}
                     disabled={
                       connectStatus.connected
                     }
@@ -635,16 +722,22 @@ export default function WithdrawPage() {
                         }
                         onChange={(
                           event
-                        ) =>
-                          setCustomPayoutCountry(
+                        ) => {
+                          const country =
                             event.target.value
                               .toUpperCase()
-                              .slice(
-                                0,
-                                2
-                              )
-                          )
-                        }
+                              .slice(0, 2);
+                          setCustomPayoutCountry(
+                            country
+                          );
+                          setMethod(
+                            isStripeSupportedCountry(
+                              country
+                            )
+                              ? "stripe_standard"
+                              : "visa_card"
+                          );
+                        }}
                         placeholder="UZ"
                         className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-base font-black text-white outline-none focus:border-cyan-400"
                       />
@@ -653,7 +746,7 @@ export default function WithdrawPage() {
 
                 {stripeUnsupported && (
                   <p className="mt-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3 text-sm text-amber-100">
-                    Uzbekistan is not supported by Stripe Connect right now. Use manual Paysend-ready card payout for Uzcard, Humo, Visa or Mastercard.
+                    Stripe Connect payouts are not available for this country through Puzzle Market. Use the manual card payout request below. Review takes up to 3 business days.
                   </p>
                 )}
 
@@ -722,14 +815,41 @@ export default function WithdrawPage() {
           {stripeUnsupported && (
             <div className="mt-5 rounded-[22px] border border-white/10 bg-black/50 p-4 md:p-5">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">
-                Paysend-ready manual payout
+                Manual card payout
               </p>
 
               {method ===
               "visa_card" ? (
                 <div className="mt-4 space-y-4">
                   <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 text-sm leading-6 text-zinc-300">
-                    Paysend Enterprise is pending approval. We collect only safe confirmation details and admin completes the payout manually. Do not enter a full card number.
+                    Enter only safe confirmation details. Puzzle Market does not collect or store full card numbers, expiry dates or CVV. Admin will contact you through the contact below to complete the transfer securely.
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-xs font-black uppercase text-zinc-500">
+                        1. Request
+                      </p>
+                      <p className="mt-1 text-sm font-bold">
+                        Amount is reserved
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-xs font-black uppercase text-zinc-500">
+                        2. Review
+                      </p>
+                      <p className="mt-1 text-sm font-bold">
+                        Up to 3 business days
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-xs font-black uppercase text-zinc-500">
+                        3. Decision
+                      </p>
+                      <p className="mt-1 text-sm font-bold">
+                        Paid or refunded
+                      </p>
+                    </div>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
@@ -840,6 +960,23 @@ export default function WithdrawPage() {
                     </label>
                   </div>
 
+                  <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <input
+                      type="checkbox"
+                      checked={
+                        manualPayoutConfirmed
+                      }
+                      onChange={(event) =>
+                        setManualPayoutConfirmed(
+                          event.target.checked
+                        )
+                      }
+                      className="mt-1 h-4 w-4 accent-cyan-400"
+                    />
+                    <span className="text-sm leading-6 text-zinc-300">
+                      I confirm the recipient details are correct. I understand the amount is reserved now, the review may take up to 3 business days, and a rejected request is returned to my Puzzle Market balance.
+                    </span>
+                  </label>
                 </div>
               ) : (
                 <label className="mt-3 block">
@@ -954,7 +1091,19 @@ export default function WithdrawPage() {
                       )}
                     </p>
                     <p className="mt-1 text-xs font-black uppercase text-zinc-500">
-                      {item.status}
+                      {item.status ===
+                      "pending"
+                        ? "Under review"
+                        : item.status ===
+                            "processing"
+                          ? "Processing"
+                          : item.status ===
+                              "paid"
+                            ? "Paid"
+                            : item.status ===
+                                "failed"
+                              ? "Rejected / refunded"
+                              : item.status}
                     </p>
                   </div>
                 </div>
