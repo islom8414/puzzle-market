@@ -108,7 +108,7 @@ export async function POST(
 
     if (
       !hasCreatorUploadAccess(
-        user.email,
+        user,
         profile
       )
     ) {

@@ -61,7 +61,7 @@ export default function CreatePage() {
 
       setAllowed(
         hasCreatorUploadAccess(
-          session.user.email,
+          session.user,
           data
         )
       );

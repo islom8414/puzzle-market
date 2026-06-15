@@ -47,10 +47,7 @@ drop policy if exists "support own threads readable" on public.support_threads;
 create policy "support own threads readable" on public.support_threads
 for select to authenticated using (
   user_id = auth.uid()
-  or lower(auth.jwt() ->> 'email') in (
-    'islommatchanov888@gmail.com',
-    'ismatchanov08@gmail.com'
-  )
+  or auth.jwt() -> 'app_metadata' ->> 'role' = 'admin'
 );
 
 drop policy if exists "support own threads insert" on public.support_threads;
@@ -66,10 +63,7 @@ for select to authenticated using (
     where thread.id = support_messages.thread_id
       and (
         thread.user_id = auth.uid()
-        or lower(auth.jwt() ->> 'email') in (
-          'islommatchanov888@gmail.com',
-          'ismatchanov08@gmail.com'
-        )
+        or auth.jwt() -> 'app_metadata' ->> 'role' = 'admin'
       )
   )
 );

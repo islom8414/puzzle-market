@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { isAdminEmail } from "@/lib/market-access";
+import { isAdminUser } from "@/lib/market-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -28,11 +28,7 @@ export async function GET(
       token
     );
 
-  const email =
-    data.user?.email?.toLowerCase() ||
-    "";
-
   return NextResponse.json({
-    allowed: isAdminEmail(email),
+    allowed: isAdminUser(data.user),
   });
 }

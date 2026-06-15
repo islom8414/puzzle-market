@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { isAdminEmail } from "@/lib/market-access";
+import { isAdminUser } from "@/lib/market-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -85,9 +85,7 @@ export async function POST(
     if (
       userError ||
       !userData.user ||
-      !isAdminEmail(
-        userData.user.email
-      )
+      !isAdminUser(userData.user)
     ) {
       return NextResponse.json(
         { error: "Admin only" },

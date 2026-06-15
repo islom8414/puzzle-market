@@ -18,7 +18,7 @@ type MarketItem = {
 
   id: number | string;
 
-  seller_email: string;
+  seller_name: string;
 
   seller_user_id?: string;
 
@@ -784,7 +784,7 @@ export default function MarketplacePage() {
 
                     <h3 className="font-black mt-2">
                       {
-                        fragment.seller_email ||
+                        fragment.seller_name ||
                         "Collector"
                       }
                     </h3>

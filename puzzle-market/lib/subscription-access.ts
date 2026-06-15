@@ -1,4 +1,4 @@
-import { isAdminEmail } from "@/lib/market-access";
+import { isAdminUser } from "@/lib/market-access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 const activeStatuses = new Set(["active", "trialing"]);
@@ -12,9 +12,11 @@ export function hasActivePaidSubscription(
       }
     | null
     | undefined,
-  email?: string | null
+  user?: {
+    app_metadata?: unknown;
+  } | null
 ) {
-  if (isAdminEmail(email)) {
+  if (isAdminUser(user)) {
     return true;
   }
 
@@ -30,6 +32,7 @@ export async function requireActivePaidSubscription(
   user: {
     id: string;
     email?: string | null;
+    app_metadata?: unknown;
   }
 ) {
   const { data: profile } =
@@ -39,5 +42,5 @@ export async function requireActivePaidSubscription(
       .eq("id", user.id)
       .maybeSingle();
 
-  return hasActivePaidSubscription(profile, user.email);
+  return hasActivePaidSubscription(profile, user);
 }

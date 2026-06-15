@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import {
-  platformOwnerEmails,
-  publicOwnerName,
-} from "@/lib/public-identity";
-
-const platformOwnerEmail =
-  platformOwnerEmails[0];
+import { publicOwnerName } from "@/lib/public-identity";
 
 type PieceListingRow = {
   id: string;
@@ -118,9 +112,7 @@ export async function GET(
       const { data: sellers } =
         await admin
           .from("market_profiles")
-          .select(
-            "id,email,username"
-          )
+          .select("id,username")
           .in("id", sellerIds);
 
       const sellerMap = new Map(
@@ -143,7 +135,7 @@ export async function GET(
             id: listing.id,
             seller_user_id:
               listing.seller_user_id,
-            seller_email:
+            seller_name:
               publicOwnerName(
                 sellerMap.get(
                   listing.seller_user_id
@@ -182,22 +174,31 @@ export async function GET(
     }
 
     const {
-      data: ownerProfile,
-    } =
-      await admin
-        .from("market_profiles")
-        .select("*")
-        .eq(
-          "email",
-          platformOwnerEmail
-        )
-        .maybeSingle();
+      data: ownerUsers,
+    } = await admin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    });
+    const ownerUser =
+      ownerUsers?.users.find(
+        (user) =>
+          user.app_metadata
+            ?.platform_owner === true
+      );
+    const { data: ownerProfile } =
+      ownerUser
+        ? await admin
+            .from("market_profiles")
+            .select("*")
+            .eq("id", ownerUser.id)
+            .maybeSingle()
+        : { data: null };
 
     if (!ownerProfile) {
       return NextResponse.json({
         listings: [],
         warning:
-          "Platform owner profile is missing",
+          "Marketplace vault is not configured",
       });
     }
 
@@ -321,9 +322,7 @@ export async function GET(
     } =
       await admin
         .from("market_profiles")
-        .select(
-          "id,email,username"
-        )
+        .select("id,username")
         .eq(
           "id",
           listing.seller_user_id
@@ -336,7 +335,7 @@ export async function GET(
           id: listing.id,
           seller_user_id:
             listing.seller_user_id,
-          seller_email:
+          seller_name:
             publicOwnerName(
               seller
             ),

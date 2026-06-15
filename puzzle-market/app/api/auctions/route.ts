@@ -15,6 +15,7 @@ export const runtime = "nodejs";
 type SessionUser = {
   id: string;
   email?: string | null;
+  app_metadata?: unknown;
 };
 
 async function getUser(request: Request) {
@@ -178,7 +179,7 @@ export async function GET(request: Request) {
         .eq("id", session.user.id)
         .maybeSingle();
 
-      canCreateAuction = hasAuctionListingAccess(session.user.email, profile);
+      canCreateAuction = hasAuctionListingAccess(session.user, profile);
 
       if (canCreateAuction) {
         const { data: ownership } = await admin
@@ -251,7 +252,7 @@ export async function POST(request: Request) {
         .eq("id", user.id)
         .maybeSingle();
 
-      if (!hasAuctionListingAccess(user.email, profile)) {
+      if (!hasAuctionListingAccess(user, profile)) {
         return NextResponse.json(
           { error: "Premium or Creator subscription required" },
           { status: 403 }

@@ -1,21 +1,29 @@
-export const ADMIN_EMAILS = [
-  "islommatchanov888@gmail.com",
-  "ismatchanov08@gmail.com",
-] as const;
+type AccessUser = {
+  app_metadata?: unknown;
+} | null | undefined;
 
-export function isAdminEmail(
-  email: string | null | undefined
+export function isAdminUser(
+  user: AccessUser
 ) {
-  const normalized =
-    email?.toLowerCase() || "";
+  const metadata =
+    user?.app_metadata &&
+    typeof user.app_metadata ===
+      "object"
+      ? (user.app_metadata as Record<
+          string,
+          unknown
+        >)
+      : {};
 
   return (
-    ADMIN_EMAILS as readonly string[]
-  ).includes(normalized);
+    metadata.role ===
+      "admin" ||
+    metadata.platform_owner === true
+  );
 }
 
 export function hasCreatorUploadAccess(
-  email: string | null | undefined,
+  user: AccessUser,
   profile:
     | {
         subscription_tier?: string | null;
@@ -24,7 +32,7 @@ export function hasCreatorUploadAccess(
     | null
     | undefined
 ) {
-  if (isAdminEmail(email)) {
+  if (isAdminUser(user)) {
     return true;
   }
 
@@ -42,7 +50,7 @@ export function hasCreatorUploadAccess(
 }
 
 export function hasAuctionListingAccess(
-  email: string | null | undefined,
+  user: AccessUser,
   profile:
     | {
         subscription_tier?: string | null;
@@ -51,7 +59,7 @@ export function hasAuctionListingAccess(
     | null
     | undefined
 ) {
-  if (isAdminEmail(email)) {
+  if (isAdminUser(user)) {
     return true;
   }
 

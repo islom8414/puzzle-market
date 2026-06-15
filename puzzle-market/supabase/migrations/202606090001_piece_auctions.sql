@@ -134,15 +134,8 @@ begin
 
   select id
   into platform_owner_id
-  from public.market_profiles
-  where lower(email) in (
-    'islommatchanov888@gmail.com',
-    'ismatchanov08@gmail.com'
-  )
-  order by case
-    when lower(email) = 'islommatchanov888@gmail.com' then 0
-    else 1
-  end
+  from auth.users
+  where raw_app_meta_data ->> 'platform_owner' = 'true'
   limit 1;
 
   if platform_owner_id is null then

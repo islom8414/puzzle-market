@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { puzzles } from "@/data/puzzles";
-import { isAdminEmail } from "@/lib/market-access";
+import { isAdminUser } from "@/lib/market-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -89,12 +89,9 @@ export async function POST(
         token
       );
 
-    const email =
-      userData.user?.email || "";
-
     if (
       userError ||
-      !isAdminEmail(email)
+      !isAdminUser(userData.user)
     ) {
       return NextResponse.json(
         {

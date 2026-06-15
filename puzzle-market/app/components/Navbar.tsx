@@ -122,7 +122,7 @@ export default function Navbar() {
       );
       setCreatorAccess(
         hasCreatorUploadAccess(
-          user.email,
+          user,
           profile
             ? {
                 subscription_tier:

@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 
 import {
   cleanPublicName,
-  isPlatformOwnerEmail,
   platformOwnerName,
 } from "@/lib/public-identity";
+import { isAdminUser } from "@/lib/market-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -82,9 +82,7 @@ async function getSessionUser(
     admin,
     user: data.user,
     isAdmin:
-      isPlatformOwnerEmail(
-        data.user.email
-      ),
+      isAdminUser(data.user),
   };
 }
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { isAdminEmail } from "@/lib/market-access";
+import { isAdminUser } from "@/lib/market-access";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -30,14 +30,10 @@ async function requireAdmin(
   } =
     await admin.auth.getUser(token);
 
-  const email =
-    data.user?.email?.toLowerCase() ||
-    "";
-
   if (
     error ||
     !data.user ||
-    !isAdminEmail(email)
+    !isAdminUser(data.user)
   ) {
     return {
       allowed: false,

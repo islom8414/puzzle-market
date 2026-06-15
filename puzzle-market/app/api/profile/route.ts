@@ -135,7 +135,7 @@ export async function GET(
       hasActiveSubscription:
         hasActivePaidSubscription(
           profile,
-          user.email
+          user
         ),
     });
   } catch (error) {

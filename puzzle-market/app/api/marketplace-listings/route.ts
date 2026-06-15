@@ -167,7 +167,7 @@ export async function GET() {
       await admin
         .from("market_profiles")
         .select(
-          "id,email,username"
+          "id,username"
         )
         .in("id", sellerIds);
 
@@ -203,7 +203,7 @@ export async function GET() {
           id: row.id,
           seller_user_id:
             row.seller_user_id,
-          seller_email:
+          seller_name:
             publicOwnerName(seller),
           fragment_id:
             catalog.slug,
