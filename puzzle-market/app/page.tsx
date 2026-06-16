@@ -98,40 +98,40 @@ export default function HomePage() {
 
               </div>
 
-              {/* FLOATING CARD */}
+              {/* DESKTOP MARKET STATUS */}
 
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-zinc-950/90 backdrop-blur-xl border border-white/10 rounded-3xl p-5 md:p-6 w-[min(320px,calc(100vw-2rem))]">
+              <div className="hidden md:block absolute -bottom-8 left-1/2 -translate-x-1/2 bg-zinc-950/90 backdrop-blur-xl border border-white/10 rounded-2xl p-5 w-[min(300px,calc(100vw-2rem))]">
 
-                <p className="text-zinc-500 text-sm">
-                  Verified Ownership
+                <p className="text-cyan-400 font-black uppercase tracking-[0.18em] text-xs">
+                  Marketplace Live
                 </p>
 
-                <h3 className="text-xl md:text-2xl font-black mt-3 leading-tight">
-                  Launch Ready
+                <h3 className="text-xl font-black mt-3 leading-tight">
+                  Rare pieces are available
                 </h3>
 
-                <div className="flex items-center justify-between mt-5">
+                <div className="flex items-center justify-between gap-4 mt-5 text-sm">
 
-                  <div>
+                  <div className="min-w-0">
 
-                    <p className="text-zinc-500 text-sm">
-                      Piece
+                    <p className="text-zinc-500">
+                      Trading
                     </p>
 
-                    <h4 className="text-lg md:text-xl font-black leading-tight">
-                      Hidden
+                    <h4 className="text-white font-black leading-tight">
+                      Open
                     </h4>
 
                   </div>
 
-                  <div>
+                  <div className="min-w-0 text-right">
 
-                    <p className="text-zinc-500 text-sm">
-                      Status
+                    <p className="text-zinc-500">
+                      Access
                     </p>
 
-                    <h4 className="text-cyan-400 text-lg md:text-xl font-black leading-tight">
-                      Online
+                    <h4 className="text-cyan-400 font-black leading-tight">
+                      Secure
                     </h4>
 
                   </div>
