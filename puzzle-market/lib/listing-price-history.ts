@@ -43,17 +43,15 @@ export async function loadListingPriceHistory(
       });
 
   if (error) {
-    if (
-      error.code === "42P01" ||
-      error.code === "42703"
-    ) {
-      return new Map<
-        string,
-        PriceHistoryPoint[]
-      >();
-    }
+    console.warn(
+      "Price history unavailable",
+      error.message
+    );
 
-    throw error;
+    return new Map<
+      string,
+      PriceHistoryPoint[]
+    >();
   }
 
   const map = new Map<
@@ -127,4 +125,3 @@ export function listingPricePayload(
       monthlyGrowthBps / 100,
   };
 }
-
