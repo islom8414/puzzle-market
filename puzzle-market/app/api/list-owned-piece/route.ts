@@ -163,6 +163,15 @@ export async function POST(
       );
     }
 
+    await admin.rpc(
+      "record_piece_listing_price",
+      {
+        p_listing_id:
+          listing.id,
+        p_reason: "resale",
+      }
+    );
+
     return NextResponse.json({
       listing,
     });

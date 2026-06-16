@@ -321,8 +321,20 @@ export async function POST(
             "id",
             existingListing.id
           );
+
+        await admin.rpc(
+          "record_piece_listing_price",
+          {
+            p_listing_id:
+              existingListing.id,
+            p_reason:
+              "manual_update",
+          }
+        );
       } else {
-        await admin
+        const {
+          data: newListing,
+        } = await admin
           .from("piece_listings")
           .insert({
             piece_id: piece.id,
@@ -333,7 +345,20 @@ export async function POST(
                 price * 100
               ),
             status: "active",
-          });
+          })
+          .select("id")
+          .single();
+
+        if (newListing?.id) {
+          await admin.rpc(
+            "record_piece_listing_price",
+            {
+              p_listing_id:
+                newListing.id,
+              p_reason: "created",
+            }
+          );
+        }
       }
 
       updatedPieces.push(

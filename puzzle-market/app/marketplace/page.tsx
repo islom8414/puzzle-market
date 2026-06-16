@@ -11,6 +11,11 @@ import {
   PUZZLE_CATEGORIES,
 } from "@/lib/brand-metadata";
 import { fetchMyProfile } from "@/lib/client-profile";
+import {
+  formatUsd,
+  indexedPriceCents,
+  type PriceHistoryPoint,
+} from "@/lib/price-index";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
 
@@ -46,10 +51,146 @@ type MarketItem = {
 
   puzzle_columns?: number;
 
+  price_history?: PriceHistoryPoint[];
+
+  monthly_growth_percent?: number;
+
 };
 
 const puzzleColumns = 5;
 const puzzleRows = 5;
+
+function PriceGrowthChart({
+  fragment,
+}: {
+  fragment: MarketItem;
+}) {
+  const monthlyGrowth =
+    fragment.monthly_growth_percent ||
+    (fragment.price <= 10
+      ? 5
+      : fragment.price <= 100
+        ? 7
+        : 9);
+
+  const currentCents = Math.round(
+    fragment.price * 100
+  );
+  const nextPrice =
+    indexedPriceCents(
+      currentCents,
+      Math.round(monthlyGrowth * 100)
+    ) / 100;
+
+  const history =
+    fragment.price_history &&
+    fragment.price_history.length > 0
+      ? fragment.price_history.slice(-5)
+      : [
+          {
+            date:
+              fragment.created_at ||
+              new Date().toISOString(),
+            price: fragment.price,
+            previousPrice: null,
+            growthPercent: null,
+            reason: "current",
+          },
+        ];
+
+  const points = [
+    ...history.map((point) => point.price),
+    nextPrice,
+  ];
+
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const spread = Math.max(0.01, max - min);
+
+  const coords = points.map(
+    (price, index) => {
+      const x =
+        points.length === 1
+          ? 50
+          : (index /
+              (points.length - 1)) *
+            100;
+      const y =
+        82 -
+        ((price - min) / spread) * 64;
+
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    }
+  );
+
+  return (
+    <div className="mt-5 rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.04] p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">
+            Price Index
+          </p>
+          <p className="mt-1 text-sm text-zinc-400">
+            Monthly growth +{monthlyGrowth}%
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-zinc-500">
+            Next month
+          </p>
+          <p className="font-black text-white">
+            {formatUsd(nextPrice)}
+          </p>
+        </div>
+      </div>
+
+      <svg
+        viewBox="0 0 100 90"
+        className="mt-4 h-20 w-full overflow-visible"
+        role="img"
+        aria-label="Monthly price growth chart"
+      >
+        <polyline
+          points="0,82 100,82"
+          fill="none"
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth="1"
+        />
+        <polyline
+          points={coords.join(" ")}
+          fill="none"
+          stroke="rgb(34,211,238)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {coords.map((point, index) => {
+          const [x, y] =
+            point.split(",");
+
+          return (
+            <circle
+              key={`${point}-${index}`}
+              cx={x}
+              cy={y}
+              r={index === coords.length - 1 ? 4 : 3}
+              fill={
+                index === coords.length - 1
+                  ? "rgb(34,211,238)"
+                  : "white"
+              }
+            />
+          );
+        })}
+      </svg>
+
+      <div className="mt-2 flex justify-between text-xs text-zinc-500">
+        <span>Current {formatUsd(fragment.price)}</span>
+        <span>Projected</span>
+      </div>
+    </div>
+  );
+}
 
 export default function MarketplacePage() {
 
@@ -790,6 +931,10 @@ export default function MarketplacePage() {
                     </h3>
 
                   </div>
+
+                  <PriceGrowthChart
+                    fragment={fragment}
+                  />
 
                   {/* BUTTON */}
 

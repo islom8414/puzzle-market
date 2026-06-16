@@ -1,0 +1,9 @@
+{
+  "crons": [
+    {
+      "path": "/api/price-index/run",
+      "schedule": "0 0 1 * *"
+    }
+  ]
+}
+

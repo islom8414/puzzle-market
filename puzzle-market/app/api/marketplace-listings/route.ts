@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 
+import {
+  listingPricePayload,
+  loadListingPriceHistory,
+} from "@/lib/listing-price-history";
 import { publicOwnerName } from "@/lib/public-identity";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
@@ -180,6 +184,12 @@ export async function GET() {
       )
     );
 
+    const priceHistoryMap =
+      await loadListingPriceHistory(
+        admin,
+        rows.map((row) => row.id)
+      );
+
     const listings = rows.map(
       (row) => {
         const piece = Array.isArray(
@@ -229,6 +239,11 @@ export async function GET() {
           puzzle_rows: catalog.rows,
           puzzle_columns:
             catalog.columns,
+          ...listingPricePayload(
+            row.id,
+            row.price_cents,
+            priceHistoryMap
+          ),
         };
       }
     );

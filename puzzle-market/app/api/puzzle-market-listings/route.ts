@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import {
+  listingPricePayload,
+  loadListingPriceHistory,
+} from "@/lib/listing-price-history";
 import { publicOwnerName } from "@/lib/public-identity";
 
 type PieceListingRow = {
@@ -124,6 +128,14 @@ export async function GET(
         )
       );
 
+      const priceHistoryMap =
+        await loadListingPriceHistory(
+          admin,
+          (listings || []).map(
+            (item) => item.id
+          )
+        );
+
       const mapped = (listings || []).map(
         (listing) => {
           const piece =
@@ -164,6 +176,11 @@ export async function GET(
             puzzle_rows: catalog.rows,
             puzzle_columns:
               catalog.columns,
+            ...listingPricePayload(
+              listing.id,
+              listing.price_cents,
+              priceHistoryMap
+            ),
           };
         }
       );
@@ -309,6 +326,17 @@ export async function GET(
           .single<PieceListingRow>();
 
       listing = data;
+
+      if (listing) {
+        await admin.rpc(
+          "record_piece_listing_price",
+          {
+            p_listing_id:
+              listing.id,
+            p_reason: "created",
+          }
+        );
+      }
     }
 
     if (!listing) {
@@ -316,6 +344,12 @@ export async function GET(
         listings: [],
       });
     }
+
+    const priceHistoryMap =
+      await loadListingPriceHistory(
+        admin,
+        [listing.id]
+      );
 
     const {
       data: seller,
@@ -355,6 +389,14 @@ export async function GET(
           created_at:
             listing.created_at,
           exact_listing: true,
+          puzzle_rows: catalog.rows,
+          puzzle_columns:
+            catalog.columns,
+          ...listingPricePayload(
+            listing.id,
+            listing.price_cents,
+            priceHistoryMap
+          ),
         },
       ],
     });

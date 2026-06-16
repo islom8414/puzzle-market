@@ -4,6 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
 import { apiFetch } from "@/lib/api-client";
+import {
+  formatUsd,
+  growthBpsForPriceCents,
+  indexedPriceCents,
+} from "@/lib/price-index";
 
 type OwnedPiece = {
   pieceId: string;
@@ -134,10 +139,24 @@ export default function SellPage() {
       Math.round(price * 10) / 100;
     const net =
       Math.max(0, price - fee);
+    const priceCents =
+      Math.round(price * 100);
+    const growthBps =
+      growthBpsForPriceCents(
+        priceCents
+      );
+    const nextPrice =
+      indexedPriceCents(
+        priceCents,
+        growthBps
+      ) / 100;
 
     return {
       fee: fee.toFixed(2),
       net: net.toFixed(2),
+      growthPercent:
+        growthBps / 100,
+      nextPrice,
     };
   }
 
@@ -365,6 +384,34 @@ export default function SellPage() {
                           )?.net
                         }
                       </span>
+                    </div>
+                    <div className="mt-3 border-t border-white/10 pt-3">
+                      <div className="flex items-center justify-between gap-3 text-cyan-300">
+                        <span>
+                          Next monthly index
+                        </span>
+                        <span className="font-black">
+                          +
+                          {
+                            salePreview(
+                              piece.pieceId
+                            )?.growthPercent
+                          }
+                          %
+                        </span>
+                      </div>
+                      <div className="mt-2 flex items-center justify-between gap-3 text-zinc-400">
+                        <span>
+                          Projected listing
+                        </span>
+                        <span className="font-black text-white">
+                          {formatUsd(
+                            salePreview(
+                              piece.pieceId
+                            )?.nextPrice || 0
+                          )}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}
