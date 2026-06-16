@@ -10,6 +10,35 @@ import {
 } from "@/lib/client-profile";
 import { supabase } from "@/lib/supabase";
 
+async function savePendingTermsAcceptance(
+  accessToken: string
+) {
+  if (
+    localStorage.getItem(
+      "puzzle-terms-consent-pending"
+    ) !== "1"
+  ) {
+    return;
+  }
+
+  const response = await fetch(
+    "/api/terms-acceptance",
+    {
+      method: "POST",
+      headers: {
+        Authorization:
+          `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (response.ok) {
+    localStorage.removeItem(
+      "puzzle-terms-consent-pending"
+    );
+  }
+}
+
 export default function AuthCallbackPage() {
   const router =
     useRouter();
@@ -57,6 +86,10 @@ export default function AuthCallbackPage() {
         await supabase.auth.getSession();
 
       if (session) {
+        await savePendingTermsAcceptance(
+          session.access_token
+        );
+
         if (safeNext) {
           router.replace(safeNext);
           return;
@@ -76,6 +109,20 @@ export default function AuthCallbackPage() {
           );
 
         if (!error) {
+          const {
+            data: {
+              session:
+                exchangedSession,
+            },
+          } =
+            await supabase.auth.getSession();
+
+          if (exchangedSession) {
+            await savePendingTermsAcceptance(
+              exchangedSession.access_token
+            );
+          }
+
           if (safeNext) {
             router.replace(safeNext);
             return;
@@ -100,6 +147,10 @@ export default function AuthCallbackPage() {
               nextSession &&
               active
             ) {
+              await savePendingTermsAcceptance(
+                nextSession.access_token
+              );
+
               if (safeNext) {
                 router.replace(safeNext);
                 return;
