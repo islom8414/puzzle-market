@@ -7,12 +7,9 @@ import {
   saveMyUsername,
 } from "@/lib/client-profile";
 import { sanitizeUsername } from "@/lib/display-name";
-import {
-  TERMS_ACCEPTANCE_TEXT,
-  TERMS_VERSION,
-} from "@/lib/legal";
 import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
+import { termsAcceptPath } from "@/lib/terms-status";
 
 const confirmationRedirect =
   getAuthRedirectUrl(
@@ -39,9 +36,6 @@ export default function RegisterPage() {
   const [confirmationPending, setConfirmationPending] =
     useState(false);
 
-  const [termsAccepted, setTermsAccepted] =
-    useState(false);
-
   const handleRegister =
     async () => {
 
@@ -57,13 +51,6 @@ export default function RegisterPage() {
           "Fill email, password, and username (3+ characters)"
         );
 
-        return;
-      }
-
-      if (!termsAccepted) {
-        setMessage(
-          "Please accept the Terms and Risk Disclosure before creating an account."
-        );
         return;
       }
 
@@ -83,10 +70,6 @@ export default function RegisterPage() {
             data: {
               username:
                 cleanUsername,
-              terms_accepted_at:
-                new Date().toISOString(),
-              terms_version:
-                TERMS_VERSION,
             },
           },
         });
@@ -133,7 +116,9 @@ export default function RegisterPage() {
 
           setTimeout(() => {
             window.location.href =
-              "/profile";
+              termsAcceptPath(
+                "/profile"
+              );
           }, 1200);
         } else {
           localStorage.setItem(
@@ -192,18 +177,6 @@ export default function RegisterPage() {
 
   const handleGoogleRegister =
     async () => {
-      if (!termsAccepted) {
-        setMessage(
-          "Please accept the Terms and Risk Disclosure before continuing with Google."
-        );
-        return;
-      }
-
-      localStorage.setItem(
-        "puzzle-terms-consent-pending",
-        "1"
-      );
-
       await supabase.auth
         .signInWithOAuth({
           provider: "google",
@@ -270,30 +243,6 @@ export default function RegisterPage() {
             value={password}
             onChange={setPassword}
           />
-
-          <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-black/60 p-4 text-sm leading-relaxed text-zinc-300">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(event) =>
-                setTermsAccepted(
-                  event.target.checked
-                )
-              }
-              className="mt-1 h-4 w-4 accent-cyan-400"
-            />
-            <span>
-              {TERMS_ACCEPTANCE_TEXT}{" "}
-              <a
-                href="/terms"
-                target="_blank"
-                rel="noreferrer"
-                className="font-black text-cyan-400 hover:text-cyan-300"
-              >
-                Read terms
-              </a>
-            </span>
-          </label>
 
           <button
             type="button"

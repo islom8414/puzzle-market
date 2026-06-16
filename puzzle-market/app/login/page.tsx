@@ -6,9 +6,12 @@ import {
   cacheUsername,
   fetchMyProfile,
 } from "@/lib/client-profile";
-import { TERMS_ACCEPTANCE_TEXT } from "@/lib/legal";
 import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
+import {
+  hasAcceptedCurrentTerms,
+  termsAcceptPath,
+} from "@/lib/terms-status";
 
 export default function LoginPage() {
   const [email, setEmail] =
@@ -23,45 +26,8 @@ export default function LoginPage() {
   const [message, setMessage] =
     useState("");
 
-  const [termsAccepted, setTermsAccepted] =
-    useState(false);
-
-  async function saveTermsAcceptance(
-    accessToken: string
-  ) {
-    const response = await fetch(
-      "/api/terms-acceptance",
-      {
-        method: "POST",
-        headers: {
-          Authorization:
-            `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const data =
-        await response
-          .json()
-          .catch(() => ({}));
-
-      throw new Error(
-        data.error ||
-          "Could not save terms agreement"
-      );
-    }
-  }
-
   const handleLogin =
     async () => {
-      if (!termsAccepted) {
-        setMessage(
-          "Please accept the Terms and Risk Disclosure before signing in."
-        );
-        return;
-      }
-
       setLoading(true);
       setMessage("");
 
@@ -92,10 +58,18 @@ export default function LoginPage() {
           data.user.email || ""
         );
 
-        if (data.session?.access_token) {
-          await saveTermsAcceptance(
-            data.session.access_token
+        if (
+          !hasAcceptedCurrentTerms(
+            data.user.user_metadata as Record<
+              string,
+              unknown
+            >
+          )
+        ) {
+          window.location.assign(
+            termsAcceptPath(nextPath)
           );
+          return;
         }
 
         const profile =
@@ -155,18 +129,6 @@ export default function LoginPage() {
 
   const handleGoogleLogin =
     async () => {
-      if (!termsAccepted) {
-        setMessage(
-          "Please accept the Terms and Risk Disclosure before continuing with Google."
-        );
-        return;
-      }
-
-      localStorage.setItem(
-        "puzzle-terms-consent-pending",
-        "1"
-      );
-
       await supabase.auth
         .signInWithOAuth({
           provider: "google",
@@ -223,30 +185,6 @@ export default function LoginPage() {
             value={password}
             onChange={setPassword}
           />
-
-          <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-black/60 p-4 text-sm leading-relaxed text-zinc-300">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(event) =>
-                setTermsAccepted(
-                  event.target.checked
-                )
-              }
-              className="mt-1 h-4 w-4 accent-cyan-400"
-            />
-            <span>
-              {TERMS_ACCEPTANCE_TEXT}{" "}
-              <a
-                href="/terms"
-                target="_blank"
-                rel="noreferrer"
-                className="font-black text-cyan-400 hover:text-cyan-300"
-              >
-                Read terms
-              </a>
-            </span>
-          </label>
 
           <div className="flex justify-end">
             <a

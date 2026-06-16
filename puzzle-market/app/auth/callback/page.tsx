@@ -9,35 +9,10 @@ import {
   fetchMyProfile,
 } from "@/lib/client-profile";
 import { supabase } from "@/lib/supabase";
-
-async function savePendingTermsAcceptance(
-  accessToken: string
-) {
-  if (
-    localStorage.getItem(
-      "puzzle-terms-consent-pending"
-    ) !== "1"
-  ) {
-    return;
-  }
-
-  const response = await fetch(
-    "/api/terms-acceptance",
-    {
-      method: "POST",
-      headers: {
-        Authorization:
-          `Bearer ${accessToken}`,
-      },
-    }
-  );
-
-  if (response.ok) {
-    localStorage.removeItem(
-      "puzzle-terms-consent-pending"
-    );
-  }
-}
+import {
+  hasAcceptedCurrentTerms,
+  termsAcceptPath,
+} from "@/lib/terms-status";
 
 export default function AuthCallbackPage() {
   const router =
@@ -56,6 +31,26 @@ export default function AuthCallbackPage() {
       !next.startsWith("//")
         ? next
         : null;
+    const finalNext =
+      safeNext || "/marketplace";
+
+    function needsTerms(
+      session: NonNullable<
+        Awaited<
+          ReturnType<
+            typeof supabase.auth.getSession
+          >
+        >["data"]["session"]
+      >
+    ) {
+      return !hasAcceptedCurrentTerms(
+        session.user
+          .user_metadata as Record<
+          string,
+          unknown
+        >
+      );
+    }
 
     async function finishLogin() {
       const profile =
@@ -86,9 +81,12 @@ export default function AuthCallbackPage() {
         await supabase.auth.getSession();
 
       if (session) {
-        await savePendingTermsAcceptance(
-          session.access_token
-        );
+        if (needsTerms(session)) {
+          router.replace(
+            termsAcceptPath(finalNext)
+          );
+          return;
+        }
 
         if (safeNext) {
           router.replace(safeNext);
@@ -118,9 +116,12 @@ export default function AuthCallbackPage() {
             await supabase.auth.getSession();
 
           if (exchangedSession) {
-            await savePendingTermsAcceptance(
-              exchangedSession.access_token
-            );
+            if (needsTerms(exchangedSession)) {
+              router.replace(
+                termsAcceptPath(finalNext)
+              );
+              return;
+            }
           }
 
           if (safeNext) {
@@ -147,9 +148,12 @@ export default function AuthCallbackPage() {
               nextSession &&
               active
             ) {
-              await savePendingTermsAcceptance(
-                nextSession.access_token
-              );
+              if (needsTerms(nextSession)) {
+                router.replace(
+                  termsAcceptPath(finalNext)
+                );
+                return;
+              }
 
               if (safeNext) {
                 router.replace(safeNext);

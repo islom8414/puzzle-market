@@ -1,5 +1,5 @@
 export const TERMS_VERSION =
-  "2026-06-16";
+  "2026-06-16-modal";
 
 export const TERMS_TITLE =
   "Puzzle Market Terms and Risk Disclosure";
@@ -53,4 +53,3 @@ export const TERMS_SECTIONS = [
 
 export const TERMS_ACCEPTANCE_TEXT =
   "I have read and agree to the Terms and Risk Disclosure. I understand Puzzle Market does not guarantee profit, liquidity, resale value, payout timing, or uninterrupted service, and I use the marketplace at my own risk.";
-
