@@ -35,6 +35,7 @@ export const PUZZLE_CATEGORIES = [
   "Sports",
   "Technology",
   "Travel & Landmarks",
+  "World Money",
   "Other",
 ] as const;
 
@@ -64,6 +65,9 @@ const CATEGORY_ALIASES: Record<string, (typeof PUZZLE_CATEGORIES)[number]> = {
   singers: "Music",
   travel: "Travel & Landmarks",
   watches: "Fashion",
+  money: "World Money",
+  currency: "World Money",
+  banknotes: "World Money",
 };
 
 export function normalizeBrandName(value: string) {
