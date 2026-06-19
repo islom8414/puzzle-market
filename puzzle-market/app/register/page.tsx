@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PasswordInput } from "@/components/password-input";
 import {
   cacheUsername,
@@ -36,6 +36,39 @@ export default function RegisterPage() {
   const [confirmationPending, setConfirmationPending] =
     useState(false);
 
+  useEffect(() => {
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+    const ref = params
+      .get("ref")
+      ?.trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9_-]/g, "")
+      .slice(0, 32);
+
+    if (ref) {
+      localStorage.setItem(
+        "puzzle-referral-code",
+        ref
+      );
+    }
+
+    const gift = params
+      .get("gift")
+      ?.trim()
+      .replace(/[^a-zA-Z0-9_-]/g, "")
+      .slice(0, 96);
+
+    if (gift) {
+      localStorage.setItem(
+        "puzzle-gift-token",
+        gift
+      );
+    }
+  }, []);
+
   const handleRegister =
     async () => {
 
@@ -70,6 +103,14 @@ export default function RegisterPage() {
             data: {
               username:
                 cleanUsername,
+              referral_code:
+                localStorage.getItem(
+                  "puzzle-referral-code"
+                ) || "",
+              gift_token:
+                localStorage.getItem(
+                  "puzzle-gift-token"
+                ) || "",
             },
           },
         });

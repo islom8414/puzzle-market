@@ -1,7 +1,9 @@
 import Link from "next/link";
 
 import {
+  PRIVACY_UPDATED,
   TERMS_SECTIONS,
+  TERMS_SUMMARY,
   TERMS_TITLE,
   TERMS_VERSION,
 } from "@/lib/legal";
@@ -19,9 +21,24 @@ export default function TermsPage() {
         </h1>
 
         <p className="mt-5 text-sm text-zinc-500">
-          Version {TERMS_VERSION}. This page is a practical marketplace
-          disclosure, not personal legal, tax, financial, or investment advice.
+          Version {TERMS_VERSION}. Privacy Policy updated {PRIVACY_UPDATED}.
+          This page is a practical marketplace disclosure, not personal legal,
+          tax, financial, or investment advice.
         </p>
+
+        <div className="mt-8 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-5">
+          <h2 className="text-xl font-black text-cyan-300">
+            Key Points
+          </h2>
+          <ul className="mt-4 space-y-3 leading-relaxed text-zinc-300">
+            {TERMS_SUMMARY.map((item) => (
+              <li key={item} className="flex gap-3">
+                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-400" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div className="mt-8 space-y-5">
           {TERMS_SECTIONS.map((section) => (
@@ -56,8 +73,14 @@ export default function TermsPage() {
         >
           Back Home
         </Link>
+
+        <Link
+          href="/privacy"
+          className="ml-3 mt-8 inline-flex rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-4 font-black text-white transition hover:border-cyan-400"
+        >
+          Privacy Policy
+        </Link>
       </section>
     </main>
   );
 }
-

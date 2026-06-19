@@ -60,6 +60,7 @@ export default function SupportPage() {
 
   useEffect(() => {
     loadSupport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function getToken() {

@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  PRIVACY_UPDATED,
   TERMS_ACCEPTANCE_TEXT,
   TERMS_SECTIONS,
+  TERMS_SUMMARY,
   TERMS_TITLE,
   TERMS_VERSION,
 } from "@/lib/legal";
@@ -157,9 +159,9 @@ export default function AcceptTermsPage() {
     <main className="min-h-screen bg-black px-4 py-8 text-white md:px-6">
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.14),transparent_35%)] pointer-events-none" />
 
-      <section className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-4xl items-center justify-center">
-        <div className="w-full rounded-[28px] border border-white/10 bg-zinc-950/95 p-5 shadow-[0_0_80px_rgba(34,211,238,0.12)] backdrop-blur-xl md:rounded-[36px] md:p-8">
-          <div className="flex items-center gap-4 border-b border-white/10 pb-5">
+      <section className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl items-center justify-center">
+        <div className="w-full rounded-3xl border border-white/10 bg-zinc-950/95 p-4 shadow-[0_0_80px_rgba(34,211,238,0.12)] backdrop-blur-xl md:p-8">
+          <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-3xl font-black text-black shadow-[0_0_40px_rgba(34,211,238,0.35)]">
               P
             </div>
@@ -170,8 +172,10 @@ export default function AcceptTermsPage() {
               <h1 className="mt-2 text-3xl font-black leading-tight md:text-5xl">
                 {TERMS_TITLE}
               </h1>
-              <p className="mt-2 text-sm text-zinc-500">
-                Version {TERMS_VERSION}
+              <p className="mt-2 text-sm leading-6 text-zinc-500">
+                Version {TERMS_VERSION}. Privacy Policy updated{" "}
+                {PRIVACY_UPDATED}. This is a marketplace disclosure, not
+                personal legal, tax, financial, or investment advice.
               </p>
             </div>
           </div>
@@ -179,18 +183,32 @@ export default function AcceptTermsPage() {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="mt-5 max-h-[48vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 p-5 pr-4 md:max-h-[52vh]"
+            className="mt-5 max-h-[54vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 p-4 pr-3 md:max-h-[56vh] md:p-6"
           >
-            <p className="leading-relaxed text-zinc-300">
-              Please read this agreement carefully. You must scroll to the end
-              before accepting.
+            <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 md:p-5">
+              <h2 className="text-xl font-black text-cyan-300">
+                Important summary
+              </h2>
+              <ul className="mt-3 space-y-3 text-sm leading-6 text-zinc-200 md:text-base">
+                {TERMS_SUMMARY.map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-400" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <p className="mt-5 leading-relaxed text-zinc-300">
+              Please read this agreement carefully. The continue button becomes
+              available only after you scroll to the end of the document.
             </p>
 
             <div className="mt-5 space-y-5">
               {TERMS_SECTIONS.map((section, index) => (
                 <article
                   key={section.title}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 md:p-5"
                 >
                   <p className="text-xs font-black text-cyan-400">
                     {String(index + 1).padStart(2, "0")}
@@ -212,11 +230,28 @@ export default function AcceptTermsPage() {
               <p className="mt-3 leading-relaxed text-zinc-200">
                 {TERMS_ACCEPTANCE_TEXT}
               </p>
+              <p className="mt-4 text-sm leading-6 text-zinc-400">
+                Full public pages:{" "}
+                <a
+                  href="/terms"
+                  className="font-black text-cyan-300 underline-offset-4 hover:underline"
+                >
+                  Terms
+                </a>{" "}
+                and{" "}
+                <a
+                  href="/privacy"
+                  className="font-black text-cyan-300 underline-offset-4 hover:underline"
+                >
+                  Privacy Policy
+                </a>
+                .
+              </p>
             </div>
           </div>
 
           <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm leading-6 text-zinc-500">
               {canAccept
                 ? "You reached the end. You can accept now."
                 : "Scroll to the bottom to enable agreement."}
@@ -244,4 +279,3 @@ export default function AcceptTermsPage() {
     </main>
   );
 }
-

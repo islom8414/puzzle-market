@@ -91,12 +91,13 @@ export async function POST(
       );
     }
 
-    const {
+    let rewardApplied = false;
+    let {
       data: tradeId,
       error: purchaseError,
     } =
       await admin.rpc(
-        "purchase_piece_listing",
+        "purchase_piece_listing_with_referral_reward",
         {
           p_buyer_id:
             userData.user.id,
@@ -104,6 +105,37 @@ export async function POST(
             body.listingId,
         }
       );
+
+    if (!purchaseError) {
+      rewardApplied = true;
+    }
+
+    if (purchaseError) {
+      const canFallbackToWallet =
+        purchaseError.message.includes(
+          "no referral reward"
+        ) ||
+        purchaseError.message.includes(
+          "function public.purchase_piece_listing_with_referral_reward"
+        );
+
+      if (canFallbackToWallet) {
+        const fallback =
+          await admin.rpc(
+            "purchase_piece_listing",
+            {
+              p_buyer_id:
+                userData.user.id,
+              p_listing_id:
+                body.listingId,
+            }
+          );
+
+        tradeId = fallback.data;
+        purchaseError =
+          fallback.error;
+      }
+    }
 
     if (purchaseError) {
       return NextResponse.json(
@@ -141,6 +173,7 @@ export async function POST(
       piece?.puzzle_catalog;
 
     let emailSent = false;
+    let emailReason: string | null = null;
 
     if (
       catalog &&
@@ -178,11 +211,26 @@ export async function POST(
         });
 
       emailSent = emailResult.sent;
+
+      if (
+        !emailResult.sent &&
+        "reason" in emailResult
+      ) {
+        emailReason =
+          emailResult.reason ||
+          "Email provider error";
+        console.error(
+          "Ownership email failed:",
+          emailReason
+        );
+      }
     }
 
     return NextResponse.json({
       tradeId,
       emailSent,
+      emailReason,
+      rewardApplied,
       puzzleSlug: catalog?.slug || null,
     });
   } catch (error) {

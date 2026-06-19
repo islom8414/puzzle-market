@@ -610,9 +610,13 @@ export default function MarketplacePage() {
         }
 
         alert(
-          data.emailSent
-            ? "Purchase completed. Your puzzle progress is saved. Returning to assembly."
-            : "Purchase completed. Returning to your puzzle board with saved progress."
+          data.rewardApplied
+            ? data.emailSent
+              ? "Referral reward applied. Purchase completed and your ownership certificate was emailed."
+              : `Referral reward applied. Purchase completed, but certificate email was not sent automatically.${data.emailReason ? ` Reason: ${data.emailReason}` : ""}`
+            : data.emailSent
+              ? "Purchase completed. Your puzzle progress is saved. Returning to assembly."
+              : `Purchase completed. Certificate email was not sent automatically.${data.emailReason ? ` Reason: ${data.emailReason}` : ""}`
         );
 
         if (puzzleFilter) {

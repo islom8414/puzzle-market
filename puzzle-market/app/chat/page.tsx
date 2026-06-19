@@ -59,11 +59,13 @@ export default function ChatPage() {
                   row.created_at ||
                   new Date().toISOString(),
                 username:
-                  row.username ||
-                  row.user_email ||
-                  row.sender ||
-                  row.author ||
-                  "Collector",
+                  cleanPublicName(
+                    row.username ||
+                      row.user_email ||
+                      row.sender ||
+                      row.author ||
+                      "Collector"
+                  ),
                 message:
                   row.message ||
                   row.text ||

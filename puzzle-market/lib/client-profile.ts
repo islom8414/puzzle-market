@@ -7,6 +7,8 @@ export type UserProfile = {
   profileComplete: boolean;
   subscriptionTier?: string | null;
   subscriptionStatus?: string | null;
+  referralCode?: string | null;
+  referredByUserId?: string | null;
   hasActiveSubscription?: boolean;
 };
 
@@ -71,6 +73,10 @@ export async function saveMyUsername(
       },
       body: JSON.stringify({
         username,
+        referralCode:
+          localStorage.getItem(
+            "puzzle-referral-code"
+          ) || "",
       }),
     });
 

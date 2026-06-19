@@ -22,6 +22,26 @@ type OwnedPiece = {
   listingPrice: number | null;
 };
 
+type ReferralReward = {
+  id: string;
+  threshold_count: number;
+  reward_cents: number;
+  remaining_cents: number;
+  status: string;
+};
+
+type ReferralSummary = {
+  referralCode: string;
+  referralUrl: string;
+  registeredCount: number;
+  qualifiedCount: number;
+  nextMilestone: {
+    threshold: number;
+    rewardCents: number;
+  } | null;
+  rewards: ReferralReward[];
+};
+
 export default function ProfilePage() {
 
   const [ownedPieces, setOwnedPieces] =
@@ -42,9 +62,12 @@ export default function ProfilePage() {
     useState("free");
   const [subscriptionStatus, setSubscriptionStatus] =
     useState("inactive");
-  const [loading, setLoading] =
-    useState(true);
-
+  const [referrals, setReferrals] =
+    useState<ReferralSummary | null>(
+      null
+    );
+  const [giftingPieceId, setGiftingPieceId] =
+    useState<string | null>(null);
   useEffect(() => {
 
     // eslint-disable-next-line react-hooks/immutability
@@ -179,9 +202,24 @@ export default function ProfilePage() {
         setOwnedPieces(
           exactData.pieces || []
         );
-      }
 
-      setLoading(false);
+        const referralResponse =
+          await apiFetch(
+            "/api/referrals",
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${sessionData.session.access_token}`,
+              },
+            }
+          );
+
+        if (referralResponse.ok) {
+          setReferrals(
+            await referralResponse.json()
+          );
+        }
+      }
 
     };
 
@@ -261,6 +299,130 @@ export default function ProfilePage() {
         : subscriptionTier === "starter"
           ? "STARTER PLAN"
           : "FREE PROFILE";
+
+  const activeReferralCredit =
+    referrals?.rewards.reduce(
+      (sum, reward) =>
+        reward.status === "active"
+          ? sum +
+            reward.remaining_cents
+          : sum,
+      0
+    ) || 0;
+
+  const copyReferralLink =
+    async () => {
+      if (!referrals?.referralUrl) {
+        return;
+      }
+
+      await navigator.clipboard.writeText(
+        referrals.referralUrl
+      );
+      alert("Referral link copied");
+    };
+
+  const giftPiece =
+    async (item: OwnedPiece) => {
+      const email = window.prompt(
+        "Recipient email for this gift"
+      );
+
+      if (!email) {
+        return;
+      }
+
+      const cleanEmail =
+        email.trim().toLowerCase();
+
+      if (!cleanEmail.includes("@")) {
+        alert(
+          "Enter a valid recipient email"
+        );
+        return;
+      }
+
+      const confirmed =
+        window.confirm(
+          "This will reserve the piece as a gift and cancel its active resale listing if it has one. Continue?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      setGiftingPieceId(
+        item.pieceId
+      );
+
+      try {
+        const {
+          data: sessionData,
+        } =
+          await supabase.auth.getSession();
+
+        if (!sessionData.session) {
+          window.location.assign(
+            "/login"
+          );
+          return;
+        }
+
+        const response =
+          await apiFetch(
+            "/api/gifts",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+                Authorization:
+                  `Bearer ${sessionData.session.access_token}`,
+              },
+              body: JSON.stringify({
+                pieceId:
+                  item.pieceId,
+                email:
+                  cleanEmail,
+              }),
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          alert(
+            data.error ||
+            "Gift creation failed"
+          );
+          return;
+        }
+
+        if (data.emailSent) {
+          alert(
+            "Gift created and invitation email sent."
+          );
+        } else {
+          await navigator.clipboard.writeText(
+            data.claimUrl
+          );
+          alert(
+            `Gift created, but email was not sent automatically. Gift link copied:\n${data.claimUrl}`
+          );
+        }
+
+        await loadProfile();
+      } catch (error) {
+        alert(
+          error instanceof Error
+            ? error.message
+            : "Gift creation failed"
+        );
+      } finally {
+        setGiftingPieceId(null);
+      }
+    };
 
   return (
 
@@ -362,6 +524,93 @@ export default function ProfilePage() {
 
           </div>
 
+        </section>
+
+        <section className="mt-8 rounded-[24px] border border-cyan-400/20 bg-cyan-400/[0.05] p-5 md:rounded-[30px] md:p-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.22em]">
+                Referrals
+              </p>
+
+              <h2 className="mt-3 text-3xl md:text-4xl font-black">
+                Invite collectors. Earn free puzzle credit.
+              </h2>
+
+              <p className="mt-3 max-w-3xl text-zinc-400">
+                Rewards unlock only when invited users register and buy an active Starter, Premium, or Creator plan.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div className="rounded-2xl bg-black/50 p-4">
+                <p className="text-xs text-zinc-500">
+                  Registered
+                </p>
+                <p className="mt-2 text-2xl font-black">
+                  {referrals?.registeredCount || 0}
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-black/50 p-4">
+                <p className="text-xs text-zinc-500">
+                  Paid
+                </p>
+                <p className="mt-2 text-2xl font-black text-cyan-300">
+                  {referrals?.qualifiedCount || 0}
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-black/50 p-4">
+                <p className="text-xs text-zinc-500">
+                  Credit
+                </p>
+                <p className="mt-2 text-2xl font-black text-green-300">
+                  ${(activeReferralCredit / 100).toFixed(0)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_auto]">
+            <input
+              readOnly
+              value={
+                referrals?.referralUrl ||
+                "Referral link loads after profile sync"
+              }
+              className="min-w-0 rounded-2xl border border-white/10 bg-black/60 px-5 py-4 text-sm outline-none"
+            />
+
+            <button
+              type="button"
+              onClick={copyReferralLink}
+              disabled={!referrals?.referralUrl}
+              className="rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-50"
+            >
+              Copy Link
+            </button>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm leading-6 text-zinc-300">
+            {referrals?.nextMilestone ? (
+              <>
+                Next reward:{" "}
+                <span className="font-black text-white">
+                  {referrals.nextMilestone.threshold} paid referrals
+                </span>{" "}
+                unlocks{" "}
+                <span className="font-black text-cyan-300">
+                  ${(
+                    referrals.nextMilestone.rewardCents / 100
+                  ).toFixed(0)}
+                </span>{" "}
+                free puzzle credit.
+              </>
+            ) : (
+              "All launch referral milestones are unlocked. More tiers can be added later."
+            )}
+          </div>
         </section>
 
         {/* STATS */}
@@ -508,6 +757,23 @@ export default function ProfilePage() {
                         ? `Listed $${item.listingPrice}`
                         : "Resell"}
                     </Link>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        giftPiece(item)
+                      }
+                      disabled={
+                        giftingPieceId ===
+                        item.pieceId
+                      }
+                      className="rounded-xl border border-cyan-400/40 px-4 py-2 text-sm font-black text-cyan-300 transition hover:bg-cyan-400 hover:text-black disabled:opacity-50"
+                    >
+                      {giftingPieceId ===
+                      item.pieceId
+                        ? "Sending..."
+                        : "Gift"}
+                    </button>
                   </div>
                 </div>
               </div>

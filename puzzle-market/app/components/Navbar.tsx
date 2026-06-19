@@ -44,7 +44,7 @@ export default function Navbar() {
   const [username, setUsername] =
     useState("");
 
-  const [notifications, setNotifications] =
+  const [notifications] =
     useState<string[]>(
       initialNotifications
     );
@@ -476,6 +476,14 @@ export default function Navbar() {
 
               <a href="/auctions" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Auctions
+              </a>
+
+              <a href="/terms" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                Terms
+              </a>
+
+              <a href="/privacy" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                Privacy
               </a>
 
               <div className="col-span-2 border-t border-white/10 pt-4 mt-2 flex flex-col gap-3">

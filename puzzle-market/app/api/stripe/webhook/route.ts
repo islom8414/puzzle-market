@@ -6,6 +6,8 @@ import {
   assertStripeEventMode,
   getStripeConfig,
 } from "@/lib/stripe-config";
+import { awardReferralRewards } from "@/lib/referrals";
+import { claimPendingGiftsForUser } from "@/lib/piece-gifts";
 
 type SubscriptionTier = "starter" | "premium" | "creator";
 
@@ -74,6 +76,28 @@ async function syncSubscription(
 
   if (error) {
     throw error;
+  }
+
+  if (isActive) {
+    await awardReferralRewards(
+      admin,
+      userId
+    );
+
+    const {
+      data: userData,
+    } = await admin.auth.admin.getUserById(
+      userId
+    );
+
+    await claimPendingGiftsForUser(
+      admin,
+      {
+        id: userId,
+        email:
+          userData.user?.email,
+      }
+    );
   }
 }
 

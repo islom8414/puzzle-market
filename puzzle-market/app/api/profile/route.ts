@@ -6,11 +6,44 @@ import {
 } from "@/lib/display-name";
 import { hasActivePaidSubscription } from "@/lib/subscription-access";
 import {
+  makeReferralCode,
+  normalizeReferralCode,
+} from "@/lib/referrals";
+import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
+
+async function resolveReferrerId(
+  admin: ReturnType<typeof createSupabaseAdmin>,
+  code: unknown,
+  currentUserId: string
+) {
+  const referralCode =
+    normalizeReferralCode(code);
+
+  if (!referralCode) {
+    return null;
+  }
+
+  const { data: referrer } =
+    await admin
+      .from("market_profiles")
+      .select("id")
+      .eq("referral_code", referralCode)
+      .maybeSingle();
+
+  if (
+    !referrer?.id ||
+    referrer.id === currentUserId
+  ) {
+    return null;
+  }
+
+  return referrer.id as string;
+}
 
 async function getAuthedUser(
   request: Request
@@ -81,7 +114,7 @@ export async function GET(
       await admin
         .from("market_profiles")
         .select(
-          "username, email, subscription_tier, subscription_status"
+          "username, email, subscription_tier, subscription_status, referral_code, referred_by_user_id"
         )
         .eq("id", user.id)
         .maybeSingle();
@@ -91,6 +124,13 @@ export async function GET(
       metadataUsername &&
       user.email
     ) {
+      const referrerId =
+        await resolveReferrerId(
+          admin,
+          user.user_metadata
+            ?.referral_code,
+          user.id
+        );
       const { data: created } =
         await admin
           .from("market_profiles")
@@ -100,11 +140,22 @@ export async function GET(
               email: user.email,
               username:
                 metadataUsername,
+              referral_code:
+                makeReferralCode(
+                  metadataUsername,
+                  user.id
+                ),
+              referred_by_user_id:
+                referrerId,
+              referral_applied_at:
+                referrerId
+                  ? new Date().toISOString()
+                  : null,
             },
             { onConflict: "id" }
           )
           .select(
-            "username, email, subscription_tier, subscription_status"
+            "username, email, subscription_tier, subscription_status, referral_code, referred_by_user_id"
           )
           .maybeSingle();
 
@@ -131,6 +182,12 @@ export async function GET(
         null,
       subscriptionStatus:
         profile?.subscription_status ||
+        null,
+      referralCode:
+        profile?.referral_code ||
+        null,
+      referredByUserId:
+        profile?.referred_by_user_id ||
         null,
       hasActiveSubscription:
         hasActivePaidSubscription(
@@ -202,6 +259,27 @@ export async function PUT(
       );
     }
 
+    const { data: existingProfile } =
+      await admin
+        .from("market_profiles")
+        .select(
+          "referral_code,referred_by_user_id"
+        )
+        .eq("id", user.id)
+        .maybeSingle();
+
+    const referrerId =
+      existingProfile
+        ?.referred_by_user_id
+        ? null
+        : await resolveReferrerId(
+            admin,
+            body.referralCode ||
+              user.user_metadata
+                ?.referral_code,
+            user.id
+          );
+
     const { error } =
       await admin
         .from("market_profiles")
@@ -210,6 +288,21 @@ export async function PUT(
             id: user.id,
             email,
             username,
+            referral_code:
+              existingProfile
+                ?.referral_code ||
+              makeReferralCode(
+                username,
+                user.id
+              ),
+            ...(referrerId
+              ? {
+                  referred_by_user_id:
+                    referrerId,
+                  referral_applied_at:
+                    new Date().toISOString(),
+                }
+              : {}),
           },
           {
             onConflict: "id",
