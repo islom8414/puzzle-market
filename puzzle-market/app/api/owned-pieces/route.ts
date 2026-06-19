@@ -4,6 +4,7 @@ import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
+import { getCanonicalSiteUrl } from "@/lib/site-url";
 
 export async function GET(
   request: Request
@@ -84,6 +85,25 @@ export async function GET(
               "active"
             )
         : {
+          data: [],
+        };
+
+    const {
+      data: gifts,
+    } =
+      pieceIds.length > 0
+        ? await admin
+            .from("piece_gifts")
+            .select(
+              "piece_id,recipient_email,gift_token,status"
+            )
+            .in("piece_id", pieceIds)
+            .eq(
+              "sender_user_id",
+              userData.user.id
+            )
+            .eq("status", "pending")
+        : {
             data: [],
           };
 
@@ -96,6 +116,17 @@ export async function GET(
           ]
         )
       );
+    const pendingGiftByPiece =
+      new Map(
+        (gifts || []).map(
+          (gift) => [
+            gift.piece_id,
+            gift,
+          ]
+        )
+      );
+    const origin =
+      getCanonicalSiteUrl();
 
     const pieces =
       (ownership || []).map(
@@ -107,6 +138,10 @@ export async function GET(
             piece?.puzzle_catalog;
           const listing =
             activeByPiece.get(
+              row.piece_id
+            );
+          const gift =
+            pendingGiftByPiece.get(
               row.piece_id
             );
 
@@ -130,6 +165,13 @@ export async function GET(
               listing
                 ? listing.price_cents /
                   100
+                : null,
+            giftPendingEmail:
+              gift?.recipient_email ||
+              null,
+            giftClaimUrl:
+              gift?.gift_token
+                ? `${origin}/gift/${encodeURIComponent(gift.gift_token)}`
                 : null,
           };
         }

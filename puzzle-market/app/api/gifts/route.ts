@@ -115,6 +115,112 @@ export async function POST(
       );
     }
 
+    const {
+      data: existingGift,
+    } = await admin
+      .from("piece_gifts")
+      .select(
+        "id,gift_token,recipient_email"
+      )
+      .eq("piece_id", pieceId)
+      .eq(
+        "sender_user_id",
+        userData.user.id
+      )
+      .eq("status", "pending")
+      .maybeSingle();
+
+    const rawPiece =
+      ownership.puzzle_pieces as
+        | unknown[]
+        | unknown;
+    const piece = (
+      Array.isArray(rawPiece)
+        ? rawPiece[0]
+        : rawPiece
+    ) as
+      | {
+          piece_index: number;
+          puzzle_catalog:
+            | {
+                title: string;
+                slug: string;
+              }
+            | {
+                title: string;
+                slug: string;
+              }[];
+        }
+      | undefined;
+    const catalog =
+      Array.isArray(
+        piece?.puzzle_catalog
+      )
+        ? piece?.puzzle_catalog[0]
+        : piece?.puzzle_catalog;
+    const origin =
+      getCanonicalSiteUrl();
+
+    if (existingGift) {
+      const claimUrl =
+        `${origin}/gift/${encodeURIComponent(existingGift.gift_token)}`;
+
+      if (
+        existingGift.recipient_email !==
+        recipientEmail
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              `This piece already has a pending gift for ${existingGift.recipient_email}`,
+            claimUrl,
+          },
+          { status: 409 }
+        );
+      }
+
+      const emailResult =
+        catalog
+          ? await sendGiftInviteEmail({
+              to: recipientEmail,
+              senderName:
+                profile?.username ||
+                "A Puzzle Market collector",
+              puzzleTitle:
+                catalog.title,
+              pieceIndex:
+                piece?.piece_index || 0,
+              claimUrl,
+            })
+          : {
+              sent: false,
+              reason:
+                "Puzzle catalog not found",
+            };
+
+      if (
+        !emailResult.sent &&
+        "reason" in emailResult
+      ) {
+        console.error(
+          "Gift email failed:",
+          emailResult.reason ||
+            "Email provider error"
+        );
+      }
+
+      return NextResponse.json({
+        giftId: existingGift.id,
+        claimUrl,
+        emailSent: emailResult.sent,
+        emailReason:
+          "reason" in emailResult
+            ? emailResult.reason
+            : null,
+        alreadyPending: true,
+      });
+    }
+
     await admin
       .from("piece_listings")
       .update({
@@ -152,37 +258,6 @@ export async function POST(
       );
     }
 
-    const rawPiece =
-      ownership.puzzle_pieces as
-        | unknown[]
-        | unknown;
-    const piece = (
-      Array.isArray(rawPiece)
-        ? rawPiece[0]
-        : rawPiece
-    ) as
-      | {
-          piece_index: number;
-          puzzle_catalog:
-            | {
-                title: string;
-                slug: string;
-              }
-            | {
-                title: string;
-                slug: string;
-              }[];
-        }
-      | undefined;
-    const catalog =
-      Array.isArray(
-        piece?.puzzle_catalog
-      )
-        ? piece?.puzzle_catalog[0]
-        : piece?.puzzle_catalog;
-
-    const origin =
-      getCanonicalSiteUrl();
     const claimUrl =
       `${origin}/gift/${encodeURIComponent(gift.gift_token)}`;
 
@@ -202,8 +277,19 @@ export async function POST(
         : {
             sent: false,
             reason:
-              "Puzzle catalog not found",
+            "Puzzle catalog not found",
           };
+
+    if (
+      !emailResult.sent &&
+      "reason" in emailResult
+    ) {
+      console.error(
+        "Gift email failed:",
+        emailResult.reason ||
+          "Email provider error"
+      );
+    }
 
     return NextResponse.json({
       giftId: gift.id,

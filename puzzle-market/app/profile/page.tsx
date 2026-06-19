@@ -20,6 +20,8 @@ type OwnedPiece = {
   title: string;
   image: string;
   listingPrice: number | null;
+  giftPendingEmail: string | null;
+  giftClaimUrl: string | null;
 };
 
 type ReferralReward = {
@@ -322,6 +324,24 @@ export default function ProfilePage() {
       alert("Referral link copied");
     };
 
+  const copyText =
+    async (
+      value: string,
+      successMessage: string
+    ) => {
+      try {
+        await navigator.clipboard.writeText(
+          value
+        );
+        alert(successMessage);
+      } catch {
+        window.prompt(
+          "Copy this link",
+          value
+        );
+      }
+    };
+
   const giftPiece =
     async (item: OwnedPiece) => {
       const email = window.prompt(
@@ -399,16 +419,18 @@ export default function ProfilePage() {
           return;
         }
 
-        if (data.emailSent) {
-          alert(
-            "Gift created and invitation email sent."
+        if (data.claimUrl) {
+          await copyText(
+            data.claimUrl,
+            data.emailSent
+              ? "Gift invitation sent. Gift link also copied."
+              : `Gift reserved, but email was not sent automatically.${data.emailReason ? ` Reason: ${data.emailReason}` : ""} Gift link copied.`
           );
         } else {
-          await navigator.clipboard.writeText(
-            data.claimUrl
-          );
           alert(
-            `Gift created, but email was not sent automatically. Gift link copied:\n${data.claimUrl}`
+            data.emailSent
+              ? "Gift invitation sent."
+              : `Gift reserved, but email was not sent automatically.${data.emailReason ? ` Reason: ${data.emailReason}` : ""}`
           );
         }
 
@@ -738,7 +760,9 @@ export default function ProfilePage() {
                   </h3>
 
                   <p className="text-zinc-500 mt-3">
-                    This missing piece belongs to you. You can keep it or list it for resale.
+                    {item.giftPendingEmail
+                      ? `Gift pending for ${item.giftPendingEmail}. The piece stays in your account until the recipient claims it.`
+                      : "This missing piece belongs to you. You can keep it or list it for resale."}
                   </p>
 
                   <div className="mt-5 flex flex-wrap gap-2">
@@ -749,14 +773,30 @@ export default function ProfilePage() {
                       Open Puzzle
                     </Link>
 
-                    <Link
-                      href="/sell"
-                      className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-black text-black"
-                    >
-                      {item.listingPrice
-                        ? `Listed $${item.listingPrice}`
-                        : "Resell"}
-                    </Link>
+                    {item.giftPendingEmail ? (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          item.giftClaimUrl &&
+                          copyText(
+                            item.giftClaimUrl,
+                            "Gift link copied"
+                          )
+                        }
+                        className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-black text-black"
+                      >
+                        Copy Gift Link
+                      </button>
+                    ) : (
+                      <Link
+                        href="/sell"
+                        className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-black text-black"
+                      >
+                        {item.listingPrice
+                          ? `Listed $${item.listingPrice}`
+                          : "Resell"}
+                      </Link>
+                    )}
 
                     <button
                       type="button"
@@ -764,6 +804,9 @@ export default function ProfilePage() {
                         giftPiece(item)
                       }
                       disabled={
+                        Boolean(
+                          item.giftPendingEmail
+                        ) ||
                         giftingPieceId ===
                         item.pieceId
                       }
@@ -772,6 +815,8 @@ export default function ProfilePage() {
                       {giftingPieceId ===
                       item.pieceId
                         ? "Sending..."
+                        : item.giftPendingEmail
+                          ? "Gift Pending"
                         : "Gift"}
                     </button>
                   </div>
