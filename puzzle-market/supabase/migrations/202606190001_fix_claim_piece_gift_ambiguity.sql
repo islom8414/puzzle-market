@@ -1,40 +1,3 @@
-create table if not exists public.piece_gifts (
-  id uuid primary key default gen_random_uuid(),
-  piece_id uuid not null references public.puzzle_pieces(id) on delete cascade,
-  sender_user_id uuid not null references public.market_profiles(id) on delete cascade,
-  recipient_email text not null,
-  recipient_user_id uuid references public.market_profiles(id) on delete set null,
-  gift_token text not null unique,
-  status text not null default 'pending' check (status in ('pending', 'claimed', 'cancelled', 'expired')),
-  message text,
-  claimed_trade_id uuid references public.piece_trades(id),
-  created_at timestamptz not null default now(),
-  claimed_at timestamptz,
-  expires_at timestamptz not null default now() + interval '30 days'
-);
-
-create unique index if not exists piece_gifts_one_pending_piece_idx
-on public.piece_gifts(piece_id)
-where status = 'pending';
-
-create index if not exists piece_gifts_recipient_email_idx
-on public.piece_gifts(lower(recipient_email))
-where status = 'pending';
-
-alter table public.piece_gifts enable row level security;
-
-drop policy if exists "gift sender readable" on public.piece_gifts;
-create policy "gift sender readable"
-on public.piece_gifts
-for select
-using (sender_user_id = auth.uid());
-
-drop policy if exists "gift recipient readable" on public.piece_gifts;
-create policy "gift recipient readable"
-on public.piece_gifts
-for select
-using (recipient_user_id = auth.uid());
-
 create or replace function public.claim_piece_gift(
   p_recipient_id uuid,
   p_recipient_email text,
@@ -62,10 +25,10 @@ declare
 begin
   select *
   into recipient_profile
-  from public.market_profiles
-  where id = p_recipient_id
-    and subscription_tier in ('starter', 'premium', 'creator')
-    and subscription_status in ('active', 'trialing');
+  from public.market_profiles mp
+  where mp.id = p_recipient_id
+    and mp.subscription_tier in ('starter', 'premium', 'creator')
+    and mp.subscription_status in ('active', 'trialing');
 
   if not found then
     raise exception 'active subscription required';
@@ -73,9 +36,9 @@ begin
 
   select *
   into gift_record
-  from public.piece_gifts
-  where gift_token = p_gift_token
-    and status = 'pending'
+  from public.piece_gifts pg
+  where pg.gift_token = p_gift_token
+    and pg.status = 'pending'
   for update;
 
   if not found then
@@ -83,9 +46,9 @@ begin
   end if;
 
   if gift_record.expires_at <= now() then
-    update public.piece_gifts
+    update public.piece_gifts pg
     set status = 'expired'
-    where id = gift_record.id;
+    where pg.id = gift_record.id;
 
     raise exception 'gift expired';
   end if;
@@ -146,12 +109,12 @@ begin
   )
   returning id into gift_trade_id;
 
-  update public.piece_gifts
+  update public.piece_gifts pg
   set status = 'claimed',
       recipient_user_id = p_recipient_id,
       claimed_trade_id = gift_trade_id,
       claimed_at = now()
-  where id = gift_record.id;
+  where pg.id = gift_record.id;
 
   select
     pc.title,
