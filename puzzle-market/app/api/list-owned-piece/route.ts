@@ -81,6 +81,8 @@ export async function POST(
           id: userData.user.id,
           email:
             userData.user.email,
+          app_metadata:
+            userData.user.app_metadata,
         }
       );
 
