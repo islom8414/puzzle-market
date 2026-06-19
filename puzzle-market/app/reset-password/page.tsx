@@ -9,6 +9,7 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [sessionReady, setSessionReady] = useState(false);
+  const [checkingLink, setCheckingLink] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
@@ -17,6 +18,46 @@ export default function ResetPasswordPage() {
     let active = true;
 
     async function checkSession() {
+      const url =
+        new URL(window.location.href);
+      const code =
+        url.searchParams.get("code");
+      const errorDescription =
+        url.searchParams.get(
+          "error_description"
+        );
+
+      if (errorDescription) {
+        setCheckingLink(false);
+        setMessage(errorDescription);
+        return;
+      }
+
+      if (code) {
+        const { error } =
+          await supabase.auth.exchangeCodeForSession(
+            code
+          );
+
+        if (!active) {
+          return;
+        }
+
+        if (error) {
+          setCheckingLink(false);
+          setMessage(
+            "This recovery link is invalid or expired. Request a new one."
+          );
+          return;
+        }
+
+        window.history.replaceState(
+          {},
+          document.title,
+          "/reset-password"
+        );
+      }
+
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -26,6 +67,7 @@ export default function ResetPasswordPage() {
       }
 
       setSessionReady(Boolean(session));
+      setCheckingLink(false);
 
       if (!session) {
         setMessage(
@@ -69,12 +111,11 @@ export default function ResetPasswordPage() {
 
     setSuccess(true);
     setMessage(
-      "Password updated successfully. Redirecting to login..."
+      "Password updated successfully. Opening your profile..."
     );
-    await supabase.auth.signOut();
 
     window.setTimeout(() => {
-      window.location.assign("/login?password=updated");
+      window.location.assign("/profile?password=updated");
     }, 1200);
   }
 
@@ -97,7 +138,11 @@ export default function ResetPasswordPage() {
           Choose a new password for your Puzzle Market account.
         </p>
 
-        {sessionReady && !success ? (
+        {checkingLink ? (
+          <p className="mt-8 text-center text-sm text-zinc-400">
+            Checking your secure recovery link...
+          </p>
+        ) : sessionReady && !success ? (
           <div className="mt-8 grid gap-4">
             <PasswordInput
               value={password}

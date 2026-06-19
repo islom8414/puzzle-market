@@ -6,7 +6,7 @@ import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 
 const recoveryRedirect = getAuthRedirectUrl(
-  "/auth/callback?next=/reset-password"
+  "/reset-password"
 );
 
 export default function ForgotPasswordPage() {

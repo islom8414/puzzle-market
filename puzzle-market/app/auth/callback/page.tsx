@@ -33,6 +33,11 @@ export default function AuthCallbackPage() {
         : null;
     const finalNext =
       safeNext || "/marketplace";
+    const isPasswordRecovery =
+      finalNext === "/reset-password" ||
+      finalNext.startsWith(
+        "/reset-password?"
+      );
 
     function needsTerms(
       session: NonNullable<
@@ -81,6 +86,11 @@ export default function AuthCallbackPage() {
         await supabase.auth.getSession();
 
       if (session) {
+        if (isPasswordRecovery) {
+          router.replace(finalNext);
+          return;
+        }
+
         if (needsTerms(session)) {
           router.replace(
             termsAcceptPath(finalNext)
@@ -116,6 +126,11 @@ export default function AuthCallbackPage() {
             await supabase.auth.getSession();
 
           if (exchangedSession) {
+            if (isPasswordRecovery) {
+              router.replace(finalNext);
+              return;
+            }
+
             if (needsTerms(exchangedSession)) {
               router.replace(
                 termsAcceptPath(finalNext)
@@ -149,6 +164,11 @@ export default function AuthCallbackPage() {
               active
             ) {
               if (needsTerms(nextSession)) {
+                if (isPasswordRecovery) {
+                  router.replace(finalNext);
+                  return;
+                }
+
                 router.replace(
                   termsAcceptPath(finalNext)
                 );
@@ -184,7 +204,7 @@ export default function AuthCallbackPage() {
 
   return (
     <main className="min-h-screen bg-black text-white flex items-center justify-center">
-      Signing you in...
+      Securing your account...
     </main>
   );
 }
