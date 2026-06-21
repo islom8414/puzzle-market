@@ -188,3 +188,78 @@ export function pickMissingPieceIndex(
     candidates.at(-1)?.pieceIndex || 0
   );
 }
+
+export function normalizeMarketPieceCount(
+  value: unknown
+) {
+  const count = Number(value);
+
+  if (!Number.isFinite(count)) {
+    return 1;
+  }
+
+  return Math.max(
+    1,
+    Math.min(3, Math.floor(count))
+  );
+}
+
+export function pickMissingPieceIndexes(
+  slug: string,
+  totalPieces: number,
+  count: number,
+  rows = Math.round(
+    Math.sqrt(totalPieces)
+  ),
+  columns = Math.max(
+    1,
+    Math.round(
+      totalPieces /
+        Math.max(1, rows)
+    )
+  )
+) {
+  const wantedCount =
+    Math.min(
+      totalPieces,
+      normalizeMarketPieceCount(count)
+    );
+  const indexes: number[] = [];
+  let salt = 0;
+
+  while (
+    indexes.length < wantedCount &&
+    salt < totalPieces * 4
+  ) {
+    const pieceIndex =
+      pickMissingPieceIndex(
+        `${slug}:${salt}`,
+        totalPieces,
+        rows,
+        columns
+      );
+
+    if (
+      !indexes.includes(pieceIndex)
+    ) {
+      indexes.push(pieceIndex);
+    }
+
+    salt += 1;
+  }
+
+  for (
+    let pieceIndex = 0;
+    indexes.length < wantedCount &&
+    pieceIndex < totalPieces;
+    pieceIndex += 1
+  ) {
+    if (
+      !indexes.includes(pieceIndex)
+    ) {
+      indexes.push(pieceIndex);
+    }
+  }
+
+  return indexes;
+}

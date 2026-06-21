@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { puzzles } from "@/data/puzzles";
 import { isAdminUser } from "@/lib/market-access";
+import { normalizeMarketPieceCount } from "@/lib/rarity";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -11,7 +12,8 @@ const rows = 5;
 const columns = 5;
 
 function getMissingIndexes(
-  puzzleId: number
+  puzzleId: number,
+  count: number
 ) {
   const first =
     (puzzleId * 7) %
@@ -21,9 +23,15 @@ function getMissingIndexes(
     (first + 11) %
     (rows * columns);
 
-  return puzzleId % 2 === 0
-    ? [first, second]
-    : [first];
+  const third =
+    (first + 17) %
+    (rows * columns);
+
+  return [
+    first,
+    second,
+    third,
+  ].slice(0, count);
 }
 
 export async function POST(
@@ -55,6 +63,11 @@ export async function POST(
 
     const resetPuzzle =
       body.resetPuzzle === true;
+
+    const marketPieceCount =
+      normalizeMarketPieceCount(
+        body.marketPieceCount
+      );
 
     const puzzle =
       puzzles.find(
@@ -131,7 +144,8 @@ export async function POST(
 
     const missingIndexes =
       getMissingIndexes(
-        Number(puzzle.id)
+        Number(puzzle.id),
+        marketPieceCount
       );
 
     const {
@@ -147,7 +161,10 @@ export async function POST(
             image_url: puzzle.image,
             rows,
             columns,
-            missing_piece_count: 1,
+            missing_piece_count:
+              missingIndexes.length,
+            missing_piece_index:
+              missingIndexes[0],
           },
           {
             onConflict: "slug",

@@ -28,7 +28,7 @@ export async function GET(
       await admin
         .from("puzzle_catalog")
         .select(
-          "slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count,brand_name,brand_country_code,category"
+          "id,slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count,brand_name,brand_country_code,category"
         )
         .eq("slug", slug)
         .maybeSingle();
@@ -37,7 +37,7 @@ export async function GET(
       const legacyResult = await admin
         .from("puzzle_catalog")
         .select(
-          "slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count"
+          "id,slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count"
         )
         .eq("slug", slug)
         .maybeSingle();
@@ -86,8 +86,26 @@ export async function GET(
       );
     }
 
+    const {
+      data: marketPieces,
+    } = await admin
+      .from("puzzle_pieces")
+      .select("piece_index")
+      .eq("puzzle_id", data.id)
+      .eq("is_market_piece", true)
+      .order("piece_index", {
+        ascending: true,
+      });
+
     return NextResponse.json({
-      puzzle: data,
+      puzzle: {
+        ...data,
+        market_piece_indexes:
+          marketPieces?.map(
+            (piece) =>
+              piece.piece_index
+          ) || [],
+      },
     });
   } catch (error) {
     const fallback =

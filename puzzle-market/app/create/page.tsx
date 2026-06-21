@@ -29,6 +29,8 @@ export default function CreatePage() {
   const [rarity, setRarity] =
     useState<PuzzleRarity>("Rare");
   const [price, setPrice] = useState("5");
+  const [marketPieceCount, setMarketPieceCount] =
+    useState(1);
   const [image, setImage] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [uploadedSlug, setUploadedSlug] =
@@ -130,6 +132,10 @@ export default function CreatePage() {
       formData.append("image", image);
       formData.append("rarity", rarity);
       formData.append("price", price.trim());
+      formData.append(
+        "marketPieceCount",
+        String(marketPieceCount)
+      );
 
       const response = await apiFetch(
         "/api/create-puzzle",
@@ -194,7 +200,9 @@ export default function CreatePage() {
       setImage(null);
       setMessage(
         slug
-          ? "Puzzle published. Only ONE missing piece is listed for sale — collectors complete the board and buy that single fragment."
+          ? `Puzzle published. ${marketPieceCount} missing market ${
+              marketPieceCount === 1 ? "piece is" : "pieces are"
+            } listed for sale from this artwork.`
           : "Puzzle uploaded successfully."
       );
     } catch (error) {
@@ -263,9 +271,9 @@ export default function CreatePage() {
         </h1>
 
         <p className="mt-5 text-zinc-400">
-          Upload a 4×4 board. Players assemble the puzzle — one piece stays
-          missing. You sell only that single fragment; buyers can resell it
-          later at their own price.
+          Upload a 4×4 board. Players assemble the puzzle — one to three
+          pieces can stay missing. Each missing fragment can be sold and
+          resold later at the owner's price.
         </p>
 
         <div className="mt-8 grid gap-4">
@@ -418,6 +426,36 @@ export default function CreatePage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
+              Pieces for sale
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {[1, 2, 3].map((count) => (
+                <button
+                  key={count}
+                  type="button"
+                  onClick={() =>
+                    setMarketPieceCount(count)
+                  }
+                  className={`rounded-2xl border px-3 py-4 text-sm font-black transition ${
+                    marketPieceCount === count
+                      ? "border-cyan-400 bg-cyan-400/10 text-cyan-300"
+                      : "border-white/10 bg-black text-zinc-400"
+                  }`}
+                >
+                  {count}
+                  <span className="mt-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                    {count === 1 ? "piece" : "pieces"}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-sm text-zinc-500">
+              Maximum 3 market pieces per artwork.
+            </p>
           </div>
 
           <div>

@@ -9,8 +9,10 @@ import {
   normalizeBrandName,
 } from "@/lib/brand-metadata";
 import {
+  normalizeMarketPieceCount,
   normalizeRarity,
   pickMissingPieceIndex,
+  pickMissingPieceIndexes,
   validateRarityPrice,
 } from "@/lib/rarity";
 import {
@@ -155,6 +157,12 @@ export async function POST(
     const priceValue = Number(
       formData.get("price")
     );
+    const marketPieceCount =
+      normalizeMarketPieceCount(
+        formData.get(
+          "marketPieceCount"
+        )
+      );
 
     if (!title) {
       return NextResponse.json(
@@ -219,12 +227,25 @@ export async function POST(
     }
 
     const slug = makeSlug(title);
+    const missingPieceIndexes =
+      pickMissingPieceIndexes(
+        slug,
+        TOTAL_PIECES,
+        marketPieceCount,
+        ROWS,
+        COLUMNS
+      );
     const missingPieceIndex =
+      missingPieceIndexes[0] ??
       pickMissingPieceIndex(
         slug,
         TOTAL_PIECES,
         ROWS,
         COLUMNS
+      );
+    const missingPieceSet =
+      new Set(
+        missingPieceIndexes
       );
 
     const fileExt =
@@ -276,7 +297,8 @@ export async function POST(
         image_url: imageUrl,
         rows: ROWS,
         columns: COLUMNS,
-        missing_piece_count: 1,
+        missing_piece_count:
+          missingPieceIndexes.length,
         missing_piece_index:
           missingPieceIndex,
         rarity,
@@ -315,7 +337,7 @@ export async function POST(
         Math.random() * 1000000
       ),
       is_market_piece:
-        index === missingPieceIndex,
+        missingPieceSet.has(index),
     }));
 
     const {
@@ -353,12 +375,12 @@ export async function POST(
       );
     }
 
-    const marketPiece =
-      insertedPieces.find(
+    const marketPieces =
+      insertedPieces.filter(
         (piece) => piece.is_market_piece
       );
 
-    if (marketPiece) {
+    for (const marketPiece of marketPieces) {
       await admin
         .from("piece_ownership")
         .upsert(
@@ -398,11 +420,11 @@ export async function POST(
             {
               p_listing_id:
                 newListing.id,
-              p_reason: "created",
-            }
-          );
-        }
+            p_reason: "created",
+          }
+        );
       }
+    }
     }
 
     return NextResponse.json({
@@ -410,6 +432,7 @@ export async function POST(
       puzzle: {
         ...puzzle,
         missingPieceIndex,
+        missingPieceIndexes,
       },
       imageUrl,
       priceCents,

@@ -1,0 +1,145 @@
+[
+  {
+    "title": "Garden Pack",
+    "slug": "garden-pack",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      9,
+      10
+    ]
+  },
+  {
+    "title": "Shibuya Guardian",
+    "slug": "shibuya-guardian",
+    "price": 18,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      13,
+      9,
+      0
+    ]
+  },
+  {
+    "title": "Poodle Path",
+    "slug": "poodle-path",
+    "price": 7,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      13
+    ]
+  },
+  {
+    "title": "Frenchie Garden",
+    "slug": "frenchie-garden",
+    "price": 6,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  },
+  {
+    "title": "Pug Patrol",
+    "slug": "pug-patrol",
+    "price": 5,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      8
+    ]
+  },
+  {
+    "title": "Chihuahua Walk",
+    "slug": "chihuahua-walk",
+    "price": 4,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      10
+    ]
+  },
+  {
+    "title": "Shepherd Bloom",
+    "slug": "shepherd-bloom",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      8,
+      4
+    ]
+  },
+  {
+    "title": "Rottweiler Gate",
+    "slug": "rottweiler-gate",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6,
+      9
+    ]
+  },
+  {
+    "title": "Doberman Path",
+    "slug": "doberman-path",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      13
+    ]
+  },
+  {
+    "title": "Golden Lake",
+    "slug": "golden-lake",
+    "price": 16,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      9,
+      10,
+      1
+    ]
+  },
+  {
+    "title": "Beagle Shore",
+    "slug": "beagle-shore",
+    "price": 7,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      13
+    ]
+  },
+  {
+    "title": "Pointer Lake",
+    "slug": "pointer-lake",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      8
+    ]
+  },
+  {
+    "title": "Afghan Lake",
+    "slug": "afghan-lake",
+    "price": 14,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      6,
+      10
+    ]
+  },
+  {
+    "title": "Mountain Pups",
+    "slug": "mountain-pups",
+    "price": 6,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      11
+    ]
+  },
+  {
+    "title": "Village Puppies",
+    "slug": "village-puppies",
+    "price": 5,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  }
+]

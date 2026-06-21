@@ -143,6 +143,8 @@ type CatalogPuzzle = {
   rows: number;
   columns: number;
   missing_piece_index: number | null;
+  missing_piece_count?: number | null;
+  market_piece_indexes?: number[];
   rarity: string | null;
   brand_name?: string | null;
   brand_country_code?: string | null;
@@ -375,6 +377,21 @@ export default function PuzzlePage() {
   const missingIndexes =
     useMemo(() => {
       if (catalogPuzzle) {
+        const marketIndexes =
+          catalogPuzzle.market_piece_indexes?.filter(
+            (index) =>
+              Number.isInteger(index) &&
+              index >= 0 &&
+              index < totalPieces
+          ) || [];
+
+        if (marketIndexes.length > 0) {
+          return marketIndexes.slice(
+            0,
+            3
+          );
+        }
+
         const missingIndex =
           catalogPuzzle.missing_piece_index ??
           0;
@@ -955,7 +972,7 @@ export default function PuzzlePage() {
               </h1>
 
               <p className="mt-4 text-zinc-400">
-                {puzzle.rarity} collection / {rows} x {columns} board / one hidden market piece
+                {puzzle.rarity} collection / {rows} x {columns} board / {missingIndexes.length} hidden market {missingIndexes.length === 1 ? "piece" : "pieces"}
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2">
