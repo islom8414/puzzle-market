@@ -141,5 +141,138 @@
     "missingPieceIndexes": [
       6
     ]
+  },
+  {
+    "title": "Alpine Husky",
+    "slug": "alpine-husky",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      5,
+      9
+    ]
+  },
+  {
+    "title": "Husky Pups",
+    "slug": "husky-pups",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      9,
+      2
+    ]
+  },
+  {
+    "title": "Shiba Meadow",
+    "slug": "shiba-meadow",
+    "price": 7,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  },
+  {
+    "title": "Tatami Puppies",
+    "slug": "tatami-puppies",
+    "price": 6,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      9
+    ]
+  },
+  {
+    "title": "Garden Saint",
+    "slug": "garden-saint",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      5,
+      9
+    ]
+  },
+  {
+    "title": "Cozy Fold",
+    "slug": "cozy-fold",
+    "price": 5,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  },
+  {
+    "title": "Siamese Chair",
+    "slug": "siamese-chair",
+    "price": 7,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      2
+    ]
+  },
+  {
+    "title": "Bengal Nap",
+    "slug": "bengal-nap",
+    "price": 7,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      9
+    ]
+  },
+  {
+    "title": "Sphynx Rest",
+    "slug": "sphynx-rest",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      9
+    ]
+  },
+  {
+    "title": "Kitten Nest",
+    "slug": "kitten-nest",
+    "price": 6,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  },
+  {
+    "title": "Kyoto Kittens",
+    "slug": "kyoto-kittens",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      14,
+      2
+    ]
+  },
+  {
+    "title": "Library Cats",
+    "slug": "library-cats",
+    "price": 12,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      9,
+      1,
+      13
+    ]
+  },
+  {
+    "title": "Garden Bengal",
+    "slug": "garden-bengal",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      10
+    ]
+  },
+  {
+    "title": "Snow Cabin Cat",
+    "slug": "snow-cabin-cat",
+    "price": 11,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      4,
+      9
+    ]
   }
 ]

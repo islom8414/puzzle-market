@@ -133,6 +133,118 @@ const items = [
     source:
       "C:/Users/hp/AppData/Local/Temp/codex-clipboard-f96f346e-3b5f-4d0e-98c2-9f3c0bf661e6.png",
   },
+  {
+    title: "Alpine Husky",
+    slug: "alpine-husky",
+    price: 9,
+    marketPieces: 2,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-4dc219c8-b832-41c5-ab62-ac8b34868606.png",
+  },
+  {
+    title: "Husky Pups",
+    slug: "husky-pups",
+    price: 8,
+    marketPieces: 2,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-1c9c574b-4b32-4484-a17c-f7abc8d9ac7d.png",
+  },
+  {
+    title: "Shiba Meadow",
+    slug: "shiba-meadow",
+    price: 7,
+    marketPieces: 1,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-98cfc65e-72d7-48af-afad-2e159ec271a8.png",
+  },
+  {
+    title: "Tatami Puppies",
+    slug: "tatami-puppies",
+    price: 6,
+    marketPieces: 1,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-d1917026-fa5d-4907-9f27-83039c984a90.png",
+  },
+  {
+    title: "Garden Saint",
+    slug: "garden-saint",
+    price: 10,
+    marketPieces: 2,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-eb12db35-ed1c-498f-bcf6-8c037a38ffa6.png",
+  },
+  {
+    title: "Cozy Fold",
+    slug: "cozy-fold",
+    price: 5,
+    marketPieces: 1,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-8342d135-94ea-433d-9d96-0822492b7408.png",
+  },
+  {
+    title: "Siamese Chair",
+    slug: "siamese-chair",
+    price: 7,
+    marketPieces: 1,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-5fadda01-db56-4ab5-83ef-058db8a7975f.png",
+  },
+  {
+    title: "Bengal Nap",
+    slug: "bengal-nap",
+    price: 7,
+    marketPieces: 1,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-e92bb53e-6b18-4d1b-9a86-3525885a7aa4.png",
+  },
+  {
+    title: "Sphynx Rest",
+    slug: "sphynx-rest",
+    price: 8,
+    marketPieces: 1,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-dceb0b81-eba5-4943-8da0-79c76441e67f.png",
+  },
+  {
+    title: "Kitten Nest",
+    slug: "kitten-nest",
+    price: 6,
+    marketPieces: 1,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-d7c23e68-582f-4a80-9308-ee411ed752e0.png",
+  },
+  {
+    title: "Kyoto Kittens",
+    slug: "kyoto-kittens",
+    price: 9,
+    marketPieces: 2,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-8d276185-b043-4c8e-af41-6635e2b46ddb.png",
+  },
+  {
+    title: "Library Cats",
+    slug: "library-cats",
+    price: 12,
+    marketPieces: 3,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-61c191b1-41e4-4f90-afb1-5cf43d89b6a1.png",
+  },
+  {
+    title: "Garden Bengal",
+    slug: "garden-bengal",
+    price: 8,
+    marketPieces: 1,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-716dfac3-5bdf-40ee-8bc4-f49766549a54.png",
+  },
+  {
+    title: "Snow Cabin Cat",
+    slug: "snow-cabin-cat",
+    price: 11,
+    marketPieces: 2,
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-f931ce86-fb41-4e2d-9242-51c0a5995c6e.png",
+  },
 ];
 
 function pickMissingPieceIndex(slug) {
