@@ -244,9 +244,9 @@ export default function RegisterPage() {
         <div className="flex justify-center">
 
           <img
-            src="/puzzle-market-mark.svg"
+            src="/puzzle-market-cube-logo.png"
             alt="Puzzle Market"
-            className="h-24 w-24 rounded-3xl shadow-[0_0_40px_rgba(34,211,238,0.35)]"
+            className="h-28 w-28 rounded-3xl object-cover shadow-[0_0_40px_rgba(34,211,238,0.35)]"
           />
 
         </div>

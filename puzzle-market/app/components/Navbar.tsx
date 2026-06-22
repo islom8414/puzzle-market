@@ -210,9 +210,9 @@ export default function Navbar() {
               >
 
                 <img
-                  src="/puzzle-market-mark.svg"
+                  src="/puzzle-market-cube-logo.png"
                   alt="Puzzle Market"
-                  className="h-11 w-11 shrink-0 rounded-2xl"
+                  className="h-12 w-12 shrink-0 rounded-2xl object-cover"
                 />
 
                 <div className="hidden sm:block">

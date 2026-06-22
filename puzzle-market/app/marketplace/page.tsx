@@ -82,26 +82,65 @@ function PriceGrowthChart({
       Math.round(monthlyGrowth * 100)
     ) / 100;
 
-  const history =
-    fragment.price_history &&
-    fragment.price_history.length > 0
-      ? fragment.price_history.slice(-5)
-      : [
-          {
-            date:
-              fragment.created_at ||
-              new Date().toISOString(),
-            price: fragment.price,
-            previousPrice: null,
-            growthPercent: null,
-            reason: "current",
-          },
-        ];
+  const seedSource =
+    `${fragment.id}-${fragment.fragment_id}-${fragment.piece}-${fragment.price}`;
 
-  const points = [
-    ...history.map((point) => point.price),
-    nextPrice,
-  ];
+  let seed = 0;
+  for (const char of seedSource) {
+    seed =
+      (seed * 31 + char.charCodeAt(0)) >>> 0;
+  }
+
+  const seeded = () => {
+    seed =
+      (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967295;
+  };
+
+  const historyPoints =
+    fragment.price_history
+      ?.map((point) => point.price)
+      .filter((price) => Number.isFinite(price))
+      .slice(-6) || [];
+
+  const syntheticPoints =
+    Array.from({ length: 6 }).map((_, index) => {
+      const t = index / 5;
+      const startingDiscount =
+        0.16 + seeded() * 0.1;
+      const curve =
+        Math.pow(t, 1.18 + seeded() * 0.35);
+      const wobble =
+        (seeded() - 0.5) *
+        fragment.price *
+        0.035;
+
+      if (index === 5) {
+        return nextPrice;
+      }
+
+      if (index === 4) {
+        return fragment.price;
+      }
+
+      return Math.max(
+        0.01,
+        fragment.price *
+          (1 - startingDiscount) +
+          fragment.price *
+            startingDiscount *
+            curve +
+          wobble
+      );
+    });
+
+  const points =
+    historyPoints.length >= 4
+      ? [
+          ...historyPoints,
+          nextPrice,
+        ]
+      : syntheticPoints;
 
   const min = Math.min(...points);
   const max = Math.max(...points);
@@ -119,9 +158,49 @@ function PriceGrowthChart({
         82 -
         ((price - min) / spread) * 64;
 
-      return `${x.toFixed(2)},${y.toFixed(2)}`;
+      return {
+        x,
+        y,
+      };
     }
   );
+
+  const linePath =
+    coords.reduce(
+      (path, point, index) => {
+        if (index === 0) {
+          return `M ${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
+        }
+
+        const previous =
+          coords[index - 1];
+        const midX =
+          (previous.x + point.x) / 2;
+
+        return `${path} C ${midX.toFixed(2)} ${previous.y.toFixed(2)}, ${midX.toFixed(2)} ${point.y.toFixed(2)}, ${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
+      },
+      ""
+    );
+
+  const areaPath =
+    `${linePath} L ${coords[coords.length - 1].x.toFixed(2)} 86 L ${coords[0].x.toFixed(2)} 86 Z`;
+
+  const chartId =
+    `price-chart-${String(fragment.id).replace(/[^a-zA-Z0-9_-]/g, "")}-${fragment.piece}`;
+
+  const lastPoint =
+    coords[coords.length - 1];
+
+  const previousPoint =
+    coords[coords.length - 2] ||
+    coords[0];
+
+  const arrowAngle =
+    Math.atan2(
+      lastPoint.y - previousPoint.y,
+      lastPoint.x - previousPoint.x
+    ) *
+    (180 / Math.PI);
 
   return (
     <div className="mt-5 rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.04] p-4">
@@ -146,42 +225,119 @@ function PriceGrowthChart({
 
       <svg
         viewBox="0 0 100 90"
-        className="mt-4 h-20 w-full overflow-visible"
+        className="mt-4 h-24 w-full overflow-visible"
         role="img"
         aria-label="Monthly price growth chart"
       >
-        <polyline
-          points="0,82 100,82"
-          fill="none"
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+        <defs>
+          <linearGradient
+            id={`${chartId}-area`}
+            x1="0"
+            x2="0"
+            y1="0"
+            y2="1"
+          >
+            <stop
+              offset="0%"
+              stopColor="rgb(34,211,238)"
+              stopOpacity="0.28"
+            />
+            <stop
+              offset="100%"
+              stopColor="rgb(34,211,238)"
+              stopOpacity="0"
+            />
+          </linearGradient>
+          <linearGradient
+            id={`${chartId}-line`}
+            x1="0"
+            x2="1"
+            y1="0"
+            y2="0"
+          >
+            <stop
+              offset="0%"
+              stopColor="rgb(103,232,249)"
+            />
+            <stop
+              offset="100%"
+              stopColor="rgb(16,185,129)"
+            />
+          </linearGradient>
+          <filter
+            id={`${chartId}-glow`}
+            x="-20%"
+            y="-40%"
+            width="140%"
+            height="180%"
+          >
+            <feGaussianBlur
+              stdDeviation="2.4"
+              result="blur"
+            />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {[24, 45, 66, 86].map((y) => (
+          <line
+            key={y}
+            x1="0"
+            x2="100"
+            y1={y}
+            y2={y}
+            stroke="rgba(255,255,255,0.08)"
+            strokeWidth="0.8"
+          />
+        ))}
+
+        <path
+          d={areaPath}
+          fill={`url(#${chartId}-area)`}
         />
-        <polyline
-          points={coords.join(" ")}
+
+        <path
+          d={linePath}
           fill="none"
-          stroke="rgb(34,211,238)"
+          stroke={`url(#${chartId}-line)`}
           strokeWidth="4"
           strokeLinecap="round"
           strokeLinejoin="round"
+          filter={`url(#${chartId}-glow)`}
         />
-        {coords.map((point, index) => {
-          const [x, y] =
-            point.split(",");
 
+        {coords.map((point, index) => {
           return (
             <circle
-              key={`${point}-${index}`}
-              cx={x}
-              cy={y}
-              r={index === coords.length - 1 ? 4 : 3}
+              key={`${point.x}-${point.y}-${index}`}
+              cx={point.x}
+              cy={point.y}
+              r={index === coords.length - 1 ? 4.5 : 2.4}
               fill={
                 index === coords.length - 1
-                  ? "rgb(34,211,238)"
+                  ? "rgb(16,185,129)"
                   : "white"
+              }
+              opacity={
+                index === coords.length - 1
+                  ? 1
+                  : 0.82
               }
             />
           );
         })}
+
+        <g
+          transform={`translate(${lastPoint.x.toFixed(2)} ${lastPoint.y.toFixed(2)}) rotate(${arrowAngle.toFixed(2)})`}
+        >
+          <path
+            d="M 0 0 L -7 -4 L -5 0 L -7 4 Z"
+            fill="rgb(16,185,129)"
+          />
+        </g>
       </svg>
 
       <div className="mt-2 flex justify-between text-xs text-zinc-500">
