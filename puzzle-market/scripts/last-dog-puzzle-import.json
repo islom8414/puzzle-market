@@ -130,7 +130,9 @@
     "price": 6,
     "rarity": "Rare",
     "missingPieceIndexes": [
-      11
+      11,
+      2,
+      10
     ]
   },
   {
@@ -273,6 +275,167 @@
     "missingPieceIndexes": [
       4,
       9
+    ]
+  },
+  {
+    "title": "Prairie Run",
+    "slug": "prairie-run",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      14,
+      5
+    ]
+  },
+  {
+    "title": "Crane Flight",
+    "slug": "crane-flight",
+    "price": 7,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      8
+    ]
+  },
+  {
+    "title": "Stork Meadow",
+    "slug": "stork-meadow",
+    "price": 6,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  },
+  {
+    "title": "Eagle Valley",
+    "slug": "eagle-valley",
+    "price": 13,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      6,
+      8
+    ]
+  },
+  {
+    "title": "Eagle Landing",
+    "slug": "eagle-landing",
+    "price": 12,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      10,
+      5
+    ]
+  },
+  {
+    "title": "Forest Owl",
+    "slug": "forest-owl",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      8
+    ]
+  },
+  {
+    "title": "Snow Owl",
+    "slug": "snow-owl",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      5,
+      6
+    ]
+  },
+  {
+    "title": "Coastal Sedan",
+    "slug": "coastal-sedan",
+    "price": 14,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      13,
+      10
+    ]
+  },
+  {
+    "title": "Sunset Drive",
+    "slug": "sunset-drive",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  },
+  {
+    "title": "Black Cruiser",
+    "slug": "black-cruiser",
+    "price": 11,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      13,
+      10
+    ]
+  },
+  {
+    "title": "Harbor Luxury",
+    "slug": "harbor-luxury",
+    "price": 12,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      5,
+      7
+    ]
+  },
+  {
+    "title": "Coast Rider",
+    "slug": "coast-rider",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      9
+    ]
+  },
+  {
+    "title": "Road Wagon",
+    "slug": "road-wagon",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  },
+  {
+    "title": "Green Trail",
+    "slug": "green-trail",
+    "price": 7,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      5
+    ]
+  },
+  {
+    "title": "Classic Ride",
+    "slug": "classic-ride",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      14
+    ]
+  },
+  {
+    "title": "Station Rush",
+    "slug": "station-rush",
+    "price": 6,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      14
+    ]
+  },
+  {
+    "title": "Terminal Classic",
+    "slug": "terminal-classic",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      8,
+      6
     ]
   }
 ]

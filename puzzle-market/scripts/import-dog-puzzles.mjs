@@ -121,7 +121,7 @@ const items = [
     title: "Mountain Pups",
     slug: "mountain-pups",
     price: 6,
-    marketPieces: 1,
+    marketPieces: 3,
     source:
       "C:/Users/hp/AppData/Local/Temp/codex-clipboard-a722dc60-8b23-4070-82ab-546d8a2a6fc1.png",
   },
@@ -244,6 +244,159 @@ const items = [
     marketPieces: 2,
     source:
       "C:/Users/hp/AppData/Local/Temp/codex-clipboard-f931ce86-fb41-4e2d-9242-51c0a5995c6e.png",
+  },
+  {
+    title: "Prairie Run",
+    slug: "prairie-run",
+    price: 8,
+    marketPieces: 2,
+    category: "Animals",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-bb5b77ed-1e55-4df2-ade1-ae39a9afc47e.png",
+  },
+  {
+    title: "Crane Flight",
+    slug: "crane-flight",
+    price: 7,
+    marketPieces: 1,
+    category: "Animals",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-0c5845b5-cc0f-4713-a247-b5ce4f469077.png",
+  },
+  {
+    title: "Stork Meadow",
+    slug: "stork-meadow",
+    price: 6,
+    marketPieces: 1,
+    category: "Animals",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-131d30ac-c947-4b48-a4f3-bec0c9cea316.png",
+  },
+  {
+    title: "Eagle Valley",
+    slug: "eagle-valley",
+    price: 13,
+    marketPieces: 2,
+    category: "Animals",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-cba3ee6e-f7f1-4d37-97dd-cfa619782d9a.png",
+  },
+  {
+    title: "Eagle Landing",
+    slug: "eagle-landing",
+    price: 12,
+    marketPieces: 2,
+    category: "Animals",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-b59f20f6-70a0-4e5e-839b-07fae81253ce.png",
+  },
+  {
+    title: "Forest Owl",
+    slug: "forest-owl",
+    price: 9,
+    marketPieces: 1,
+    category: "Animals",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-8492a18e-6992-4db5-8bea-e969b7826190.png",
+  },
+  {
+    title: "Snow Owl",
+    slug: "snow-owl",
+    price: 10,
+    marketPieces: 2,
+    category: "Animals",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-b60c3435-bac4-48a4-9e6d-8123e58181dd.png",
+  },
+  {
+    title: "Coastal Sedan",
+    slug: "coastal-sedan",
+    price: 14,
+    marketPieces: 2,
+    category: "Cars",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-5b5f297c-66a0-4137-9c50-f2a4596ad910.png",
+  },
+  {
+    title: "Sunset Drive",
+    slug: "sunset-drive",
+    price: 9,
+    marketPieces: 1,
+    category: "Cars",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-ba7cbfa5-761a-4362-881d-ee2431950b23.png",
+  },
+  {
+    title: "Black Cruiser",
+    slug: "black-cruiser",
+    price: 11,
+    marketPieces: 2,
+    category: "Cars",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-d1f78a5f-1a28-4584-ae57-4a778fbef473.png",
+  },
+  {
+    title: "Harbor Luxury",
+    slug: "harbor-luxury",
+    price: 12,
+    marketPieces: 2,
+    category: "Cars",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-14638f7c-b85c-4207-a999-f62308b59346.png",
+  },
+  {
+    title: "Coast Rider",
+    slug: "coast-rider",
+    price: 8,
+    marketPieces: 1,
+    category: "Cars",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-0350cb3a-bc56-403e-bbfe-26097786a20d.png",
+  },
+  {
+    title: "Road Wagon",
+    slug: "road-wagon",
+    price: 9,
+    marketPieces: 1,
+    category: "Cars",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-3a1dc4e3-5a55-47be-bc9a-21fab28f0c33.png",
+  },
+  {
+    title: "Green Trail",
+    slug: "green-trail",
+    price: 7,
+    marketPieces: 1,
+    category: "Cars",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-21e75a59-eee9-446f-b38c-1960814afca1.png",
+  },
+  {
+    title: "Classic Ride",
+    slug: "classic-ride",
+    price: 8,
+    marketPieces: 1,
+    category: "Cars",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-9df00c74-8f6b-4cf8-a8b9-3ee0b1ee0c41.png",
+  },
+  {
+    title: "Station Rush",
+    slug: "station-rush",
+    price: 6,
+    marketPieces: 1,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-4b26f7bc-218b-4458-9315-5e0f9bf876b2.png",
+  },
+  {
+    title: "Terminal Classic",
+    slug: "terminal-classic",
+    price: 10,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-bbf3406f-c704-444f-a47c-e9b28b58bfcd.png",
   },
 ];
 
@@ -411,7 +564,7 @@ async function ensurePuzzle(admin, owner, item, imageUrl) {
         rarity,
         brand_name: null,
         brand_country_code: null,
-        category: CATEGORY,
+        category: item.category || CATEGORY,
       },
       { onConflict: "slug" }
     )
