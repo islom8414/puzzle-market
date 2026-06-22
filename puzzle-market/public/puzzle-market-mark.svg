@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="104" fill="#030506"/>
+  <path d="M118 130C118 104.595 138.595 84 164 84H348C373.405 84 394 104.595 394 130V222H337.8C322.556 222 313.356 205.284 321.487 192.389C326.222 184.88 329 176.013 329 166.5C329 139.714 307.286 118 280.5 118C253.714 118 232 139.714 232 166.5C232 176.013 234.778 184.88 239.513 192.389C247.644 205.284 238.444 222 223.2 222H118V130Z" fill="url(#pieceA)"/>
+  <path d="M118 242H223.2C238.444 242 247.644 258.716 239.513 271.611C234.778 279.12 232 287.987 232 297.5C232 324.286 253.714 346 280.5 346C307.286 346 329 324.286 329 297.5C329 287.987 326.222 279.12 321.487 271.611C313.356 258.716 322.556 242 337.8 242H394V382C394 407.405 373.405 428 348 428H164C138.595 428 118 407.405 118 382V242Z" fill="url(#pieceB)"/>
+  <path d="M256 84V157.5C270.5 139.5 299.5 139.5 314 157.5C326.5 173 325.2 196.1 311.4 210.2C303.8 218 309.4 231 320.3 231H394" stroke="#061014" stroke-width="20" stroke-linecap="round"/>
+  <path d="M118 231H209.7C220.6 231 226.2 218 218.6 210.2C204.8 196.1 203.5 173 216 157.5C230.5 139.5 259.5 139.5 274 157.5" stroke="#061014" stroke-width="20" stroke-linecap="round"/>
+  <path d="M256 428V354.5C270.5 372.5 299.5 372.5 314 354.5C326.5 339 325.2 315.9 311.4 301.8C303.8 294 309.4 281 320.3 281H394" stroke="#061014" stroke-width="20" stroke-linecap="round"/>
+  <path d="M118 281H209.7C220.6 281 226.2 294 218.6 301.8C204.8 315.9 203.5 339 216 354.5C230.5 372.5 259.5 372.5 274 354.5" stroke="#061014" stroke-width="20" stroke-linecap="round"/>
+  <path d="M363 126L400 89L423 112L386 149C379 139 373 133 363 126Z" fill="#F7FCFF"/>
+  <path d="M149 386L112 423L89 400L126 363C133 373 139 379 149 386Z" fill="#F7FCFF"/>
+  <circle cx="372" cy="372" r="58" fill="#031013" stroke="#08C7E8" stroke-width="12"/>
+  <path d="M345 373L364 392L402 350" stroke="#08C7E8" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="pieceA" x1="118" y1="84" x2="397" y2="231" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08C7E8"/>
+      <stop offset="0.56" stop-color="#39E6FF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="pieceB" x1="118" y1="242" x2="406" y2="428" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071316"/>
+      <stop offset="0.42" stop-color="#08C7E8"/>
+      <stop offset="1" stop-color="#151019"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -662,7 +662,9 @@ export default function MarketplacePage() {
 
           <p className="translate-safe-copy text-zinc-400 text-base md:text-lg mt-6 md:mt-8 leading-relaxed">
             {puzzleFilter
-              ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
+              ? pieceFilter
+                ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
+                : "All active missing pieces for this puzzle are shown here. Buy each missing fragment to complete the image."
               : "Real-time collectible economy powered by live cloud ownership, instant marketplace sync and premium fragment trading."}
           </p>
 

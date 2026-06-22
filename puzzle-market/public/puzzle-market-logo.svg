@@ -1,0 +1,36 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="360" rx="48" fill="#030506"/>
+  <g filter="url(#markGlow)">
+    <rect x="72" y="52" width="256" height="256" rx="58" fill="#05090B"/>
+    <path d="M126 123C126 102.013 143.013 85 164 85H236C256.987 85 274 102.013 274 123V171H242.6C233.48 171 228.042 160.928 232.873 153.191C235.69 148.68 237.333 143.346 237.333 137.6C237.333 121.253 224.08 108 207.733 108C191.386 108 178.133 121.253 178.133 137.6C178.133 143.346 179.777 148.68 182.593 153.191C187.425 160.928 181.986 171 172.867 171H126V123Z" fill="url(#pieceTop)"/>
+    <path d="M126 187H172.867C181.986 187 187.425 197.072 182.593 204.809C179.777 209.32 178.133 214.654 178.133 220.4C178.133 236.747 191.386 250 207.733 250C224.08 250 237.333 236.747 237.333 220.4C237.333 214.654 235.69 209.32 232.873 204.809C228.042 197.072 233.48 187 242.6 187H274V237C274 257.987 256.987 275 236 275H164C143.013 275 126 257.987 126 237V187Z" fill="url(#pieceBottom)"/>
+    <path d="M249 100L281 68L300 87L268 119C263 111 257 105 249 100Z" fill="#F7FCFF"/>
+    <path d="M151 260L119 292L100 273L132 241C137 249 143 255 151 260Z" fill="#F7FCFF"/>
+    <circle cx="272" cy="248" r="38" fill="#031013" stroke="#08C7E8" stroke-width="8"/>
+    <path d="M254 249L267 262L292 234" stroke="#08C7E8" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="392" y="124" fill="#08C7E8" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800" letter-spacing="9">DIGITAL COLLECTIBLES MARKET</text>
+  <text x="390" y="205" fill="#F8FBFF" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="78" font-weight="900">Puzzle Market</text>
+  <text x="394" y="258" fill="#A7B0BE" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="600">Own the missing piece</text>
+  <path d="M394 292H948" stroke="#08C7E8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M986 92H1152C1184.03 92 1210 117.967 1210 150V210C1210 242.033 1184.03 268 1152 268H986C953.967 268 928 242.033 928 210V150C928 117.967 953.967 92 986 92Z" fill="#070B0E" stroke="#12343A" stroke-width="2"/>
+  <path d="M1003 146H1041C1065.85 146 1086 166.147 1086 191V213H1046V191C1046 188.239 1043.76 186 1041 186H1003V146Z" fill="#08C7E8"/>
+  <path d="M1120 146H1158V186H1120C1117.24 186 1115 188.239 1115 191V213H1075V191C1075 166.147 1095.15 146 1120 146Z" fill="#8B5CF6"/>
+  <circle cx="1062" cy="236" r="13" fill="#08C7E8"/>
+  <circle cx="1101" cy="236" r="13" fill="#8B5CF6"/>
+  <defs>
+    <filter id="markGlow" x="34" y="14" width="332" height="332" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="22" flood-color="#08C7E8" flood-opacity="0.28"/>
+    </filter>
+    <linearGradient id="pieceTop" x1="126" y1="85" x2="276" y2="171" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08C7E8"/>
+      <stop offset="0.58" stop-color="#39E6FF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="pieceBottom" x1="126" y1="187" x2="281" y2="275" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071316"/>
+      <stop offset="0.45" stop-color="#08C7E8"/>
+      <stop offset="1" stop-color="#151019"/>
+    </linearGradient>
+  </defs>
+</svg>

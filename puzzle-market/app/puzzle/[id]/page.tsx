@@ -1119,14 +1119,22 @@ export default function PuzzlePage() {
             {lockedMissingIndexes.length > 0 && (
               <div className="mt-5 space-y-3">
                 <p className="text-sm text-zinc-400">
-                  Missing piece #{lockedMissingIndexes[0] + 1} is marked in red on the board.
+                  {lockedMissingIndexes.length === 1
+                    ? `Missing piece #${lockedMissingIndexes[0] + 1} is marked in red on the board.`
+                    : `${lockedMissingIndexes.length} missing pieces are marked in red on the board.`}
                 </p>
 
                 <Link
-                  href={`/marketplace?puzzle=${encodeURIComponent(puzzle.slug)}&piece=${lockedMissingIndexes[0]}`}
+                  href={
+                    lockedMissingIndexes.length === 1
+                      ? `/marketplace?puzzle=${encodeURIComponent(puzzle.slug)}&piece=${lockedMissingIndexes[0]}`
+                      : `/marketplace?puzzle=${encodeURIComponent(puzzle.slug)}`
+                  }
                   className="flex justify-center bg-green-400 text-black font-black py-4 rounded-2xl"
                 >
-                  Buy Missing Piece
+                  {lockedMissingIndexes.length === 1
+                    ? "Buy Missing Piece"
+                    : "Buy Missing Pieces"}
                 </Link>
               </div>
             )}

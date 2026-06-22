@@ -163,7 +163,9 @@ export async function GET(
             price:
               listing.price_cents /
               100,
-            rarity: "Legendary",
+            rarity:
+              catalog.rarity ||
+              "Rare",
             category:
               catalog.category ||
               "Other",
@@ -379,7 +381,9 @@ export async function GET(
           piece: String(pieceIndex),
           price:
             listing.price_cents / 100,
-          rarity: "Legendary",
+          rarity:
+            catalog.rarity ||
+            "Rare",
           category:
             catalog.category ||
             "Other",

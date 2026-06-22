@@ -209,9 +209,11 @@ export default function Navbar() {
                 className="flex min-w-0 items-center gap-3"
               >
 
-                <div className="w-10 h-10 shrink-0 rounded-2xl bg-cyan-400 text-black flex items-center justify-center font-black">
-                  P
-                </div>
+                <img
+                  src="/puzzle-market-mark.svg"
+                  alt="Puzzle Market"
+                  className="h-11 w-11 shrink-0 rounded-2xl"
+                />
 
                 <div className="hidden sm:block">
 

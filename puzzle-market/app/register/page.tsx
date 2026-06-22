@@ -243,9 +243,11 @@ export default function RegisterPage() {
 
         <div className="flex justify-center">
 
-          <div className="w-20 h-20 rounded-full bg-cyan-400 flex items-center justify-center text-black text-4xl font-black shadow-[0_0_40px_rgba(34,211,238,0.35)]">
-            P
-          </div>
+          <img
+            src="/puzzle-market-mark.svg"
+            alt="Puzzle Market"
+            className="h-24 w-24 rounded-3xl shadow-[0_0_40px_rgba(34,211,238,0.35)]"
+          />
 
         </div>
 
