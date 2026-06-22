@@ -398,6 +398,231 @@ const items = [
     source:
       "C:/Users/hp/AppData/Local/Temp/codex-clipboard-bbf3406f-c704-444f-a47c-e9b28b58bfcd.png",
   },
+  {
+    title: "Karst River",
+    slug: "karst-river",
+    price: 11,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-59c046b9-74ae-4261-a7c8-34346d9fde85.png",
+  },
+  {
+    title: "Fuji Blossom",
+    slug: "fuji-blossom",
+    price: 12,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-2e95e7ee-39bd-4731-95c9-d434a39c5b53.png",
+  },
+  {
+    title: "Autumn Temple",
+    slug: "autumn-temple",
+    price: 10,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-acaacc30-6792-41ce-9597-87ef973233c6.png",
+  },
+  {
+    title: "Desert Monuments",
+    slug: "desert-monuments",
+    price: 13,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-f69c314a-011a-4caa-a969-f837651b2a44.png",
+  },
+  {
+    title: "Fjord Dusk",
+    slug: "fjord-dusk",
+    price: 10,
+    marketPieces: 2,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-26957b07-f540-4b2d-b740-018de7385d3b.png",
+  },
+  {
+    title: "Nordic Cabin",
+    slug: "nordic-cabin",
+    price: 9,
+    marketPieces: 1,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-0c5c5fe5-601a-4a83-8354-82dc4203c6d4.png",
+  },
+  {
+    title: "Coastal Garden",
+    slug: "coastal-garden",
+    price: 10,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-73569aa4-72d5-405b-a6f6-1be8820cc5d0.png",
+  },
+  {
+    title: "Cliff Village",
+    slug: "cliff-village",
+    price: 9,
+    marketPieces: 1,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-d3ff27b0-cc8f-48a3-8e0b-c12646282376.png",
+  },
+  {
+    title: "Taiga River",
+    slug: "taiga-river",
+    price: 8,
+    marketPieces: 1,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-2dbccfd7-1a0a-4d1c-b678-5e4ea13a2bfb.png",
+  },
+  {
+    title: "Emerald Lake",
+    slug: "emerald-lake",
+    price: 12,
+    marketPieces: 2,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-971a09d0-964e-4a93-91d8-4cd4aeb6d9fd.png",
+  },
+  {
+    title: "Village Fields",
+    slug: "village-fields",
+    price: 6,
+    marketPieces: 1,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-06432767-fc20-4039-96ed-72d489c09e12.png",
+  },
+  {
+    title: "Misty Valley",
+    slug: "misty-valley",
+    price: 10,
+    marketPieces: 2,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-37384806-0f79-4f4d-91b7-3e93c5d99a4c.png",
+  },
+  {
+    title: "Sunflower Hills",
+    slug: "sunflower-hills",
+    price: 7,
+    marketPieces: 1,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-1c88ed52-c556-42f5-9268-77fe382d14ff.png",
+  },
+  {
+    title: "Nomad Valley",
+    slug: "nomad-valley",
+    price: 9,
+    marketPieces: 1,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-ad4b84cd-1ae5-418f-b3cd-73ac07d4743e.png",
+  },
+  {
+    title: "Oasis Dunes",
+    slug: "oasis-dunes",
+    price: 12,
+    marketPieces: 2,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-8f6dcda9-a260-444f-9e1f-3b565e15972d.png",
+  },
+  {
+    title: "Blue Cliffs",
+    slug: "blue-cliffs",
+    price: 10,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-a625d4f1-40e3-4239-8652-ccd816426193.png",
+  },
+  {
+    title: "Savanna Sunset",
+    slug: "savanna-sunset",
+    price: 13,
+    marketPieces: 2,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-1058e301-0a91-48a5-a4cd-686111be35a9.png",
+  },
+  {
+    title: "Ocean Peak",
+    slug: "ocean-peak",
+    price: 11,
+    marketPieces: 2,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-a38576ee-bdc5-42e9-862a-12d81e3a615d.png",
+  },
+  {
+    title: "Cactus Canyon",
+    slug: "cactus-canyon",
+    price: 9,
+    marketPieces: 1,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-b85286bc-ec87-46fc-888f-a4a496aba7df.png",
+  },
+  {
+    title: "Alpine Coast",
+    slug: "alpine-coast",
+    price: 10,
+    marketPieces: 2,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-bfdcc7eb-0e7c-459b-ad0f-86a59bd595e1.png",
+  },
+  {
+    title: "Steppe River",
+    slug: "steppe-river",
+    price: 9,
+    marketPieces: 1,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-c817d93f-9fbd-4dbc-9ab1-1deb97ddeecc.png",
+  },
+  {
+    title: "Silk Road Valley",
+    slug: "silk-road-valley",
+    price: 8,
+    marketPieces: 1,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-dc9c4618-f67c-457d-91eb-9dfce1df2306.png",
+  },
+  {
+    title: "Highland Trail",
+    slug: "highland-trail",
+    price: 11,
+    marketPieces: 2,
+    category: "Nature",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-1f38d188-bc24-4b19-814f-64044a9ded8f.png",
+  },
+  {
+    title: "Rice Terrace Bay",
+    slug: "rice-terrace-bay",
+    price: 12,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-f539debf-4264-4361-b11f-a40e99da513b.png",
+  },
+  {
+    title: "Green Bay Fields",
+    slug: "green-bay-fields",
+    price: 13,
+    marketPieces: 2,
+    category: "Travel & Landmarks",
+    source:
+      "C:/Users/hp/AppData/Local/Temp/codex-clipboard-105d4b83-1cb9-402b-8542-08503f467eda.png",
+  },
 ];
 
 function pickMissingPieceIndex(slug) {

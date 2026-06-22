@@ -437,5 +437,246 @@
       8,
       6
     ]
+  },
+  {
+    "title": "Karst River",
+    "slug": "karst-river",
+    "price": 11,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      10,
+      6
+    ]
+  },
+  {
+    "title": "Fuji Blossom",
+    "slug": "fuji-blossom",
+    "price": 12,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      6,
+      8
+    ]
+  },
+  {
+    "title": "Autumn Temple",
+    "slug": "autumn-temple",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      10,
+      14
+    ]
+  },
+  {
+    "title": "Desert Monuments",
+    "slug": "desert-monuments",
+    "price": 13,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      9,
+      4
+    ]
+  },
+  {
+    "title": "Fjord Dusk",
+    "slug": "fjord-dusk",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      1,
+      5
+    ]
+  },
+  {
+    "title": "Nordic Cabin",
+    "slug": "nordic-cabin",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      13
+    ]
+  },
+  {
+    "title": "Coastal Garden",
+    "slug": "coastal-garden",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      5,
+      9
+    ]
+  },
+  {
+    "title": "Cliff Village",
+    "slug": "cliff-village",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      6
+    ]
+  },
+  {
+    "title": "Taiga River",
+    "slug": "taiga-river",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      1
+    ]
+  },
+  {
+    "title": "Emerald Lake",
+    "slug": "emerald-lake",
+    "price": 12,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      5,
+      10
+    ]
+  },
+  {
+    "title": "Village Fields",
+    "slug": "village-fields",
+    "price": 6,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      5
+    ]
+  },
+  {
+    "title": "Misty Valley",
+    "slug": "misty-valley",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      7,
+      4
+    ]
+  },
+  {
+    "title": "Sunflower Hills",
+    "slug": "sunflower-hills",
+    "price": 7,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      9
+    ]
+  },
+  {
+    "title": "Nomad Valley",
+    "slug": "nomad-valley",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      10
+    ]
+  },
+  {
+    "title": "Oasis Dunes",
+    "slug": "oasis-dunes",
+    "price": 12,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      6,
+      10
+    ]
+  },
+  {
+    "title": "Blue Cliffs",
+    "slug": "blue-cliffs",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      10,
+      5
+    ]
+  },
+  {
+    "title": "Savanna Sunset",
+    "slug": "savanna-sunset",
+    "price": 13,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      13,
+      6
+    ]
+  },
+  {
+    "title": "Ocean Peak",
+    "slug": "ocean-peak",
+    "price": 11,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      1,
+      5
+    ]
+  },
+  {
+    "title": "Cactus Canyon",
+    "slug": "cactus-canyon",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      10
+    ]
+  },
+  {
+    "title": "Alpine Coast",
+    "slug": "alpine-coast",
+    "price": 10,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      5,
+      9
+    ]
+  },
+  {
+    "title": "Steppe River",
+    "slug": "steppe-river",
+    "price": 9,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      10
+    ]
+  },
+  {
+    "title": "Silk Road Valley",
+    "slug": "silk-road-valley",
+    "price": 8,
+    "rarity": "Rare",
+    "missingPieceIndexes": [
+      9
+    ]
+  },
+  {
+    "title": "Highland Trail",
+    "slug": "highland-trail",
+    "price": 11,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      1,
+      10
+    ]
+  },
+  {
+    "title": "Rice Terrace Bay",
+    "slug": "rice-terrace-bay",
+    "price": 12,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      14,
+      10
+    ]
+  },
+  {
+    "title": "Green Bay Fields",
+    "slug": "green-bay-fields",
+    "price": 13,
+    "rarity": "Epic",
+    "missingPieceIndexes": [
+      5,
+      4
+    ]
   }
 ]
