@@ -1072,7 +1072,17 @@ export default function PuzzlePage() {
             </h1>
 
             <p className="text-zinc-400 mt-3 max-w-2xl">
-              Place all pieces on the board. One cell stays missing — buy that exact fragment on the marketplace to complete the image.
+              Place all pieces on the board.{" "}
+              {missingIndexes.length === 1
+                ? "One cell stays missing"
+                : `${missingIndexes.length} cells stay missing`}
+              {" "}
+              — buy
+              {missingIndexes.length === 1
+                ? " that exact fragment"
+                : " those exact fragments"}
+              {" "}
+              on the marketplace to complete the image.
             </p>
           </div>
 
