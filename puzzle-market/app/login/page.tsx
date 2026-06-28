@@ -143,34 +143,34 @@ export default function LoginPage() {
   return (
 
     <main
-      className="min-h-screen flex items-center justify-center px-4 bg-black text-white overflow-hidden"
+      className="min-h-screen flex items-center justify-center overflow-y-auto bg-black px-4 py-6 text-white sm:py-10"
     >
 
       {/* BG */}
 
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
 
-      <div className="relative w-full max-w-md bg-zinc-950 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
+      <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-zinc-950 p-5 backdrop-blur-xl sm:p-8">
 
         <div className="flex justify-center">
 
           <img
             src="/puzzle-market-cube-logo.png"
             alt="Puzzle Market"
-            className="h-28 w-28 rounded-3xl object-cover shadow-[0_0_40px_rgba(34,211,238,0.35)]"
+            className="h-20 w-20 rounded-3xl object-cover shadow-[0_0_40px_rgba(34,211,238,0.35)] sm:h-28 sm:w-28"
           />
 
         </div>
 
-        <h1 className="text-5xl font-black text-center mt-6">
+        <h1 className="mt-5 text-center text-4xl font-black sm:mt-6 sm:text-5xl">
           Welcome Back
         </h1>
 
-        <p className="text-zinc-500 text-center mt-3">
+        <p className="mt-2 text-center text-zinc-500 sm:mt-3">
           Login to Puzzle Market
         </p>
 
-        <div className="mt-8 space-y-4">
+        <div className="mt-6 space-y-5 sm:mt-8">
 
           <input
             type="email"
@@ -180,7 +180,7 @@ export default function LoginPage() {
             onChange={(e) =>
               setEmail(e.target.value)
             }
-            className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400"
+            className="min-h-12 w-full rounded-2xl border border-white/10 bg-black px-5 py-4 outline-none focus:border-cyan-400"
           />
 
           <PasswordInput
@@ -188,7 +188,7 @@ export default function LoginPage() {
             onChange={setPassword}
           />
 
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-1">
             <a
               href="/forgot-password"
               className="text-sm font-bold text-cyan-400 transition hover:text-cyan-300"
@@ -201,7 +201,7 @@ export default function LoginPage() {
             type="button"
             onClick={handleLogin}
             disabled={loading}
-            className="w-full bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 text-black font-black py-4 rounded-2xl transition"
+            className="min-h-12 w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-50"
           >
 
             {loading
@@ -213,7 +213,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full bg-white hover:bg-zinc-200 text-black font-black py-4 rounded-2xl transition"
+            className="min-h-12 w-full rounded-2xl bg-white py-4 font-black text-black transition hover:bg-zinc-200"
           >
             Continue with Google
           </button>
@@ -228,7 +228,7 @@ export default function LoginPage() {
 
         )}
 
-        <p className="text-center text-zinc-500 mt-6">
+        <p className="mt-7 text-center text-zinc-500">
 
           No account?{" "}
 
