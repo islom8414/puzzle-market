@@ -34,6 +34,7 @@ export const PUZZLE_CATEGORIES = [
   "Space",
   "Sports",
   "Technology",
+  "Toys",
   "Travel & Landmarks",
   "World Money",
   "Other",
