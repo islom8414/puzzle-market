@@ -6,6 +6,27 @@ import {
 } from "@/lib/supabase-admin";
 import { getCanonicalSiteUrl } from "@/lib/site-url";
 
+const QUERY_CHUNK_SIZE = 100;
+
+function chunkValues<T>(
+  values: T[],
+  size = QUERY_CHUNK_SIZE
+) {
+  const chunks: T[][] = [];
+
+  for (
+    let index = 0;
+    index < values.length;
+    index += size
+  ) {
+    chunks.push(
+      values.slice(index, index + size)
+    );
+  }
+
+  return chunks;
+}
+
 export async function GET(
   request: Request
 ) {
@@ -67,45 +88,50 @@ export async function GET(
         (row) => row.piece_id
       ) || [];
 
-    const {
-      data: listings,
-    } =
-      pieceIds.length > 0
-        ? await admin
-            .from("piece_listings")
-            .select(
-              "id,piece_id,price_cents,status"
-            )
-            .in(
-              "piece_id",
-              pieceIds
-            )
-            .eq(
-              "status",
-              "active"
-            )
-        : {
-          data: [],
-        };
+    const listings = [];
+    const gifts = [];
 
-    const {
-      data: gifts,
-    } =
-      pieceIds.length > 0
-        ? await admin
-            .from("piece_gifts")
-            .select(
-              "piece_id,recipient_email,gift_token,status"
-            )
-            .in("piece_id", pieceIds)
-            .eq(
-              "sender_user_id",
-              userData.user.id
-            )
-            .eq("status", "pending")
-        : {
-            data: [],
-          };
+    for (const chunk of chunkValues(pieceIds)) {
+      const {
+        data: listingRows,
+        error: listingsError,
+      } = await admin
+        .from("piece_listings")
+        .select(
+          "id,piece_id,price_cents,status"
+        )
+        .in("piece_id", chunk)
+        .eq("status", "active");
+
+      if (listingsError) {
+        throw listingsError;
+      }
+
+      listings.push(
+        ...(listingRows || [])
+      );
+
+      const {
+        data: giftRows,
+        error: giftsError,
+      } = await admin
+        .from("piece_gifts")
+        .select(
+          "piece_id,recipient_email,gift_token,status"
+        )
+        .in("piece_id", chunk)
+        .eq(
+          "sender_user_id",
+          userData.user.id
+        )
+        .eq("status", "pending");
+
+      if (giftsError) {
+        throw giftsError;
+      }
+
+      gifts.push(...(giftRows || []));
+    }
 
     const activeByPiece =
       new Map(

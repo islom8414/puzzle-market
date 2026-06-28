@@ -273,7 +273,7 @@ export default function CreatePage() {
         <p className="mt-5 text-zinc-400">
           Upload a 4×4 board. Players assemble the puzzle — one to three
           pieces can stay missing. Each missing fragment can be sold and
-          resold later at the owner's price.
+          resold later at the owner&apos;s price.
         </p>
 
         <div className="mt-8 grid gap-4">
