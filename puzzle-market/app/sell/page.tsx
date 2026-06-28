@@ -278,7 +278,7 @@ export default function SellPage() {
                 Listed Value
               </p>
               <h2 className="text-green-400 text-4xl md:text-5xl font-black mt-3">
-                ${totalMarketValue}
+                {formatUsd(totalMarketValue)}
               </h2>
             </div>
           </div>

@@ -12,6 +12,7 @@ import {
 import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
 import { sanitizeUsername } from "@/lib/display-name";
+import { formatUsd } from "@/lib/price-index";
 
 type OwnedPiece = {
   pieceId: string;
@@ -670,7 +671,7 @@ export default function ProfilePage() {
             </p>
 
             <h2 className="text-4xl md:text-5xl font-black mt-4 text-cyan-400">
-              ${balance}
+              {formatUsd(balance)}
             </h2>
 
             <div className="mt-5 flex gap-3">
@@ -698,7 +699,7 @@ export default function ProfilePage() {
             </p>
 
             <h2 className="text-4xl md:text-5xl font-black mt-4 text-green-400">
-              ${totalValue}
+              {formatUsd(totalValue)}
             </h2>
 
           </div>
