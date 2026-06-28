@@ -143,14 +143,14 @@ export default function LoginPage() {
   return (
 
     <main
-      className="min-h-screen flex items-center justify-center overflow-y-auto bg-black px-4 py-6 text-white sm:py-10"
+      className="flex min-h-dvh items-center justify-center overflow-y-auto bg-black px-4 py-6 text-white sm:py-10"
     >
 
       {/* BG */}
 
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
 
-      <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-zinc-950 p-5 backdrop-blur-xl sm:p-8">
+      <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-zinc-950 p-5 pb-6 backdrop-blur-xl sm:p-8">
 
         <div className="flex justify-center">
 
@@ -170,25 +170,29 @@ export default function LoginPage() {
           Login to Puzzle Market
         </p>
 
-        <div className="mt-6 space-y-5 sm:mt-8">
+        <div className="mt-6 sm:mt-8">
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            autoComplete="email"
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
-            className="min-h-12 w-full rounded-2xl border border-white/10 bg-black px-5 py-4 outline-none focus:border-cyan-400"
-          />
+          <div className="space-y-4">
 
-          <PasswordInput
-            value={password}
-            onChange={setPassword}
-          />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              autoComplete="email"
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
+              className="min-h-12 w-full rounded-2xl border border-white/10 bg-black px-5 py-4 outline-none focus:border-cyan-400"
+            />
 
-          <div className="flex justify-end pt-1">
+            <PasswordInput
+              value={password}
+              onChange={setPassword}
+            />
+
+          </div>
+
+          <div className="mt-4 flex justify-end">
             <a
               href="/forgot-password"
               className="text-sm font-bold text-cyan-400 transition hover:text-cyan-300"
@@ -197,26 +201,30 @@ export default function LoginPage() {
             </a>
           </div>
 
-          <button
-            type="button"
-            onClick={handleLogin}
-            disabled={loading}
-            className="min-h-12 w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-50"
-          >
+          <div className="mt-6 space-y-4">
 
-            {loading
-              ? "Signing In..."
-              : "Sign In"}
+            <button
+              type="button"
+              onClick={handleLogin}
+              disabled={loading}
+              className="min-h-12 w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-50"
+            >
 
-          </button>
+              {loading
+                ? "Signing In..."
+                : "Sign In"}
 
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className="min-h-12 w-full rounded-2xl bg-white py-4 font-black text-black transition hover:bg-zinc-200"
-          >
-            Continue with Google
-          </button>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="min-h-12 w-full rounded-2xl bg-white py-4 font-black text-black transition hover:bg-zinc-200"
+            >
+              Continue with Google
+            </button>
+
+          </div>
 
         </div>
 
@@ -228,7 +236,7 @@ export default function LoginPage() {
 
         )}
 
-        <p className="mt-7 text-center text-zinc-500">
+        <p className="mb-1 mt-8 text-center text-zinc-500">
 
           No account?{" "}
 
