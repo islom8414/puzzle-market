@@ -126,6 +126,11 @@ export function HomePuzzleGrid() {
       {filteredPuzzles.map((puzzle) => {
         const card =
           catalogToCard(puzzle);
+        const missingCount =
+          Math.max(
+            1,
+            puzzle.missing_piece_count || 1
+          );
 
         return (
           <article
@@ -142,7 +147,8 @@ export function HomePuzzleGrid() {
 
             <div className="p-6">
               <p className="text-xs font-black uppercase tracking-[0.25em] text-cyan-400">
-                {puzzle.rarity || "Rare"} / 1 missing piece
+                {puzzle.rarity || "Rare"} / {missingCount} missing{" "}
+                {missingCount === 1 ? "piece" : "pieces"}
               </p>
 
               <p className="mt-3 text-sm font-bold text-zinc-500">
