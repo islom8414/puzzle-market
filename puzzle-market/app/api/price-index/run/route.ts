@@ -12,6 +12,19 @@ export async function GET(
       process.env.CRON_SECRET ||
       process.env.PRICE_INDEX_CRON_SECRET;
 
+    if (
+      !cronSecret &&
+      process.env.NODE_ENV === "production"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Price index cron secret is not configured",
+        },
+        { status: 503 }
+      );
+    }
+
     if (cronSecret) {
       const expected =
         `Bearer ${cronSecret}`;

@@ -15,8 +15,24 @@ const nextConfig: NextConfig = {
             value: "nosniff",
           },
           {
+            key: "X-DNS-Prefetch-Control",
+            value: "off",
+          },
+          {
             key: "X-Frame-Options",
             value: "DENY",
+          },
+          {
+            key: "X-Download-Options",
+            value: "noopen",
+          },
+          {
+            key: "X-Permitted-Cross-Domain-Policies",
+            value: "none",
+          },
+          {
+            key: "Origin-Agent-Cluster",
+            value: "?1",
           },
           {
             key: "Referrer-Policy",
