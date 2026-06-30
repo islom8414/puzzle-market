@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { CategoryScroller } from "@/components/category-scroller";
 import {
   normalizePuzzleCategory,
   PUZZLE_CATEGORIES,
@@ -83,34 +84,12 @@ export function HomePuzzleGrid() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-3 overflow-x-auto pb-2">
-        <button
-          type="button"
-          onClick={() => setCategory("ALL")}
-          className={`shrink-0 rounded-2xl border px-5 py-3 text-sm font-black transition ${
-            category === "ALL"
-              ? "border-cyan-400 bg-cyan-400 text-black"
-              : "border-white/10 bg-zinc-950 text-zinc-300"
-          }`}
-        >
-          All
-        </button>
-
-        {PUZZLE_CATEGORIES.map((item) => (
-          <button
-            key={item}
-            type="button"
-            onClick={() => setCategory(item)}
-            className={`shrink-0 rounded-2xl border px-5 py-3 text-sm font-black transition ${
-              category === item
-                ? "border-cyan-400 bg-cyan-400 text-black"
-                : "border-white/10 bg-zinc-950 text-zinc-300"
-            }`}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
+      <CategoryScroller
+        items={PUZZLE_CATEGORIES}
+        value={category}
+        onChange={setCategory}
+        className="mb-6"
+      />
 
       {filteredPuzzles.length === 0 ? (
         <div className="rounded-3xl border border-white/10 bg-zinc-950/80 p-10 text-center">

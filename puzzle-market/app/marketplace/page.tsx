@@ -1,15 +1,14 @@
 "use client";
 
 import {
-  useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
 import Link from "next/link";
 
+import { CategoryScroller } from "@/components/category-scroller";
 import { puzzles } from "@/data/puzzles";
 import { apiFetch } from "@/lib/api-client";
 import {
@@ -371,17 +370,6 @@ export default function MarketplacePage() {
   const [categoryFilter, setCategoryFilter] =
     useState("ALL");
 
-  const categoryScrollerRef =
-    useRef<HTMLDivElement | null>(null);
-
-  const [
-    categoryScrollState,
-    setCategoryScrollState,
-  ] = useState({
-    canScrollLeft: false,
-    canScrollRight: false,
-  });
-
   const [puzzleFilter, setPuzzleFilter] =
     useState("");
 
@@ -390,94 +378,6 @@ export default function MarketplacePage() {
 
   const [currentUserId, setCurrentUserId] =
     useState("");
-
-  const categoryChoices = useMemo(
-    () => ["ALL", ...PUZZLE_CATEGORIES],
-    []
-  );
-
-  const updateCategoryScrollState =
-    useCallback(() => {
-      const scroller =
-        categoryScrollerRef.current;
-
-      if (!scroller) {
-        return;
-      }
-
-      const maxScroll =
-        scroller.scrollWidth -
-        scroller.clientWidth;
-
-      setCategoryScrollState({
-        canScrollLeft:
-          scroller.scrollLeft > 4,
-        canScrollRight:
-          scroller.scrollLeft <
-          maxScroll - 4,
-      });
-    }, []);
-
-  const scrollMobileCategories =
-    useCallback(
-      (direction: "left" | "right") => {
-        const scroller =
-          categoryScrollerRef.current;
-
-        if (!scroller) {
-          return;
-        }
-
-        scroller.scrollBy({
-          left:
-            direction === "left"
-              ? -220
-              : 220,
-          behavior: "smooth",
-        });
-
-        window.setTimeout(
-          updateCategoryScrollState,
-          260
-        );
-      },
-      [updateCategoryScrollState]
-    );
-
-  useEffect(() => {
-    const scroller =
-      categoryScrollerRef.current;
-
-    if (!scroller) {
-      return;
-    }
-
-    updateCategoryScrollState();
-
-    scroller.addEventListener(
-      "scroll",
-      updateCategoryScrollState,
-      { passive: true }
-    );
-
-    const resizeObserver =
-      new ResizeObserver(
-        updateCategoryScrollState
-      );
-
-    resizeObserver.observe(scroller);
-
-    return () => {
-      scroller.removeEventListener(
-        "scroll",
-        updateCategoryScrollState
-      );
-      resizeObserver.disconnect();
-    };
-  }, [
-    categoryChoices.length,
-    updateCategoryScrollState,
-  ]);
 
   useEffect(() => {
 
@@ -1049,73 +949,12 @@ export default function MarketplacePage() {
 
           </select>
 
-          <div className="relative md:hidden">
-            <div
-              ref={categoryScrollerRef}
-              className="flex gap-2 overflow-x-auto scroll-smooth px-11 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            >
-              {categoryChoices.map(
-                (item) => {
-                  const selected =
-                    categoryFilter === item;
-
-                  return (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() =>
-                        setCategoryFilter(item)
-                      }
-                      className={`min-h-11 shrink-0 rounded-2xl border px-4 text-sm font-black transition ${
-                        selected
-                          ? "border-cyan-300 bg-cyan-400 text-black shadow-[0_0_24px_rgba(34,211,238,0.25)]"
-                          : "border-white/10 bg-white/[0.04] text-white/80"
-                      }`}
-                    >
-                      {item === "ALL"
-                        ? "All"
-                        : item}
-                    </button>
-                  );
-                }
-              )}
-            </div>
-
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-black via-black/80 to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-black via-black/80 to-transparent" />
-
-            <button
-              type="button"
-              aria-label="Scroll categories left"
-              onClick={() =>
-                scrollMobileCategories("left")
-              }
-              disabled={
-                !categoryScrollState.canScrollLeft
-              }
-              className="absolute left-1 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/80 text-white shadow-[0_0_18px_rgba(34,211,238,0.18)] transition disabled:opacity-25"
-            >
-              <span className="-mt-0.5 text-2xl leading-none">
-                &lsaquo;
-              </span>
-            </button>
-
-            <button
-              type="button"
-              aria-label="Scroll categories right"
-              onClick={() =>
-                scrollMobileCategories("right")
-              }
-              disabled={
-                !categoryScrollState.canScrollRight
-              }
-              className="absolute right-1 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-300/30 bg-black/80 text-cyan-200 shadow-[0_0_18px_rgba(34,211,238,0.2)] transition disabled:opacity-25"
-            >
-              <span className="-mt-0.5 text-2xl leading-none">
-                &rsaquo;
-              </span>
-            </button>
-          </div>
+          <CategoryScroller
+            items={PUZZLE_CATEGORIES}
+            value={categoryFilter}
+            onChange={setCategoryFilter}
+            className="md:hidden"
+          />
 
           <select
             value={categoryFilter}
