@@ -11,6 +11,7 @@
     "clean:test-content": "node --env-file=.env.local scripts/clean-test-content.mjs"
   },
   "dependencies": {
+    "@next/third-parties": "^16.2.10",
     "@stripe/stripe-js": "^9.5.0",
     "@supabase/supabase-js": "^2.105.4",
     "next": "^16.2.9",

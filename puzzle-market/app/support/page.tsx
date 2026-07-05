@@ -199,7 +199,7 @@ export default function SupportPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white px-4 md:px-6 py-10">
+    <main className="support-page min-h-screen bg-black text-white px-4 md:px-6 py-10">
       <section className="mx-auto max-w-7xl">
         <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.3em]">
           Private Support
@@ -217,7 +217,7 @@ export default function SupportPage() {
             : "Messages here are private between you and Puzzle Market support."}
         </p>
 
-        <div className="mt-10 grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
+        <div className="mt-8 grid grid-cols-1 gap-5 lg:mt-10 lg:grid-cols-[340px_1fr] lg:gap-6">
           <aside className="rounded-[28px] border border-white/10 bg-white/[0.03] p-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-black">
@@ -296,14 +296,14 @@ export default function SupportPage() {
                 />
               )}
 
-            <div className="min-h-[360px] max-h-[560px] overflow-y-auto rounded-2xl border border-white/10 bg-black p-4">
+            <div className="support-message-list min-h-[360px] max-h-[560px] overflow-y-auto rounded-2xl border border-white/10 bg-black p-4">
               {selectedThread ? (
                 <div className="space-y-3">
                   {selectedThread.messages.map(
                     (item) => (
                       <div
                         key={item.id}
-                        className={`max-w-[85%] rounded-2xl p-4 ${
+                        className={`support-message-bubble max-w-[85%] rounded-2xl p-4 ${
                           item.role ===
                           "admin"
                             ? "ml-auto bg-cyan-400 text-black"
@@ -328,7 +328,7 @@ export default function SupportPage() {
               )}
             </div>
 
-            <div className="mt-4 flex gap-3">
+            <div className="support-compose mt-4 flex gap-3">
               <input
                 value={message}
                 onChange={(event) =>

@@ -9,7 +9,6 @@ import { supabase } from "@/lib/supabase";
 
 const protectedPrefixes = [
   "/sell",
-  "/chat",
 ];
 
 const publicPrefixes = [
@@ -131,7 +130,7 @@ export default function SubscriptionGate() {
     state === "guest"
       ? {
           title: "Sign in to enter Puzzle Market",
-          body: "Create an account or sign in before collecting, buying, selling, or chatting.",
+          body: "Create an account or sign in before collecting, buying, or selling.",
           href: getCanonicalLoginUrl(
             pathname
           ),
@@ -146,7 +145,7 @@ export default function SubscriptionGate() {
           }
         : {
             title: "Starter plan required",
-            body: "A Starter subscription unlocks puzzle assembly, buying pieces, reselling, wallet actions, and chat. You can still browse available puzzles before upgrading.",
+            body: "A Starter subscription unlocks puzzle assembly, buying pieces, reselling, and wallet actions. You can still browse available puzzles before upgrading.",
             href: "/subscribe",
             action: "Choose Starter",
           };

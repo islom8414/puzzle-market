@@ -230,6 +230,10 @@ export default function WithdrawPage() {
     useState<WithdrawalMethod>(
       "stripe_instant"
     );
+  const [payoutMode, setPayoutMode] =
+    useState<"stripe" | "manual">(
+      "stripe"
+    );
   const [
     destinationLabel,
     setDestinationLabel,
@@ -460,12 +464,13 @@ export default function WithdrawPage() {
     }
 
     const isStripeMethod =
-      method ===
-        "stripe_instant" ||
-      method ===
-        "stripe_standard";
+      payoutMode === "stripe" &&
+      (method ===
+          "stripe_instant" ||
+        method ===
+          "stripe_standard");
     const isPaysendManualCard =
-      stripeUnsupported &&
+      manualMode &&
       method === "visa_card";
     const paysendDestinationLabel =
       [
@@ -588,18 +593,27 @@ export default function WithdrawPage() {
   const connectedCountry =
     connectStatus.country;
   const selectedCountry =
-    connectedCountry ||
-    (payoutCountry === "OTHER"
-      ? customPayoutCountry
-          .trim()
-          .toUpperCase()
-      : payoutCountry);
+    payoutMode === "stripe"
+      ? connectedCountry ||
+        (payoutCountry === "OTHER"
+          ? customPayoutCountry
+              .trim()
+              .toUpperCase()
+          : payoutCountry)
+      : payoutCountry === "OTHER"
+        ? customPayoutCountry
+            .trim()
+            .toUpperCase()
+        : payoutCountry;
   const stripeUnsupported =
     !isStripeSupportedCountry(
       selectedCountry
     );
+  const manualMode =
+    payoutMode === "manual" ||
+    stripeUnsupported;
   const activeMethods =
-    stripeUnsupported
+    manualMode
       ? manualMethods
       : methods;
 
@@ -642,18 +656,56 @@ export default function WithdrawPage() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
-                  Stripe Connect
+                  Payout method
                 </p>
                 <h2 className="mt-2 text-[1.65rem] font-black leading-tight md:text-3xl">
-                  {stripeUnsupported
+                  {manualMode
                     ? "Manual payout request"
                     : readyLabel}
                 </h2>
                 <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
-                  {stripeUnsupported
-                    ? "Stripe does not currently support this payout country. Create a Paysend-ready manual payout request. Admin will process it outside Stripe until Paysend API approval is complete."
+                  {manualMode
+                    ? "Create a manual payout request when Stripe is unavailable, unfinished, or you want another payout route. Admin reviews it outside Stripe."
                     : "Add your Visa debit card or bank account inside Stripe. Puzzle Market never stores card numbers."}
                 </p>
+
+                <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPayoutMode("stripe");
+                      setMethod("stripe_standard");
+                    }}
+                    className={`rounded-2xl border px-4 py-3 text-left font-black transition ${
+                      payoutMode === "stripe"
+                        ? "border-cyan-400 bg-cyan-400 text-black"
+                        : "border-white/10 bg-white/[0.04] text-white"
+                    }`}
+                  >
+                    Automatic Stripe
+                    <span className="mt-1 block text-xs font-semibold opacity-70">
+                      Card or bank inside Stripe
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPayoutMode("manual");
+                      setMethod("visa_card");
+                    }}
+                    className={`rounded-2xl border px-4 py-3 text-left font-black transition ${
+                      payoutMode === "manual"
+                        ? "border-cyan-400 bg-cyan-400 text-black"
+                        : "border-white/10 bg-white/[0.04] text-white"
+                    }`}
+                  >
+                    Manual request
+                    <span className="mt-1 block text-xs font-semibold opacity-70">
+                      Card, bank, or USDT review
+                    </span>
+                  </button>
+                </div>
 
                 <label className="mt-4 block max-w-xs">
                   <span className="text-sm font-bold text-zinc-400">
@@ -661,8 +713,11 @@ export default function WithdrawPage() {
                   </span>
                   <select
                     value={
-                      connectedCountry ||
-                      payoutCountry
+                      payoutMode ===
+                        "stripe" &&
+                      connectedCountry
+                        ? connectedCountry
+                        : payoutCountry
                     }
                     onChange={(event) => {
                       const country =
@@ -676,11 +731,16 @@ export default function WithdrawPage() {
                         isStripeSupportedCountry(
                           country
                         );
-                      setMethod(
-                        supportsStripe
-                          ? "stripe_standard"
-                          : "visa_card"
-                      );
+                      if (
+                        payoutMode ===
+                        "stripe"
+                      ) {
+                        setMethod(
+                          supportsStripe
+                            ? "stripe_standard"
+                            : "visa_card"
+                        );
+                      }
                       setPaysendCardType(
                         country === "UZ"
                           ? "Uzcard"
@@ -688,6 +748,8 @@ export default function WithdrawPage() {
                       );
                     }}
                     disabled={
+                      payoutMode ===
+                        "stripe" &&
                       connectStatus.connected
                     }
                     className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-base font-black text-white outline-none focus:border-cyan-400 disabled:opacity-60"
@@ -709,7 +771,8 @@ export default function WithdrawPage() {
                   </select>
                 </label>
 
-                {!connectStatus.connected &&
+                {!(payoutMode === "stripe" &&
+                  connectStatus.connected) &&
                   payoutCountry ===
                     "OTHER" && (
                     <label className="mt-3 block max-w-xs">
@@ -730,13 +793,18 @@ export default function WithdrawPage() {
                           setCustomPayoutCountry(
                             country
                           );
-                          setMethod(
-                            isStripeSupportedCountry(
-                              country
-                            )
-                              ? "stripe_standard"
-                              : "visa_card"
-                          );
+                          if (
+                            payoutMode ===
+                            "stripe"
+                          ) {
+                            setMethod(
+                              isStripeSupportedCountry(
+                                country
+                              )
+                                ? "stripe_standard"
+                                : "visa_card"
+                            );
+                          }
                         }}
                         placeholder="UZ"
                         className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-base font-black text-white outline-none focus:border-cyan-400"
@@ -744,14 +812,15 @@ export default function WithdrawPage() {
                     </label>
                   )}
 
-                {stripeUnsupported && (
+                {manualMode && (
                   <p className="mt-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3 text-sm text-amber-100">
-                    Stripe Connect payouts are not available for this country through Puzzle Market. Use the manual card payout request below. Review takes up to 3 business days.
+                    Manual payout requests are reviewed by admin. Only enter safe confirmation details here; never submit a full card number, expiry date, CVV, password, or one-time code.
                   </p>
                 )}
 
                 {connectedCountry &&
-                  !stripeUnsupported && (
+                  payoutMode === "stripe" &&
+                  !manualMode && (
                   <p className="mt-3 text-sm text-zinc-500">
                     Connected as{" "}
                     <span className="font-bold text-zinc-300">
@@ -765,7 +834,7 @@ export default function WithdrawPage() {
                 )}
               </div>
 
-              {!stripeUnsupported && (
+              {!manualMode && (
                 <button
                   onClick={
                     connectStripe
@@ -812,7 +881,7 @@ export default function WithdrawPage() {
             ))}
           </div>
 
-          {stripeUnsupported && (
+          {manualMode && (
             <div className="mt-5 rounded-[22px] border border-white/10 bg-black/50 p-4 md:p-5">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">
                 Manual card payout
@@ -1034,14 +1103,14 @@ export default function WithdrawPage() {
               disabled={
                 submitting ||
                 loading ||
-                (!stripeUnsupported &&
+                (!manualMode &&
                   !connectStatus.ready)
               }
               className="w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:bg-white/10 disabled:text-zinc-500"
             >
               {submitting
                 ? "Sending Payout..."
-                : stripeUnsupported
+                : manualMode
                   ? "Create Withdrawal Request"
                   : "Send Automatic Payout"}
             </button>

@@ -1,0 +1,1045 @@
+{
+  "imported": [
+    {
+      "title": "Collector Image 5671",
+      "category": "Other",
+      "price": 5,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-06-28_22-45-10.jpg",
+      "hash": "5ecf095e756de1c6fe9a8c8ec91bad27adb52f767a8de9c6a90a556b4cc5a157"
+    },
+    {
+      "title": "Collector Image 1140",
+      "category": "Other",
+      "price": 5,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-06-28_22-45-19.jpg",
+      "hash": "8757f72e6aeb8c1fa968410528c9ca5704e7d94942dfd213e8af87ac71c0d726"
+    },
+    {
+      "title": "Collector Image 5687",
+      "category": "Other",
+      "price": 5,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-06-28_22-45-27.jpg",
+      "hash": "23878c6f3990a7d3a1ac8577f5dc15d76bd693166259f0175db94023317e1ec8"
+    },
+    {
+      "title": "Collector Image 937",
+      "category": "Other",
+      "price": 5,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-06-28_22-45-33.jpg",
+      "hash": "15536595909820644158b57f3b047cc5e4a670cd9e61e72058c31bc2ee1c6e8f"
+    },
+    {
+      "title": "Collector Image 7184",
+      "category": "Other",
+      "price": 5,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-06-28_22-45-40.jpg",
+      "hash": "293d35fba88d845fb4ef792c2e7e9980d9a9b4dd81742d8c5e3098659af94a2f"
+    },
+    {
+      "title": "Santorini Sunset Harbor",
+      "category": "Travel & Landmarks",
+      "price": 9,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-06-29_22-58-07.jpg",
+      "hash": "51d9757a3440b82ef818d39b9e8f659109dd5c178348d782d9fb2905fe6951cd"
+    },
+    {
+      "title": "Map Room Shelves",
+      "category": "Other",
+      "price": 4,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-14-25.jpg",
+      "hash": "8c3e22b1789b3a45cb995655ec14f0ffb411f523504f8515f8807efa6665ff69"
+    },
+    {
+      "title": "Antique Reading Corner",
+      "category": "Other",
+      "price": 4,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-14-33.jpg",
+      "hash": "01e7ea6e825ab554a68af774b38c2d92bb7a3f52bd7dce41805c27bd016f3a53"
+    },
+    {
+      "title": "Home Plate Dive",
+      "category": "Baseball",
+      "price": 6,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-16-49.jpg",
+      "hash": "055de853960a99936d9c1130889d19144c3651be2868e130f404112a25ef9a60"
+    },
+    {
+      "title": "Green Diamond Swing",
+      "category": "Baseball",
+      "price": 6,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-16-52.jpg",
+      "hash": "cfb0797f10b6169215dba906422f372ce06ea9cc001800c3e8268480f539bacc"
+    },
+    {
+      "title": "Catcher Tag Moment",
+      "category": "Baseball",
+      "price": 6,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-16-59.jpg",
+      "hash": "676e927abf2e68cc5021ce2567955d95cbcd0b88a4006001a35998633ed56dcd"
+    },
+    {
+      "title": "Five Star Highway",
+      "category": "Gaming",
+      "price": 7,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-17-02.jpg",
+      "hash": "e24435e3e265479719cd6735cace876334b75636e99c16de90fd237552369623"
+    },
+    {
+      "title": "Night Boss Battle",
+      "category": "Gaming",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-17-05.jpg",
+      "hash": "1c12887cae25fc157649d26c0aab4317f67ea594ef38c8da84d992de424451f7"
+    },
+    {
+      "title": "Desert Firefight",
+      "category": "Gaming",
+      "price": 7,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-17-11.jpg",
+      "hash": "112ca32a7a5db1c522893ccd74c27c7d096de1593bb1c93cd07b3a6fa9de7478"
+    },
+    {
+      "title": "Neon Kart Sprint",
+      "category": "Gaming",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-17-17.jpg",
+      "hash": "201499408857a5fd53641a05527ce302481f16ae630951ff7ff89b2ca4e5c17c"
+    },
+    {
+      "title": "Ancient Jump Quest",
+      "category": "Gaming",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-18-10.jpg",
+      "hash": "88f32205ce529a48d039bf16c98a65e85b5f44cec47efc429d5e5ea0d49b7af2"
+    },
+    {
+      "title": "Cavern Block Run",
+      "category": "Gaming",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-18-19.jpg",
+      "hash": "6c1c4d72ecb669e578a48570b915296aeaac43d22554dd3d348436eea3984439"
+    },
+    {
+      "title": "Cliffside Golf Chip",
+      "category": "Golf",
+      "price": 6,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-18-26.jpg",
+      "hash": "94bf67366a89cbc78193dcdc9380b681975fce5150a599191f2699d829493170"
+    },
+    {
+      "title": "Ocean Green Putt",
+      "category": "Golf",
+      "price": 6,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-18-29.jpg",
+      "hash": "21f8c993c222690b58c132e7fe43404c29538226121bffbbe828807a17789d70"
+    },
+    {
+      "title": "Sand Save Moment",
+      "category": "Golf",
+      "price": 6,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-18-32.jpg",
+      "hash": "4eebbb58e4ae01af03f8f89991a14292312d179a965d72a45d77ddba8396b003"
+    },
+    {
+      "title": "Mars Canyon Dawn",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-18-48.jpg",
+      "hash": "559a4f43b2135f1023b873c44c4abb71e0e6acb8425754b90181620e92fb5118"
+    },
+    {
+      "title": "Orbital Repair Walk",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-18-51.jpg",
+      "hash": "40effab6d447f719c2cae4e4a195b571f9cc3edda725ad99624ba4bea5c9f7ce"
+    },
+    {
+      "title": "Earth Moon Reflection",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-18-55.jpg",
+      "hash": "8a6741fe98ded294416017f971740e5712e4e6cf73d7f5e2d3d35bd0b25f56be"
+    },
+    {
+      "title": "Ice Ring Planet",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-18-58.jpg",
+      "hash": "a05fb95f546c682619838bb554e70618bddce97d67af2906a1562b206226b177"
+    },
+    {
+      "title": "Bronze Red Planet",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-19-05.jpg",
+      "hash": "14c09bbe6ed51eae719185201d2bfb1667a3e37dd52d11fc822e0f490d08061f"
+    },
+    {
+      "title": "Golden Cloud Planet",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-19-14.jpg",
+      "hash": "b717891268bdadb0aa1c2ea3de110bf41bc6a2df3dc15a87d57eadc7abc4e973"
+    },
+    {
+      "title": "Storm Ring World",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-19-31.jpg",
+      "hash": "ae03901fe66de6e69747ea2b975b944ebecbb08a242715537a735e5b215c5a98"
+    },
+    {
+      "title": "Blue Ring Giant",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-19-35.jpg",
+      "hash": "d9cbc33ac8a1bdb379a0d5d26a2af66bf3c104f3f3414f1fb4e2ab18e31977de"
+    },
+    {
+      "title": "Red Canyon Explorer",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-19-41.jpg",
+      "hash": "81c7d0b183bcfab9e930240051ff87540625df73d8b3bde711f50daef3d5297f"
+    },
+    {
+      "title": "Lunar Rover Trail",
+      "category": "Space",
+      "price": 8,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-19-50.jpg",
+      "hash": "4d8b535008c12bf0c402d1a07d4f85950c92f74a510122d145b55822ab79449b"
+    },
+    {
+      "title": "Garden Hive Morning",
+      "category": "Animals",
+      "price": 5,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-20-03.jpg",
+      "hash": "a0877820ab382dd6996bbbeaf39734d75fbcf5bd890cff3c0284ec67aa78366e"
+    },
+    {
+      "title": "Golden Pollen Macro",
+      "category": "Animals",
+      "price": 5,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-20-07.jpg",
+      "hash": "3c3db72c6b27e7f639c7480848d317ca4a64f48aed48d5ae8dcc0f15fea863aa"
+    },
+    {
+      "title": "Cherry Blossom Bee",
+      "category": "Animals",
+      "price": 5,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-20-16.jpg",
+      "hash": "5abd700d9eee29515291fae0c55d4fa17d4c7494fe9829bba48e8a09fc690a24"
+    },
+    {
+      "title": "Old Canal Lane",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-20-24.jpg",
+      "hash": "182d4a75f64f53bf4514e3b1a6433bcc09caaba847c21d59b2ceef357d6ca2f4"
+    },
+    {
+      "title": "Skyline Evening Roads",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-20-27.jpg",
+      "hash": "932b94ea63ebcf0fe31cd77efccacd7e81f08a98f97b5e142080dfeda4b2a22c"
+    },
+    {
+      "title": "Stone Alley Twilight",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-20-37.jpg",
+      "hash": "9d07638b64d16701e2f3d2c79b2ab9ad2a57610cd3a7ba32338582a033356b18"
+    },
+    {
+      "title": "Lantern Stair Street",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-20-41.jpg",
+      "hash": "dcbf854e70c4909d26d11a71f934f91697d96d9760ed3a8477a5e3ca2e264932"
+    },
+    {
+      "title": "Tokyo Overpass Glow",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-20-48.jpg",
+      "hash": "3699ca415906f62edaea9794993f634f5953156c515e8be843ae0ad233a0d094"
+    },
+    {
+      "title": "Traditional Town Night",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-21-10.jpg",
+      "hash": "36248f178b4c513ef8fb56aa88c481adec8c5848b710a929a0146718a2ac0f21"
+    },
+    {
+      "title": "Willow Courtyard Garden",
+      "category": "Nature",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-21-13.jpg",
+      "hash": "99abfb6b7615644d94df7dee24a9d73b00c1da107133116ff1dc23baddf51ee2"
+    },
+    {
+      "title": "Lotus Pagoda Garden",
+      "category": "Nature",
+      "price": 7,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-21-17.jpg",
+      "hash": "198016430ef44901d10c393aeed287334c03c9c7f83895da2f5f575253fc7753"
+    },
+    {
+      "title": "Mist Pavilion Pond",
+      "category": "Nature",
+      "price": 7,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-21-22.jpg",
+      "hash": "4883bd84bd2d4f24118569eb3e5c6a700f44fb12f017cbe0d89080c4dfc2fade"
+    },
+    {
+      "title": "Cliff Temple Sunrise",
+      "category": "Travel & Landmarks",
+      "price": 9,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-21-34.jpg",
+      "hash": "00ae46fb32e6ba59df3353efc2be918eedd7b32387cf106f8cf1ffd2a9178daa"
+    },
+    {
+      "title": "Alpine Canal Sunset",
+      "category": "Travel & Landmarks",
+      "price": 9,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-21-39.jpg",
+      "hash": "0e1656210a75bfc5319fe81ba455e4e31483f7ed5333796f0a8bd5c642a4b34a"
+    },
+    {
+      "title": "Mountain Sunrise Valley",
+      "category": "Travel & Landmarks",
+      "price": 9,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-21-45.jpg",
+      "hash": "9e075a4f31301f54ca9d7d965171533cad702929330bfec7f4befff692f60791"
+    },
+    {
+      "title": "Emerald Rice Terraces",
+      "category": "Travel & Landmarks",
+      "price": 9,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-21-58.jpg",
+      "hash": "d6ca1753ecbf60666527bb0e83226a73bbc5955724420ef3848c0f187dc3e4a0"
+    },
+    {
+      "title": "Greek Island Dusk",
+      "category": "Travel & Landmarks",
+      "price": 9,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-22-01.jpg",
+      "hash": "4dbae945d342576ceb98d746e51eb493771a2999893bac926ebb05bb451ecffc"
+    },
+    {
+      "title": "Snow Lake Village",
+      "category": "Travel & Landmarks",
+      "price": 9,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-22-08.jpg",
+      "hash": "ccc9e1186a3c6d18e59a6cfabdab1f84a711b3d97c2cd40efda5dfb588e62463"
+    },
+    {
+      "title": "Market Canvas Scene",
+      "category": "Art",
+      "price": 6,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-22-15.jpg",
+      "hash": "625e800b5f3d23960711bd566975b590dcaa1ec2bde672d94d0bcf14fbde6073"
+    },
+    {
+      "title": "Mechanical Abstract Eye",
+      "category": "Art",
+      "price": 6,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-22-25.jpg",
+      "hash": "80e4ef074219fcef84b4ebade0d303c7e30401962a3aee45e1c1ad04be6645b7"
+    },
+    {
+      "title": "Cubist City Study",
+      "category": "Art",
+      "price": 6,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-22-28.jpg",
+      "hash": "85a4bf2b32eeef919696f7477a0f47d31d7f1f208e8735cb6fc872819d8ccae9"
+    },
+    {
+      "title": "Moon Pine Temple",
+      "category": "Art",
+      "price": 6,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-22-31.jpg",
+      "hash": "9beee6bd02de200f3f1af966e930dcbbd234a4020e4f6a31b2f875748cc4fd74"
+    },
+    {
+      "title": "Color Mask Abstract",
+      "category": "Art",
+      "price": 6,
+      "missingPieceCount": 3,
+      "fileName": "photo_2026-07-03_18-22-34.jpg",
+      "hash": "51eaf5428c9cd3dd483d649d506203e7b8ae3190efd6968b7a6174a50476c4b5"
+    },
+    {
+      "title": "Velvet Library Portrait",
+      "category": "Art",
+      "price": 6,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-22-43.jpg",
+      "hash": "9eb0e712fa4ca26be9cd93386033ab6a3e233c9b4ba14444ec400daef1fed431"
+    },
+    {
+      "title": "Westminster Commuter Bike",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-25-59.jpg",
+      "hash": "dd5ab444c359accc21bd9bb9d8c10eba37883b5e9d6bb84d0d1ea653a339bc79"
+    },
+    {
+      "title": "Patagonia Gravel Bike",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 2,
+      "fileName": "photo_2026-07-03_18-27-17.jpg",
+      "hash": "55b366132564b433ce71d62bfe9e5ae3fd1854001001fbec8f6c3da0c1ba8a47"
+    },
+    {
+      "title": "Capital Cargo Bicycle",
+      "category": "Travel & Landmarks",
+      "price": 7,
+      "missingPieceCount": 1,
+      "fileName": "photo_2026-07-03_18-28-45.jpg",
+      "hash": "77b5900081963ae32a3be6545fff835cb3d8dcd0554c0899340232c31096bedb"
+    }
+  ],
+  "skipped": [
+    {
+      "title": "Palace Dance Celebration",
+      "reason": "existing-title-or-slug",
+      "fileName": "03286f51-b624-4f24-a97f-8c34e3180336.jpg"
+    },
+    {
+      "title": "Blue Arena Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "0502936e-1206-47ad-b552-17a4c664317e.jpg"
+    },
+    {
+      "title": "Sunset Fairway Putt",
+      "reason": "existing-title-or-slug",
+      "fileName": "077c01df-54cf-4837-977c-3df4d820c7a8.jpg"
+    },
+    {
+      "title": "Derby Match Sprint",
+      "reason": "existing-title-or-slug",
+      "fileName": "09334acb-a4d6-417b-b258-6499ea6972fe.jpg"
+    },
+    {
+      "title": "Window Coffee Archive",
+      "reason": "existing-title-or-slug",
+      "fileName": "0e92f673-8671-42e7-a8dc-679c5424a886.jpg"
+    },
+    {
+      "title": "Lakeside Golf Swing",
+      "reason": "existing-title-or-slug",
+      "fileName": "10e5b940-7f9c-471a-8599-45722c96cc51.jpg"
+    },
+    {
+      "title": "Island Terrace Espresso",
+      "reason": "existing-title-or-slug",
+      "fileName": "18a62ea1-203f-4fc8-93dd-6b018f9b88de.jpg"
+    },
+    {
+      "title": "Bunker Sand Shot",
+      "reason": "existing-title-or-slug",
+      "fileName": "1c6760f7-a477-4f8b-9869-3ff27235cf89.jpg"
+    },
+    {
+      "title": "Blue Bridge Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "1e7540d9-be26-433c-bef3-f94797ac308e.jpg"
+    },
+    {
+      "title": "Tea Room Garden Vase",
+      "reason": "existing-title-or-slug",
+      "fileName": "1f8f868e-3126-4bf0-b1e4-3e949d784640.jpg"
+    },
+    {
+      "title": "Crimson Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "2638c315-3d63-4097-be17-3e5140e53215.jpg"
+    },
+    {
+      "title": "Studio Coffee Sketch",
+      "reason": "existing-title-or-slug",
+      "fileName": "26ad5652-87b6-45c2-b03d-dd7a594d1a91.jpg"
+    },
+    {
+      "title": "Yellow Arena Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "2a229920-ea3f-415f-b5e4-77965a6d8946.jpg"
+    },
+    {
+      "title": "Red Stripe Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "3702355f-0152-4e6b-ac4a-8d81fab61f16.jpg"
+    },
+    {
+      "title": "Rose Garden Bouquet",
+      "reason": "existing-title-or-slug",
+      "fileName": "3cae83b3-34dd-47e6-8e73-08bb2570127d.jpg"
+    },
+    {
+      "title": "Cafe Latte Hands",
+      "reason": "existing-title-or-slug",
+      "fileName": "3d17b6a5-186d-47d6-ae9b-71b54d5a22fe.jpg"
+    },
+    {
+      "title": "Golden Hour Golf Blast",
+      "reason": "existing-title-or-slug",
+      "fileName": "41f0be8e-3c03-49b3-8c5d-739c9da13745.jpg"
+    },
+    {
+      "title": "Library Flower Notes",
+      "reason": "existing-title-or-slug",
+      "fileName": "4548f4ab-5ffd-4af9-9dda-97e2360d2605.jpg"
+    },
+    {
+      "title": "Red Arena Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "48278d4b-c774-4aa3-88e6-073cb8f10218.jpg"
+    },
+    {
+      "title": "Ocean Matcha Window",
+      "reason": "existing-title-or-slug",
+      "fileName": "4ecf5ad2-2e2c-4f37-a25c-b827ebd872b2.jpg"
+    },
+    {
+      "title": "Striped Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "50b6ad3c-6364-403a-9901-7ccb1703176f.jpg"
+    },
+    {
+      "title": "Vintage Football Boots",
+      "reason": "existing-title-or-slug",
+      "fileName": "5357e70f-c7ce-4edc-9781-ad3616306d88.jpg"
+    },
+    {
+      "title": "Blue Stadium Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "53621f1e-959d-4823-a8f0-1681ed936db9.jpg"
+    },
+    {
+      "title": "Red Classic Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "555c5809-1538-4789-9713-1c193c404294.jpg"
+    },
+    {
+      "title": "Tea Ceremony Set",
+      "reason": "existing-title-or-slug",
+      "fileName": "556cce2b-0e5f-42bf-9782-1b44c9e7dc48.jpg"
+    },
+    {
+      "title": "White Stadium Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "5a39f2b0-a42d-4270-9fc7-b9430dfd50a2.jpg"
+    },
+    {
+      "title": "Tatami Tea Table",
+      "reason": "existing-title-or-slug",
+      "fileName": "5af2178c-f5f7-44eb-98e0-f7ba97a602e9.jpg"
+    },
+    {
+      "title": "Street Sport Motorbike",
+      "reason": "existing-title-or-slug",
+      "fileName": "5c912ad3-8bd4-4424-863d-99cfac5c05b7.jpg"
+    },
+    {
+      "title": "Garden Tea Set",
+      "reason": "existing-title-or-slug",
+      "fileName": "5f8baad0-7388-484f-aa16-9734857ee27e.jpg"
+    },
+    {
+      "title": "Half Blue Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "674827fe-de8b-4019-9644-dee37fd54356.jpg"
+    },
+    {
+      "title": "Blue Street Motorbike",
+      "reason": "existing-title-or-slug",
+      "fileName": "6d9cfff4-1f7f-4458-b3c2-899da886fda2.jpg"
+    },
+    {
+      "title": "Purple Stadium Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "6e081eb3-1837-45df-800c-10d68c2868ec.jpg"
+    },
+    {
+      "title": "Red Carpet Film Star",
+      "reason": "existing-title-or-slug",
+      "fileName": "72a67fc2-5ed6-4f18-8b98-f47af15f8749.jpg"
+    },
+    {
+      "title": "Navy Paris Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "72e11e31-395c-4ff2-938b-af631551c640.jpg"
+    },
+    {
+      "title": "Yellow Camp Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "72fa9306-b539-4d28-8161-e99e6298a120.jpg"
+    },
+    {
+      "title": "White Paris Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "7564ead1-721b-4039-bb22-aec63b1672ea.jpg"
+    },
+    {
+      "title": "Orange Stadium Goalkeeper Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "756d8383-64c0-4557-91a7-adfcc71c7869.jpg"
+    },
+    {
+      "title": "Stone Garden Tea Set",
+      "reason": "existing-title-or-slug",
+      "fileName": "7836bba8-f139-4e3c-976d-5e884315ade2.jpg"
+    },
+    {
+      "title": "Window Travel Coffee",
+      "reason": "existing-title-or-slug",
+      "fileName": "7e9652c9-1223-4f31-a244-88abd01baac3.jpg"
+    },
+    {
+      "title": "Red Stadium Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "7f72e5ab-7b50-4227-85e2-1492c9cb8d61.jpg"
+    },
+    {
+      "title": "White Galaxy Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "7fedbb59-c7eb-4b57-ab13-2e07b7bf0e69.jpg"
+    },
+    {
+      "title": "Blue Retro Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "831a4e41-b905-4531-ad27-d68d12a9f32e.jpg"
+    },
+    {
+      "title": "Pastel Garden Bouquet",
+      "reason": "existing-title-or-slug",
+      "fileName": "86ca5068-7306-4b1e-a536-46e0085682fb.jpg"
+    },
+    {
+      "title": "Mountain Cabin Coffee",
+      "reason": "existing-title-or-slug",
+      "fileName": "887a2969-336e-4903-9dff-4b09355c7af8.jpg"
+    },
+    {
+      "title": "Sky Blue Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "88b2fcb0-babb-4bec-b5b7-1a08392dc61d.jpg"
+    },
+    {
+      "title": "Red Blue Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "989236f7-a71e-4c07-811b-8e2b38eb8698.jpg"
+    },
+    {
+      "title": "Match Ball Boots",
+      "reason": "existing-title-or-slug",
+      "fileName": "9c1f5cff-5947-404a-9a35-0ef712bcd902.jpg"
+    },
+    {
+      "title": "Yellow Arena Club Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "9db25ab4-a53f-4da0-9d69-896d3edc28f0.jpg"
+    },
+    {
+      "title": "Tea Room Guests",
+      "reason": "existing-title-or-slug",
+      "fileName": "a121f139-1144-464f-9971-2e0581695b8a.jpg"
+    },
+    {
+      "title": "Cliffside Coffee View",
+      "reason": "existing-title-or-slug",
+      "fileName": "a747e80e-6aef-45d5-b694-9a44bb1a75cc.jpg"
+    },
+    {
+      "title": "Seaside Tea Cup",
+      "reason": "existing-title-or-slug",
+      "fileName": "a9c38964-6244-4a63-83b5-d9ad22027b83.jpg"
+    },
+    {
+      "title": "Turquoise Balcony Tea",
+      "reason": "existing-title-or-slug",
+      "fileName": "aeb86f28-9bc0-4ecd-b590-cbd8e3c3d3f3.jpg"
+    },
+    {
+      "title": "Garden Incense Tea",
+      "duplicateOf": "Stone Garden Tea Set",
+      "reason": "existing-image",
+      "fileName": "b75f5ec9-2039-41b7-a59b-6cc83c6fefd7.jpg"
+    },
+    {
+      "title": "White Classic Stadium Shirt",
+      "duplicateOf": "White Stadium Football Shirt",
+      "reason": "existing-image",
+      "fileName": "be922b3a-7835-4f9f-8c5d-1c8a6fbae9a1.jpg"
+    },
+    {
+      "title": "Garden Ikebana Vase",
+      "reason": "existing-title-or-slug",
+      "fileName": "c0b0c896-1323-451f-a9ba-601b1c55828d.jpg"
+    },
+    {
+      "title": "Library Rose Arrangement",
+      "reason": "existing-title-or-slug",
+      "fileName": "c667a7dc-3c51-43b2-b91b-6ba155d3cb9f.jpg"
+    },
+    {
+      "title": "Green Stadium Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "c85ed0cb-5caa-4490-b3b7-d818b3158dc2.jpg"
+    },
+    {
+      "title": "Night City Motorbike",
+      "reason": "existing-title-or-slug",
+      "fileName": "cac0d918-6626-46ab-8963-73e419d9b945.jpg"
+    },
+    {
+      "title": "Black Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "cb102301-a0c0-4f7c-9345-4781ca471fdb.jpg"
+    },
+    {
+      "title": "Fireplace Flower Room",
+      "reason": "existing-title-or-slug",
+      "fileName": "d8008772-18d5-4d6f-9735-25a6c0292a6d.jpg"
+    },
+    {
+      "title": "White Stadium Crest Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "dbaf7122-6fd4-438c-8684-7fbd2df97fdf.jpg"
+    },
+    {
+      "title": "Neon Yellow Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "e64cab78-4336-49da-98b2-179f27c47761.jpg"
+    },
+    {
+      "title": "Night Football Clash",
+      "reason": "existing-title-or-slug",
+      "fileName": "e92d9c4a-a975-4ae0-b3b8-3f50fb3760b2.jpg"
+    },
+    {
+      "title": "Library Floral Still Life",
+      "reason": "existing-title-or-slug",
+      "fileName": "f999c19f-29e6-4e53-9d66-cc9e9e71c540.jpg"
+    },
+    {
+      "title": "White Bridge Football Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "fbb8eda8-a87f-4e0d-91b5-900528f9d5c6.jpg"
+    },
+    {
+      "title": "Festive Palace Dancer",
+      "reason": "existing-title-or-slug",
+      "fileName": "fd6dac00-5c19-48ec-b800-54504fa40bf6.jpg"
+    },
+    {
+      "title": "White Madrid Stadium Shirt",
+      "reason": "existing-title-or-slug",
+      "fileName": "fdd15eb8-8bbf-495c-b81a-52ac81b931f3.jpg"
+    },
+    {
+      "title": "Orbit Postage Stamp",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-06-28_22-45-05.jpg"
+    },
+    {
+      "title": "Map Room Shelves",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-14-38.jpg"
+    },
+    {
+      "title": "Collector Book Nook",
+      "duplicateOf": "Collector Image 5671",
+      "reason": "batch-duplicate",
+      "fileName": "photo_2026-07-03_18-14-43.jpg"
+    },
+    {
+      "title": "Vintage Table Radio",
+      "duplicateOf": "Collector Image 937",
+      "reason": "batch-duplicate",
+      "fileName": "photo_2026-07-03_18-16-39.jpg"
+    },
+    {
+      "title": "Vintage Table Radio",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-16-42.jpg"
+    },
+    {
+      "title": "Home Plate Dive",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-16-56.jpg"
+    },
+    {
+      "title": "Five Star Highway",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-17-08.jpg"
+    },
+    {
+      "title": "Five Star Highway",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-17-14.jpg"
+    },
+    {
+      "title": "Five Star Highway",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-18-07.jpg"
+    },
+    {
+      "title": "Desert Firefight",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-18-13.jpg"
+    },
+    {
+      "title": "Five Star Highway",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-18-16.jpg"
+    },
+    {
+      "title": "Night Boss Battle",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-18-23.jpg"
+    },
+    {
+      "title": "Sand Save Moment",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-18-35.jpg"
+    },
+    {
+      "title": "Mars Canyon Dawn",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-01.jpg"
+    },
+    {
+      "title": "Orbital Repair Walk",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-08.jpg"
+    },
+    {
+      "title": "Mars Canyon Dawn",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-11.jpg"
+    },
+    {
+      "title": "Mars Canyon Dawn",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-18.jpg"
+    },
+    {
+      "title": "Bronze Red Planet",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-25.jpg"
+    },
+    {
+      "title": "Golden Cloud Planet",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-28.jpg"
+    },
+    {
+      "title": "Earth Moon Reflection",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-38.jpg"
+    },
+    {
+      "title": "Red Canyon Explorer",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-45.jpg"
+    },
+    {
+      "title": "Earth Moon Reflection",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-53.jpg"
+    },
+    {
+      "title": "Earth Moon Reflection",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-19-57.jpg"
+    },
+    {
+      "title": "Red Canyon Explorer",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-00.jpg"
+    },
+    {
+      "title": "Garden Hive Morning",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-10.jpg"
+    },
+    {
+      "title": "Golden Pollen Macro",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-13.jpg"
+    },
+    {
+      "title": "Golden Pollen Macro",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-20.jpg"
+    },
+    {
+      "title": "Skyline Evening Roads",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-31.jpg"
+    },
+    {
+      "title": "Old Canal Lane",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-33.jpg"
+    },
+    {
+      "title": "Stone Alley Twilight",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-45.jpg"
+    },
+    {
+      "title": "Stone Alley Twilight",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-51.jpg"
+    },
+    {
+      "title": "Old Canal Lane",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-56.jpg"
+    },
+    {
+      "title": "Old Canal Lane",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-20-59.jpg"
+    },
+    {
+      "title": "Stone Alley Twilight",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-21-02.jpg"
+    },
+    {
+      "title": "Lantern Stair Street",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-21-07.jpg"
+    },
+    {
+      "title": "Lotus Pagoda Garden",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-21-26.jpg"
+    },
+    {
+      "title": "Willow Courtyard Garden",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-21-31.jpg"
+    },
+    {
+      "title": "Cliff Temple Sunrise",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-21-37.jpg"
+    },
+    {
+      "title": "Alpine Canal Sunset",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-21-42.jpg"
+    },
+    {
+      "title": "Mountain Sunrise Valley",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-22-04.jpg"
+    },
+    {
+      "title": "Snow Lake Village",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-22-11.jpg"
+    },
+    {
+      "title": "Market Canvas Scene",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-22-19.jpg"
+    },
+    {
+      "title": "Greek Island Dusk",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-22-22.jpg"
+    },
+    {
+      "title": "Color Mask Abstract",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-22-40.jpg"
+    },
+    {
+      "title": "Mechanical Abstract Eye",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-22-47.jpg"
+    },
+    {
+      "title": "Moon Pine Temple",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-23-47.jpg"
+    },
+    {
+      "title": "Patagonia Gravel Bike",
+      "reason": "existing-title-or-slug",
+      "fileName": "photo_2026-07-03_18-27-20.jpg"
+    },
+    {
+      "title": "Collector Image 2452",
+      "duplicateOf": "Orbit Postage Stamp",
+      "reason": "existing-image",
+      "fileName": "photo_2026-07-03_18-36-14.jpg"
+    }
+  ],
+  "importedCount": 57,
+  "skippedCount": 115,
+  "owner": "dry-run"
+}

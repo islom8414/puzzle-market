@@ -24,7 +24,7 @@ export default function AboutPage() {
             ],
             [
               "Buy The Missing Piece",
-              "Only one or two pieces are missing. The marketplace opens the exact piece needed for that puzzle.",
+              "One to three pieces can be missing. The marketplace opens the exact piece needed for that puzzle.",
             ],
             [
               "Own And Resell",

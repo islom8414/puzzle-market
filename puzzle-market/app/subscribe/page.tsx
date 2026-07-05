@@ -116,7 +116,7 @@ export default function SubscribePage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white px-4 md:px-6 py-8 md:py-10">
+    <main className="subscribe-page min-h-screen bg-black text-white px-4 md:px-6 py-8 md:py-10">
       <section className="mx-auto max-w-6xl">
         <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.18em] md:tracking-[0.35em]">
           Collector Plans
@@ -144,7 +144,7 @@ export default function SubscribePage() {
                 {plan.name}
               </h2>
 
-              <div className="mt-3 text-4xl md:text-5xl font-black text-cyan-400">
+              <div className="plan-price mt-3 text-4xl md:text-5xl font-black text-cyan-400">
                 {plan.price}
               </div>
 

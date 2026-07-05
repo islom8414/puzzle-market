@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Puzzle Market Premium Commercial</title>
+  <style>
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #05070a;
+      color: white;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      gap: 18px;
+      padding: 24px;
+    }
+
+    canvas {
+      width: min(390px, 90vw);
+      aspect-ratio: 9 / 16;
+      border-radius: 24px;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .12);
+      background: #020305;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 620px;
+    }
+
+    button, a {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: #15c8e6;
+      color: #001013;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: rgba(255, 255, 255, .12);
+      color: white;
+    }
+
+    p {
+      max-width: 620px;
+      color: rgba(255, 255, 255, .68);
+      text-align: center;
+      line-height: 1.5;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    body.capture {
+      display: block;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    body.capture canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    body.capture .controls,
+    body.capture p {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="ad" width="2160" height="3840"></canvas>
+  <div class="controls">
+    <button id="play">Play Preview</button>
+    <button id="record">Record 20s 4K WebM</button>
+    <a id="download" style="display:none">Download video</a>
+    <button id="snapshot" class="secondary">Save thumbnail PNG</button>
+  </div>
+  <p>
+    Puzzle Market premium vertical commercial. The exported file is WebM because this machine has no local ffmpeg available for MP4 conversion.
+  </p>
+
+  <script>
+    const canvas = document.getElementById('ad');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    let W = canvas.width;
+    let H = canvas.height;
+    const DURATION = 20;
+
+    const ASSETS = [
+      '../puzzle-market-cube-logo.png',
+      '../photo_2026-06-26_21-10-42.jpg',
+      '../photo_2026-06-26_21-10-46.jpg',
+      '../photo_2026-06-26_21-10-50.jpg',
+      '../photo_2026-06-26_21-10-53.jpg',
+      '../photo_2026-06-26_21-11-16.jpg',
+      '../photo_2026-06-26_21-11-35.jpg',
+      '../photo_2026-06-26_21-12-34.jpg'
+    ];
+
+    const images = new Map();
+    let startTime = performance.now();
+    let playing = true;
+
+    function loadImage(src) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve([src, img]);
+        img.onerror = () => resolve([src, null]);
+        img.src = src;
+      });
+    }
+
+    const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const smooth = (a, b, t) => ease(clamp((t - a) / (b - a)));
+    const fade = (a, b, t) => clamp(Math.min((t - a) / .45, (b - t) / .45));
+
+    function sceneTime(t, a, b) {
+      return clamp((t - a) / (b - a));
+    }
+
+    function setFont(size, weight = 800, family = 'Inter, Arial, sans-serif') {
+      ctx.font = `${weight} ${size}px ${family}`;
+    }
+
+    function fillTextCentered(text, y, size, color = '#ffffff', weight = 850, maxWidth = W * .86) {
+      ctx.fillStyle = color;
+      setFont(size, weight);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, W / 2, y, maxWidth);
+    }
+
+    function multiline(lines, x, y, size, gap, color = '#fff', weight = 850, align = 'center') {
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = color;
+      setFont(size, weight);
+      lines.forEach((line, i) => ctx.fillText(line, x, y + i * gap));
+    }
+
+    function roundRect(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function bg(t, tone = 0) {
+      const g = ctx.createRadialGradient(W * .55, H * .38, 0, W * .55, H * .38, H * .72);
+      g.addColorStop(0, tone ? '#13222d' : '#0f1218');
+      g.addColorStop(.42, '#040609');
+      g.addColorStop(1, '#000000');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      const glow = ctx.createRadialGradient(W * .52, H * .32, 0, W * .52, H * .32, W * .55);
+      glow.addColorStop(0, 'rgba(244,190,91,.22)');
+      glow.addColorStop(.5, 'rgba(10,198,230,.08)');
+      glow.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.globalAlpha = .12;
+      for (let i = 0; i < 120; i++) {
+        const x = (Math.sin(i * 91.7 + t * .18) * .5 + .5) * W;
+        const y = ((i * 331 + t * 38) % H);
+        ctx.fillStyle = i % 5 === 0 ? '#f6d28a' : '#ffffff';
+        ctx.beginPath();
+        ctx.arc(x, y, 1.5 + (i % 4), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function drawImageCover(img, x, y, w, h, alpha = 1) {
+      if (!img) return;
+      const s = Math.max(w / img.width, h / img.height);
+      const sw = w / s;
+      const sh = h / s;
+      const sx = (img.width - sw) / 2;
+      const sy = (img.height - sh) / 2;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+      ctx.restore();
+    }
+
+    function luxuryBox(cx, cy, scale, rot, label = 'PUZZLE') {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rot);
+      ctx.scale(scale, scale);
+
+      ctx.shadowColor = 'rgba(0,0,0,.55)';
+      ctx.shadowBlur = 120;
+      ctx.fillStyle = 'rgba(0,0,0,.45)';
+      ctx.beginPath();
+      ctx.ellipse(0, 560, 520, 95, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      const g = ctx.createLinearGradient(-470, -360, 450, 390);
+      g.addColorStop(0, '#151a22');
+      g.addColorStop(.35, '#0b0e14');
+      g.addColorStop(.55, '#1b2835');
+      g.addColorStop(1, '#020305');
+      ctx.fillStyle = g;
+      roundRect(-470, -410, 940, 940, 58);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255,255,255,.22)';
+      ctx.lineWidth = 7;
+      ctx.stroke();
+
+      ctx.fillStyle = '#111820';
+      roundRect(-405, -345, 810, 630, 38);
+      ctx.fill();
+      const img = images.get('../photo_2026-06-26_21-12-34.jpg');
+      drawImageCover(img, -384, -324, 768, 588, .86);
+
+      const sheen = ctx.createLinearGradient(-380, -320, 360, 280);
+      sheen.addColorStop(0, 'rgba(255,255,255,.0)');
+      sheen.addColorStop(.48, 'rgba(255,255,255,.14)');
+      sheen.addColorStop(.52, 'rgba(255,255,255,.03)');
+      sheen.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = sheen;
+      roundRect(-384, -324, 768, 588, 32);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      setFont(74, 900);
+      ctx.textAlign = 'center';
+      ctx.fillText(label, 0, 390);
+      ctx.fillStyle = '#15c8e6';
+      setFont(31, 800);
+      ctx.fillText('LIMITED SERIES', 0, 448);
+
+      ctx.restore();
+    }
+
+    function priceTag(x, y, price, alpha = 1) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.shadowColor = 'rgba(245,191,85,.35)';
+      ctx.shadowBlur = 40;
+      const g = ctx.createLinearGradient(x, y, x + 330, y + 118);
+      g.addColorStop(0, '#f9e7b1');
+      g.addColorStop(1, '#c99632');
+      ctx.fillStyle = g;
+      roundRect(x, y, 390, 132, 24);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#050505';
+      setFont(56, 950);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(price, x + 195, y + 68);
+      ctx.restore();
+    }
+
+    function shelf(t, st) {
+      const y = H * .58;
+      ctx.fillStyle = '#5f3b20';
+      ctx.fillRect(200, y, W - 400, 40);
+      ctx.fillStyle = 'rgba(246,205,124,.18)';
+      ctx.fillRect(200, y, W - 400, 4);
+      for (let i = 0; i < 6; i++) {
+        const x = 260 + i * 270 + Math.sin(st * 8 + i) * 6;
+        luxuryMiniBox(x, y - 500 + (i % 2) * 54, .42 + (i % 3) * .03, i);
+      }
+    }
+
+    function luxuryMiniBox(x, y, s, idx) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(s, s);
+      const colors = [['#132b38', '#101219'], ['#28141f', '#09080c'], ['#2b2716', '#0b0a08']][idx % 3];
+      const g = ctx.createLinearGradient(0, 0, 0, 780);
+      g.addColorStop(0, colors[0]);
+      g.addColorStop(1, colors[1]);
+      ctx.fillStyle = g;
+      roundRect(0, 0, 520, 780, 34);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.14)';
+      ctx.lineWidth = 5;
+      ctx.stroke();
+      const pool = [
+        '../photo_2026-06-26_21-10-42.jpg',
+        '../photo_2026-06-26_21-10-46.jpg',
+        '../photo_2026-06-26_21-10-50.jpg',
+        '../photo_2026-06-26_21-11-16.jpg',
+        '../photo_2026-06-26_21-11-35.jpg',
+        '../photo_2026-06-26_21-12-34.jpg'
+      ];
+      drawImageCover(images.get(pool[idx % pool.length]), 44, 50, 432, 470, .92);
+      ctx.fillStyle = '#fff';
+      setFont(54, 900);
+      ctx.textAlign = 'center';
+      ctx.fillText(['RARE', 'VINTAGE', 'LIMITED'][idx % 3], 260, 618);
+      ctx.fillStyle = '#15c8e6';
+      setFont(28, 800);
+      ctx.fillText('COLLECTIBLE PUZZLE', 260, 672);
+      ctx.restore();
+    }
+
+    function phoneUI(x, y, w, h, t) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(21,200,230,.28)';
+      ctx.shadowBlur = 80;
+      ctx.fillStyle = '#05080c';
+      roundRect(x, y, w, h, 84);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(255,255,255,.18)';
+      ctx.lineWidth = 8;
+      ctx.stroke();
+      const pad = 58;
+      ctx.fillStyle = '#0b1016';
+      roundRect(x + pad, y + pad, w - pad * 2, h - pad * 2, 48);
+      ctx.fill();
+      const logo = images.get('../puzzle-market-cube-logo.png');
+      if (logo) ctx.drawImage(logo, x + pad + 28, y + pad + 24, 140, 140);
+      ctx.fillStyle = '#fff';
+      setFont(58, 950);
+      ctx.textAlign = 'left';
+      ctx.fillText('Puzzle Market', x + pad + 190, y + pad + 84);
+      ctx.fillStyle = 'rgba(255,255,255,.58)';
+      setFont(26, 650);
+      ctx.fillText('Premium collectible marketplace', x + pad + 190, y + pad + 130);
+
+      const cards = [
+        '../photo_2026-06-26_21-10-42.jpg',
+        '../photo_2026-06-26_21-10-46.jpg',
+        '../photo_2026-06-26_21-10-50.jpg'
+      ];
+      for (let i = 0; i < 3; i++) {
+        const yy = y + 340 + i * 360 - (smooth(0, 1, t) * 62);
+        ctx.fillStyle = 'rgba(255,255,255,.06)';
+        roundRect(x + pad + 28, yy, w - pad * 2 - 56, 280, 34);
+        ctx.fill();
+        drawImageCover(images.get(cards[i]), x + pad + 56, yy + 30, 310, 220, 1);
+        ctx.fillStyle = '#fff';
+        setFont(42, 900);
+        ctx.fillText(['Emerald Collector Set', 'Ruby Archive Edition', 'Golden Heirloom Puzzle'][i], x + pad + 400, yy + 88);
+        ctx.fillStyle = '#17dce9';
+        setFont(31, 850);
+        ctx.fillText(['Rare', 'Vintage', 'Limited'][i], x + pad + 400, yy + 150);
+        ctx.fillStyle = '#16f58a';
+        setFont(42, 950);
+        ctx.fillText(['$189', '$420', '$790'][i], x + pad + 400, yy + 218);
+      }
+      ctx.restore();
+    }
+
+    function scene1(t) {
+      const st = sceneTime(t, 0, 3);
+      bg(t);
+      luxuryBox(W / 2, H * .39 + Math.sin(st * Math.PI) * 34, 1.14, lerp(-.08, .1, ease(st)), 'ARCHIVE');
+      priceTag(W / 2 - 195, H * .68, '$29.99', fade(.2, 2.9, t));
+      ctx.globalAlpha = fade(.6, 3, t);
+      multiline(['What if this', "wasn't just a puzzle?"], W / 2, H * .82, 92, 108);
+      ctx.globalAlpha = 1;
+    }
+
+    function scene2(t) {
+      const st = sceneTime(t, 3, 6);
+      bg(t, 1);
+      shelf(t, st);
+      luxuryBox(W / 2, H * .42, .75, .035, 'ARCHIVE');
+      for (let i = 0; i < 6; i++) {
+        const x = W * .18 + i * W * .12 + Math.sin(st * 20 + i) * 40;
+        const y = H * .18 + ((st * 1800 + i * 260) % 900);
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(Math.sin(st * 14 + i) * .2);
+        ctx.fillStyle = i % 2 ? '#f8f2df' : '#e7d8ac';
+        ctx.fillRect(-90, -118, 180, 236);
+        ctx.fillStyle = 'rgba(0,0,0,.18)';
+        ctx.fillRect(-80, -92, 160, 16);
+        ctx.restore();
+      }
+      ctx.globalAlpha = fade(3.2, 5.9, t);
+      fillTextCentered('Years later...', H * .82, 98, '#fff', 900);
+      ctx.globalAlpha = 1;
+    }
+
+    function scene3(t) {
+      const st = sceneTime(t, 6, 10);
+      bg(t);
+      ctx.save();
+      ctx.globalAlpha = .38;
+      for (let i = 0; i < 18; i++) {
+        ctx.strokeStyle = i % 3 === 0 ? 'rgba(21,200,230,.35)' : 'rgba(255,255,255,.12)';
+        ctx.lineWidth = 2;
+        const y = H * .18 + i * 122;
+        ctx.beginPath();
+        ctx.moveTo(150, y);
+        ctx.lineTo(W - 150, y + Math.sin(st * 8 + i) * 8);
+        ctx.stroke();
+      }
+      ctx.restore();
+      luxuryBox(W / 2, H * .37, .86, lerp(-.04, .04, Math.sin(st * Math.PI)), 'ARCHIVE');
+
+      const prices = ['$29', '$189', '$420', '$790'];
+      const active = Math.min(3, Math.floor(st * 4.2));
+      for (let i = 0; i < 4; i++) {
+        const y = H * .61 + i * 170;
+        const a = smooth(i * .19, i * .19 + .13, st);
+        ctx.globalAlpha = a;
+        ctx.fillStyle = i === active ? '#16f58a' : 'rgba(255,255,255,.55)';
+        setFont(i === active ? 92 : 58, 950);
+        ctx.textAlign = 'center';
+        ctx.fillText(prices[i], W / 2, y);
+        if (i < 3) {
+          ctx.fillStyle = 'rgba(255,255,255,.28)';
+          setFont(42, 700);
+          ctx.fillText('↓', W / 2, y + 78);
+        }
+      }
+      ctx.globalAlpha = fade(6.1, 9.8, t);
+      ctx.fillStyle = 'rgba(255,255,255,.72)';
+      setFont(36, 650);
+      ctx.textAlign = 'center';
+      ctx.fillText('Illustrative example. Values vary depending on rarity and demand.', W / 2, H * .94, W * .86);
+      ctx.globalAlpha = 1;
+    }
+
+    function scene4(t) {
+      const st = sceneTime(t, 10, 15);
+      bg(t, 1);
+      const imgs = [
+        '../photo_2026-06-26_21-10-42.jpg',
+        '../photo_2026-06-26_21-10-46.jpg',
+        '../photo_2026-06-26_21-10-50.jpg',
+        '../photo_2026-06-26_21-10-53.jpg',
+        '../photo_2026-06-26_21-11-16.jpg',
+        '../photo_2026-06-26_21-11-35.jpg',
+        '../photo_2026-06-26_21-12-34.jpg'
+      ];
+      for (let i = 0; i < 7; i++) {
+        const p = (st * 1.15 + i / 7) % 1;
+        const x = lerp(W * .98, -W * .52, p);
+        const y = H * (.18 + (i % 4) * .16);
+        const w = W * .46;
+        const h = H * .15;
+        ctx.save();
+        ctx.translate(x + w / 2, y + h / 2);
+        ctx.rotate((i % 2 ? -1 : 1) * .035);
+        ctx.shadowColor = 'rgba(0,0,0,.5)';
+        ctx.shadowBlur = 40;
+        roundRect(-w / 2, -h / 2, w, h, 36);
+        ctx.clip();
+        drawImageCover(images.get(imgs[i]), -w / 2, -h / 2, w, h, 1);
+        ctx.restore();
+      }
+      ctx.save();
+      const grd = ctx.createLinearGradient(0, H * .56, 0, H);
+      grd.addColorStop(0, 'rgba(0,0,0,0)');
+      grd.addColorStop(.45, 'rgba(0,0,0,.78)');
+      grd.addColorStop(1, '#000');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+      ctx.globalAlpha = fade(10.25, 14.8, t);
+      multiline(['Some puzzles', 'become collectibles.'], W / 2, H * .79, 98, 112);
+      ctx.globalAlpha = 1;
+    }
+
+    function scene5(t) {
+      const st = sceneTime(t, 15, 18);
+      bg(t);
+      phoneUI(W * .13, H * .11 + Math.sin(st * Math.PI) * 16, W * .74, H * .76, st);
+      ctx.globalAlpha = fade(15.2, 17.9, t);
+      ctx.fillStyle = '#fff';
+      setFont(58, 900);
+      ctx.textAlign = 'center';
+      ctx.fillText('Search. Buy. Save.', W / 2, H * .91);
+      ctx.globalAlpha = 1;
+    }
+
+    function scene6(t) {
+      const st = sceneTime(t, 18, 20);
+      bg(t);
+      const logo = images.get('../puzzle-market-cube-logo.png');
+      if (logo) {
+        ctx.save();
+        ctx.globalAlpha = smooth(18, 18.4, t);
+        ctx.shadowColor = 'rgba(21,200,230,.36)';
+        ctx.shadowBlur = 90;
+        ctx.drawImage(logo, W / 2 - 230, H * .19, 460, 460);
+        ctx.restore();
+      }
+      ctx.globalAlpha = smooth(18.15, 18.75, t);
+      fillTextCentered('Puzzle Market', H * .45, 126, '#ffffff', 950);
+      fillTextCentered('www.puzzle-market.com', H * .52, 64, '#15c8e6', 850);
+      ctx.globalAlpha = smooth(18.45, 19.05, t);
+      multiline(["Discover Tomorrow's", 'Collectibles.'], W / 2, H * .67, 92, 106, '#fff', 950);
+      ctx.globalAlpha = smooth(18.85, 19.3, t);
+      fillTextCentered('Buy • Sell • Collect', H * .83, 54, 'rgba(255,255,255,.72)', 780);
+      ctx.globalAlpha = 1;
+    }
+
+    function draw(t) {
+      t = ((t % DURATION) + DURATION) % DURATION;
+      if (t < 3) scene1(t);
+      else if (t < 6) scene2(t);
+      else if (t < 10) scene3(t);
+      else if (t < 15) scene4(t);
+      else if (t < 18) scene5(t);
+      else scene6(t);
+
+      const vignette = ctx.createRadialGradient(W / 2, H * .42, W * .18, W / 2, H * .42, H * .66);
+      vignette.addColorStop(0, 'rgba(0,0,0,0)');
+      vignette.addColorStop(1, 'rgba(0,0,0,.58)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function loop(now) {
+      if (playing) draw((now - startTime) / 1000);
+      requestAnimationFrame(loop);
+    }
+
+    function audioDestination() {
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      const dest = ac.createMediaStreamDestination();
+      const master = ac.createGain();
+      master.gain.value = .055;
+      master.connect(dest);
+
+      const pad = ac.createOscillator();
+      pad.type = 'sine';
+      pad.frequency.value = 146.83;
+      const padGain = ac.createGain();
+      padGain.gain.value = .18;
+      pad.connect(padGain).connect(master);
+      pad.start();
+
+      const high = ac.createOscillator();
+      high.type = 'triangle';
+      high.frequency.value = 440;
+      const highGain = ac.createGain();
+      highGain.gain.value = .04;
+      high.connect(highGain).connect(master);
+      high.start();
+
+      const bass = ac.createOscillator();
+      bass.type = 'sine';
+      bass.frequency.value = 73.42;
+      const bassGain = ac.createGain();
+      bassGain.gain.value = .12;
+      bass.connect(bassGain).connect(master);
+      bass.start();
+
+      const start = ac.currentTime;
+      master.gain.setValueAtTime(.001, start);
+      master.gain.exponentialRampToValueAtTime(.05, start + 1.2);
+      master.gain.linearRampToValueAtTime(.075, start + 18);
+      master.gain.exponentialRampToValueAtTime(.001, start + 20);
+
+      [1.2, 3.05, 6, 10, 15, 18.1].forEach((offset, i) => {
+        const o = ac.createOscillator();
+        const g = ac.createGain();
+        o.type = 'sine';
+        o.frequency.value = [587, 659, 784, 880, 988, 1175][i];
+        g.gain.setValueAtTime(.0001, start + offset);
+        g.gain.exponentialRampToValueAtTime(.08, start + offset + .06);
+        g.gain.exponentialRampToValueAtTime(.0001, start + offset + .8);
+        o.connect(g).connect(master);
+        o.start(start + offset);
+        o.stop(start + offset + .9);
+      });
+
+      return { ac, stream: dest.stream };
+    }
+
+    async function recordCommercial() {
+      playing = false;
+      draw(0);
+      await new Promise(r => setTimeout(r, 250));
+      const videoStream = canvas.captureStream(30);
+      const audio = audioDestination();
+      const stream = new MediaStream([
+        ...videoStream.getVideoTracks(),
+        ...audio.stream.getAudioTracks()
+      ]);
+      const preferred = [
+        'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp8,opus',
+        'video/webm'
+      ].find(type => MediaRecorder.isTypeSupported(type));
+      const chunks = [];
+      const recorder = new MediaRecorder(stream, {
+        mimeType: preferred,
+        videoBitsPerSecond: 18000000,
+        audioBitsPerSecond: 128000
+      });
+      recorder.ondataavailable = (e) => {
+        if (e.data.size) chunks.push(e.data);
+      };
+      const done = new Promise(resolve => recorder.onstop = resolve);
+      recorder.start(250);
+      const startedAt = performance.now();
+      await new Promise(resolve => {
+        function frame(now) {
+          const elapsed = (now - startedAt) / 1000;
+          draw(Math.min(elapsed, DURATION - 1 / 30));
+          if (elapsed < DURATION) requestAnimationFrame(frame);
+          else resolve();
+        }
+        requestAnimationFrame(frame);
+      });
+      recorder.stop();
+      await done;
+      stream.getTracks().forEach(track => track.stop());
+      await audio.ac.close();
+      const blob = new Blob(chunks, { type: preferred });
+      const url = URL.createObjectURL(blob);
+      const ext = preferred.includes('mp4') ? 'mp4' : 'webm';
+      const a = document.getElementById('download');
+      a.href = url;
+      a.download = `puzzle-market-premium-collectibles-20s-4k.${ext}`;
+      a.style.display = 'inline-flex';
+      window.__lastRecording = { blob, mimeType: preferred, ext, size: blob.size };
+      playing = true;
+      startTime = performance.now();
+      return { mimeType: preferred, ext, size: blob.size };
+    }
+
+    document.getElementById('play').onclick = () => {
+      startTime = performance.now();
+      playing = true;
+    };
+    document.getElementById('record').onclick = recordCommercial;
+    document.getElementById('snapshot').onclick = () => {
+      draw(18.9);
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'puzzle-market-premium-commercial-thumbnail.png';
+      a.click();
+    };
+
+    window.recordCommercial = recordCommercial;
+    window.renderFrame = draw;
+    Promise.all(ASSETS.map(loadImage)).then(entries => {
+      entries.forEach(([src, img]) => images.set(src, img));
+      if (new URLSearchParams(location.search).get('capture') === '1') {
+        document.body.classList.add('capture');
+        const params = new URLSearchParams(location.search);
+        const captureWidth = Number(params.get('w')) || window.innerWidth;
+        const captureHeight = Number(params.get('h')) || window.innerHeight;
+        canvas.width = captureWidth;
+        canvas.height = captureHeight;
+        W = canvas.width;
+        H = canvas.height;
+        playing = false;
+        function captureLoop() {
+          const raw = document.body.dataset.time;
+          const value = raw == null ? 0 : Number(raw);
+          draw(Number.isFinite(value) ? value : 0);
+          requestAnimationFrame(captureLoop);
+        }
+        captureLoop();
+        window.__adReady = true;
+        return;
+      }
+      startTime = performance.now();
+      requestAnimationFrame(loop);
+    });
+  </script>
+</body>
+</html>

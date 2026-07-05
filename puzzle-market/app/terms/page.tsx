@@ -10,7 +10,7 @@ import {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-black px-4 py-10 text-white md:px-6 md:py-16">
+    <main className="legal-page min-h-screen bg-black px-4 py-10 text-white md:px-6 md:py-16">
       <section className="mx-auto max-w-4xl rounded-[28px] border border-white/10 bg-zinc-950/90 p-6 backdrop-blur-xl md:rounded-[36px] md:p-10">
         <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-400">
           Legal

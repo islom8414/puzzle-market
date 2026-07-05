@@ -64,6 +64,28 @@ type WithdrawalRequest = {
   } | null;
 };
 
+type CustomPuzzleOrder = {
+  id: string;
+  created_at: string;
+  user_id: string;
+  status: string;
+  amount_cents: number;
+  title: string;
+  description?: string | null;
+  image_url?: string | null;
+  category: string;
+  rarity: string;
+  piece_price_cents: number;
+  market_piece_count: number;
+  brand_name?: string | null;
+  brand_country_code?: string | null;
+  stripe_session_id?: string | null;
+  profile?: {
+    email?: string | null;
+    username?: string | null;
+  } | null;
+};
+
 export default function AdminPage() {
 
   const [transactions, setTransactions] =
@@ -79,6 +101,13 @@ export default function AdminPage() {
     withdrawals,
     setWithdrawals,
   ] = useState<WithdrawalRequest[]>(
+    []
+  );
+
+  const [
+    customOrders,
+    setCustomOrders,
+  ] = useState<CustomPuzzleOrder[]>(
     []
   );
 
@@ -237,6 +266,26 @@ export default function AdminPage() {
         setWithdrawals(
           withdrawalJson.withdrawals ||
             []
+        );
+      }
+
+      const orderResponse =
+        await fetch(
+          "/api/admin/custom-orders",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${session.access_token}`,
+            },
+          }
+        );
+
+      if (orderResponse.ok) {
+        const orderJson =
+          await orderResponse.json();
+
+        setCustomOrders(
+          orderJson.orders || []
         );
       }
 
@@ -655,6 +704,114 @@ export default function AdminPage() {
             />
             Reset this puzzle test ownership back to admin before saving price
           </label>
+
+        </section>
+
+        {/* CUSTOM PUZZLE ORDERS */}
+
+        <section className="mt-12 md:mt-16 bg-white/[0.03] border border-cyan-400/20 rounded-[24px] md:rounded-[36px] p-5 md:p-10 backdrop-blur-xl">
+
+          <p className="text-cyan-400 uppercase tracking-[0.18em] md:tracking-[0.3em] text-xs font-black">
+            CUSTOM ORDERS
+          </p>
+
+          <h2 className="text-3xl md:text-5xl font-black mt-3">
+            Paid Puzzle Requests
+          </h2>
+
+          <p className="text-zinc-400 mt-5 max-w-3xl">
+            Starter, Premium, and Creator members can pay $50 for a custom puzzle setup request. Review the image, description, requested title, piece count, and initial piece price before publishing.
+          </p>
+
+          <div className="mt-8 space-y-4">
+            {customOrders.length === 0 && (
+              <div className="rounded-2xl border border-white/10 bg-black/40 p-5 text-zinc-400">
+                No custom puzzle orders yet.
+              </div>
+            )}
+
+            {customOrders.map((order) => (
+              <article
+                key={order.id}
+                className="rounded-3xl border border-white/10 bg-black/50 p-5"
+              >
+                <div className="grid gap-5 lg:grid-cols-[220px_1fr]">
+                  <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                    {order.image_url ? (
+                      <img
+                        src={order.image_url}
+                        alt={order.title}
+                        className="h-56 w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-56 items-center justify-center px-5 text-center text-sm font-bold text-zinc-500">
+                        Description only
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="rounded-full bg-cyan-400 px-3 py-1 text-xs font-black text-black">
+                        {order.status}
+                      </span>
+                      <span className="rounded-full border border-white/10 px-3 py-1 text-xs font-black text-zinc-300">
+                        ${(order.amount_cents / 100).toFixed(2)} setup
+                      </span>
+                      <span className="rounded-full border border-white/10 px-3 py-1 text-xs font-black text-zinc-300">
+                        {order.market_piece_count} pieces
+                      </span>
+                    </div>
+
+                    <h3 className="mt-4 break-words text-2xl font-black md:text-3xl">
+                      {order.title}
+                    </h3>
+
+                    <div className="mt-3 grid gap-3 text-sm text-zinc-300 md:grid-cols-2">
+                      <div>
+                        <span className="text-zinc-500">User:</span>{" "}
+                        {order.profile?.email ||
+                          order.profile?.username ||
+                          order.user_id}
+                      </div>
+                      <div>
+                        <span className="text-zinc-500">Category:</span>{" "}
+                        {order.category}
+                      </div>
+                      <div>
+                        <span className="text-zinc-500">Rarity:</span>{" "}
+                        {order.rarity}
+                      </div>
+                      <div>
+                        <span className="text-zinc-500">Piece price:</span>{" "}
+                        ${(order.piece_price_cents / 100).toFixed(2)}
+                      </div>
+                      <div>
+                        <span className="text-zinc-500">Brand:</span>{" "}
+                        {order.brand_name || "Regular"}
+                      </div>
+                      <div>
+                        <span className="text-zinc-500">Created:</span>{" "}
+                        {new Date(order.created_at).toLocaleString()}
+                      </div>
+                    </div>
+
+                    {order.description && (
+                      <p className="mt-4 whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-zinc-300">
+                        {order.description}
+                      </p>
+                    )}
+
+                    {order.stripe_session_id && (
+                      <p className="mt-4 break-all text-xs text-zinc-500">
+                        Stripe session: {order.stripe_session_id}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
 
         </section>
 

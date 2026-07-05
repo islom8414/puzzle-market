@@ -259,6 +259,13 @@ export default function Navbar() {
                   Auctions
                 </a>
 
+                <a
+                  href="/custom-order"
+                  className="translate-safe-nav hover:text-cyan-400 transition"
+                >
+                  Order Puzzle
+                </a>
+
               </nav>
 
             </div>
@@ -456,12 +463,12 @@ export default function Navbar() {
                 Sell
               </a>
 
-              <a href="/withdraw" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
-                Withdraw
+              <a href="/custom-order" className="translate-safe-action rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-cyan-300">
+                Order Puzzle
               </a>
 
-              <a href="/chat" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
-                Chat
+              <a href="/withdraw" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                Withdraw
               </a>
 
               <a href="/support" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">

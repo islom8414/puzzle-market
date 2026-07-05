@@ -183,6 +183,28 @@ export async function POST(request: Request) {
       }
 
       if (
+        session.metadata?.kind === "custom_puzzle_order" &&
+        session.payment_status === "paid" &&
+        session.metadata.order_id &&
+        userId
+      ) {
+        const { error } = await admin
+          .from("custom_puzzle_orders")
+          .update({
+            status: "paid",
+            stripe_session_id: session.id,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", session.metadata.order_id)
+          .eq("user_id", userId)
+          .eq("status", "pending_payment");
+
+        if (error) {
+          throw error;
+        }
+      }
+
+      if (
         session.metadata?.kind === "subscription" &&
         session.subscription
       ) {

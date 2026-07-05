@@ -73,3 +73,29 @@ export function hasAuctionListingAccess(
       profile?.subscription_tier === "creator")
   );
 }
+
+export function hasCustomPuzzleOrderAccess(
+  user: AccessUser,
+  profile:
+    | {
+        subscription_tier?: string | null;
+        subscription_status?: string | null;
+      }
+    | null
+    | undefined
+) {
+  if (isAdminUser(user)) {
+    return true;
+  }
+
+  const active =
+    profile?.subscription_status === "active" ||
+    profile?.subscription_status === "trialing";
+
+  return (
+    active &&
+    (profile?.subscription_tier === "starter" ||
+      profile?.subscription_tier === "premium" ||
+      profile?.subscription_tier === "creator")
+  );
+}
