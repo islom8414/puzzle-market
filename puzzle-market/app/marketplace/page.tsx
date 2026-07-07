@@ -23,6 +23,11 @@ import {
 } from "@/lib/price-index";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
+import {
+  trackAddToCart,
+  trackPurchase,
+  trackSearch,
+} from "@/lib/analytics";
 
 type MarketItem = {
 
@@ -439,6 +444,24 @@ export default function MarketplacePage() {
 
   }, []);
 
+  useEffect(() => {
+    const searchTerm =
+      search.trim();
+
+    if (!searchTerm || puzzleFilter) {
+      return;
+    }
+
+    const timer =
+      window.setTimeout(() => {
+        trackSearch(searchTerm);
+      }, 700);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [search, puzzleFilter]);
+
   async function loadMarketplace() {
     setLoading(true);
 
@@ -737,6 +760,21 @@ export default function MarketplacePage() {
           return;
         }
 
+        const analyticsItem = {
+          item_id: String(fragment.id),
+          item_name: `${fragment.title} Piece #${fragment.piece}`,
+          item_category:
+            normalizePuzzleCategory(
+              fragment.category
+            ),
+          item_brand:
+            fragment.brand || undefined,
+          price: fragment.price,
+          quantity: 1,
+        };
+
+        trackAddToCart(analyticsItem);
+
         const response =
           await apiFetch(
             "/api/purchase-listing",
@@ -769,6 +807,15 @@ export default function MarketplacePage() {
           return;
 
         }
+
+        trackPurchase({
+          transaction_id:
+            data.tradeId ||
+            data.purchaseId ||
+            `listing_${fragment.id}_${Date.now()}`,
+          value: fragment.price,
+          items: [analyticsItem],
+        });
 
         alert(
           data.rewardApplied

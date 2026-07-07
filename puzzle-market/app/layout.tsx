@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { Suspense } from "react";
 
 import "./globals.css";
 
 import ConditionalNavbar from "./components/ConditionalNavbar";
 import EnableDynamicTranslation from "./components/EnableDynamicTranslation";
+import GoogleAnalyticsRouteTracker from "./components/GoogleAnalyticsRouteTracker";
 import LiveFeed from "./components/LiveFeed";
 import LinguiseScript from "./components/LinguiseScript";
 import OriginalPathGuard from "./components/OriginalPathGuard";
 import SubscriptionGate from "./components/SubscriptionGate";
+import { GA_MEASUREMENT_ID } from "@/lib/analytics";
 
 export const metadata: Metadata = {
   title: "Puzzle Market",
@@ -19,7 +23,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html
       lang="en"
@@ -70,8 +73,11 @@ export default function RootLayout({
           {children}
         </main>
 
+        <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
+        <Suspense fallback={null}>
+          <GoogleAnalyticsRouteTracker />
+        </Suspense>
       </body>
-
     </html>
   );
 }

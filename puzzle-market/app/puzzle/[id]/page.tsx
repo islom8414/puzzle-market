@@ -14,6 +14,7 @@ import { useParams } from "next/navigation";
 
 import { puzzles } from "@/data/puzzles";
 import { apiFetch } from "@/lib/api-client";
+import { trackViewItem } from "@/lib/analytics";
 import { normalizePuzzleCategory } from "@/lib/brand-metadata";
 import { fetchMyProfile } from "@/lib/client-profile";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
@@ -373,6 +374,35 @@ export default function PuzzlePage() {
           description:
             "This puzzle was not found in the catalog.",
         };
+
+  useEffect(() => {
+    if (
+      catalogLoading ||
+      !puzzle.title ||
+      puzzle.title === "Puzzle Not Available"
+    ) {
+      return;
+    }
+
+    trackViewItem({
+      item_id: slug,
+      item_name: puzzle.title,
+      item_category: puzzle.category,
+      item_brand:
+        catalogPuzzle?.brand_name ||
+        undefined,
+      price:
+        puzzle.price || undefined,
+      quantity: 1,
+    });
+  }, [
+    catalogLoading,
+    slug,
+    puzzle.title,
+    puzzle.category,
+    puzzle.price,
+    catalogPuzzle?.brand_name,
+  ]);
 
   const missingIndexes =
     useMemo(() => {

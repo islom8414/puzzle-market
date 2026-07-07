@@ -12,6 +12,7 @@ import {
   hasAcceptedCurrentTerms,
   termsAcceptPath,
 } from "@/lib/terms-status";
+import { trackLogin } from "@/lib/analytics";
 
 export default function LoginPage() {
   const [email, setEmail] =
@@ -57,6 +58,8 @@ export default function LoginPage() {
           "puzzle-user",
           data.user.email || ""
         );
+
+        trackLogin("email");
 
         if (
           !hasAcceptedCurrentTerms(
@@ -129,6 +132,8 @@ export default function LoginPage() {
 
   const handleGoogleLogin =
     async () => {
+      trackLogin("google");
+
       await supabase.auth
         .signInWithOAuth({
           provider: "google",

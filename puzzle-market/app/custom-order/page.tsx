@@ -6,6 +6,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { apiFetch } from "@/lib/api-client";
 import {
+  trackBeginCheckout,
+  trackPurchase,
+} from "@/lib/analytics";
+import {
   BRAND_COUNTRIES,
   PUZZLE_CATEGORIES,
 } from "@/lib/brand-metadata";
@@ -66,6 +70,41 @@ function CustomOrderForm() {
 
     checkAccess();
   }, []);
+
+  useEffect(() => {
+    if (orderStatus !== "success") {
+      return;
+    }
+
+    const storageKey =
+      "ga-custom-puzzle-order-success";
+
+    if (
+      sessionStorage.getItem(storageKey) ===
+      "tracked"
+    ) {
+      return;
+    }
+
+    sessionStorage.setItem(
+      storageKey,
+      "tracked"
+    );
+
+    trackPurchase({
+      transaction_id: `custom_puzzle_order_${Date.now()}`,
+      value: 50,
+      items: [
+        {
+          item_id: "custom_puzzle_order",
+          item_name: "Custom Puzzle Order",
+          item_category: "custom_order",
+          price: 50,
+          quantity: 1,
+        },
+      ],
+    });
+  }, [orderStatus]);
 
   async function startOrder() {
     setMessage("");
@@ -135,6 +174,22 @@ function CustomOrderForm() {
       if (!response.ok || !payload.url) {
         throw new Error(payload.error || "Order checkout failed");
       }
+
+      trackBeginCheckout({
+        value: 50,
+        items: [
+          {
+            item_id: "custom_puzzle_order",
+            item_name: title.trim(),
+            item_category: "custom_order",
+            item_brand: branded
+              ? brandName.trim()
+              : undefined,
+            price: 50,
+            quantity: 1,
+          },
+        ],
+      });
 
       window.location.assign(payload.url);
     } catch (error) {

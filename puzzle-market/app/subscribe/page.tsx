@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
+import { trackBeginCheckout } from "@/lib/analytics";
 
 type PlanTier = "starter" | "premium" | "creator";
 
@@ -55,6 +56,12 @@ const plans: Array<{
   },
 ];
 
+const planValues: Record<PlanTier, number> = {
+  starter: 1,
+  premium: 10,
+  creator: 100,
+};
+
 export default function SubscribePage() {
   const router = useRouter();
 
@@ -101,6 +108,26 @@ export default function SubscribePage() {
             "Subscription checkout failed"
         );
       }
+
+      const plan =
+        plans.find((item) => item.tier === tier);
+      const value =
+        planValues[tier];
+
+      trackBeginCheckout({
+        value,
+        items: [
+          {
+            item_id: `subscription_${tier}`,
+            item_name:
+              plan?.name ||
+              `${tier} subscription`,
+            item_category: "subscription",
+            price: value,
+            quantity: 1,
+          },
+        ],
+      });
 
       window.location.assign(data.url);
     } catch (error) {

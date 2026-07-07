@@ -10,6 +10,7 @@ import { sanitizeUsername } from "@/lib/display-name";
 import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 import { termsAcceptPath } from "@/lib/terms-status";
+import { trackSignUp } from "@/lib/analytics";
 
 const confirmationRedirect =
   getAuthRedirectUrl(
@@ -129,6 +130,8 @@ export default function RegisterPage() {
             data.user.email || ""
           );
 
+          trackSignUp("email");
+
           const saved =
             await saveMyUsername(
               cleanUsername
@@ -166,6 +169,7 @@ export default function RegisterPage() {
             "puzzle-pending-username",
             cleanUsername
           );
+          trackSignUp("email_pending_confirmation");
           setMessage(
             "Check your email to confirm your account. After confirmation, sign in with this email."
           );
@@ -218,6 +222,8 @@ export default function RegisterPage() {
 
   const handleGoogleRegister =
     async () => {
+      trackSignUp("google");
+
       await supabase.auth
         .signInWithOAuth({
           provider: "google",

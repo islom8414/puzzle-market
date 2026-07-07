@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
+import { trackBeginCheckout } from "@/lib/analytics";
 
 export default function AddFundsPage() {
 
@@ -97,6 +98,18 @@ export default function AddFundsPage() {
       }
 
       if (data.url) {
+        trackBeginCheckout({
+          value: topupAmount,
+          items: [
+            {
+              item_id: "wallet_topup",
+              item_name: "Wallet Topup",
+              item_category: "wallet",
+              price: topupAmount,
+              quantity: 1,
+            },
+          ],
+        });
 
         window.location.href =
           data.url;
