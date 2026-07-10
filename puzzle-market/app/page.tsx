@@ -67,12 +67,12 @@ const faq = [
   {
     question: "How does Puzzle Market earn money?",
     answer:
-      "The platform may earn fees from marketplace activity or paid plans when those terms are shown before purchase. Fees should be confirmed on the live checkout and policy pages.",
+      "Puzzle Market takes a 10% marketplace fee from each completed resale. Any payment processor charges are shown separately where they apply.",
   },
   {
     question: "How and when do sellers receive payouts?",
     answer:
-      "Seller payout details must be shown in the seller flow before a listing or resale is completed. If payout terms are not displayed, support should confirm them before you sell.",
+      "Seller payouts are supported through Stripe where available. In supported alternative regions, eligible card payouts can be arranged through Puzzle Market support after verification.",
   },
   {
     question: "Can a fragment lose value?",
@@ -147,9 +147,11 @@ export default function HomePage() {
               resale on the marketplace.
             </p>
 
-            <div className="mt-6 rounded-2xl border border-amber-300/25 bg-amber-300/[0.07] p-4 text-sm leading-relaxed text-zinc-300">
-              Prices are influenced by rarity, availability and collector
-              demand. Resale and profit are not guaranteed.
+            <div className="mt-6 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] p-4 text-sm leading-relaxed text-zinc-300">
+              Puzzle Market takes a 10% marketplace fee from each completed
+              resale. Sellers can receive payouts through Stripe where
+              available, with alternative card payout support in eligible
+              regions after verification.
             </div>
 
             <div className="mt-7 grid gap-3 sm:flex sm:flex-wrap">
@@ -205,8 +207,8 @@ export default function HomePage() {
                   </h2>
                   <p className="mt-3 text-sm leading-relaxed text-zinc-400">
                     A collector buys a fragment, owns it in their account and
-                    can choose a resale listing price. This is an example, not a
-                    guarantee of sale or profit.
+                    can choose a resale listing price. The marketplace fee is
+                    10% on each completed resale.
                   </p>
                 </div>
 
@@ -272,8 +274,9 @@ export default function HomePage() {
 
           <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-relaxed text-zinc-300 md:flex-row md:items-center md:justify-between">
             <p>
-              Collectible prices can rise or fall. A resale buyer is not
-              guaranteed.
+              Puzzle Market keeps resale rules clear: sellers choose the
+              listing price, and the marketplace fee is 10% only when a resale
+              is completed.
             </p>
             <Link
               href="/marketplace"
@@ -339,8 +342,8 @@ export default function HomePage() {
               {[
                 ["Purchase price", "$1.00"],
                 ["Example listing price", "$25.00"],
-                ["Platform fee", "Shown before sale"],
-                ["Seller payout", "Calculated before listing"],
+                ["Platform fee", "10% per completed resale"],
+                ["Seller payout", "Stripe or eligible card payout"],
               ].map(([label, value]) => (
                 <div
                   key={label}
@@ -352,8 +355,9 @@ export default function HomePage() {
               ))}
             </div>
             <p className="mt-5 text-sm leading-relaxed text-zinc-500">
-              Example values explain the flow. Actual fees, payout and profit or
-              loss depend on the real listing and completed buyer payment.
+              Example values explain the flow. Puzzle Market takes a 10%
+              marketplace fee from completed resales, and payout options depend
+              on seller verification and regional payment support.
             </p>
           </div>
         </div>
@@ -371,8 +375,7 @@ export default function HomePage() {
               </h2>
               <p className="mt-5 leading-relaxed text-zinc-400">
                 This panel is an example flow for new visitors. It is not live
-                site activity, not verified sales data and not a profit
-                guarantee.
+                site activity or verified sales data.
               </p>
             </div>
 
