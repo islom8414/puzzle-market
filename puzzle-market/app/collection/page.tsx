@@ -165,6 +165,8 @@ export default function CollectionPage() {
                 <img
                   src={fragment.image}
                   alt={fragment.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-72 object-cover"
                 />
 

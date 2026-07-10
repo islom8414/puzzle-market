@@ -748,6 +748,8 @@ export default function ProfilePage() {
                 <img
                   src={item.image}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="h-48 md:h-56 w-full object-cover blur-sm scale-105"
                 />
 

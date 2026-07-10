@@ -14,6 +14,9 @@ import {
 } from "@/lib/puzzle-catalog";
 import { apiFetch } from "@/lib/api-client";
 
+const INITIAL_VISIBLE_PUZZLES = 9;
+const PUZZLE_PAGE_SIZE = 9;
+
 export function HomePuzzleGrid() {
   const [puzzles, setPuzzles] =
     useState<CatalogPuzzle[]>([]);
@@ -21,6 +24,8 @@ export function HomePuzzleGrid() {
     useState(true);
   const [category, setCategory] =
     useState("ALL");
+  const [visibleCount, setVisibleCount] =
+    useState(INITIAL_VISIBLE_PUZZLES);
 
   const filteredPuzzles = useMemo(
     () =>
@@ -32,6 +37,19 @@ export function HomePuzzleGrid() {
           ),
     [category, puzzles]
   );
+
+  const visiblePuzzles = useMemo(
+    () =>
+      filteredPuzzles.slice(
+        0,
+        visibleCount
+      ),
+    [filteredPuzzles, visibleCount]
+  );
+
+  const hasMorePuzzles =
+    visibleCount <
+    filteredPuzzles.length;
 
   useEffect(() => {
     async function load() {
@@ -52,6 +70,12 @@ export function HomePuzzleGrid() {
 
     load();
   }, []);
+
+  useEffect(() => {
+    setVisibleCount(
+      INITIAL_VISIBLE_PUZZLES
+    );
+  }, [category]);
 
   if (loading) {
     return (
@@ -102,7 +126,7 @@ export function HomePuzzleGrid() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {filteredPuzzles.map((puzzle) => {
+      {visiblePuzzles.map((puzzle) => {
         const card =
           catalogToCard(puzzle);
         const missingCount =
@@ -120,6 +144,8 @@ export function HomePuzzleGrid() {
               <img
                 src={card.image}
                 alt={card.title}
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             </div>
@@ -153,6 +179,22 @@ export function HomePuzzleGrid() {
           </article>
         );
       })}
+        </div>
+      )}
+      {hasMorePuzzles && (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() =>
+              setVisibleCount(
+                (count) =>
+                  count + PUZZLE_PAGE_SIZE
+              )
+            }
+            className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 font-black transition hover:border-cyan-400 hover:bg-cyan-400 hover:text-black"
+          >
+            Show more puzzles
+          </button>
         </div>
       )}
     </div>

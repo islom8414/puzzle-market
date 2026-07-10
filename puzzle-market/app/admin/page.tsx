@@ -741,6 +741,8 @@ export default function AdminPage() {
                       <img
                         src={order.image_url}
                         alt={order.title}
+                        loading="lazy"
+                        decoding="async"
                         className="h-56 w-full object-cover"
                       />
                     ) : (
