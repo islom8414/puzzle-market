@@ -62,6 +62,25 @@ const faq = [
   },
 ] as const;
 
+const illustrativeActivity = [
+  {
+    label: "Entry price",
+    value: "$1.00",
+  },
+  {
+    label: "Example listing",
+    value: "$25.00",
+  },
+  {
+    label: "Demo interest",
+    value: "124",
+  },
+  {
+    label: "Example payout",
+    value: "$22.50",
+  },
+] as const;
+
 export default function HomePage() {
   return (
     <main className="min-h-screen overflow-hidden text-white">
@@ -272,6 +291,48 @@ export default function HomePage() {
               Example values explain the flow. Actual fees, payout and profit or
               loss depend on the real listing and completed buyer payment.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-24 md:px-6">
+        <div className="mx-auto max-w-7xl rounded-[28px] border border-cyan-400/15 bg-cyan-400/[0.04] p-5 md:p-8">
+          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">
+                Illustrative activity
+              </p>
+              <h2 className="mt-4 text-3xl font-black md:text-5xl">
+                See how a fragment can move through the market.
+              </h2>
+              <p className="mt-5 leading-relaxed text-zinc-400">
+                This panel is an example flow for new visitors. It is not live
+                site activity, not verified sales data and not a profit
+                guarantee.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {illustrativeActivity.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-2xl border border-white/10 bg-black/45 p-5"
+                >
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
+                    {item.label}
+                  </p>
+                  <p className="mt-3 text-3xl font-black text-white">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-relaxed text-zinc-300">
+            Real marketplace metrics should come from completed listings,
+            verified purchases and active user records. Until then, examples are
+            labeled as examples.
           </div>
         </div>
       </section>
