@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
@@ -232,39 +233,32 @@ export default function Navbar() {
               <nav className="hidden xl:flex min-w-0 items-center gap-5 text-sm font-semibold">
 
                 <a
-                  href={CHOOSE_PUZZLE_HREF}
-                  className="translate-safe-nav hover:text-cyan-400 transition"
-                >
-                  Play
-                </a>
-
-                <a
                   href="/marketplace"
                   className="translate-safe-nav hover:text-cyan-400 transition"
                 >
-                  Explore
+                  Marketplace
                 </a>
 
-                <a
-                  href="/leaderboard"
+                <Link
+                  href="/#how-it-works"
                   className="translate-safe-nav hover:text-cyan-400 transition"
                 >
-                  Rankings
-                </a>
+                  How It Works
+                </Link>
 
                 <a
-                  href="/auctions"
+                  href={CHOOSE_PUZZLE_HREF}
                   className="translate-safe-nav hover:text-cyan-400 transition"
                 >
-                  Auctions
+                  Collections
                 </a>
 
-                <a
-                  href="/custom-order"
+                <Link
+                  href="/#faq"
                   className="translate-safe-nav hover:text-cyan-400 transition"
                 >
-                  Order Puzzle
-                </a>
+                  FAQ
+                </Link>
 
               </nav>
 
@@ -437,16 +431,20 @@ export default function Navbar() {
 
             <div className="px-4 py-5 grid grid-cols-2 gap-3 text-sm font-semibold">
 
-              <a href={CHOOSE_PUZZLE_HREF} className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
-                Play
+              <a href="/marketplace" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                Marketplace
               </a>
 
-              <a href="/marketplace" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
-                Explore
+              <Link href="/#how-it-works" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                How It Works
+              </Link>
+
+              <a href={CHOOSE_PUZZLE_HREF} className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                Collections
               </a>
 
               <a href="/profile" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
-                Profile
+                Portfolio
               </a>
 
               <a href="/subscribe" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
@@ -463,10 +461,6 @@ export default function Navbar() {
                 Sell
               </a>
 
-              <a href="/custom-order" className="translate-safe-action rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-cyan-300">
-                Order Puzzle
-              </a>
-
               <a href="/withdraw" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Withdraw
               </a>
@@ -479,13 +473,9 @@ export default function Navbar() {
                 About
               </a>
 
-              <a href="/leaderboard" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
-                Rankings
-              </a>
-
-              <a href="/auctions" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
-                Auctions
-              </a>
+              <Link href="/#faq" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
+                FAQ
+              </Link>
 
               <a href="/terms" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Terms

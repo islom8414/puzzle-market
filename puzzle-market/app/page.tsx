@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { HomePuzzleGrid } from "@/components/home-puzzle-grid";
 import { HomeTrustStats } from "@/components/home-trust-stats";
-import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 
 const flowSteps = [
   "Buy",
@@ -14,28 +13,28 @@ const flowSteps = [
 const howItWorks = [
   {
     step: "01",
-    title: "Choose a collection",
-    body: "Browse available artwork and open a puzzle with missing collectible fragments.",
+    title: "Choose a Collection",
+    body: "Browse available artwork and select a collection you understand and like.",
   },
   {
     step: "02",
-    title: "Buy a fragment",
-    body: "Purchase an available fragment at the displayed price through the marketplace flow.",
+    title: "Buy a Fragment",
+    body: "Purchase an available fragment at the displayed price.",
   },
   {
     step: "03",
-    title: "Own it",
-    body: "The fragment appears in your account with a recorded ownership history.",
+    title: "Own It",
+    body: "The fragment and verified ownership record appear in your account.",
   },
   {
     step: "04",
-    title: "List for resale",
-    body: "Set your own listing price and offer the fragment to other collectors.",
+    title: "List for Resale",
+    body: "Choose your listing price and offer the fragment to other collectors.",
   },
   {
     step: "05",
-    title: "Keep or trade",
-    body: "Hold it, complete collections, or wait for another collector to accept your listing.",
+    title: "Complete or Trade",
+    body: "Complete collections, keep your fragment or sell it when another collector accepts the offer.",
   },
 ] as const;
 
@@ -43,7 +42,17 @@ const faq = [
   {
     question: "What exactly am I buying?",
     answer:
-      "You buy a digital collectible puzzle fragment connected to a specific puzzle collection.",
+      "You buy a limited puzzle fragment connected to a specific collection. After purchase, it is shown in your account with its ownership record.",
+  },
+  {
+    question: "Is the fragment digital or physical?",
+    answer:
+      "Puzzle Market currently presents fragments as digital collectible assets. Do not assume physical delivery unless a checkout page explicitly says delivery is included.",
+  },
+  {
+    question: "How is ownership recorded?",
+    answer:
+      "Ownership is tied to your account and the fragment record in the marketplace database. Public pages should use usernames, not private email addresses.",
   },
   {
     question: "Can I resell my fragment?",
@@ -51,14 +60,49 @@ const faq = [
       "Yes. If you own a supported fragment, you can list it for resale at your chosen price.",
   },
   {
+    question: "Who sets the resale price?",
+    answer:
+      "The owner sets the listing price. Another collector must choose to buy it before a resale is completed.",
+  },
+  {
+    question: "How does Puzzle Market earn money?",
+    answer:
+      "The platform may earn fees from marketplace activity or paid plans when those terms are shown before purchase. Fees should be confirmed on the live checkout and policy pages.",
+  },
+  {
+    question: "How and when do sellers receive payouts?",
+    answer:
+      "Seller payout details must be shown in the seller flow before a listing or resale is completed. If payout terms are not displayed, support should confirm them before you sell.",
+  },
+  {
+    question: "Can a fragment lose value?",
+    answer:
+      "Yes. Collectible prices can rise or fall based on rarity, availability and buyer demand.",
+  },
+  {
     question: "Is profit guaranteed?",
     answer:
       "No. Resale depends on buyer demand, listing price, rarity and market activity.",
   },
   {
-    question: "Who sets the resale price?",
+    question: "What happens if no one buys my listing?",
     answer:
-      "The owner sets the listing price. Another collector must choose to buy it.",
+      "Your listing remains unsold until a collector accepts it. Depending on the seller tools available, you may adjust or remove the listing.",
+  },
+  {
+    question: "Can more copies be created?",
+    answer:
+      "Supply should follow the collection and fragment records shown in the app. Always check the visible supply information for the collection you are buying.",
+  },
+  {
+    question: "Can I request a refund?",
+    answer:
+      "Refund rules depend on the purchase type, payment status and posted policy. Review the refund policy before checkout.",
+  },
+  {
+    question: "How is my payment protected?",
+    answer:
+      "Purchases should only complete after the server confirms the payment. If payment fails, the fragment should not be transferred.",
   },
 ] as const;
 
@@ -90,17 +134,17 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.82fr)] lg:items-center">
           <div className="min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400 md:text-sm">
-              The collectible puzzle marketplace
+              THE COLLECTIBLE PUZZLE MARKETPLACE
             </p>
 
             <h1 className="translate-safe-title mt-5 font-black">
-              Buy rare puzzle fragments. Own them. List them for resale.
+              Own Rare Puzzle Fragments. Trade Them With Collectors.
             </h1>
 
             <p className="translate-safe-copy mt-6 max-w-3xl text-base leading-relaxed text-zinc-300 md:text-lg">
-              Choose a collection, buy an available missing fragment, keep
-              verified ownership in your account and list your piece for resale
-              when you decide to sell.
+              Buy limited puzzle fragments, keep verified ownership in your
+              account, complete exclusive collections and list your pieces for
+              resale on the marketplace.
             </p>
 
             <div className="mt-6 rounded-2xl border border-amber-300/25 bg-amber-300/[0.07] p-4 text-sm leading-relaxed text-zinc-300">
@@ -117,12 +161,19 @@ export default function HomePage() {
               </Link>
 
               <Link
-                href={CHOOSE_PUZZLE_HREF}
+                href="/#how-it-works"
                 className="translate-safe-action rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-center text-base font-black transition hover:border-cyan-400"
               >
                 See How It Works
               </Link>
             </div>
+
+            <Link
+              href="/#faq"
+              className="mt-4 inline-flex text-sm font-bold text-cyan-300 underline-offset-4 hover:text-cyan-200 hover:underline"
+            >
+              Learn about risks and fees
+            </Link>
 
             <HomeTrustStats />
           </div>
@@ -184,7 +235,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-4 pb-20 md:px-6">
+      <section id="how-it-works" className="scroll-mt-24 px-4 pb-20 md:px-6">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
             <div>
@@ -218,6 +269,19 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+
+          <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-relaxed text-zinc-300 md:flex-row md:items-center md:justify-between">
+            <p>
+              Collectible prices can rise or fall. A resale buyer is not
+              guaranteed.
+            </p>
+            <Link
+              href="/marketplace"
+              className="shrink-0 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-center font-black text-white transition hover:border-cyan-400"
+            >
+              View a Real Example
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -248,7 +312,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-4 pb-24 md:px-6">
+      <section id="faq" className="scroll-mt-24 px-4 pb-24 md:px-6">
         <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="rounded-[28px] border border-white/10 bg-zinc-950 p-6 md:p-8">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">

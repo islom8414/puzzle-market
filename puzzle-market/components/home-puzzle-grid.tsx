@@ -71,11 +71,14 @@ export function HomePuzzleGrid() {
     load();
   }, []);
 
-  useEffect(() => {
+  const handleCategoryChange = (
+    nextCategory: string
+  ) => {
+    setCategory(nextCategory);
     setVisibleCount(
       INITIAL_VISIBLE_PUZZLES
     );
-  }, [category]);
+  };
 
   if (loading) {
     return (
@@ -111,7 +114,7 @@ export function HomePuzzleGrid() {
       <CategoryScroller
         items={PUZZLE_CATEGORIES}
         value={category}
-        onChange={setCategory}
+        onChange={handleCategoryChange}
         className="mb-6"
       />
 

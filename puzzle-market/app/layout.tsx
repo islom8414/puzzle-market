@@ -14,8 +14,27 @@ import SubscriptionGate from "./components/SubscriptionGate";
 import { GA_MEASUREMENT_ID } from "@/lib/analytics";
 
 export const metadata: Metadata = {
-  title: "Puzzle Market",
-  description: "Premium Puzzle Marketplace",
+  metadataBase: new URL("https://www.puzzle-market.com"),
+  title: "Puzzle Market — Buy, Own & Trade Collectible Puzzle Fragments",
+  description:
+    "Discover limited puzzle fragments, track verified ownership and trade with collectors on Puzzle Market.",
+  alternates: {
+    canonical: "https://www.puzzle-market.com",
+  },
+  openGraph: {
+    title: "Puzzle Market — Buy, Own & Trade Collectible Puzzle Fragments",
+    description:
+      "Discover limited puzzle fragments, track verified ownership and trade with collectors on Puzzle Market.",
+    url: "https://www.puzzle-market.com",
+    siteName: "Puzzle Market",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Puzzle Market — Buy, Own & Trade Collectible Puzzle Fragments",
+    description:
+      "Discover limited puzzle fragments, track verified ownership and trade with collectors on Puzzle Market.",
+  },
 };
 
 export default function RootLayout({
