@@ -7,6 +7,7 @@ import {
 } from "react";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import { CategoryScroller } from "@/components/category-scroller";
 import { puzzles } from "@/data/puzzles";
@@ -47,6 +48,8 @@ type MarketItem = {
   puzzle_columns?: number;
   sale_type?: "Primary Sale" | "Resale";
   availability?: "Available";
+  available_supply?: number;
+  total_supply?: number;
   price_history?: PriceHistoryPoint[];
   monthly_growth_percent?: number;
 };
@@ -352,10 +355,12 @@ function PriceGrowthChart({
 export default function MarketplaceClient({
   initialListings,
   initialActiveCount,
+  initialNextOffset,
   initialStatus,
 }: {
   initialListings: MarketItem[];
   initialActiveCount: number | null;
+  initialNextOffset: number | null;
   initialStatus: "success" | "error";
 }) {
 
@@ -377,6 +382,14 @@ export default function MarketplaceClient({
     useState<number | null>(
       initialActiveCount
     );
+
+  const [nextOffset, setNextOffset] =
+    useState<number | null>(
+      initialNextOffset
+    );
+
+  const [loadingMore, setLoadingMore] =
+    useState(false);
 
   const [search, setSearch] =
     useState("");
@@ -446,21 +459,11 @@ export default function MarketplaceClient({
       });
 
     if (puzzleParam) {
+      // eslint-disable-next-line react-hooks/immutability
       loadExactMarketplace(
         puzzleParam,
         pieceParam || ""
       );
-    } else if (initialStatus === "success") {
-      const refreshTimer =
-        window.setTimeout(() => {
-          void loadMarketplace({
-            silent: true,
-          });
-        }, 250);
-
-      return () => {
-        window.clearTimeout(refreshTimer);
-      };
     }
 
   }, [initialStatus]);
@@ -484,9 +487,13 @@ export default function MarketplaceClient({
   }, [search, puzzleFilter]);
 
   async function loadMarketplace({
+    append = false,
     silent = false,
+    offset = 0,
   }: {
+    append?: boolean;
     silent?: boolean;
+    offset?: number;
   } = {}) {
     if (!silent) {
       setLoadStatus("loading");
@@ -503,7 +510,7 @@ export default function MarketplaceClient({
     try {
       const response =
         await apiFetch(
-          "/api/marketplace-listings",
+          `/api/marketplace-listings?limit=12&offset=${offset}`,
           {
             signal:
               controller.signal,
@@ -522,16 +529,27 @@ export default function MarketplaceClient({
       const listings =
         data.listings || [];
 
-      setMarketItems(
-        listings
+      setMarketItems((current) =>
+        append
+          ? [
+              ...current,
+              ...listings,
+            ]
+          : listings
       );
       setActiveCount(
         typeof data.activeCount === "number"
           ? data.activeCount
           : listings.length
       );
+      setNextOffset(
+        typeof data.nextOffset === "number"
+          ? data.nextOffset
+          : null
+      );
       setLoadStatus(
-        listings.length === 0
+        listings.length === 0 &&
+        !append
           ? "empty"
           : "success"
       );
@@ -547,6 +565,23 @@ export default function MarketplaceClient({
       }
     } finally {
       window.clearTimeout(timeoutId);
+    }
+  }
+
+  async function loadMoreListings() {
+    if (nextOffset === null) {
+      return;
+    }
+
+    setLoadingMore(true);
+    try {
+      await loadMarketplace({
+        append: true,
+        offset: nextOffset,
+        silent: true,
+      });
+    } finally {
+      setLoadingMore(false);
     }
   }
 
@@ -785,6 +820,7 @@ export default function MarketplaceClient({
 
         setMarketItems(listings);
         setActiveCount(listings.length);
+        setNextOffset(null);
         setLoadStatus(
           listings.length === 0
             ? "empty"
@@ -1218,15 +1254,17 @@ export default function MarketplaceClient({
                       />
                     </div>
                   ) : (
-                    <img
+                    <Image
                       src={
                         fragment.image
                       }
                       alt={
                         fragment.title
                       }
+                      width={720}
+                      height={520}
+                      sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                       loading="lazy"
-                      decoding="async"
                       className="w-full h-[260px] md:h-[340px] object-cover transition duration-700 group-hover:scale-110"
                     />
                   )}
@@ -1313,6 +1351,28 @@ export default function MarketplaceClient({
 
                   </div>
 
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-white/5 bg-black/30 p-3">
+                      <p className="text-xs text-zinc-500">
+                        Available Supply
+                      </p>
+                      <p className="mt-1 font-black">
+                        {fragment.available_supply ?? 1}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/5 bg-black/30 p-3">
+                      <p className="text-xs text-zinc-500">
+                        Total Supply
+                      </p>
+                      <p className="mt-1 font-black">
+                        {fragment.total_supply ??
+                          (fragment.puzzle_rows || puzzleRows) *
+                            (fragment.puzzle_columns || puzzleColumns)}
+                      </p>
+                    </div>
+                  </div>
+
                   <PriceGrowthChart
                     fragment={fragment}
                   />
@@ -1367,6 +1427,25 @@ duration-300
         </div>
         )}
 
+        {!isLoading &&
+          !isRequestProblem &&
+          !isTrueEmpty &&
+          nextOffset !== null && (
+            <div className="mt-10 flex justify-center">
+              <button
+                onClick={() => {
+                  void loadMoreListings();
+                }}
+                disabled={loadingMore}
+                className="rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-7 py-4 font-black text-cyan-200 transition hover:border-cyan-300 disabled:cursor-wait disabled:opacity-60"
+              >
+                {loadingMore
+                  ? "Loading..."
+                  : "Load More Listings"}
+              </button>
+            </div>
+          )}
+
         {/* EMPTY */}
 
         {isTrueEmpty && (
@@ -1374,7 +1453,7 @@ duration-300
           <div className="mt-12 md:mt-16 bg-white/[0.03] border border-white/10 rounded-[28px] md:rounded-[32px] p-8 md:p-20 text-center backdrop-blur-xl">
 
             <h2 className="text-3xl md:text-5xl font-black">
-              No fragments are currently listed.
+              No active listings are available right now.
             </h2>
 
             <p className="text-zinc-500 mt-5 text-lg">

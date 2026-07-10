@@ -11,7 +11,7 @@ const loadCachedMarketplaceListings =
   unstable_cache(
     () =>
       loadMarketplaceListings({
-        limit: 8,
+        limit: 12,
       }),
     ["marketplace-listings-initial"],
     {
@@ -23,6 +23,7 @@ const loadCachedMarketplaceListings =
 export default async function MarketplacePage() {
   let initialListings: MarketplaceListing[] = [];
   let initialActiveCount: number | null = null;
+  let initialNextOffset: number | null = null;
   let initialStatus: "success" | "error" =
     "success";
 
@@ -34,6 +35,8 @@ export default async function MarketplacePage() {
       result.listings;
     initialActiveCount =
       result.activeCount;
+    initialNextOffset =
+      result.nextOffset;
   } catch (error) {
     console.error(
       "Marketplace listings could not be loaded.",
@@ -44,9 +47,10 @@ export default async function MarketplacePage() {
 
   return (
     <MarketplaceClient
-      initialListings={initialListings}
-      initialActiveCount={initialActiveCount}
-      initialStatus={initialStatus}
-    />
+        initialListings={initialListings}
+        initialActiveCount={initialActiveCount}
+        initialNextOffset={initialNextOffset}
+        initialStatus={initialStatus}
+      />
   );
 }

@@ -1,11 +1,8 @@
 import "server-only";
 
-import {
-  listingPricePayload,
-  loadListingPriceHistory,
-} from "@/lib/listing-price-history";
 import { publicOwnerName } from "@/lib/public-identity";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { growthBpsForPriceCents } from "@/lib/price-index";
 
 export type MarketplaceListing = {
   id: number | string;
@@ -25,6 +22,8 @@ export type MarketplaceListing = {
   puzzle_columns?: number;
   sale_type: "Primary Sale" | "Resale";
   availability: "Available";
+  available_supply: number;
+  total_supply: number;
   price_history?: import("@/lib/price-index").PriceHistoryPoint[];
   monthly_growth_percent?: number;
 };
@@ -75,6 +74,7 @@ type ListingRow = {
 export type MarketplaceListingsResult = {
   listings: MarketplaceListing[];
   activeCount: number;
+  nextOffset: number | null;
 };
 
 function normalizeListingType(
@@ -95,14 +95,22 @@ function normalizeListingType(
 
 export async function loadMarketplaceListings({
   limit,
+  offset,
 }: {
   limit?: number;
+  offset?: number;
 } = {}): Promise<MarketplaceListingsResult> {
   const admin =
     createSupabaseAdmin();
 
   const maxRows =
-    Math.max(1, limit || 300);
+    Math.min(
+      24,
+      Math.max(1, limit || 12)
+    );
+
+  const startOffset =
+    Math.max(0, offset || 0);
 
   const query = admin
     .from("piece_listings")
@@ -136,7 +144,10 @@ export async function loadMarketplaceListings({
     .order("created_at", {
       ascending: false,
     })
-    .range(0, maxRows - 1);
+    .range(
+      startOffset,
+      startOffset + maxRows - 1
+    );
 
   let { data, error, count } =
     await query;
@@ -171,7 +182,10 @@ export async function loadMarketplaceListings({
       .order("created_at", {
         ascending: false,
       })
-      .range(0, maxRows - 1);
+      .range(
+        startOffset,
+        startOffset + maxRows - 1
+      );
 
     data =
       legacyResult.data?.map((row) => {
@@ -229,19 +243,8 @@ export async function loadMarketplaceListings({
           .select("id,username")
           .in("id", sellerIds);
 
-  const priceHistoryPromise =
-    loadListingPriceHistory(
-      admin,
-      rows.map((row) => row.id)
-    );
-
-  const [
-    { data: sellers },
-    priceHistoryMap,
-  ] = await Promise.all([
-    sellersPromise,
-    priceHistoryPromise,
-  ]);
+  const { data: sellers } =
+    await sellersPromise;
 
   const sellerMap = new Map(
     (sellers || []).map((seller) => [
@@ -266,6 +269,13 @@ export async function loadMarketplaceListings({
     const seller =
       sellerMap.get(row.seller_user_id);
 
+    const totalSupply =
+      Math.max(
+        1,
+        (catalog.rows || 1) *
+          (catalog.columns || 1)
+      );
+
     return {
       id: row.id,
       seller_user_id:
@@ -289,16 +299,25 @@ export async function loadMarketplaceListings({
       sale_type:
         normalizeListingType(row),
       availability: "Available" as const,
-      ...listingPricePayload(
-        row.id,
-        row.price_cents,
-        priceHistoryMap
-      ),
+      available_supply: 1,
+      total_supply: totalSupply,
+      monthly_growth_percent:
+        growthBpsForPriceCents(
+          row.price_cents
+        ) / 100,
     };
   });
 
+  const activeCount =
+    count ?? startOffset + listings.length;
+
   return {
     listings,
-    activeCount: count ?? listings.length,
+    activeCount,
+    nextOffset:
+      startOffset + listings.length <
+      activeCount
+        ? startOffset + listings.length
+        : null,
   };
 }
