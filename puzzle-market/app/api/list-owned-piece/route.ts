@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  revalidatePath,
+  revalidateTag,
+} from "next/cache";
 
 import {
   createSupabaseAdmin,
@@ -172,6 +176,12 @@ export async function POST(
           listing.id,
         p_reason: "resale",
       }
+    );
+
+    revalidatePath("/marketplace");
+    revalidateTag(
+      "marketplace-listings",
+      "max"
     );
 
     return NextResponse.json({

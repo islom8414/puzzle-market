@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  revalidatePath,
+  revalidateTag,
+} from "next/cache";
 
 import { sendOwnershipEmail } from "@/lib/ownership-email";
 import { createOwnershipCode } from "@/lib/ownership-certificate";
@@ -227,6 +231,12 @@ export async function POST(
         );
       }
     }
+
+    revalidatePath("/marketplace");
+    revalidateTag(
+      "marketplace-listings",
+      "max"
+    );
 
     return NextResponse.json({
       tradeId,

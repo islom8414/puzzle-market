@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  revalidatePath,
+  revalidateTag,
+} from "next/cache";
 
 import { puzzles } from "@/data/puzzles";
 import { isAdminUser } from "@/lib/market-access";
@@ -382,6 +386,12 @@ export async function POST(
         missingIndex
       );
     }
+
+    revalidatePath("/marketplace");
+    revalidateTag(
+      "marketplace-listings",
+      "max"
+    );
 
     return NextResponse.json({
       ok: true,

@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  revalidatePath,
+  revalidateTag,
+} from "next/cache";
 
 import {
   hasCreatorUploadAccess,
@@ -426,6 +430,12 @@ export async function POST(
       }
     }
     }
+
+    revalidatePath("/marketplace");
+    revalidateTag(
+      "marketplace-listings",
+      "max"
+    );
 
     return NextResponse.json({
       ok: true,
