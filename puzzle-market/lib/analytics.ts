@@ -1,6 +1,6 @@
 export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ||
-  "G-0QBE80QRNW";
+  "G-0QBE800RNW";
 
 type GtagCommand =
   | "config"
@@ -58,6 +58,88 @@ function isBrowser() {
   return typeof window !== "undefined";
 }
 
+const attributionKeys = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+] as const;
+
+function getAttributionParams() {
+  if (!isBrowser()) {
+    return {};
+  }
+
+  try {
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+    const attribution: Record<
+      string,
+      string
+    > = {};
+
+    for (const key of attributionKeys) {
+      const value =
+        params.get(key);
+
+      if (value) {
+        attribution[key] = value;
+      }
+    }
+
+    return attribution;
+  } catch {
+    return {};
+  }
+}
+
+export function captureCampaignAttribution() {
+  if (!isBrowser()) {
+    return;
+  }
+
+  const attribution =
+    getAttributionParams();
+
+  if (
+    Object.keys(attribution).length === 0
+  ) {
+    return;
+  }
+
+  try {
+    const payload =
+      JSON.stringify({
+        ...attribution,
+        landing_path:
+          window.location.pathname,
+        captured_at:
+          new Date().toISOString(),
+      });
+
+    if (
+      !localStorage.getItem(
+        "pm_first_touch"
+      )
+    ) {
+      localStorage.setItem(
+        "pm_first_touch",
+        payload
+      );
+    }
+
+    localStorage.setItem(
+      "pm_last_touch",
+      payload
+    );
+  } catch {
+    // Attribution is helpful, but should never block the page.
+  }
+}
+
 export function isGoogleAnalyticsReady() {
   return (
     isBrowser() &&
@@ -74,7 +156,10 @@ export function sendGAEvent(
     return;
   }
 
-  window.gtag?.("event", eventName, params);
+  window.gtag?.("event", eventName, {
+    ...getAttributionParams(),
+    ...params,
+  });
 }
 
 export function trackPageView(

@@ -6,7 +6,11 @@ import {
   useSearchParams,
 } from "next/navigation";
 
-import { trackPageView } from "@/lib/analytics";
+import {
+  captureCampaignAttribution,
+  sendGAEvent,
+  trackPageView,
+} from "@/lib/analytics";
 
 export default function GoogleAnalyticsRouteTracker() {
   const pathname = usePathname();
@@ -20,6 +24,13 @@ export default function GoogleAnalyticsRouteTracker() {
 
     if (!didMount.current) {
       didMount.current = true;
+      captureCampaignAttribution();
+      sendGAEvent("landing_view", {
+        page_path:
+          window.location.pathname +
+          window.location.search,
+        page_title: document.title,
+      });
       return;
     }
 
@@ -33,6 +44,10 @@ export default function GoogleAnalyticsRouteTracker() {
       pagePath,
       document.title
     );
+    sendGAEvent("view_page", {
+      page_path: pagePath,
+      page_title: document.title,
+    });
   }, [pathname, searchParams]);
 
   return null;
