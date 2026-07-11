@@ -13,4 +13,20 @@ export function publicOwnerName(
   );
 }
 
+export function isPlatformOwnerName(
+  value?: string | null
+) {
+  const name =
+    cleanPublicName(value)
+      .trim()
+      .toLowerCase();
+
+  return [
+    "admin",
+    "puzzle market",
+    "puzzle market vault",
+    "puzzlemarket",
+  ].includes(name);
+}
+
 export { cleanPublicName };

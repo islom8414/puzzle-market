@@ -5,7 +5,10 @@ import {
   listingPricePayload,
   loadListingPriceHistory,
 } from "@/lib/listing-price-history";
-import { publicOwnerName } from "@/lib/public-identity";
+import {
+  isPlatformOwnerName,
+  publicOwnerName,
+} from "@/lib/public-identity";
 
 type PieceListingRow = {
   id: string;
@@ -143,16 +146,19 @@ export async function GET(
               listing.piece_id
             );
 
+          const sellerName =
+            publicOwnerName(
+              sellerMap.get(
+                listing.seller_user_id
+              )
+            );
+
           return {
             id: listing.id,
             seller_user_id:
               listing.seller_user_id,
             seller_name:
-              publicOwnerName(
-                sellerMap.get(
-                  listing.seller_user_id
-                )
-              ),
+              sellerName,
             fragment_id:
               catalog.slug,
             title: catalog.title,
@@ -178,6 +184,12 @@ export async function GET(
             puzzle_rows: catalog.rows,
             puzzle_columns:
               catalog.columns,
+            sale_type:
+              isPlatformOwnerName(
+                sellerName
+              )
+                ? "Primary Sale"
+                : "Resale",
             ...listingPricePayload(
               listing.id,
               listing.price_cents,
@@ -372,9 +384,7 @@ export async function GET(
           seller_user_id:
             listing.seller_user_id,
           seller_name:
-            publicOwnerName(
-              seller
-            ),
+            publicOwnerName(seller),
           fragment_id: catalog.slug,
           title: catalog.title,
           image: catalog.image_url,
@@ -396,6 +406,12 @@ export async function GET(
           puzzle_rows: catalog.rows,
           puzzle_columns:
             catalog.columns,
+          sale_type:
+            isPlatformOwnerName(
+              publicOwnerName(seller)
+            )
+              ? "Primary Sale"
+              : "Resale",
           ...listingPricePayload(
             listing.id,
             listing.price_cents,

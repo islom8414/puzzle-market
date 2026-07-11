@@ -15,11 +15,11 @@ import {
 import { trackLogin } from "@/lib/analytics";
 
 const accountBenefits = [
-  "save fragments to your Watchlist",
-  "track verified ownership",
-  "purchase available fragments",
-  "list owned fragments for resale",
-  "receive sale and price notifications",
+  "Save fragments",
+  "Track ownership",
+  "Buy pieces",
+  "Sell owned fragments",
+  "Receive notifications",
 ] as const;
 
 export default function LoginPage() {
@@ -201,7 +201,7 @@ export default function LoginPage() {
 
         <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4">
           <p className="text-sm font-black text-cyan-300">
-            Create a free collector account to:
+            Create your free collector account
           </p>
           <ul className="mt-3 space-y-2 text-sm text-zinc-300">
             {accountBenefits.map(
@@ -213,7 +213,9 @@ export default function LoginPage() {
             )}
           </ul>
           <p className="mt-3 text-sm font-bold text-zinc-400">
-            Free registration. No purchase required.
+            Free registration.
+            <br />
+            No purchase required.
           </p>
         </div>
 

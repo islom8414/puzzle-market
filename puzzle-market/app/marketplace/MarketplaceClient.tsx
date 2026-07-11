@@ -211,15 +211,15 @@ function PriceGrowthChart({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">
-            Price Index
+            Platform Price Schedule
           </p>
           <p className="mt-1 text-sm text-zinc-400">
-            Monthly growth +{monthlyGrowth}%
+            Scheduled increase +{monthlyGrowth}%
           </p>
         </div>
         <div className="text-right">
           <p className="text-xs text-zinc-500">
-            Next month
+            Next scheduled price
           </p>
           <p className="font-black text-white">
             {formatUsd(nextPrice)}
@@ -231,7 +231,7 @@ function PriceGrowthChart({
         viewBox="0 0 100 90"
         className="mt-4 h-24 w-full overflow-visible"
         role="img"
-        aria-label="Monthly price growth chart"
+        aria-label="Platform price schedule chart"
       >
         <defs>
           <linearGradient
@@ -346,7 +346,7 @@ function PriceGrowthChart({
 
       <div className="mt-2 flex justify-between text-xs text-zinc-500">
         <span>Current {formatUsd(fragment.price)}</span>
-        <span>Projected</span>
+        <span>Scheduled</span>
       </div>
     </div>
   );
@@ -1339,15 +1339,24 @@ export default function MarketplaceClient({
                   <div className="mt-6 bg-black/40 border border-white/5 rounded-2xl p-4">
 
                     <p className="text-zinc-500 text-sm">
-                      Current Owner
+                      Sale Type
                     </p>
 
                     <h3 className="font-black mt-2">
                       {
-                        fragment.seller_name ||
-                        "Collector"
+                        fragment.sale_type || "Resale"
                       }
                     </h3>
+
+                    <p className="mt-2 text-xs text-zinc-500">
+                      {fragment.sale_type ===
+                      "Primary Sale"
+                        ? "Listed by Puzzle Market"
+                        : `Listed by ${
+                            fragment.seller_name ||
+                            "Collector"
+                          }`}
+                    </p>
 
                   </div>
 
@@ -1371,6 +1380,25 @@ export default function MarketplaceClient({
                             (fragment.puzzle_columns || puzzleColumns)}
                       </p>
                     </div>
+                  </div>
+
+                  <div className="mt-3 rounded-2xl border border-white/5 bg-black/30 p-4">
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
+                      Why it stands out
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-zinc-300">
+                      {fragment.rarity} fragment from{" "}
+                      {normalizePuzzleCategory(
+                        fragment.category
+                      )}{" "}
+                      with {fragment.available_supply ?? 1} available out of{" "}
+                      {fragment.total_supply ??
+                        (fragment.puzzle_rows ||
+                          puzzleRows) *
+                          (fragment.puzzle_columns ||
+                            puzzleColumns)}{" "}
+                      total pieces.
+                    </p>
                   </div>
 
                   <PriceGrowthChart

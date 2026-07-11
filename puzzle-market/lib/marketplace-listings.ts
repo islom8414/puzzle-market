@@ -1,6 +1,9 @@
 import "server-only";
 
-import { publicOwnerName } from "@/lib/public-identity";
+import {
+  isPlatformOwnerName,
+  publicOwnerName,
+} from "@/lib/public-identity";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { growthBpsForPriceCents } from "@/lib/price-index";
 
@@ -78,7 +81,8 @@ export type MarketplaceListingsResult = {
 };
 
 function normalizeListingType(
-  row: ListingRow
+  row: ListingRow,
+  sellerName?: string | null
 ): "Primary Sale" | "Resale" {
   const rawType =
     row.listing_type?.toLowerCase() || "";
@@ -87,6 +91,10 @@ function normalizeListingType(
     rawType.includes("primary") ||
     rawType.includes("vault")
   ) {
+    return "Primary Sale";
+  }
+
+  if (isPlatformOwnerName(sellerName)) {
     return "Primary Sale";
   }
 
@@ -268,6 +276,8 @@ export async function loadMarketplaceListings({
 
     const seller =
       sellerMap.get(row.seller_user_id);
+    const sellerName =
+      publicOwnerName(seller);
 
     const totalSupply =
       Math.max(
@@ -281,7 +291,7 @@ export async function loadMarketplaceListings({
       seller_user_id:
         row.seller_user_id,
       seller_name:
-        publicOwnerName(seller),
+        sellerName,
       fragment_id:
         catalog.slug,
       title: catalog.title,
@@ -297,7 +307,10 @@ export async function loadMarketplaceListings({
       puzzle_rows: catalog.rows,
       puzzle_columns: catalog.columns,
       sale_type:
-        normalizeListingType(row),
+        normalizeListingType(
+          row,
+          sellerName
+        ),
       availability: "Available" as const,
       available_supply: 1,
       total_supply: totalSupply,
