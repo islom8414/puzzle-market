@@ -81,7 +81,7 @@ export default function ForgotPasswordPage() {
     setSent(true);
     setCooldown(60);
     setMessage(
-      "If an account exists for this email, a secure reset link will be sent. Check your inbox and spam folder."
+      "If an account exists for this email, a password reset link has been sent. Please check your inbox and spam folder."
     );
   }
 

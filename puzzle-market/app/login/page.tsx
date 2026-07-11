@@ -14,14 +14,6 @@ import {
 } from "@/lib/terms-status";
 import { trackLogin } from "@/lib/analytics";
 
-const accountBenefits = [
-  "Save fragments",
-  "Track ownership",
-  "Buy pieces",
-  "Sell owned fragments",
-  "Receive notifications",
-] as const;
-
 export default function LoginPage() {
   const [email, setEmail] =
     useState("");
@@ -192,26 +184,20 @@ export default function LoginPage() {
         </div>
 
         <h1 className="mt-5 text-center text-4xl font-black sm:mt-6 sm:text-5xl">
-          Welcome Back
+          Sign in to manage your collection
         </h1>
 
         <p className="mt-2 text-center text-zinc-500 sm:mt-3">
-          Login to Puzzle Market
+          Access your owned fragments, Watchlist, listings and transaction history.
         </p>
 
         <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4">
           <p className="text-sm font-black text-cyan-300">
-            Create your free collector account
+            New to Puzzle Market?
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-zinc-300">
-            {accountBenefits.map(
-              (benefit) => (
-                <li key={benefit}>
-                  • {benefit}
-                </li>
-              )
-            )}
-          </ul>
+          <p className="mt-2 text-sm text-zinc-300">
+            Create a free collector account.
+          </p>
           <p className="mt-3 text-sm font-bold text-zinc-400">
             Free registration.
             <br />

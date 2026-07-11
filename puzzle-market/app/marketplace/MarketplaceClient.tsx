@@ -17,11 +17,6 @@ import {
   PUZZLE_CATEGORIES,
 } from "@/lib/brand-metadata";
 import { fetchMyProfile } from "@/lib/client-profile";
-import {
-  formatUsd,
-  indexedPriceCents,
-  type PriceHistoryPoint,
-} from "@/lib/price-index";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import { supabase } from "@/lib/supabase";
 import {
@@ -50,8 +45,6 @@ type MarketItem = {
   availability?: "Available";
   available_supply?: number;
   total_supply?: number;
-  price_history?: PriceHistoryPoint[];
-  monthly_growth_percent?: number;
 };
 
 type MarketplaceLoadStatus =
@@ -63,303 +56,6 @@ type MarketplaceLoadStatus =
 
 const puzzleColumns = 5;
 const puzzleRows = 5;
-
-function PriceGrowthChart({
-  fragment,
-}: {
-  fragment: MarketItem;
-}) {
-  if (
-    fragment.sale_type !== "Primary Sale"
-  ) {
-    return null;
-  }
-
-  const monthlyGrowth =
-    fragment.monthly_growth_percent ||
-    (fragment.price <= 10
-      ? 5
-      : fragment.price <= 100
-        ? 7
-        : 9);
-
-  const currentCents = Math.round(
-    fragment.price * 100
-  );
-  const nextPrice =
-    indexedPriceCents(
-      currentCents,
-      Math.round(monthlyGrowth * 100)
-    ) / 100;
-
-  const seedSource =
-    `${fragment.id}-${fragment.fragment_id}-${fragment.piece}-${fragment.price}`;
-
-  let seed = 0;
-  for (const char of seedSource) {
-    seed =
-      (seed * 31 + char.charCodeAt(0)) >>> 0;
-  }
-
-  const seeded = () => {
-    seed =
-      (seed * 1664525 + 1013904223) >>> 0;
-    return seed / 4294967295;
-  };
-
-  const historyPoints =
-    fragment.price_history
-      ?.map((point) => point.price)
-      .filter((price) => Number.isFinite(price))
-      .slice(-6) || [];
-
-  const syntheticPoints =
-    Array.from({ length: 6 }).map((_, index) => {
-      const t = index / 5;
-      const startingDiscount =
-        0.16 + seeded() * 0.1;
-      const curve =
-        Math.pow(t, 1.18 + seeded() * 0.35);
-      const wobble =
-        (seeded() - 0.5) *
-        fragment.price *
-        0.035;
-
-      if (index === 5) {
-        return nextPrice;
-      }
-
-      if (index === 4) {
-        return fragment.price;
-      }
-
-      return Math.max(
-        0.01,
-        fragment.price *
-          (1 - startingDiscount) +
-          fragment.price *
-            startingDiscount *
-            curve +
-          wobble
-      );
-    });
-
-  const points =
-    historyPoints.length >= 4
-      ? [
-          ...historyPoints,
-          nextPrice,
-        ]
-      : syntheticPoints;
-
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const spread = Math.max(0.01, max - min);
-
-  const coords = points.map(
-    (price, index) => {
-      const x =
-        points.length === 1
-          ? 50
-          : (index /
-              (points.length - 1)) *
-            100;
-      const y =
-        82 -
-        ((price - min) / spread) * 64;
-
-      return {
-        x,
-        y,
-      };
-    }
-  );
-
-  const linePath =
-    coords.reduce(
-      (path, point, index) => {
-        if (index === 0) {
-          return `M ${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
-        }
-
-        const previous =
-          coords[index - 1];
-        const midX =
-          (previous.x + point.x) / 2;
-
-        return `${path} C ${midX.toFixed(2)} ${previous.y.toFixed(2)}, ${midX.toFixed(2)} ${point.y.toFixed(2)}, ${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
-      },
-      ""
-    );
-
-  const areaPath =
-    `${linePath} L ${coords[coords.length - 1].x.toFixed(2)} 86 L ${coords[0].x.toFixed(2)} 86 Z`;
-
-  const chartId =
-    `price-chart-${String(fragment.id).replace(/[^a-zA-Z0-9_-]/g, "")}-${fragment.piece}`;
-
-  const lastPoint =
-    coords[coords.length - 1];
-
-  const previousPoint =
-    coords[coords.length - 2] ||
-    coords[0];
-
-  const arrowAngle =
-    Math.atan2(
-      lastPoint.y - previousPoint.y,
-      lastPoint.x - previousPoint.x
-    ) *
-    (180 / Math.PI);
-
-  return (
-    <div className="mt-5 rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.04] p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">
-            Scheduled Primary Price Adjustment
-          </p>
-          <p className="mt-1 text-sm text-zinc-400">
-            Scheduled increase +{monthlyGrowth}%
-          </p>
-          <p className="mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">
-            This is a scheduled platform price adjustment for primary listings. It is not a forecast of resale value or a guaranteed return.
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-zinc-500">
-            Next scheduled price
-          </p>
-          <p className="font-black text-white">
-            {formatUsd(nextPrice)}
-          </p>
-        </div>
-      </div>
-
-      <svg
-        viewBox="0 0 100 90"
-        className="mt-4 h-24 w-full overflow-visible"
-        role="img"
-        aria-label="Platform price schedule chart"
-      >
-        <defs>
-          <linearGradient
-            id={`${chartId}-area`}
-            x1="0"
-            x2="0"
-            y1="0"
-            y2="1"
-          >
-            <stop
-              offset="0%"
-              stopColor="rgb(34,211,238)"
-              stopOpacity="0.28"
-            />
-            <stop
-              offset="100%"
-              stopColor="rgb(34,211,238)"
-              stopOpacity="0"
-            />
-          </linearGradient>
-          <linearGradient
-            id={`${chartId}-line`}
-            x1="0"
-            x2="1"
-            y1="0"
-            y2="0"
-          >
-            <stop
-              offset="0%"
-              stopColor="rgb(103,232,249)"
-            />
-            <stop
-              offset="100%"
-              stopColor="rgb(16,185,129)"
-            />
-          </linearGradient>
-          <filter
-            id={`${chartId}-glow`}
-            x="-20%"
-            y="-40%"
-            width="140%"
-            height="180%"
-          >
-            <feGaussianBlur
-              stdDeviation="2.4"
-              result="blur"
-            />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {[24, 45, 66, 86].map((y) => (
-          <line
-            key={y}
-            x1="0"
-            x2="100"
-            y1={y}
-            y2={y}
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth="0.8"
-          />
-        ))}
-
-        <path
-          d={areaPath}
-          fill={`url(#${chartId}-area)`}
-        />
-
-        <path
-          d={linePath}
-          fill="none"
-          stroke={`url(#${chartId}-line)`}
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          filter={`url(#${chartId}-glow)`}
-        />
-
-        {coords.map((point, index) => {
-          return (
-            <circle
-              key={`${point.x}-${point.y}-${index}`}
-              cx={point.x}
-              cy={point.y}
-              r={index === coords.length - 1 ? 4.5 : 2.4}
-              fill={
-                index === coords.length - 1
-                  ? "rgb(16,185,129)"
-                  : "white"
-              }
-              opacity={
-                index === coords.length - 1
-                  ? 1
-                  : 0.82
-              }
-            />
-          );
-        })}
-
-        <g
-          transform={`translate(${lastPoint.x.toFixed(2)} ${lastPoint.y.toFixed(2)}) rotate(${arrowAngle.toFixed(2)})`}
-        >
-          <path
-            d="M 0 0 L -7 -4 L -5 0 L -7 4 Z"
-            fill="rgb(16,185,129)"
-          />
-        </g>
-      </svg>
-
-      <div className="mt-2 flex justify-between text-xs text-zinc-500">
-        <span>Current {formatUsd(fragment.price)}</span>
-        <span>Scheduled</span>
-      </div>
-    </div>
-  );
-}
 
 export default function MarketplaceClient({
   initialListings,
@@ -407,6 +103,12 @@ export default function MarketplaceClient({
     useState("ALL");
 
   const [categoryFilter, setCategoryFilter] =
+    useState("ALL");
+
+  const [saleTypeFilter, setSaleTypeFilter] =
+    useState("ALL");
+
+  const [priceRangeFilter, setPriceRangeFilter] =
     useState("ALL");
 
   const [puzzleFilter, setPuzzleFilter] =
@@ -650,10 +352,28 @@ export default function MarketplaceClient({
               : normalizePuzzleCategory(fragment.category) ===
                 categoryFilter;
 
+          const matchesSaleType =
+            saleTypeFilter === "ALL"
+              ? true
+              : fragment.sale_type ===
+                saleTypeFilter;
+
+          const matchesPriceRange =
+            priceRangeFilter === "ALL"
+              ? true
+              : priceRangeFilter === "UNDER_25"
+                ? fragment.price < 25
+                : priceRangeFilter === "25_100"
+                  ? fragment.price >= 25 &&
+                    fragment.price <= 100
+                  : fragment.price > 100;
+
           return (
             matchesSearch &&
             matchesRarity &&
-            matchesCategory
+            matchesCategory &&
+            matchesSaleType &&
+            matchesPriceRange
           );
 
         }
@@ -664,9 +384,30 @@ export default function MarketplaceClient({
       search,
       rarityFilter,
       categoryFilter,
+      saleTypeFilter,
+      priceRangeFilter,
       puzzleFilter,
       pieceFilter,
     ]);
+
+  const primarySaleCount = useMemo(
+    () =>
+      marketItems.filter(
+        (item) =>
+          item.sale_type === "Primary Sale"
+      ).length,
+    [marketItems]
+  );
+
+  const collectorResaleCount = useMemo(
+    () =>
+      marketItems.filter(
+        (item) =>
+          item.sale_type ===
+          "Collector Resale"
+      ).length,
+    [marketItems]
+  );
 
   const isLoading =
     loadStatus === "loading";
@@ -869,8 +610,9 @@ export default function MarketplaceClient({
             "Login required"
           );
 
-          location.href =
-            "/login";
+          window.location.assign(
+            "/login"
+          );
 
           return;
 
@@ -880,8 +622,9 @@ export default function MarketplaceClient({
           await fetchMyProfile();
 
         if (!profile?.profileComplete) {
-          location.href =
-            "/setup";
+          window.location.assign(
+            "/setup"
+          );
           return;
         }
 
@@ -892,8 +635,9 @@ export default function MarketplaceClient({
             );
 
           if (upgrade) {
-            location.href =
-              "/subscribe";
+            window.location.assign(
+              "/subscribe"
+            );
           }
 
           return;
@@ -973,7 +717,7 @@ export default function MarketplaceClient({
           transaction_id:
             data.tradeId ||
             data.purchaseId ||
-            `listing_${fragment.id}_${Date.now()}`,
+            `listing_${fragment.id}`,
           value: fragment.price,
           items: [analyticsItem],
         });
@@ -989,10 +733,11 @@ export default function MarketplaceClient({
         );
 
         if (puzzleFilter) {
-          location.href =
-            `/puzzle/${encodeURIComponent(puzzleFilter)}`;
+          window.location.assign(
+            `/puzzle/${encodeURIComponent(puzzleFilter)}`
+          );
         } else {
-          loadMarketplace();
+          void loadMarketplace();
         }
 
       } catch (error) {
@@ -1034,7 +779,7 @@ export default function MarketplaceClient({
               ? pieceFilter
                 ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
                 : "All active missing pieces for this puzzle are shown here. Buy each missing fragment to complete the image."
-              : "Real-time collectible economy powered by live cloud ownership, instant marketplace sync and premium fragment trading."}
+              : "Browse collectible puzzle fragments available from Puzzle Market and other collectors."}
           </p>
 
           <div className="flex flex-wrap gap-3 md:gap-4 mt-8 md:mt-10">
@@ -1048,7 +793,7 @@ export default function MarketplaceClient({
 
           {/* STATS */}
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-10 md:mt-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mt-10 md:mt-12">
 
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
@@ -1071,11 +816,16 @@ export default function MarketplaceClient({
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
-                Marketplace
+                Primary Sale
               </p>
 
               <h3 className="translate-safe-stat text-cyan-400 font-black mt-3">
-                LIVE
+                {isLoading ||
+                isRequestProblem ? (
+                  <span className="block h-10 w-20 animate-pulse rounded-xl bg-white/10" />
+                ) : (
+                  primarySaleCount
+                )}
               </h3>
 
             </div>
@@ -1083,23 +833,16 @@ export default function MarketplaceClient({
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
-                Cloud Sync
+                Collector Resale
               </p>
 
               <h3 className="translate-safe-stat font-black mt-3">
-                24/7
-              </h3>
-
-            </div>
-
-            <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
-
-              <p className="text-zinc-500 text-sm">
-                Status
-              </p>
-
-              <h3 className="translate-safe-stat text-green-400 font-black mt-3">
-                ONLINE
+                {isLoading ||
+                isRequestProblem ? (
+                  <span className="block h-10 w-20 animate-pulse rounded-xl bg-white/10" />
+                ) : (
+                  collectorResaleCount
+                )}
               </h3>
 
             </div>
@@ -1116,7 +859,7 @@ export default function MarketplaceClient({
 
         {/* FILTERS */}
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_220px_220px] gap-4 md:gap-5 mb-10 md:mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_170px_210px_190px_170px] gap-4 md:gap-5 mb-10 md:mb-12">
 
           <input
             value={search}
@@ -1181,6 +924,31 @@ export default function MarketplaceClient({
                 {item}
               </option>
             ))}
+          </select>
+
+          <select
+            value={saleTypeFilter}
+            onChange={(event) =>
+              setSaleTypeFilter(event.target.value)
+            }
+            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
+          >
+            <option value="ALL">All Sale Types</option>
+            <option value="Primary Sale">Primary Sale</option>
+            <option value="Collector Resale">Collector Resale</option>
+          </select>
+
+          <select
+            value={priceRangeFilter}
+            onChange={(event) =>
+              setPriceRangeFilter(event.target.value)
+            }
+            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
+          >
+            <option value="ALL">All Prices</option>
+            <option value="UNDER_25">Under $25</option>
+            <option value="25_100">$25 - $100</option>
+            <option value="OVER_100">Over $100</option>
           </select>
 
         </div>
@@ -1349,24 +1117,24 @@ export default function MarketplaceClient({
                   <div className="mt-6 bg-black/40 border border-white/5 rounded-2xl p-4">
 
                     <p className="text-zinc-500 text-sm">
-                      Sale Type
-                    </p>
-
-                    <h3 className="font-black mt-2">
-                      {
-                        fragment.sale_type || "Resale"
-                      }
-                    </h3>
-
-                    <p className="mt-2 text-xs text-zinc-500">
                       {fragment.sale_type ===
                       "Primary Sale"
                         ? "Listed by Puzzle Market"
-                        : `Listed by ${
-                            fragment.seller_name ||
-                            "Collector"
-                          }`}
+                        : "Seller"}
                     </p>
+
+                    <h3 className="font-black mt-2">
+                      {fragment.sale_type ||
+                        "Collector Resale"}
+                    </h3>
+
+                    {fragment.sale_type ===
+                      "Collector Resale" && (
+                      <p className="mt-2 text-xs text-zinc-500">
+                        {fragment.seller_name ||
+                          "Collector"}
+                      </p>
+                    )}
 
                   </div>
 
@@ -1391,36 +1159,6 @@ export default function MarketplaceClient({
                       </p>
                     </div>
                   </div>
-
-                  <div className="mt-3 rounded-2xl border border-white/5 bg-black/30 p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
-                      Why it stands out
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-                      {fragment.rarity} fragment from{" "}
-                      {normalizePuzzleCategory(
-                        fragment.category
-                      )}{" "}
-                      with {fragment.available_supply ?? 1} available out of{" "}
-                      {fragment.total_supply ??
-                        (fragment.puzzle_rows ||
-                          puzzleRows) *
-                          (fragment.puzzle_columns ||
-                            puzzleColumns)}{" "}
-                      total pieces.
-                    </p>
-                  </div>
-
-                  <PriceGrowthChart
-                    fragment={fragment}
-                  />
-
-                  {fragment.sale_type ===
-                    "Collector Resale" && (
-                    <div className="mt-3 rounded-2xl border border-white/5 bg-black/30 p-4 text-sm leading-relaxed text-zinc-400">
-                      Seller sets the listing price. A 10% marketplace fee applies only after a completed sale.
-                    </div>
-                  )}
 
                   {/* BUTTON */}
 
@@ -1543,6 +1281,8 @@ duration-300
                   setPieceFilter("");
                   setRarityFilter("ALL");
                   setCategoryFilter("ALL");
+                  setSaleTypeFilter("ALL");
+                  setPriceRangeFilter("ALL");
                   window.history.replaceState(
                     null,
                     "",
