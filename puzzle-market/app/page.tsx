@@ -110,22 +110,18 @@ const faq = [
   },
 ] as const;
 
-const illustrativeActivity = [
+const resaleScenarios = [
   {
-    label: "Entry price",
-    value: "$1.00",
+    title: "Higher demand",
+    body: "A collector accepts a higher listing price.",
   },
   {
-    label: "Example listing",
-    value: "$25.00",
+    title: "Similar demand",
+    body: "The fragment resells near the original purchase price.",
   },
   {
-    label: "Demo interest",
-    value: "124",
-  },
-  {
-    label: "Example payout",
-    value: "$22.50",
+    title: "No buyer yet",
+    body: "The listing remains active until another collector accepts it.",
   },
 ] as const;
 
@@ -334,9 +330,11 @@ export default async function HomePage() {
               You control the listing price. Buyers control demand.
             </h2>
             <p className="mt-5 leading-relaxed text-zinc-400">
-              Listing a fragment does not mean it will sell immediately. The
-              final resale price depends on what another collector is willing to
-              pay.
+              You choose the asking price. Buyers decide whether and when it
+              sells.
+            </p>
+            <p className="mt-4 text-sm font-bold text-amber-200">
+              Resale and profit are not guaranteed.
             </p>
             <Link
               href="/sell"
@@ -348,67 +346,25 @@ export default async function HomePage() {
 
           <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-6 md:p-8">
             <div className="grid gap-3">
-              {[
-                ["Purchase price", "$1.00"],
-                ["Example listing price", "$25.00"],
-                ["Platform fee", "10% per completed resale"],
-                ["Seller payout", "Stripe or eligible card payout"],
-              ].map(([label, value]) => (
+              {resaleScenarios.map((scenario) => (
                 <div
-                  key={label}
-                  className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                  key={scenario.title}
+                  className="rounded-2xl border border-white/10 bg-black/40 p-4"
                 >
-                  <p className="text-sm font-bold text-zinc-400">{label}</p>
-                  <p className="text-right text-lg font-black">{value}</p>
+                  <p className="text-sm font-black text-cyan-300">
+                    {scenario.title}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                    {scenario.body}
+                  </p>
                 </div>
               ))}
             </div>
             <p className="mt-5 text-sm leading-relaxed text-zinc-500">
-              Example values explain the flow. Puzzle Market takes a 10%
-              marketplace fee from completed resales, and payout options depend
-              on seller verification and regional payment support.
+              Puzzle Market takes a 10% marketplace fee from completed resales,
+              and payout options depend on seller verification and regional
+              payment support.
             </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 pb-24 md:px-6">
-        <div className="mx-auto max-w-7xl rounded-[28px] border border-cyan-400/15 bg-cyan-400/[0.04] p-5 md:p-8">
-          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">
-                Illustrative activity
-              </p>
-              <h2 className="mt-4 text-3xl font-black md:text-5xl">
-                See how a fragment can move through the market.
-              </h2>
-              <p className="mt-5 leading-relaxed text-zinc-400">
-                This panel is an example flow for new visitors. It is not live
-                site activity or verified sales data.
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {illustrativeActivity.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-2xl border border-white/10 bg-black/45 p-5"
-                >
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
-                    {item.label}
-                  </p>
-                  <p className="mt-3 text-3xl font-black text-white">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-relaxed text-zinc-300">
-            Live marketplace metrics are separated from illustrative examples,
-            so new visitors can understand the flow without confusing examples
-            with verified sales.
           </div>
         </div>
       </section>

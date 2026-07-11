@@ -92,7 +92,7 @@ export async function GET(
         });
       }
 
-      const { data: listings } =
+    const { data: listings } =
         await admin
           .from("piece_listings")
           .select(
@@ -136,6 +136,21 @@ export async function GET(
           admin,
           (listings || []).map(
             (item) => item.id
+          )
+        );
+
+      const { data: trades } =
+        pieceIds.length > 0
+          ? await admin
+              .from("piece_trades")
+              .select("piece_id")
+              .in("piece_id", pieceIds)
+          : { data: [] };
+
+      const tradedPieceIds =
+        new Set(
+          (trades || []).map(
+            (trade) => trade.piece_id
           )
         );
 
@@ -185,11 +200,15 @@ export async function GET(
             puzzle_columns:
               catalog.columns,
             sale_type:
-              isPlatformOwnerName(
-                sellerName
+              tradedPieceIds.has(
+                listing.piece_id
               )
-                ? "Primary Sale"
-                : "Resale",
+                ? "Collector Resale"
+                : isPlatformOwnerName(
+                    sellerName
+                  )
+                  ? "Primary Sale"
+                  : "Collector Resale",
             ...listingPricePayload(
               listing.id,
               listing.price_cents,
@@ -377,6 +396,17 @@ export async function GET(
         )
         .maybeSingle();
 
+    const { data: trade } =
+      await admin
+        .from("piece_trades")
+        .select("id")
+        .eq("piece_id", piece.id)
+        .limit(1)
+        .maybeSingle();
+
+    const sellerName =
+      publicOwnerName(seller);
+
     return NextResponse.json({
       listings: [
         {
@@ -384,7 +414,7 @@ export async function GET(
           seller_user_id:
             listing.seller_user_id,
           seller_name:
-            publicOwnerName(seller),
+            sellerName,
           fragment_id: catalog.slug,
           title: catalog.title,
           image: catalog.image_url,
@@ -407,11 +437,13 @@ export async function GET(
           puzzle_columns:
             catalog.columns,
           sale_type:
-            isPlatformOwnerName(
-              publicOwnerName(seller)
-            )
-              ? "Primary Sale"
-              : "Resale",
+            trade
+              ? "Collector Resale"
+              : isPlatformOwnerName(
+                  sellerName
+                )
+                ? "Primary Sale"
+                : "Collector Resale",
           ...listingPricePayload(
             listing.id,
             listing.price_cents,

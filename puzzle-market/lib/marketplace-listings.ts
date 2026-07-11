@@ -23,7 +23,7 @@ export type MarketplaceListing = {
   exact_listing?: boolean;
   puzzle_rows?: number;
   puzzle_columns?: number;
-  sale_type: "Primary Sale" | "Resale";
+  sale_type: "Primary Sale" | "Collector Resale";
   availability: "Available";
   available_supply: number;
   total_supply: number;
@@ -82,10 +82,15 @@ export type MarketplaceListingsResult = {
 
 function normalizeListingType(
   row: ListingRow,
-  sellerName?: string | null
-): "Primary Sale" | "Resale" {
+  sellerName?: string | null,
+  hasVerifiedTrade = false
+): "Primary Sale" | "Collector Resale" {
   const rawType =
     row.listing_type?.toLowerCase() || "";
+
+  if (hasVerifiedTrade) {
+    return "Collector Resale";
+  }
 
   if (
     rawType.includes("primary") ||
@@ -98,7 +103,7 @@ function normalizeListingType(
     return "Primary Sale";
   }
 
-  return "Resale";
+  return "Collector Resale";
 }
 
 export async function loadMarketplaceListings({
@@ -176,11 +181,13 @@ export async function loadMarketplaceListings({
             slug,
             title,
             image_url,
-            rows,
-            columns,
-            rarity
-          )
+          rows,
+          columns,
+          rarity,
+          category,
+          brand_name
         )
+      )
       `,
         {
           count: "exact",
@@ -218,8 +225,10 @@ export async function loadMarketplaceListings({
               puzzle_catalog: catalogs.map(
                 (catalog) => ({
                   ...catalog,
-                  category: null,
-                  brand_name: null,
+                  category:
+                    catalog.category || null,
+                  brand_name:
+                    catalog.brand_name || null,
                 })
               ),
             };
@@ -253,6 +262,29 @@ export async function loadMarketplaceListings({
 
   const { data: sellers } =
     await sellersPromise;
+
+  const pieceIds = rows
+    .map((row) => row.piece_id)
+    .filter(
+      (pieceId): pieceId is string =>
+        typeof pieceId === "string" &&
+        pieceId.length > 0
+    );
+
+  const { data: trades } =
+    pieceIds.length === 0
+      ? { data: [] }
+      : await admin
+          .from("piece_trades")
+          .select("piece_id")
+          .in("piece_id", pieceIds);
+
+  const tradedPieceIds =
+    new Set(
+      (trades || []).map(
+        (trade) => trade.piece_id
+      )
+    );
 
   const sellerMap = new Map(
     (sellers || []).map((seller) => [
@@ -309,15 +341,30 @@ export async function loadMarketplaceListings({
       sale_type:
         normalizeListingType(
           row,
-          sellerName
+          sellerName,
+          row.piece_id
+            ? tradedPieceIds.has(
+                row.piece_id
+              )
+            : false
         ),
       availability: "Available" as const,
       available_supply: 1,
       total_supply: totalSupply,
       monthly_growth_percent:
-        growthBpsForPriceCents(
-          row.price_cents
-        ) / 100,
+        normalizeListingType(
+          row,
+          sellerName,
+          row.piece_id
+            ? tradedPieceIds.has(
+                row.piece_id
+              )
+            : false
+        ) === "Primary Sale"
+          ? growthBpsForPriceCents(
+              row.price_cents
+            ) / 100
+          : undefined,
     };
   });
 

@@ -46,7 +46,7 @@ type MarketItem = {
   exact_listing?: boolean;
   puzzle_rows?: number;
   puzzle_columns?: number;
-  sale_type?: "Primary Sale" | "Resale";
+  sale_type?: "Primary Sale" | "Collector Resale";
   availability?: "Available";
   available_supply?: number;
   total_supply?: number;
@@ -69,6 +69,12 @@ function PriceGrowthChart({
 }: {
   fragment: MarketItem;
 }) {
+  if (
+    fragment.sale_type !== "Primary Sale"
+  ) {
+    return null;
+  }
+
   const monthlyGrowth =
     fragment.monthly_growth_percent ||
     (fragment.price <= 10
@@ -211,10 +217,13 @@ function PriceGrowthChart({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">
-            Platform Price Schedule
+            Scheduled Primary Price Adjustment
           </p>
           <p className="mt-1 text-sm text-zinc-400">
             Scheduled increase +{monthlyGrowth}%
+          </p>
+          <p className="mt-2 max-w-xs text-xs leading-relaxed text-zinc-500">
+            This is a scheduled platform price adjustment for primary listings. It is not a forecast of resale value or a guaranteed return.
           </p>
         </div>
         <div className="text-right">
@@ -1286,7 +1295,8 @@ export default function MarketplaceClient({
                     </div>
 
                     <div className="bg-black/70 backdrop-blur-xl px-3 md:px-4 py-2 rounded-full text-[11px] md:text-xs font-black text-white border border-white/10">
-                      {fragment.sale_type || "Resale"}
+                      {fragment.sale_type ||
+                        "Collector Resale"}
                     </div>
 
                   </div>
@@ -1404,6 +1414,13 @@ export default function MarketplaceClient({
                   <PriceGrowthChart
                     fragment={fragment}
                   />
+
+                  {fragment.sale_type ===
+                    "Collector Resale" && (
+                    <div className="mt-3 rounded-2xl border border-white/5 bg-black/30 p-4 text-sm leading-relaxed text-zinc-400">
+                      Seller sets the listing price. A 10% marketplace fee applies only after a completed sale.
+                    </div>
+                  )}
 
                   {/* BUTTON */}
 

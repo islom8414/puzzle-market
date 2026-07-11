@@ -4,6 +4,7 @@ import { findFallbackPuzzle } from "@/lib/fallback-puzzles";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export type PuzzleDetail = {
+  slug?: string;
   title: string;
   image_url: string;
   rows: number;
@@ -14,6 +15,13 @@ export type PuzzleDetail = {
   available_piece_indexes?: number[];
   active_listing_count?: number;
   lowest_price?: number | null;
+  current_price?: number | null;
+  available_fragments?: {
+    listing_id: string;
+    piece_index: number;
+    price: number;
+    sale_type: "Primary Sale" | "Collector Resale";
+  }[];
   rarity: string | null;
   brand_name?: string | null;
   brand_country_code?: string | null;
@@ -37,6 +45,7 @@ function fallbackToDetail(
 
   return {
     title: fallback.title,
+    slug: fallback.slug,
     image_url: fallback.image_url,
     rows: fallback.rows,
     columns: fallback.columns,
@@ -57,6 +66,8 @@ function fallbackToDetail(
       fallback.brand_country_code,
     active_listing_count: 0,
     lowest_price: null,
+    current_price: null,
+    available_fragments: [],
     available_piece_indexes: [],
   };
 }
@@ -122,9 +133,12 @@ export async function loadPuzzleDetail(
       pieceIds.length > 0
         ? await admin
             .from("piece_listings")
-            .select("piece_id,price_cents")
+            .select("id,piece_id,price_cents,seller_user_id")
             .eq("status", "active")
             .in("piece_id", pieceIds)
+            .order("price_cents", {
+              ascending: true,
+            })
         : { data: [] };
 
     const pieceIndexById = new Map(
@@ -143,6 +157,21 @@ export async function loadPuzzleDetail(
           Number(listing.price_cents)
         )
         .filter(Number.isFinite);
+
+    const { data: trades } =
+      pieceIds.length > 0
+        ? await admin
+            .from("piece_trades")
+            .select("piece_id")
+            .in("piece_id", pieceIds)
+        : { data: [] };
+
+    const tradedPieceIds =
+      new Set(
+        (trades || []).map(
+          (trade) => trade.piece_id
+        )
+      );
 
     const marketPieceIndexes =
       (pieces || [])
@@ -181,6 +210,29 @@ export async function loadPuzzleDetail(
         prices.length > 0
           ? Math.min(...prices) / 100
           : null,
+      current_price:
+        prices.length > 0
+          ? Math.min(...prices) / 100
+          : null,
+      available_fragments:
+        activeListings
+          .slice(0, 6)
+          .map((listing) => ({
+            listing_id: String(listing.id),
+            piece_index:
+              pieceIndexById.get(
+                listing.piece_id
+              ) ?? 0,
+            price:
+              Number(listing.price_cents) /
+              100,
+            sale_type:
+              tradedPieceIds.has(
+                listing.piece_id
+              )
+                ? "Collector Resale"
+                : "Primary Sale",
+          })),
     };
   } catch (error) {
     console.warn(

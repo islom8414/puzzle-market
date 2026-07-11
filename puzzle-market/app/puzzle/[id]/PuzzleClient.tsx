@@ -936,7 +936,7 @@ export default function PuzzleClient({
   ) {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        Loading puzzle board...
+        Preparing interactive puzzle board...
       </main>
     );
   }
