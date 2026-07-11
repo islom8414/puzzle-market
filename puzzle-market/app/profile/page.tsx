@@ -59,6 +59,9 @@ export default function ProfilePage() {
   const [editUsername, setEditUsername] =
     useState("");
 
+  const [editingUsername, setEditingUsername] =
+    useState(false);
+
   const [savingUsername, setSavingUsername] =
     useState(false);
   const [subscriptionTier, setSubscriptionTier] =
@@ -101,23 +104,20 @@ export default function ProfilePage() {
       const profile =
         await fetchMyProfile();
 
-      if (
-        !profile?.profileComplete ||
-        !profile.username
-      ) {
-        window.location.href =
-          "/setup";
+      const publicName =
+        profile?.username ||
+        user.email
+          ?.split("@")[0]
+          ?.replace(
+            /[^a-zA-Z0-9_-]/g,
+            ""
+          )
+          ?.slice(0, 24) ||
+        "Collector";
 
-        return;
-      }
+      setUsername(publicName);
 
-      setUsername(
-        profile.username
-      );
-
-      setEditUsername(
-        profile.username
-      );
+      setEditUsername(publicName);
 
       const {
         data: profileData,
@@ -145,9 +145,14 @@ export default function ProfilePage() {
           "inactive"
         );
 
-      cacheUsername(
+      if (
+        profile?.profileComplete &&
         profile.username
-      );
+      ) {
+        cacheUsername(
+          profile.username
+        );
+      }
 
       if (user) {
 
@@ -188,34 +193,31 @@ export default function ProfilePage() {
       if (
         sessionData.session
       ) {
-        const response =
-          await apiFetch(
-            "/api/owned-pieces",
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${sessionData.session.access_token}`,
-              },
-            }
+        const authHeaders = {
+          Authorization:
+            `Bearer ${sessionData.session.access_token}`,
+        };
+
+        const [
+          ownedResponse,
+          referralResponse,
+        ] = await Promise.all([
+          apiFetch("/api/owned-pieces", {
+            headers: authHeaders,
+          }),
+          apiFetch("/api/referrals", {
+            headers: authHeaders,
+          }),
+        ]);
+
+        if (ownedResponse.ok) {
+          const exactData =
+            await ownedResponse.json();
+
+          setOwnedPieces(
+            exactData.pieces || []
           );
-
-        const exactData =
-          await response.json();
-
-        setOwnedPieces(
-          exactData.pieces || []
-        );
-
-        const referralResponse =
-          await apiFetch(
-            "/api/referrals",
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${sessionData.session.access_token}`,
-              },
-            }
-          );
+        }
 
         if (referralResponse.ok) {
           setReferrals(
@@ -263,6 +265,7 @@ export default function ProfilePage() {
 
       setUsername(result.username);
       setEditUsername(result.username);
+      setEditingUsername(false);
       alert("Username updated");
 
     };
@@ -511,28 +514,55 @@ export default function ProfilePage() {
 
                 </div>
 
-                <div className="mt-6 flex flex-col sm:flex-row gap-3 max-w-xl">
-                  <input
-                    value={editUsername}
-                    onChange={(event) =>
-                      setEditUsername(
-                        event.target.value
-                      )
-                    }
-                    placeholder="Change username"
-                    className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/60 px-5 py-3 outline-none focus:border-cyan-400"
-                  />
+                {editingUsername ? (
+                  <div className="mt-6 flex max-w-xl flex-col gap-3 sm:flex-row">
+                    <input
+                      value={editUsername}
+                      onChange={(event) =>
+                        setEditUsername(
+                          event.target.value
+                        )
+                      }
+                      placeholder="Username"
+                      className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/60 px-5 py-3 outline-none focus:border-cyan-400"
+                    />
 
+                    <button
+                      onClick={saveUsername}
+                      disabled={savingUsername}
+                      className="rounded-2xl bg-white/10 px-5 py-3 font-black transition hover:bg-cyan-400 hover:text-black disabled:opacity-50"
+                    >
+                      {savingUsername
+                        ? "Saving..."
+                        : "Save"}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditUsername(
+                          username
+                        );
+                        setEditingUsername(
+                          false
+                        );
+                      }}
+                      className="rounded-2xl border border-white/10 px-5 py-3 font-black text-zinc-300 transition hover:border-white/30 hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
                   <button
-                    onClick={saveUsername}
-                    disabled={savingUsername}
-                    className="rounded-2xl bg-white/10 px-5 py-3 font-black transition hover:bg-cyan-400 hover:text-black disabled:opacity-50"
+                    type="button"
+                    onClick={() =>
+                      setEditingUsername(true)
+                    }
+                    className="mt-6 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-black text-zinc-200 transition hover:border-cyan-400 hover:text-cyan-200"
                   >
-                    {savingUsername
-                      ? "Saving..."
-                      : "Save Name"}
+                    Edit username
                   </button>
-                </div>
+                )}
 
               </div>
 

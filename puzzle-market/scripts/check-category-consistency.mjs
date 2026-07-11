@@ -111,6 +111,21 @@ const forbiddenChecks = [
       "Why it stands out",
     ],
   },
+  {
+    file: "app/page.tsx",
+    patterns: [
+      "Resale and profit are not guaranteed",
+      "Is profit guaranteed?",
+      "fixed inset-x-0 bottom-0",
+    ],
+  },
+  {
+    file: "app/profile/page.tsx",
+    patterns: [
+      "window.location.href =\n          \"/setup\"",
+      "Change username",
+    ],
+  },
 ];
 
 for (const check of checks) {

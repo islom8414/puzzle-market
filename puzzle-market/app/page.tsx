@@ -79,14 +79,9 @@ const faq = [
       "Seller payouts are supported through Stripe where available. In supported alternative regions, eligible card payouts can be arranged through Puzzle Market support after verification.",
   },
   {
-    question: "Can a fragment lose value?",
+    question: "Can the resale price change?",
     answer:
-      "Yes. Collectible prices can rise or fall based on rarity, availability and buyer demand.",
-  },
-  {
-    question: "Is profit guaranteed?",
-    answer:
-      "No. Resale depends on buyer demand, listing price, rarity and market activity.",
+      "Yes. Resale depends on buyer demand, listing price, rarity and market activity.",
   },
   {
     question: "What happens if no one buys my listing?",
@@ -333,9 +328,6 @@ export default async function HomePage() {
               You choose the asking price. Buyers decide whether and when it
               sells.
             </p>
-            <p className="mt-4 text-sm font-bold text-amber-200">
-              Resale and profit are not guaranteed.
-            </p>
             <Link
               href="/sell"
               className="mt-7 inline-flex rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300"
@@ -395,15 +387,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-black/90 p-3 backdrop-blur-xl md:hidden">
-        <Link
-          href="/marketplace"
-          className="block rounded-2xl bg-cyan-400 px-5 py-4 text-center font-black text-black"
-        >
-          Explore Live Fragments
-        </Link>
-      </div>
     </main>
   );
 }
