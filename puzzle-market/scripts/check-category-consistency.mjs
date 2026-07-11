@@ -61,6 +61,16 @@ const checks = [
       "Explore Available Pieces",
       "application/ld+json",
       "loadPuzzleDetail",
+      "displayPuzzle",
+      "Puzzle Collection",
+    ],
+  },
+  {
+    file: "app/marketplace/MarketplaceClient.tsx",
+    patterns: [
+      "All Sale Types",
+      "All Prices",
+      "Browse collectible puzzle fragments available from Puzzle Market and other collectors.",
     ],
   },
   {
@@ -90,6 +100,19 @@ const checks = [
   },
 ];
 
+const forbiddenChecks = [
+  {
+    file: "app/marketplace/MarketplaceClient.tsx",
+    patterns: [
+      "CategoryScroller",
+      "Cloud Sync",
+      "Status\n",
+      "Scheduled Primary Price Adjustment",
+      "Why it stands out",
+    ],
+  },
+];
+
 for (const check of checks) {
   const source = fs.readFileSync(
     check.file,
@@ -100,6 +123,21 @@ for (const check of checks) {
     if (!source.includes(pattern)) {
       throw new Error(
         `${check.file} is missing ${pattern}`
+      );
+    }
+  }
+}
+
+for (const check of forbiddenChecks) {
+  const source = fs.readFileSync(
+    check.file,
+    "utf8"
+  );
+
+  for (const pattern of check.patterns) {
+    if (source.includes(pattern)) {
+      throw new Error(
+        `${check.file} still contains forbidden UI text/import: ${pattern}`
       );
     }
   }

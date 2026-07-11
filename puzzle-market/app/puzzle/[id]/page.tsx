@@ -72,22 +72,37 @@ export default async function PuzzlePage({
   const { id } = await params;
   const initialPuzzle =
     await loadPuzzleDetail(id);
+  const displayPuzzle =
+    initialPuzzle || {
+      title: "Puzzle Collection",
+      slug: id,
+      image_url:
+        "/puzzle-market-cube-logo.png",
+      rows: 4,
+      columns: 4,
+      missing_piece_index: null,
+      missing_piece_count: 0,
+      rarity: "Rare",
+      category: "Other",
+      active_listing_count: 0,
+      lowest_price: null,
+      current_price: null,
+      available_fragments: [],
+    };
   const totalSupply =
-    initialPuzzle
-      ? initialPuzzle.rows *
-        initialPuzzle.columns
-      : 0;
+    displayPuzzle.rows *
+    displayPuzzle.columns;
   const availableCount =
-    initialPuzzle
+    displayPuzzle
       ?.active_listing_count || 0;
   const lowestPrice =
-    initialPuzzle?.lowest_price ??
-    initialPuzzle?.current_price ??
+    displayPuzzle.lowest_price ??
+    displayPuzzle.current_price ??
     null;
   const category =
-    initialPuzzle?.category || "Other";
+    displayPuzzle.category || "Other";
   const availableFragments =
-    initialPuzzle
+    displayPuzzle
       ?.available_fragments || [];
   const structuredData =
     initialPuzzle && lowestPrice
@@ -116,13 +131,12 @@ export default async function PuzzlePage({
 
   return (
     <>
-      {initialPuzzle && (
-        <main className="bg-black text-white">
+      <main className="bg-black text-white">
           <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:px-6 md:py-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:items-center">
             <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950">
               <Image
-                src={initialPuzzle.image_url}
-                alt={initialPuzzle.title}
+                src={displayPuzzle.image_url}
+                alt={displayPuzzle.title}
                 width={1200}
                 height={900}
                 priority
@@ -134,7 +148,7 @@ export default async function PuzzlePage({
                   Digital Collectible
                 </span>
                 <span className="rounded-full border border-white/10 bg-black/70 px-3 py-2 text-xs font-black text-white">
-                  {initialPuzzle.rarity || "Rare"}
+                  {displayPuzzle.rarity || "Rare"}
                 </span>
               </div>
             </div>
@@ -144,7 +158,7 @@ export default async function PuzzlePage({
                 Puzzle Collection
               </p>
               <h1 className="mt-4 text-4xl font-black leading-tight md:text-6xl">
-                {initialPuzzle.title}
+                {displayPuzzle.title}
               </h1>
               <p className="mt-5 max-w-2xl leading-relaxed text-zinc-300">
                 Own verified digital fragments from this collection. Purchased fragments appear in your account, can be tracked as ownership records and can be listed for resale when seller tools are available.
@@ -158,7 +172,7 @@ export default async function PuzzlePage({
                   ],
                   [
                     "Rarity",
-                    initialPuzzle.rarity ||
+                    displayPuzzle.rarity ||
                       "Rare",
                   ],
                   [
@@ -262,8 +276,7 @@ export default async function PuzzlePage({
               </div>
             </div>
           </section>
-        </main>
-      )}
+      </main>
 
       {structuredData && (
         <script

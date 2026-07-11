@@ -9,7 +9,6 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 
-import { CategoryScroller } from "@/components/category-scroller";
 import { puzzles } from "@/data/puzzles";
 import { apiFetch } from "@/lib/api-client";
 import {
@@ -904,19 +903,12 @@ export default function MarketplaceClient({
 
           </select>
 
-          <CategoryScroller
-            items={PUZZLE_CATEGORIES}
-            value={categoryFilter}
-            onChange={setCategoryFilter}
-            className="md:hidden"
-          />
-
           <select
             value={categoryFilter}
             onChange={(event) =>
               setCategoryFilter(event.target.value)
             }
-            className="hidden bg-white/[0.03] border border-white/10 rounded-2xl md:block md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
+            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           >
             <option value="ALL">All Categories</option>
             {PUZZLE_CATEGORIES.map((item) => (

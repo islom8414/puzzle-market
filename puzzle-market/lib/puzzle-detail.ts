@@ -33,6 +33,102 @@ type CatalogRow = PuzzleDetail & {
   slug: string;
 };
 
+const catalogSelect =
+  "id,slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count,brand_name,brand_country_code,category";
+
+const legacyCatalogSelect =
+  "id,slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count";
+
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value
+  );
+}
+
+function safePositiveNumber(
+  value: unknown,
+  fallback: number
+) {
+  const number = Number(value);
+
+  return Number.isFinite(number) &&
+    number > 0
+    ? number
+    : fallback;
+}
+
+function normalizeDetail(
+  detail: Partial<PuzzleDetail> & {
+    id?: string;
+    slug?: string;
+  },
+  requestedSlug: string
+): PuzzleDetail {
+  const rows = safePositiveNumber(
+    detail.rows,
+    4
+  );
+  const columns = safePositiveNumber(
+    detail.columns,
+    4
+  );
+  const missingPieceIndex =
+    typeof detail.missing_piece_index ===
+      "number" &&
+    detail.missing_piece_index >= 0
+      ? detail.missing_piece_index
+      : null;
+  const missingPieceCount =
+    typeof detail.missing_piece_count ===
+      "number" &&
+    detail.missing_piece_count >= 0
+      ? detail.missing_piece_count
+      : missingPieceIndex === null
+        ? 0
+        : 1;
+
+  return {
+    title:
+      detail.title?.trim() ||
+      "Puzzle Collection",
+    slug:
+      detail.slug ||
+      requestedSlug,
+    image_url:
+      detail.image_url?.trim() ||
+      "/puzzle-market-cube-logo.png",
+    rows,
+    columns,
+    missing_piece_index:
+      missingPieceIndex,
+    missing_piece_count:
+      missingPieceCount,
+    market_piece_indexes:
+      detail.market_piece_indexes ||
+      (missingPieceIndex === null
+        ? []
+        : [missingPieceIndex]),
+    rarity:
+      detail.rarity || "Rare",
+    category:
+      detail.category || "Other",
+    brand_name:
+      detail.brand_name || null,
+    brand_country_code:
+      detail.brand_country_code || null,
+    active_listing_count:
+      detail.active_listing_count || 0,
+    lowest_price:
+      detail.lowest_price ?? null,
+    current_price:
+      detail.current_price ?? null,
+    available_fragments:
+      detail.available_fragments || [],
+    available_piece_indexes:
+      detail.available_piece_indexes || [],
+  };
+}
+
 function fallbackToDetail(
   slug: string
 ): PuzzleDetail | null {
@@ -43,7 +139,7 @@ function fallbackToDetail(
     return null;
   }
 
-  return {
+  return normalizeDetail({
     title: fallback.title,
     slug: fallback.slug,
     image_url: fallback.image_url,
@@ -69,7 +165,7 @@ function fallbackToDetail(
     current_price: null,
     available_fragments: [],
     available_piece_indexes: [],
-  };
+  }, slug);
 }
 
 export async function loadPuzzleDetail(
@@ -86,18 +182,14 @@ export async function loadPuzzleDetail(
     let { data, error } =
       await admin
         .from("puzzle_catalog")
-        .select(
-          "id,slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count,brand_name,brand_country_code,category"
-        )
+        .select(catalogSelect)
         .eq("slug", slug)
         .maybeSingle<CatalogRow>();
 
     if (error?.code === "42703") {
       const legacyResult = await admin
         .from("puzzle_catalog")
-        .select(
-          "id,slug,title,image_url,rows,columns,missing_piece_index,rarity,missing_piece_count"
-        )
+        .select(legacyCatalogSelect)
         .eq("slug", slug)
         .maybeSingle<CatalogRow>();
 
@@ -112,9 +204,42 @@ export async function loadPuzzleDetail(
       error = legacyResult.error;
     }
 
+    if (!error && !data && isUuid(slug)) {
+      const byIdResult = await admin
+        .from("puzzle_catalog")
+        .select(catalogSelect)
+        .eq("id", slug)
+        .maybeSingle<CatalogRow>();
+
+      if (byIdResult.error?.code === "42703") {
+        const legacyById = await admin
+          .from("puzzle_catalog")
+          .select(legacyCatalogSelect)
+          .eq("id", slug)
+          .maybeSingle<CatalogRow>();
+
+        data = legacyById.data
+          ? {
+              ...legacyById.data,
+              brand_name: null,
+              brand_country_code: null,
+              category: null,
+            }
+          : null;
+        error = legacyById.error;
+      } else {
+        data = byIdResult.data;
+        error = byIdResult.error;
+      }
+    }
+
     if (error || !data) {
       return fallbackToDetail(slug);
     }
+
+    const normalizedData =
+      normalizeDetail(data, slug) as PuzzleDetail &
+        CatalogRow;
 
     const { data: pieces } =
       await admin
@@ -199,9 +324,11 @@ export async function loadPuzzleDetail(
         );
 
     return {
-      ...data,
+      ...normalizedData,
       market_piece_indexes:
-        marketPieceIndexes,
+        marketPieceIndexes.length > 0
+          ? marketPieceIndexes
+          : normalizedData.market_piece_indexes,
       available_piece_indexes:
         availablePieceIndexes,
       active_listing_count:
