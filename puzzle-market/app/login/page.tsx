@@ -14,6 +14,14 @@ import {
 } from "@/lib/terms-status";
 import { trackLogin } from "@/lib/analytics";
 
+const accountBenefits = [
+  "save fragments to your Watchlist",
+  "track verified ownership",
+  "purchase available fragments",
+  "list owned fragments for resale",
+  "receive sale and price notifications",
+] as const;
+
 export default function LoginPage() {
   const [email, setEmail] =
     useState("");
@@ -130,16 +138,32 @@ export default function LoginPage() {
 
     };
 
+  function getSafeNextPath() {
+    const requestedNext =
+      new URLSearchParams(
+        window.location.search
+      ).get("next");
+
+    return requestedNext?.startsWith("/") &&
+      !requestedNext.startsWith("//")
+      ? requestedNext
+      : "/marketplace";
+  }
+
   const handleGoogleLogin =
     async () => {
       trackLogin("google");
+      const nextPath =
+        getSafeNextPath();
 
       await supabase.auth
         .signInWithOAuth({
           provider: "google",
           options: {
             redirectTo:
-              getAuthRedirectUrl(),
+              getAuthRedirectUrl(
+                `/auth/callback?next=${encodeURIComponent(nextPath)}`
+              ),
           },
         });
 
@@ -175,7 +199,25 @@ export default function LoginPage() {
           Login to Puzzle Market
         </p>
 
-        <div className="mt-6 sm:mt-8">
+        <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4">
+          <p className="text-sm font-black text-cyan-300">
+            Create a free collector account to:
+          </p>
+          <ul className="mt-3 space-y-2 text-sm text-zinc-300">
+            {accountBenefits.map(
+              (benefit) => (
+                <li key={benefit}>
+                  • {benefit}
+                </li>
+              )
+            )}
+          </ul>
+          <p className="mt-3 text-sm font-bold text-zinc-400">
+            Free registration. No purchase required.
+          </p>
+        </div>
+
+        <div className="mt-5 sm:mt-6">
 
           <div className="space-y-4">
 

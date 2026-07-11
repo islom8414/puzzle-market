@@ -2,6 +2,10 @@ import Link from "next/link";
 
 import { HomePuzzleGrid } from "@/components/home-puzzle-grid";
 import { HomeTrustStats } from "@/components/home-trust-stats";
+import { loadHomeCollections } from "@/lib/home-collections";
+
+export const dynamic =
+  "force-dynamic";
 
 const flowSteps = [
   "Buy",
@@ -52,7 +56,7 @@ const faq = [
   {
     question: "How is ownership recorded?",
     answer:
-      "Ownership is tied to your account and the fragment record in the marketplace database. Public pages should use usernames, not private email addresses.",
+      "Ownership is tied to your account and the fragment record in the marketplace database. Public ownership records display usernames only, while private details remain hidden.",
   },
   {
     question: "Can I resell my fragment?",
@@ -92,7 +96,7 @@ const faq = [
   {
     question: "Can more copies be created?",
     answer:
-      "Supply should follow the collection and fragment records shown in the app. Always check the visible supply information for the collection you are buying.",
+      "Each collection displays its visible supply information before you choose a fragment. Always check the collection record before buying.",
   },
   {
     question: "Can I request a refund?",
@@ -102,7 +106,7 @@ const faq = [
   {
     question: "How is my payment protected?",
     answer:
-      "Purchases should only complete after the server confirms the payment. If payment fails, the fragment should not be transferred.",
+      "Ownership transfers after the payment is securely confirmed. If payment fails, the fragment remains available according to the marketplace record.",
   },
 ] as const;
 
@@ -125,7 +129,10 @@ const illustrativeActivity = [
   },
 ] as const;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const initialCollections =
+    await loadHomeCollections();
+
   return (
     <main className="min-h-screen overflow-hidden text-white">
       <section className="relative px-4 pb-14 pt-10 md:px-6 md:pb-20 md:pt-16">
@@ -311,7 +318,9 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <HomePuzzleGrid />
+          <HomePuzzleGrid
+            initialPuzzles={initialCollections}
+          />
         </div>
       </section>
 
@@ -397,9 +406,9 @@ export default function HomePage() {
           </div>
 
           <div className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-relaxed text-zinc-300">
-            Real marketplace metrics should come from completed listings,
-            verified purchases and active user records. Until then, examples are
-            labeled as examples.
+            Live marketplace metrics are separated from illustrative examples,
+            so new visitors can understand the flow without confusing examples
+            with verified sales.
           </div>
         </div>
       </section>

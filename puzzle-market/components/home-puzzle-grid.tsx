@@ -17,11 +17,21 @@ import { apiFetch } from "@/lib/api-client";
 const INITIAL_VISIBLE_PUZZLES = 9;
 const PUZZLE_PAGE_SIZE = 9;
 
-export function HomePuzzleGrid() {
+type HomePuzzleGridProps = {
+  initialPuzzles?: CatalogPuzzle[];
+};
+
+export function HomePuzzleGrid({
+  initialPuzzles = [],
+}: HomePuzzleGridProps) {
+  const hasInitialPuzzles =
+    initialPuzzles.length > 0;
   const [puzzles, setPuzzles] =
-    useState<CatalogPuzzle[]>([]);
+    useState<CatalogPuzzle[]>(
+      initialPuzzles
+    );
   const [loading, setLoading] =
-    useState(true);
+    useState(!hasInitialPuzzles);
   const [category, setCategory] =
     useState("ALL");
   const [visibleCount, setVisibleCount] =
@@ -52,6 +62,10 @@ export function HomePuzzleGrid() {
     filteredPuzzles.length;
 
   useEffect(() => {
+    if (hasInitialPuzzles) {
+      return;
+    }
+
     async function load() {
       try {
         const response =
@@ -69,7 +83,7 @@ export function HomePuzzleGrid() {
     }
 
     load();
-  }, []);
+  }, [hasInitialPuzzles]);
 
   const handleCategoryChange = (
     nextCategory: string

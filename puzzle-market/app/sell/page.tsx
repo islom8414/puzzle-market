@@ -42,38 +42,48 @@ export default function SellPage() {
   }, []);
 
   async function loadPieces() {
-    const {
-      data: {
-        session,
-      },
-    } =
-      await supabase.auth
-        .getSession();
+    setLoading(true);
 
-    if (!session) {
-      location.href = "/login";
-      return;
-    }
+    try {
+      const {
+        data: {
+          session,
+        },
+      } =
+        await supabase.auth
+          .getSession();
 
-    const response =
-      await apiFetch(
-        "/api/owned-pieces",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${session.access_token}`,
-          },
-        }
+      if (!session) {
+        location.href = "/login?next=/sell";
+        return;
+      }
+
+      const response =
+        await apiFetch(
+          "/api/owned-pieces",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${session.access_token}`,
+            },
+          }
+        );
+
+      const data =
+        await response.json();
+
+      setPieces(
+        data.pieces || []
       );
+    } finally {
+      setLoading(false);
+    }
+  }
 
-    const data =
-      await response.json();
-
-    setPieces(
-      data.pieces || []
-    );
-
-    setLoading(false);
+  function statValue(
+    value: string | number
+  ) {
+    return loading ? "—" : value;
   }
 
   const activeListings =
@@ -260,7 +270,7 @@ export default function SellPage() {
                 Owned Pieces
               </p>
               <h2 className="text-4xl md:text-5xl font-black mt-3">
-                {pieces.length}
+                {statValue(pieces.length)}
               </h2>
             </div>
 
@@ -269,7 +279,7 @@ export default function SellPage() {
                 Active Listings
               </p>
               <h2 className="text-cyan-400 text-4xl md:text-5xl font-black mt-3">
-                {activeListings.length}
+                {statValue(activeListings.length)}
               </h2>
             </div>
 
@@ -278,17 +288,29 @@ export default function SellPage() {
                 Listed Value
               </p>
               <h2 className="text-green-400 text-4xl md:text-5xl font-black mt-3">
-                {formatUsd(totalMarketValue)}
+                {statValue(
+                  formatUsd(totalMarketValue)
+                )}
               </h2>
             </div>
           </div>
         </section>
 
         {loading && (
-          <div className="mt-8 md:mt-10 bg-white/[0.03] border border-white/10 rounded-[24px] md:rounded-[32px] p-8 md:p-16 text-center">
-            <h2 className="text-3xl md:text-4xl font-black">
-              Loading owned pieces...
-            </h2>
+          <div className="mt-8 md:mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from({
+              length: 3,
+            }).map((_, index) => (
+              <div
+                key={index}
+                className="rounded-[24px] md:rounded-[32px] border border-white/10 bg-white/[0.03] p-5"
+              >
+                <div className="h-[220px] rounded-3xl bg-white/[0.06]" />
+                <div className="mt-6 h-4 w-2/3 rounded-full bg-white/[0.08]" />
+                <div className="mt-4 h-8 w-1/2 rounded-full bg-white/[0.08]" />
+                <div className="mt-6 h-14 rounded-2xl bg-white/[0.06]" />
+              </div>
+            ))}
           </div>
         )}
 

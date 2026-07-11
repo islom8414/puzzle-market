@@ -12,10 +12,29 @@ import { supabase } from "@/lib/supabase";
 import { termsAcceptPath } from "@/lib/terms-status";
 import { trackSignUp } from "@/lib/analytics";
 
-const confirmationRedirect =
-  getAuthRedirectUrl(
-    "/auth/callback?next=/login?confirmed=1"
-  );
+const accountBenefits = [
+  "save fragments to your Watchlist",
+  "track verified ownership",
+  "purchase available fragments",
+  "list owned fragments for resale",
+  "receive sale and price notifications",
+] as const;
+
+function getSafeNextPath() {
+  if (typeof window === "undefined") {
+    return "/marketplace";
+  }
+
+  const requestedNext =
+    new URLSearchParams(
+      window.location.search
+    ).get("next");
+
+  return requestedNext?.startsWith("/") &&
+    !requestedNext.startsWith("//")
+    ? requestedNext
+    : "/marketplace";
+}
 
 export default function RegisterPage() {
 
@@ -100,7 +119,9 @@ export default function RegisterPage() {
           password,
           options: {
             emailRedirectTo:
-              confirmationRedirect,
+              getAuthRedirectUrl(
+                `/auth/callback?next=${encodeURIComponent(getSafeNextPath())}`
+              ),
             data: {
               username:
                 cleanUsername,
@@ -161,7 +182,7 @@ export default function RegisterPage() {
           setTimeout(() => {
             window.location.href =
               termsAcceptPath(
-                "/profile"
+                getSafeNextPath()
               );
           }, 1200);
         } else {
@@ -200,7 +221,9 @@ export default function RegisterPage() {
           email,
           options: {
             emailRedirectTo:
-              confirmationRedirect,
+              getAuthRedirectUrl(
+                `/auth/callback?next=${encodeURIComponent(getSafeNextPath())}`
+              ),
           },
         });
 
@@ -229,7 +252,9 @@ export default function RegisterPage() {
           provider: "google",
           options: {
             redirectTo:
-              getAuthRedirectUrl(),
+              getAuthRedirectUrl(
+                `/auth/callback?next=${encodeURIComponent(getSafeNextPath())}`
+              ),
           },
         });
 
@@ -265,7 +290,25 @@ export default function RegisterPage() {
           Join Puzzle Market
         </p>
 
-        <div className="mt-6 sm:mt-8">
+        <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4">
+          <p className="text-sm font-black text-cyan-300">
+            Create a free collector account to:
+          </p>
+          <ul className="mt-3 space-y-2 text-sm text-zinc-300">
+            {accountBenefits.map(
+              (benefit) => (
+                <li key={benefit}>
+                  • {benefit}
+                </li>
+              )
+            )}
+          </ul>
+          <p className="mt-3 text-sm font-bold text-zinc-400">
+            Free registration. No purchase required.
+          </p>
+        </div>
+
+        <div className="mt-5 sm:mt-6">
 
           <div className="space-y-4">
 
