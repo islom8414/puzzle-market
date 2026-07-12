@@ -56,6 +56,37 @@ type MarketplaceLoadStatus =
 const puzzleColumns = 5;
 const puzzleRows = 5;
 
+function categoryKey(value: string | null | undefined) {
+  const raw = String(value || "")
+    .replace(/&amp;/gi, "&")
+    .replace(/\band\b/gi, "&")
+    .trim();
+
+  return raw
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+function categoryMatches(
+  itemCategory: string | null | undefined,
+  selectedCategory: string
+) {
+  if (selectedCategory === "ALL") {
+    return true;
+  }
+
+  const selectedKey = categoryKey(selectedCategory);
+  const rawItemKey = categoryKey(itemCategory);
+  const normalizedItemKey = categoryKey(
+    normalizePuzzleCategory(itemCategory)
+  );
+
+  return (
+    rawItemKey === selectedKey ||
+    normalizedItemKey === selectedKey
+  );
+}
+
 export default function MarketplaceClient({
   initialListings,
   initialActiveCount,
@@ -195,6 +226,27 @@ export default function MarketplaceClient({
       window.clearTimeout(timer);
     };
   }, [search, puzzleFilter]);
+
+  const availableCategories = useMemo(
+    () =>
+      PUZZLE_CATEGORIES.filter((category) =>
+        marketItems.some((item) =>
+          categoryMatches(
+            item.category,
+            category
+          )
+        )
+      ),
+    [marketItems]
+  );
+
+  const activeCategoryFilter =
+    categoryFilter === "ALL" ||
+    availableCategories.some(
+      (category) => category === categoryFilter
+    )
+      ? categoryFilter
+      : "ALL";
 
   async function loadMarketplace({
     append = false,
@@ -346,10 +398,10 @@ export default function MarketplaceClient({
                 rarityFilter;
 
           const matchesCategory =
-            categoryFilter === "ALL"
-              ? true
-              : normalizePuzzleCategory(fragment.category) ===
-                categoryFilter;
+            categoryMatches(
+              fragment.category,
+              activeCategoryFilter
+            );
 
           const matchesSaleType =
             saleTypeFilter === "ALL"
@@ -382,7 +434,7 @@ export default function MarketplaceClient({
       marketItems,
       search,
       rarityFilter,
-      categoryFilter,
+      activeCategoryFilter,
       saleTypeFilter,
       priceRangeFilter,
       puzzleFilter,
@@ -904,14 +956,14 @@ export default function MarketplaceClient({
           </select>
 
           <select
-            value={categoryFilter}
+            value={activeCategoryFilter}
             onChange={(event) =>
               setCategoryFilter(event.target.value)
             }
             className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           >
             <option value="ALL">All Categories</option>
-            {PUZZLE_CATEGORIES.map((item) => (
+            {availableCategories.map((item) => (
               <option key={item} value={item}>
                 {item}
               </option>

@@ -70,8 +70,23 @@ const checks = [
     patterns: [
       "All Sale Types",
       "All Prices",
+      "function categoryMatches",
+      "function categoryKey",
+      "const availableCategories",
       "Browse collectible puzzle fragments available from Puzzle Market and other collectors.",
     ],
+  },
+  {
+    file: "app/components/LandingScrollReset.tsx",
+    patterns: [
+      "utm_source",
+      "scrollRestoration",
+      "window.scrollTo(0, 0)",
+    ],
+  },
+  {
+    file: "app/page.tsx",
+    patterns: ["<LandingScrollReset />"],
   },
   {
     file: "app/login/page.tsx",

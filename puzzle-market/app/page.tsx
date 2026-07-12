@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { HomePuzzleGrid } from "@/components/home-puzzle-grid";
 import { HomeTrustStats } from "@/components/home-trust-stats";
+import LandingScrollReset from "@/app/components/LandingScrollReset";
 import { loadHomeCollections } from "@/lib/home-collections";
 
 export const dynamic =
@@ -126,6 +127,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen overflow-hidden text-white">
+      <LandingScrollReset />
       <section className="relative px-4 pb-14 pt-10 md:px-6 md:pb-20 md:pt-16">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.12),transparent_34%)]" />
 
