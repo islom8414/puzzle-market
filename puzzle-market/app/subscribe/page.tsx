@@ -156,50 +156,70 @@ export default function SubscribePage() {
   }
 
   return (
-    <main className="subscribe-page min-h-screen bg-black text-white px-4 md:px-6 py-8 md:py-10">
+    <main className="subscribe-page min-h-screen bg-black px-4 py-6 text-white sm:px-6 md:py-8">
       <section className="mx-auto max-w-6xl">
-        <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.18em] md:tracking-[0.35em]">
-          Collector Plans
-        </p>
+        <div className="max-w-3xl">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">
+            Collector Plans
+          </p>
 
-        <h1 className="mt-4 text-5xl sm:text-6xl md:text-7xl font-black leading-none">
-          Choose your access.
-        </h1>
+          <h1 className="mt-3 text-4xl font-black leading-[0.98] sm:text-5xl md:text-6xl">
+            Start collecting with 3 days free.
+          </h1>
 
-        <p className="mt-5 max-w-2xl text-zinc-400 text-base md:text-lg leading-relaxed">
-          Start with a 3-day free trial. Add a card now, pay nothing for the subscription today, and cancel before the trial ends if Puzzle Market is not for you.
-        </p>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-300 md:text-lg">
+            Add a card to unlock buying, ownership and resale tools today. The
+            subscription is not charged during the trial, and you can cancel
+            before the trial ends.
+          </p>
+        </div>
 
-        <div className="mt-8 md:mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-5 grid gap-3 text-sm font-bold text-zinc-300 sm:grid-cols-3">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+            No subscription charge today
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+            Secure Stripe checkout
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+            Bonus credit after first billing
+          </div>
+        </div>
+
+        <div className="mt-7 grid gap-4 md:grid-cols-3">
           {plans.map((plan) => (
             <article
               key={plan.tier}
-              className="rounded-[24px] md:rounded-[28px] border border-cyan-400/20 bg-white/[0.03] p-5 md:p-6"
+              className="flex min-h-[420px] flex-col rounded-3xl border border-cyan-400/20 bg-white/[0.035] p-5 shadow-[0_0_50px_rgba(34,211,238,0.08)] md:p-6"
             >
-              <p className="text-cyan-400 text-xs font-black uppercase tracking-[0.16em] md:tracking-[0.25em]">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-400">
                 {plan.badge}
               </p>
 
-              <h2 className="mt-4 text-3xl md:text-4xl font-black">
+              <h2 className="mt-3 text-3xl font-black md:text-4xl">
                 {plan.name}
               </h2>
 
-              <div className="plan-price mt-3 text-4xl md:text-5xl font-black text-cyan-400">
+              <div className="plan-price mt-2 text-4xl font-black text-cyan-400 md:text-5xl">
                 {plan.price}
               </div>
 
-              <p className="mt-4 text-zinc-400 md:min-h-[76px] leading-relaxed">
+              <p className="mt-4 min-h-[76px] text-sm leading-relaxed text-zinc-300 md:text-base">
                 {plan.description}
               </p>
 
-              <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm font-bold text-cyan-100">
+              <div className="mt-4 rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-4 py-3 text-sm font-black text-cyan-100">
                 {plan.bonus}
               </div>
 
-              <div className="mt-6 space-y-3 text-sm text-zinc-300">
+              <div className="mt-5 flex-1 space-y-3 text-sm text-zinc-300">
                 {plan.features.map((feature) => (
-                  <div key={feature}>
-                    {feature}
+                  <div
+                    key={feature}
+                    className="flex gap-2"
+                  >
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
+                    <span>{feature}</span>
                   </div>
                 ))}
               </div>
@@ -207,14 +227,36 @@ export default function SubscribePage() {
               <button
                 onClick={() => startSubscription(plan.tier)}
                 disabled={loadingTier !== null}
-                className="mt-8 w-full rounded-2xl bg-cyan-400 px-5 py-4 font-black text-black disabled:opacity-60"
+                className="mt-6 w-full rounded-2xl bg-cyan-400 px-5 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-60"
               >
                 {loadingTier === plan.tier
                   ? "Opening Stripe..."
                   : `Start ${plan.name} Trial`}
               </button>
+
+              <p className="mt-3 text-center text-xs font-semibold text-zinc-500">
+                Cancel before day 3 to avoid the subscription charge.
+              </p>
             </article>
           ))}
+        </div>
+
+        <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.035] p-5 text-sm leading-relaxed text-zinc-300 md:p-6">
+          <p className="font-black text-white">
+            What happens during the trial?
+          </p>
+
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {[
+              "You can browse collections, buy available pieces and keep ownership in your account.",
+              "You can list owned pieces for resale while your plan is active or trialing.",
+              "Bonus puzzle credit is added only after the first successful subscription billing.",
+            ].map((item) => (
+              <div key={item} className="text-zinc-400">
+                {item}
+              </div>
+            ))}
+          </div>
         </div>
 
         {errorMessage && (

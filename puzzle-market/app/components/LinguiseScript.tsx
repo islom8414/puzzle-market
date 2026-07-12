@@ -154,7 +154,11 @@ export default function LinguiseScript() {
     const translatePage = () => {
       window.setTimeout(
         refreshTextNodes,
-        500
+        120
+      );
+      window.setTimeout(
+        refreshTextNodes,
+        650
       );
     };
     const existing =
