@@ -75,6 +75,13 @@ const planValues: Record<PlanTier, number> = {
   creator: 100,
 };
 
+const trialTrustPoints = [
+  "Card required to start the trial",
+  "No subscription charge today",
+  "Cancel before day 3",
+  "Stripe-secured checkout",
+] as const;
+
 export default function SubscribePage() {
   const router = useRouter();
 
@@ -174,16 +181,20 @@ export default function SubscribePage() {
           </p>
         </div>
 
-        <div className="mt-5 grid gap-3 text-sm font-bold text-zinc-300 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-            No subscription charge today
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-            Secure Stripe checkout
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-            Bonus credit after first billing
-          </div>
+        <div className="mt-5 grid gap-3 text-sm font-bold text-zinc-300 sm:grid-cols-2 lg:grid-cols-4">
+          {trialTrustPoints.map((point) => (
+            <div
+              key={point}
+              className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
+            >
+              {point}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] px-4 py-3 text-sm font-bold text-cyan-100">
+          Bonus puzzle credit is added after the first successful subscription
+          billing, not during the free trial.
         </div>
 
         <div className="mt-7 grid gap-4 md:grid-cols-3">
@@ -235,7 +246,8 @@ export default function SubscribePage() {
               </button>
 
               <p className="mt-3 text-center text-xs font-semibold text-zinc-500">
-                Cancel before day 3 to avoid the subscription charge.
+                Subscription billing starts only after the 3-day trial unless
+                you cancel first.
               </p>
             </article>
           ))}

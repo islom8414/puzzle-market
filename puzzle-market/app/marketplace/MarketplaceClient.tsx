@@ -479,6 +479,25 @@ export default function MarketplaceClient({
     marketItems.length > 0 &&
     filteredFragments.length === 0;
 
+  function fragmentValueNotes(
+    fragment: MarketItem
+  ) {
+    const available =
+      fragment.available_supply ?? 1;
+    const total =
+      fragment.total_supply ??
+      (fragment.puzzle_rows || puzzleRows) *
+        (fragment.puzzle_columns || puzzleColumns);
+
+    return [
+      available <= 1
+        ? "Only 1 available piece"
+        : `${available} available pieces`,
+      `${fragment.rarity} fragment`,
+      `${total}-piece collectible board`,
+    ];
+  }
+
   const rarityGlow = (
     rarity: string
   ) => {
@@ -1165,30 +1184,15 @@ export default function MarketplaceClient({
                     }
                   </h2>
 
-                  {/* SELLER */}
-
-                  <div className="mt-6 bg-black/40 border border-white/5 rounded-2xl p-4">
-
-                    <p className="text-zinc-500 text-sm">
-                      {fragment.sale_type ===
-                      "Primary Sale"
-                        ? "Listed by Puzzle Market"
-                        : "Seller"}
-                    </p>
-
-                    <h3 className="font-black mt-2">
-                      {fragment.sale_type ||
-                        "Collector Resale"}
-                    </h3>
-
-                    {fragment.sale_type ===
-                      "Collector Resale" && (
-                      <p className="mt-2 text-xs text-zinc-500">
-                        {fragment.seller_name ||
-                          "Collector"}
-                      </p>
-                    )}
-
+                  <div className="mt-5 grid gap-2">
+                    {fragmentValueNotes(fragment).map((note) => (
+                      <div
+                        key={note}
+                        className="rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.06] px-4 py-3 text-sm font-black text-cyan-100"
+                      >
+                        {note}
+                      </div>
+                    ))}
                   </div>
 
                   <div className="mt-3 grid grid-cols-2 gap-3">
@@ -1212,6 +1216,13 @@ export default function MarketplaceClient({
                       </p>
                     </div>
                   </div>
+
+                  <p className="mt-4 text-sm font-semibold text-zinc-500">
+                    {fragment.sale_type ===
+                    "Primary Sale"
+                      ? "Listed by Puzzle Market."
+                      : `Listed by ${fragment.seller_name || "a collector"}.`}
+                  </p>
 
                   {/* BUTTON */}
 

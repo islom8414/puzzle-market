@@ -15,6 +15,12 @@ const flowSteps = [
   "Resell",
 ] as const;
 
+const heroHighlights = [
+  "Buy a missing piece",
+  "Own it in your account",
+  "Choose your resale price later",
+] as const;
+
 const howItWorks = [
   {
     step: "01",
@@ -142,16 +148,20 @@ export default async function HomePage() {
             </h1>
 
             <p className="translate-safe-copy mt-6 max-w-3xl text-base leading-relaxed text-zinc-300 md:text-lg">
-              Buy limited puzzle fragments, keep verified ownership in your
-              account, complete exclusive collections and list your pieces for
-              resale on the marketplace.
+              Pick a real puzzle, buy one missing fragment, keep verified
+              ownership in your account and list owned pieces when you are
+              ready to sell.
             </p>
 
-            <div className="mt-6 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] p-4 text-sm leading-relaxed text-zinc-300">
-              Puzzle Market takes a 10% marketplace fee from each completed
-              resale. Sellers can receive payouts through Stripe where
-              available, with alternative card payout support in eligible
-              regions after verification.
+            <div className="mt-5 grid gap-2 sm:grid-cols-3">
+              {heroHighlights.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-black text-zinc-100"
+                >
+                  {item}
+                </div>
+              ))}
             </div>
 
             <div className="mt-7 grid gap-3 sm:flex sm:flex-wrap">
@@ -174,7 +184,7 @@ export default async function HomePage() {
               href="/#faq"
               className="mt-4 inline-flex text-sm font-bold text-cyan-300 underline-offset-4 hover:text-cyan-200 hover:underline"
             >
-              Learn about risks and fees
+              See fees and payouts
             </Link>
 
             <HomeTrustStats />
@@ -200,23 +210,23 @@ export default async function HomePage() {
               <div className="mt-6 grid gap-4">
                 <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
                   <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">
-                    Example market scenario
+                    Missing piece path
                   </p>
                   <h2 className="mt-3 text-4xl font-black md:text-5xl">
-                    $1 to $25 listing
+                    Buy. Own. List.
                   </h2>
                   <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-                    A collector buys a fragment, owns it in their account and
-                    can choose a resale listing price. The marketplace fee is
-                    10% on each completed resale.
+                    Start with one available fragment. Your account records
+                    ownership after purchase, and seller tools let you choose a
+                    resale price later.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3 text-center">
                   {[
-                    ["Buy", "$1"],
-                    ["Hold", "Owner"],
-                    ["List", "$25"],
+                    ["Buy", "Piece"],
+                    ["Own", "Account"],
+                    ["List", "Price"],
                   ].map(([label, value]) => (
                     <div
                       key={label}
@@ -370,7 +380,7 @@ export default async function HomePage() {
               Questions before buying
             </p>
             <h2 className="translate-safe-heading mt-3 font-black">
-              Clear answers convert better than hype.
+              Know what happens before you buy.
             </h2>
           </div>
 
