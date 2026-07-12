@@ -87,6 +87,119 @@ function categoryMatches(
   );
 }
 
+function getStoredLanguage() {
+  if (typeof window === "undefined") {
+    return "en";
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const queryLanguage = params.get("lang");
+
+  return (
+    queryLanguage ||
+    window.localStorage.getItem("puzzle-language") ||
+    document.documentElement.lang ||
+    "en"
+  ).toLowerCase();
+}
+
+const ruCategoryLabels: Record<string, string> = {
+  Animals: "Животные",
+  Anime: "Аниме",
+  Art: "Искусство",
+  Baseball: "Бейсбол",
+  Cars: "Автомобили",
+  Fashion: "Мода",
+  "Food & Drink": "Еда и напитки",
+  Football: "Футбол",
+  Flowers: "Цветы",
+  Gaming: "Игры",
+  Golf: "Гольф",
+  Music: "Музыка",
+  Nature: "Природа",
+  Space: "Космос",
+  Sports: "Спорт",
+  Technology: "Технологии",
+  Toys: "Игрушки",
+  "Travel & Landmarks": "Путешествия и достопримечательности",
+  "World Money": "Мировые деньги",
+  Other: "Другое",
+};
+
+function createMarketplaceCopy(language: string) {
+  const isRussian = language.startsWith("ru");
+
+  return {
+    eyebrow: isRussian ? "LIVE MARKETPLACE" : "LIVE MARKETPLACE",
+    titleLineOne: isRussian ? "Rare Puzzle" : "Trade Rare",
+    titleLineTwo: isRussian ? "Fragments" : "Puzzle Fragments",
+    defaultDescription: isRussian
+      ? "Browse collectible puzzle fragments from Puzzle Market and other collectors."
+      : "Browse collectible puzzle fragments available from Puzzle Market and other collectors.",
+    exactPieceDescription: isRussian
+      ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
+      : "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet.",
+    puzzleDescription: isRussian
+      ? "All active missing pieces for this puzzle are shown here. Buy each missing fragment to complete the image."
+      : "All active missing pieces for this puzzle are shown here. Buy each missing fragment to complete the image.",
+    choosePuzzle: isRussian ? "Choose a Puzzle" : "Choose A Puzzle",
+    liveListings: isRussian ? "Live Listings" : "Live Listings",
+    primarySale: isRussian ? "Primary Sale" : "Primary Sale",
+    collectorResale: isRussian ? "Collector Resale" : "Collector Resale",
+    marketplaceAccess: isRussian ? "Marketplace Access" : "Marketplace Access",
+    open: isRussian ? "Open" : "Open",
+    buyNowListLater: isRussian ? "Buy now, list later" : "Buy now, list later",
+    search: isRussian ? "Search rare fragments..." : "Search rare fragments...",
+    exactPuzzleFilter: isRussian ? "Exact puzzle filter is active" : "Exact puzzle filter is active",
+    allRarity: isRussian ? "All Rarity" : "All Rarity",
+    legendary: isRussian ? "Legendary" : "Legendary",
+    epic: isRussian ? "Epic" : "Epic",
+    rare: isRussian ? "Rare" : "Rare",
+    allCategories: isRussian ? "All Categories" : "All Categories",
+    allSaleTypes: isRussian ? "All Sale Types" : "All Sale Types",
+    allPrices: isRussian ? "All Prices" : "All Prices",
+    under25: isRussian ? "Under $25" : "Under $25",
+    over100: isRussian ? "Over $100" : "Over $100",
+    available: isRussian ? "Available" : "Available",
+    price: isRussian ? "PRICE" : "PRICE",
+    piece: isRussian ? "Piece" : "Piece",
+    availableSupply: isRussian ? "Available Supply" : "Available Supply",
+    totalSupply: isRussian ? "Total Supply" : "Total Supply",
+    listedByPuzzleMarket: isRussian
+      ? "Listed by Puzzle Market."
+      : "Listed by Puzzle Market.",
+    listedByCollector: isRussian
+      ? "Listed by"
+      : "Listed by",
+    buyPiece: isRussian ? "Buy Piece" : "Buy Piece",
+    thisPieceIsYours: isRussian ? "This Piece Is Yours" : "This Piece Is Yours",
+    loading: isRussian ? "Loading..." : "Loading...",
+    loadMore: isRussian ? "Load More Listings" : "Load More Listings",
+    couldNotLoad: isRussian
+      ? "Marketplace listings could not be loaded."
+      : "Marketplace listings could not be loaded.",
+    timeout: isRussian
+      ? "The request took too long. Try again on a better connection."
+      : "The request took too long. Try again on a better connection.",
+    failed: isRussian
+      ? "The request failed before live listings could be confirmed."
+      : "The request failed before live listings could be confirmed.",
+    tryAgain: isRussian ? "Try Again" : "Try Again",
+    noListings: isRussian
+      ? "No active listings are available right now."
+      : "No active listings are available right now.",
+    emptyCopy: isRussian
+      ? "Browse collections, create a watchlist or become the first seller."
+      : "Browse collections, create a watchlist or become the first seller.",
+    browseCollections: isRussian ? "Browse Collections" : "Browse Collections",
+    createFreeAccount: isRussian ? "Create Free Account" : "Create Free Account",
+    noMatches: isRussian ? "No matching fragments found" : "No matching fragments found",
+    noMatchesCopy: isRussian
+      ? "The marketplace has live listings, but none match the current filters."
+      : "The marketplace has live listings, but none match the current filters.",
+  };
+}
+
 export default function MarketplaceClient({
   initialListings,
   initialActiveCount,
@@ -149,6 +262,27 @@ export default function MarketplaceClient({
 
   const [currentUserId, setCurrentUserId] =
     useState("");
+
+  const [uiLanguage] =
+    useState(() => getStoredLanguage());
+
+  const ui = useMemo(
+    () =>
+      createMarketplaceCopy(uiLanguage),
+    [uiLanguage]
+  );
+
+  const categoryLabel = (
+    category: string | null | undefined
+  ) => {
+    const normalized =
+      normalizePuzzleCategory(category);
+
+    return uiLanguage.startsWith("ru")
+      ? ruCategoryLabels[normalized] ||
+          normalized
+      : normalized;
+  };
 
   useEffect(() => {
 
@@ -827,7 +961,12 @@ export default function MarketplaceClient({
 
   return (
 
-    <main className="min-h-screen bg-black text-white overflow-hidden">
+    <main
+      className="min-h-screen bg-black text-white overflow-hidden notranslate"
+      translate="no"
+      data-no-translation="true"
+      data-linguise-ignore="true"
+    >
 
       {/* HERO */}
 
@@ -838,21 +977,21 @@ export default function MarketplaceClient({
         <div className="relative max-w-7xl mx-auto px-4 md:px-6 pt-12 md:pt-16 pb-12 md:pb-14">
 
           <p className="text-cyan-400 font-black uppercase tracking-[0.18em] md:tracking-[0.3em] text-xs">
-            LIVE CLOUD MARKETPLACE
+            {ui.eyebrow}
           </p>
 
           <h1 className="translate-safe-title font-black mt-4 md:mt-5 max-w-5xl">
-            Trade Rare
+            {ui.titleLineOne}
             <br />
-            Puzzle Fragments
+            {ui.titleLineTwo}
           </h1>
 
           <p className="translate-safe-copy text-zinc-400 text-base md:text-lg mt-6 md:mt-8 leading-relaxed">
             {puzzleFilter
               ? pieceFilter
-                ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
-                : "All active missing pieces for this puzzle are shown here. Buy each missing fragment to complete the image."
-              : "Browse collectible puzzle fragments available from Puzzle Market and other collectors."}
+                ? ui.exactPieceDescription
+                : ui.puzzleDescription
+              : ui.defaultDescription}
           </p>
 
           <div className="flex flex-wrap gap-3 md:gap-4 mt-8 md:mt-10">
@@ -860,7 +999,7 @@ export default function MarketplaceClient({
               href={CHOOSE_PUZZLE_HREF}
               className="inline-flex w-full sm:w-auto justify-center rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300"
             >
-              Choose A Puzzle
+              {ui.choosePuzzle}
             </Link>
           </div>
 
@@ -871,7 +1010,7 @@ export default function MarketplaceClient({
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
-                Live Listings
+                {ui.liveListings}
               </p>
 
               <h3 className="translate-safe-stat font-black mt-3">
@@ -889,7 +1028,7 @@ export default function MarketplaceClient({
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
-                Primary Sale
+                {ui.primarySale}
               </p>
 
               <h3 className="translate-safe-stat text-cyan-400 font-black mt-3">
@@ -906,7 +1045,7 @@ export default function MarketplaceClient({
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
-                Marketplace Access
+                {ui.marketplaceAccess}
               </p>
 
               <h3 className="translate-safe-stat font-black mt-3">
@@ -914,12 +1053,12 @@ export default function MarketplaceClient({
                 isRequestProblem ? (
                   <span className="block h-10 w-20 animate-pulse rounded-xl bg-white/10" />
                 ) : (
-                  "Open"
+                  ui.open
                 )}
               </h3>
 
               <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
-                Buy now, list later
+                {ui.buyNowListLater}
               </p>
 
             </div>
@@ -947,8 +1086,8 @@ export default function MarketplaceClient({
             }
             placeholder={
               puzzleFilter
-                ? "Exact puzzle filter is active"
-                : "Search rare fragments..."
+                ? ui.exactPuzzleFilter
+                : ui.search
             }
             className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           />
@@ -964,19 +1103,19 @@ export default function MarketplaceClient({
           >
 
             <option value="ALL">
-              All Rarity
+              {ui.allRarity}
             </option>
 
             <option value="Legendary">
-              Legendary
+              {ui.legendary}
             </option>
 
             <option value="Epic">
-              Epic
+              {ui.epic}
             </option>
 
             <option value="Rare">
-              Rare
+              {ui.rare}
             </option>
 
           </select>
@@ -988,10 +1127,10 @@ export default function MarketplaceClient({
             }
             className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           >
-            <option value="ALL">All Categories</option>
+            <option value="ALL">{ui.allCategories}</option>
             {availableCategories.map((item) => (
               <option key={item} value={item}>
-                {item}
+                {categoryLabel(item)}
               </option>
             ))}
           </select>
@@ -1003,10 +1142,10 @@ export default function MarketplaceClient({
             }
             className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           >
-            <option value="ALL">All Sale Types</option>
-            <option value="Primary Sale">Primary Sale</option>
+            <option value="ALL">{ui.allSaleTypes}</option>
+            <option value="Primary Sale">{ui.primarySale}</option>
             {hasCollectorResales && (
-              <option value="Collector Resale">Collector Resale</option>
+              <option value="Collector Resale">{ui.collectorResale}</option>
             )}
           </select>
 
@@ -1017,10 +1156,10 @@ export default function MarketplaceClient({
             }
             className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           >
-            <option value="ALL">All Prices</option>
-            <option value="UNDER_25">Under $25</option>
+            <option value="ALL">{ui.allPrices}</option>
+            <option value="UNDER_25">{ui.under25}</option>
             <option value="25_100">$25 - $100</option>
-            <option value="OVER_100">Over $100</option>
+            <option value="OVER_100">{ui.over100}</option>
           </select>
 
         </div>
@@ -1050,13 +1189,13 @@ export default function MarketplaceClient({
           <div className="bg-white/[0.03] border border-white/10 rounded-[28px] md:rounded-[32px] p-8 md:p-20 text-center backdrop-blur-xl">
 
             <h2 className="text-3xl md:text-5xl font-black">
-              Marketplace listings could not be loaded.
+              {ui.couldNotLoad}
             </h2>
 
             <p className="mx-auto mt-5 max-w-2xl text-zinc-500 text-lg">
               {loadStatus === "timeout"
-                ? "The request took too long. Try again on a better connection."
-                : "The request failed before live listings could be confirmed."}
+                ? ui.timeout
+                : ui.failed}
             </p>
 
             <button
@@ -1065,7 +1204,7 @@ export default function MarketplaceClient({
               }}
               className="mt-8 rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black transition hover:bg-cyan-300"
             >
-              Try Again
+              {ui.tryAgain}
             </button>
 
           </div>
@@ -1131,12 +1270,12 @@ export default function MarketplaceClient({
                     </div>
 
                     <div className="bg-green-400 text-black px-3 md:px-4 py-2 rounded-full text-[11px] md:text-xs font-black">
-                      {fragment.availability || "Available"}
+                      {fragment.availability || ui.available}
                     </div>
 
                     <div className="bg-black/70 backdrop-blur-xl px-3 md:px-4 py-2 rounded-full text-[11px] md:text-xs font-black text-white border border-white/10">
                       {fragment.sale_type ||
-                        "Collector Resale"}
+                        ui.collectorResale}
                     </div>
 
                   </div>
@@ -1146,7 +1285,7 @@ export default function MarketplaceClient({
                   <div className="absolute bottom-4 md:bottom-5 right-4 md:right-5 bg-black/70 backdrop-blur-xl border border-white/10 rounded-2xl px-4 md:px-5 py-3">
 
                     <p className="text-zinc-500 text-xs">
-                      PRICE
+                      {ui.price}
                     </p>
 
                     <h3 className="text-cyan-400 text-2xl md:text-3xl font-black">
@@ -1171,14 +1310,14 @@ export default function MarketplaceClient({
                   </p>
 
                   <p className="mt-2 text-sm font-bold text-cyan-400">
-                    {normalizePuzzleCategory(fragment.category)}
+                    {categoryLabel(fragment.category)}
                     {fragment.brand
                       ? ` / ${fragment.brand}`
                       : ""}
                   </p>
 
                   <h2 className="text-3xl md:text-4xl font-black mt-2">
-                    Piece #
+                    {ui.piece} #
                     {
                       fragment.piece
                     }
@@ -1198,7 +1337,7 @@ export default function MarketplaceClient({
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     <div className="rounded-2xl border border-white/5 bg-black/30 p-3">
                       <p className="text-xs text-zinc-500">
-                        Available Supply
+                        {ui.availableSupply}
                       </p>
                       <p className="mt-1 font-black">
                         {fragment.available_supply ?? 1}
@@ -1207,7 +1346,7 @@ export default function MarketplaceClient({
 
                     <div className="rounded-2xl border border-white/5 bg-black/30 p-3">
                       <p className="text-xs text-zinc-500">
-                        Total Supply
+                        {ui.totalSupply}
                       </p>
                       <p className="mt-1 font-black">
                         {fragment.total_supply ??
@@ -1220,8 +1359,8 @@ export default function MarketplaceClient({
                   <p className="mt-4 text-sm font-semibold text-zinc-500">
                     {fragment.sale_type ===
                     "Primary Sale"
-                      ? "Listed by Puzzle Market."
-                      : `Listed by ${fragment.seller_name || "a collector"}.`}
+                      ? ui.listedByPuzzleMarket
+                      : `${ui.listedByCollector} ${fragment.seller_name || "a collector"}.`}
                   </p>
 
                   {/* BUTTON */}
@@ -1259,8 +1398,8 @@ duration-300
 >
 
 {isOwnListing(fragment)
-  ? "This Piece Is Yours"
-  : `Buy Piece - $${fragment.price}`}
+  ? ui.thisPieceIsYours
+  : `${ui.buyPiece} - $${fragment.price}`}
 
 </button>
 
@@ -1287,8 +1426,8 @@ duration-300
                 className="rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-7 py-4 font-black text-cyan-200 transition hover:border-cyan-300 disabled:cursor-wait disabled:opacity-60"
               >
                 {loadingMore
-                  ? "Loading..."
-                  : "Load More Listings"}
+                  ? ui.loading
+                  : ui.loadMore}
               </button>
             </div>
           )}
@@ -1300,11 +1439,11 @@ duration-300
           <div className="mt-12 md:mt-16 bg-white/[0.03] border border-white/10 rounded-[28px] md:rounded-[32px] p-8 md:p-20 text-center backdrop-blur-xl">
 
             <h2 className="text-3xl md:text-5xl font-black">
-              No active listings are available right now.
+              {ui.noListings}
             </h2>
 
             <p className="text-zinc-500 mt-5 text-lg">
-              Browse collections, create a watchlist or become the first seller.
+              {ui.emptyCopy}
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -1312,13 +1451,13 @@ duration-300
                 href={CHOOSE_PUZZLE_HREF}
                 className="rounded-2xl bg-cyan-400 px-6 py-4 font-black text-black"
               >
-                Browse Collections
+                {ui.browseCollections}
               </Link>
               <Link
                 href="/register"
                 className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 font-black text-white"
               >
-                Create Free Account
+                {ui.createFreeAccount}
               </Link>
             </div>
 
@@ -1331,11 +1470,11 @@ duration-300
           <div className="mt-12 md:mt-16 bg-white/[0.03] border border-white/10 rounded-[28px] md:rounded-[32px] p-8 md:p-20 text-center backdrop-blur-xl">
 
             <h2 className="text-3xl md:text-5xl font-black">
-              No matching fragments found
+              {ui.noMatches}
             </h2>
 
             <p className="text-zinc-500 mt-5 text-lg">
-              The marketplace has live listings, but none match the current filters.
+              {ui.noMatchesCopy}
             </p>
 
               <button

@@ -1,7 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { type MouseEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 
 const languages = [
   {
@@ -24,6 +29,32 @@ const languages = [
 
 export default function LanguageSwitcher() {
   const path = usePathname() || "/";
+  const [open, setOpen] = useState(false);
+  const rootRef =
+    useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function closeOnOutsideClick(event: globalThis.MouseEvent) {
+      if (
+        rootRef.current &&
+        !rootRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener(
+      "mousedown",
+      closeOnOutsideClick
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        closeOnOutsideClick
+      );
+    };
+  }, []);
 
   function getTargetUrl(
     language: string
@@ -62,10 +93,11 @@ export default function LanguageSwitcher() {
   }
 
   function switchLanguage(
-    event: MouseEvent<HTMLAnchorElement>,
+    event: ReactMouseEvent<HTMLAnchorElement>,
     language: string
   ) {
     event.preventDefault();
+    setOpen(false);
     window.localStorage.setItem(
       "puzzle-language",
       language
@@ -78,22 +110,29 @@ export default function LanguageSwitcher() {
   }
 
   return (
-    <details
+    <div
+      ref={rootRef}
       className="language-switcher notranslate"
       translate="no"
       data-no-translation="true"
       data-linguise-ignore="true"
     >
-      <summary
+      <button
+        type="button"
         aria-label="Language"
+        aria-expanded={open}
+        onClick={() => {
+          setOpen((current) => !current);
+        }}
         className="language-switcher-trigger"
       >
         <span
           aria-hidden="true"
           className="language-current"
         />
-      </summary>
+      </button>
 
+      {open && (
       <div className="language-switcher-menu">
         {languages.map(
           (language) => (
@@ -119,6 +158,7 @@ export default function LanguageSwitcher() {
           )
         )}
       </div>
-    </details>
+      )}
+    </div>
   );
 }

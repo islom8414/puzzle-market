@@ -163,7 +163,12 @@ export default function SubscribePage() {
   }
 
   return (
-    <main className="subscribe-page min-h-screen bg-black px-4 py-6 text-white sm:px-6 md:py-8">
+    <main
+      className="subscribe-page min-h-screen bg-black px-4 py-6 text-white sm:px-6 md:py-8 notranslate"
+      translate="no"
+      data-no-translation="true"
+      data-linguise-ignore="true"
+    >
       <section className="mx-auto max-w-6xl">
         <div className="max-w-3xl">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400">

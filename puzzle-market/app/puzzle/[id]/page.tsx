@@ -131,7 +131,12 @@ export default async function PuzzlePage({
 
   return (
     <>
-      <main className="bg-black text-white">
+      <main
+        className="bg-black text-white notranslate"
+        translate="no"
+        data-no-translation="true"
+        data-linguise-ignore="true"
+      >
           <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:px-6 md:py-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:items-center">
             <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950">
               <Image
