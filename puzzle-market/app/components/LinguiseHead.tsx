@@ -12,6 +12,11 @@ const earlyScript = `
   const params = new URLSearchParams(window.location.search);
   const queryLanguage = params.get("lang");
   const storedLanguage = window.localStorage.getItem(storageKey);
+  const criticalPath =
+    window.location.pathname === "/marketplace" ||
+    window.location.pathname === "/subscribe" ||
+    window.location.pathname.startsWith("/puzzle/") ||
+    window.location.pathname.startsWith("/fragment/");
   const language = supported.has(queryLanguage || "")
     ? queryLanguage
     : supported.has(storedLanguage || "")
@@ -20,7 +25,7 @@ const earlyScript = `
 
   window.__puzzleLinguiseLanguage = language;
 
-  if (language === "en") {
+  if (language === "en" || criticalPath) {
     document.documentElement.lang = "en";
     return;
   }

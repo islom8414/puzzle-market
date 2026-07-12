@@ -43,6 +43,31 @@ function getSelectedLanguage() {
     : "en";
 }
 
+function isCriticalMarketplacePath() {
+  return (
+    window.location.pathname === "/marketplace" ||
+    window.location.pathname === "/subscribe" ||
+    window.location.pathname.startsWith("/puzzle/") ||
+    window.location.pathname.startsWith("/fragment/")
+  );
+}
+
+function removeLinguiseRuntime() {
+  document
+    .getElementById(
+      "linguise-extra-metadata"
+    )
+    ?.remove();
+
+  document
+    .querySelectorAll<HTMLScriptElement>(
+      `script[src^="${LINGUISE_SCRIPT_URL}"]`
+    )
+    .forEach((script) => {
+      script.remove();
+    });
+}
+
 function refreshTextNodes() {
   const walker =
     document.createTreeWalker(
@@ -152,7 +177,11 @@ export default function LinguiseScript() {
       language
     );
 
-    if (language === "en") {
+    if (
+      language === "en" ||
+      isCriticalMarketplacePath()
+    ) {
+      removeLinguiseRuntime();
       document.documentElement.lang = "en";
       return;
     }
