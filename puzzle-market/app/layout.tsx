@@ -9,6 +9,7 @@ import EnableDynamicTranslation from "./components/EnableDynamicTranslation";
 import GoogleAnalyticsRouteTracker from "./components/GoogleAnalyticsRouteTracker";
 import LanguagePrompt from "./components/LanguagePrompt";
 import LiveFeed from "./components/LiveFeed";
+import LinguiseHead from "./components/LinguiseHead";
 import LinguiseScript from "./components/LinguiseScript";
 import OriginalPathGuard from "./components/OriginalPathGuard";
 import SubscriptionGate from "./components/SubscriptionGate";
@@ -53,6 +54,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <LinguiseHead />
         <OriginalPathGuard />
       </head>
 

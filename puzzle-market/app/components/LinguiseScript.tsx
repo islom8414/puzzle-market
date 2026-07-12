@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import {
+  LINGUISE_PUBLIC_KEY,
+  LINGUISE_SCRIPT_URL,
+} from "@/lib/linguise";
 
 const publicKey =
-  "pk_ofdGPZoP3EV4s45OpExbRtYSeqqbocYG";
-const scriptUrl =
-  `https://static.linguise.com/script-js/switcher.bundle.js?d=${publicKey}`;
+  LINGUISE_PUBLIC_KEY;
 const languageStorageKey =
   "puzzle-language";
 const supportedLanguages = new Set([
@@ -16,6 +18,12 @@ const supportedLanguages = new Set([
 ]);
 
 function getSelectedLanguage() {
+  const earlyLanguage =
+    (
+      window as typeof window & {
+        __puzzleLinguiseLanguage?: string;
+      }
+    ).__puzzleLinguiseLanguage;
   const queryLanguage =
     new URLSearchParams(
       window.location.search
@@ -26,6 +34,7 @@ function getSelectedLanguage() {
     );
   const language =
     queryLanguage ||
+    earlyLanguage ||
     storedLanguage ||
     "en";
 
@@ -150,23 +159,45 @@ export default function LinguiseScript() {
 
     addMetadata(language);
 
+    const unlockRoots = () => {
+      for (const root of [
+        document.documentElement,
+        document.body,
+      ]) {
+        root.classList.remove("notranslate");
+        root.removeAttribute("translate");
+        root.removeAttribute("data-no-translation");
+        root.removeAttribute("data-linguise-ignore");
+      }
+    };
+
     const translatePage = () => {
+      unlockRoots();
+      refreshTextNodes();
       window.setTimeout(
         refreshTextNodes,
-        120
+        60
       );
       window.setTimeout(
         refreshTextNodes,
-        650
+        180
+      );
+      window.setTimeout(
+        refreshTextNodes,
+        500
+      );
+      window.setTimeout(
+        refreshTextNodes,
+        1100
       );
       window.setTimeout(() => {
         document.documentElement.lang =
           language;
-      }, 700);
+      }, 350);
     };
     const existing =
       document.querySelector<HTMLScriptElement>(
-        `script[src^="${scriptUrl}"]`
+        `script[src^="${LINGUISE_SCRIPT_URL}"]`
       );
 
     if (existing) {
@@ -176,14 +207,18 @@ export default function LinguiseScript() {
 
     const script =
       document.createElement("script");
-    script.src = scriptUrl;
+    script.src = LINGUISE_SCRIPT_URL;
     script.async = true;
+    script.setAttribute(
+      "fetchpriority",
+      "high"
+    );
     script.addEventListener(
       "load",
       translatePage,
       { once: true }
     );
-    document.body.appendChild(script);
+    document.head.appendChild(script);
   }, []);
 
   return null;
