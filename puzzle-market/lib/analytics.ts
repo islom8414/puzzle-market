@@ -96,6 +96,47 @@ function getAttributionParams() {
   }
 }
 
+function getStoredAttributionParams() {
+  if (!isBrowser()) {
+    return {};
+  }
+
+  try {
+    const stored =
+      localStorage.getItem("pm_last_touch") ||
+      localStorage.getItem("pm_first_touch");
+
+    if (!stored) {
+      return {};
+    }
+
+    const parsed = JSON.parse(stored) as Record<
+      string,
+      unknown
+    >;
+    const attribution: Record<string, string> = {};
+
+    for (const key of attributionKeys) {
+      const value = parsed[key];
+
+      if (typeof value === "string" && value) {
+        attribution[key] = value;
+      }
+    }
+
+    return attribution;
+  } catch {
+    return {};
+  }
+}
+
+function getEventAttributionParams() {
+  return {
+    ...getStoredAttributionParams(),
+    ...getAttributionParams(),
+  };
+}
+
 export function captureCampaignAttribution() {
   if (!isBrowser()) {
     return;
@@ -148,17 +189,40 @@ export function isGoogleAnalyticsReady() {
   );
 }
 
+function runWhenGoogleAnalyticsReady(
+  callback: () => void,
+  attempt = 0
+) {
+  if (!isBrowser() || !GA_MEASUREMENT_ID) {
+    return;
+  }
+
+  if (isGoogleAnalyticsReady()) {
+    callback();
+    return;
+  }
+
+  if (attempt >= 20) {
+    return;
+  }
+
+  window.setTimeout(() => {
+    runWhenGoogleAnalyticsReady(
+      callback,
+      attempt + 1
+    );
+  }, 250);
+}
+
 export function sendGAEvent(
   eventName: string,
   params: GtagParams = {}
 ) {
-  if (!isGoogleAnalyticsReady()) {
-    return;
-  }
-
-  window.gtag?.("event", eventName, {
-    ...getAttributionParams(),
-    ...params,
+  runWhenGoogleAnalyticsReady(() => {
+    window.gtag?.("event", eventName, {
+      ...getEventAttributionParams(),
+      ...params,
+    });
   });
 }
 
@@ -166,13 +230,11 @@ export function trackPageView(
   pagePath: string,
   pageTitle?: string
 ) {
-  if (!isGoogleAnalyticsReady()) {
-    return;
-  }
-
-  window.gtag?.("config", GA_MEASUREMENT_ID, {
-    page_path: pagePath,
-    page_title: pageTitle,
+  runWhenGoogleAnalyticsReady(() => {
+    window.gtag?.("config", GA_MEASUREMENT_ID, {
+      page_path: pagePath,
+      page_title: pageTitle,
+    });
   });
 }
 
