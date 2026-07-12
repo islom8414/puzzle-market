@@ -83,33 +83,50 @@ export function validateRarityPrice(
   return null;
 }
 
-export function pickMissingPieceIndex(
-  slug: string,
-  totalPieces: number,
-  rows = Math.round(
+function hashSeed(value: string) {
+  let hash = 0;
+
+  for (
+    let index = 0;
+    index < value.length;
+    index += 1
+  ) {
+    hash =
+      (hash * 31 +
+        value.charCodeAt(index)) >>>
+      0;
+  }
+
+  return hash;
+}
+
+function defaultRows(
+  totalPieces: number
+) {
+  return Math.round(
     Math.sqrt(totalPieces)
-  ),
-  columns = Math.max(
+  );
+}
+
+function defaultColumns(
+  totalPieces: number,
+  rows: number
+) {
+  return Math.max(
     1,
     Math.round(
       totalPieces /
         Math.max(1, rows)
     )
-  )
+  );
+}
+
+function getPieceCandidates(
+  slug: string,
+  totalPieces: number,
+  rows: number,
+  columns: number
 ) {
-  let hash = 0;
-
-  for (
-    let index = 0;
-    index < slug.length;
-    index += 1
-  ) {
-    hash =
-      (hash * 31 +
-        slug.charCodeAt(index)) >>>
-      0;
-  }
-
   const centerRow =
     (rows - 1) / 2;
   const centerColumn =
@@ -119,65 +136,107 @@ export function pickMissingPieceIndex(
       centerRow,
       centerColumn
     ) || 1;
+  const seed = hashSeed(slug);
 
-  const candidates =
-    Array.from(
-      { length: totalPieces },
-      (_, pieceIndex) => {
-        const row = Math.floor(
-          pieceIndex / columns
+  return Array.from(
+    { length: totalPieces },
+    (_, pieceIndex) => {
+      const row = Math.floor(
+        pieceIndex / columns
+      );
+      const column =
+        pieceIndex % columns;
+      const isCorner =
+        (row === 0 ||
+          row === rows - 1) &&
+        (column === 0 ||
+          column === columns - 1);
+      const isEdge =
+        row === 0 ||
+        row === rows - 1 ||
+        column === 0 ||
+        column === columns - 1;
+      const distance =
+        Math.hypot(
+          row - centerRow,
+          column - centerColumn
         );
-        const column =
-          pieceIndex % columns;
-        const isCorner =
-          (row === 0 ||
-            row === rows - 1) &&
-          (column === 0 ||
-            column ===
-              columns - 1);
-        const isEdge =
-          row === 0 ||
-          row === rows - 1 ||
-          column === 0 ||
-          column ===
-            columns - 1;
-        const distance =
-          Math.hypot(
-            row - centerRow,
-            column - centerColumn
-          );
-        const centerWeight =
-          1 -
-          distance /
-            maxDistance;
+      const centerWeight =
+        1 -
+        distance / maxDistance;
+      const rowBand =
+        row < centerRow
+          ? "top"
+          : row > centerRow
+            ? "bottom"
+            : "middle";
+      const columnBand =
+        column < centerColumn
+          ? "left"
+          : column > centerColumn
+            ? "right"
+            : "center";
+      const seededNoise =
+        ((hashSeed(
+          `${slug}:${pieceIndex}:${seed}`
+        ) %
+          1000) /
+          1000) *
+        0.8;
 
-        return {
-          pieceIndex,
-          weight:
-            1 +
-            centerWeight * 8 +
-            (isEdge ? -0.8 : 1.5) +
-            (isCorner ? -1.5 : 0),
-        };
+      return {
+        pieceIndex,
+        row,
+        column,
+        zone: `${rowBand}-${columnBand}`,
+        score:
+          1 +
+          centerWeight * 10 +
+          (isEdge ? -1.4 : 2.2) +
+          (isCorner ? -2.6 : 0) +
+          seededNoise,
       }
-    ).filter(
+    }
+  )
+    .filter(
       (candidate) =>
-        candidate.weight > 0
+        candidate.score > 0
+    )
+    .sort(
+      (a, b) => b.score - a.score
+    );
+}
+
+export function pickMissingPieceIndex(
+  slug: string,
+  totalPieces: number,
+  rows = defaultRows(totalPieces),
+  columns = defaultColumns(
+    totalPieces,
+    rows
+  )
+) {
+  const candidates =
+    getPieceCandidates(
+      slug,
+      totalPieces,
+      rows,
+      columns
     );
 
   const totalWeight =
     candidates.reduce(
       (sum, candidate) =>
-        sum + candidate.weight,
+        sum + candidate.score,
       0
     );
 
   let cursor =
-    (hash / 0xffffffff) *
+    (hashSeed(slug) / 0xffffffff) *
     totalWeight;
 
   for (const candidate of candidates) {
-    cursor -= candidate.weight;
+    cursor -= candidate.score;
 
     if (cursor <= 0) {
       return candidate.pieceIndex;
@@ -208,15 +267,10 @@ export function pickMissingPieceIndexes(
   slug: string,
   totalPieces: number,
   count: number,
-  rows = Math.round(
-    Math.sqrt(totalPieces)
-  ),
-  columns = Math.max(
-    1,
-    Math.round(
-      totalPieces /
-        Math.max(1, rows)
-    )
+  rows = defaultRows(totalPieces),
+  columns = defaultColumns(
+    totalPieces,
+    rows
   )
 ) {
   const wantedCount =
@@ -224,28 +278,90 @@ export function pickMissingPieceIndexes(
       totalPieces,
       normalizeMarketPieceCount(count)
     );
-  const indexes: number[] = [];
-  let salt = 0;
+  const candidates =
+    getPieceCandidates(
+      slug,
+      totalPieces,
+      rows,
+      columns
+    );
+  const indexes: typeof candidates = [];
+  const usedZones =
+    new Set<string>();
+  const minimumDistance =
+    wantedCount <= 1
+      ? 0
+      : Math.max(
+          1.4,
+          Math.min(rows, columns) /
+            (wantedCount + 1)
+        );
+
+  const canUseCandidate = (
+    candidate: (typeof candidates)[number],
+    enforceZone: boolean,
+    enforceDistance: boolean
+  ) => {
+    if (
+      enforceZone &&
+      usedZones.has(candidate.zone)
+    ) {
+      return false;
+    }
+
+    if (!enforceDistance) {
+      return true;
+    }
+
+    return indexes.every((chosen) => {
+      const distance = Math.hypot(
+        chosen.row - candidate.row,
+        chosen.column - candidate.column
+      );
+
+      return (
+        distance >= minimumDistance
+      );
+    });
+  };
 
   while (
     indexes.length < wantedCount &&
-    salt < totalPieces * 4
+    candidates.length > 0
   ) {
-    const pieceIndex =
-      pickMissingPieceIndex(
-        `${slug}:${salt}`,
-        totalPieces,
-        rows,
-        columns
+    const chosen =
+      candidates.find((candidate) =>
+        canUseCandidate(
+          candidate,
+          true,
+          true
+        )
+      ) ||
+      candidates.find((candidate) =>
+        canUseCandidate(
+          candidate,
+          false,
+          true
+        )
+      ) ||
+      candidates.find((candidate) =>
+        canUseCandidate(
+          candidate,
+          false,
+          false
+        )
       );
 
-    if (
-      !indexes.includes(pieceIndex)
-    ) {
-      indexes.push(pieceIndex);
+    if (!chosen) {
+      break;
     }
 
-    salt += 1;
+    indexes.push(chosen);
+    usedZones.add(chosen.zone);
+    candidates.splice(
+      candidates.indexOf(chosen),
+      1
+    );
   }
 
   for (
@@ -255,11 +371,25 @@ export function pickMissingPieceIndexes(
     pieceIndex += 1
   ) {
     if (
-      !indexes.includes(pieceIndex)
+      indexes.every(
+        (item) =>
+          item.pieceIndex !== pieceIndex
+      )
     ) {
-      indexes.push(pieceIndex);
+      indexes.push({
+        pieceIndex,
+        row: Math.floor(
+          pieceIndex / columns
+        ),
+        column:
+          pieceIndex % columns,
+        zone: "fallback",
+        score: 0,
+      });
     }
   }
 
-  return indexes;
+  return indexes.map(
+    (item) => item.pieceIndex
+  );
 }
