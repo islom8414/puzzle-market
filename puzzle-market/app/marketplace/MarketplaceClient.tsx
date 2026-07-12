@@ -460,6 +460,9 @@ export default function MarketplaceClient({
     [marketItems]
   );
 
+  const hasCollectorResales =
+    collectorResaleCount > 0;
+
   const isLoading =
     loadStatus === "loading";
 
@@ -884,17 +887,27 @@ export default function MarketplaceClient({
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-xl">
 
               <p className="text-zinc-500 text-sm">
-                Collector Resale
+                {hasCollectorResales
+                  ? "Collector Resale"
+                  : "Marketplace Access"}
               </p>
 
               <h3 className="translate-safe-stat font-black mt-3">
                 {isLoading ||
                 isRequestProblem ? (
                   <span className="block h-10 w-20 animate-pulse rounded-xl bg-white/10" />
-                ) : (
+                ) : hasCollectorResales ? (
                   collectorResaleCount
+                ) : (
+                  "Open"
                 )}
               </h3>
+
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                {hasCollectorResales
+                  ? "Live collector listings"
+                  : "Buy now, list later"}
+              </p>
 
             </div>
 
@@ -979,7 +992,9 @@ export default function MarketplaceClient({
           >
             <option value="ALL">All Sale Types</option>
             <option value="Primary Sale">Primary Sale</option>
-            <option value="Collector Resale">Collector Resale</option>
+            {hasCollectorResales && (
+              <option value="Collector Resale">Collector Resale</option>
+            )}
           </select>
 
           <select
