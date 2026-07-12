@@ -286,7 +286,6 @@ html[lang^="zh"] .language-current::before{
   background:#22d3ee;
   color:#020617;
 }
-
 .language-prompt-close{
   min-width:2rem;
   height:2rem;

@@ -142,10 +142,9 @@ export default function LinguiseScript() {
       languageStorageKey,
       language
     );
-    document.documentElement.lang =
-      language;
 
     if (language === "en") {
+      document.documentElement.lang = "en";
       return;
     }
 
@@ -160,6 +159,10 @@ export default function LinguiseScript() {
         refreshTextNodes,
         650
       );
+      window.setTimeout(() => {
+        document.documentElement.lang =
+          language;
+      }, 700);
     };
     const existing =
       document.querySelector<HTMLScriptElement>(

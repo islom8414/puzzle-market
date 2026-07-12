@@ -9,24 +9,8 @@ const languages = [
   { label: "English", code: "EN", value: "en" },
   { label: "Russian", code: "RU", value: "ru" },
   { label: "Japanese", code: "JA", value: "ja" },
+  { label: "Chinese", code: "ZH", value: "zh-cn" },
 ];
-
-function preferredLanguage() {
-  const detected =
-    navigator.languages?.[0] ||
-    navigator.language ||
-    "";
-
-  if (detected.toLowerCase().startsWith("ru")) {
-    return "ru";
-  }
-
-  if (detected.toLowerCase().startsWith("ja")) {
-    return "ja";
-  }
-
-  return "en";
-}
 
 function targetForLanguage(language: string) {
   const target = new URL(window.location.href);
@@ -82,8 +66,6 @@ export default function LanguagePrompt() {
     return null;
   }
 
-  const suggested = preferredLanguage();
-
   return (
     <div
       className="language-prompt notranslate"
@@ -108,11 +90,8 @@ export default function LanguagePrompt() {
             onClick={() =>
               chooseLanguage(language.value)
             }
-            className={
-              language.value === suggested
-                ? "language-prompt-button language-prompt-button-primary"
-                : "language-prompt-button"
-            }
+            className="language-prompt-button"
+            aria-label={language.label}
           >
             {language.code}
           </button>
@@ -124,7 +103,7 @@ export default function LanguagePrompt() {
           className="language-prompt-close"
           aria-label="Close language prompt"
         >
-          ×
+          x
         </button>
       </div>
     </div>
