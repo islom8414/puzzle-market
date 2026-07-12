@@ -685,7 +685,7 @@ export default function MarketplaceClient({
         if (!profile.hasActiveSubscription) {
           const upgrade =
             window.confirm(
-              "A Starter plan is required only when you buy or resell a puzzle piece. Open plans now?"
+              "Start a 3-day free trial to buy and resell puzzle pieces. Add a card now, but the subscription is not charged today. Open plans?"
             );
 
           if (upgrade) {

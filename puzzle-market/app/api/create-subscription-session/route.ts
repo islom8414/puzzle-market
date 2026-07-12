@@ -6,18 +6,26 @@ import { getStripeConfig } from "@/lib/stripe-config";
 
 type PlanTier = "starter" | "premium" | "creator";
 
-const plans: Record<PlanTier, { name: string; amount: number }> = {
+const trialDays = 3;
+
+const plans: Record<
+  PlanTier,
+  { name: string; amount: number; bonusCents: number }
+> = {
   starter: {
     name: "Puzzle Market Starter",
     amount: 100,
+    bonusCents: 500,
   },
   premium: {
     name: "Puzzle Market Premium",
     amount: 1000,
+    bonusCents: 2000,
   },
   creator: {
     name: "Puzzle Market Creator",
     amount: 10000,
+    bonusCents: 10000,
   },
 };
 
@@ -88,12 +96,14 @@ export async function POST(request: Request) {
       mode: "subscription",
       customer,
       customer_email: customer ? undefined : user.email,
+      payment_method_collection: "always",
       line_items: [
         {
           price_data: {
             currency: "usd",
             product_data: {
               name: plan.name,
+              description: `${trialDays}-day free trial. Bonus puzzle credit is added after the first successful subscription payment.`,
             },
             recurring: {
               interval: "month",
@@ -107,12 +117,16 @@ export async function POST(request: Request) {
         kind: "subscription",
         user_id: user.id,
         tier,
+        trial_days: String(trialDays),
+        bonus_cents: String(plan.bonusCents),
       },
       subscription_data: {
+        trial_period_days: trialDays,
         metadata: {
           kind: "subscription",
           user_id: user.id,
           tier,
+          bonus_cents: String(plan.bonusCents),
         },
       },
       success_url: `${origin}/profile?subscription=success`,

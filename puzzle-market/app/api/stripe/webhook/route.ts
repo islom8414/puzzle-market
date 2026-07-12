@@ -18,6 +18,15 @@ const activeSubscriptionStatuses = new Set([
   "trialing",
 ]);
 
+const subscriptionBonusCents: Record<
+  SubscriptionTier,
+  number
+> = {
+  starter: 500,
+  premium: 2000,
+  creator: 10000,
+};
+
 function normalizeTier(tier: string | null | undefined): SubscriptionTier {
   if (tier === "premium" || tier === "creator") {
     return tier;
@@ -98,6 +107,52 @@ async function syncSubscription(
           userData.user?.email,
       }
     );
+  }
+}
+
+function getInvoiceSubscriptionId(invoice: Stripe.Invoice) {
+  const value = (
+    invoice as Stripe.Invoice & {
+      subscription?: string | Stripe.Subscription | null;
+    }
+  ).subscription;
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return value?.id || null;
+}
+
+async function awardSubscriptionBonus(
+  admin: SupabaseAdmin,
+  subscription: Stripe.Subscription
+) {
+  const userId = subscription.metadata?.user_id;
+  const tier = normalizeTier(
+    subscription.metadata?.tier
+  );
+
+  if (!userId) {
+    return;
+  }
+
+  const bonusCents =
+    Number(subscription.metadata?.bonus_cents) ||
+    subscriptionBonusCents[tier];
+
+  if (!Number.isFinite(bonusCents) || bonusCents <= 0) {
+    return;
+  }
+
+  const { error } = await admin.rpc("credit_wallet_topup", {
+    p_user_id: userId,
+    p_amount_cents: Math.round(bonusCents),
+    p_stripe_session_id: `subscription_bonus_${subscription.id}_${tier}`,
+  });
+
+  if (error) {
+    throw error;
   }
 }
 
@@ -218,6 +273,31 @@ export async function POST(request: Request) {
         );
 
         await syncSubscription(admin, subscription);
+      }
+    }
+
+    if (event.type === "invoice.payment_succeeded") {
+      const invoice =
+        event.data.object as Stripe.Invoice;
+      const subscriptionId =
+        getInvoiceSubscriptionId(invoice);
+
+      if (subscriptionId) {
+        const subscription =
+          await stripe.subscriptions.retrieve(
+            subscriptionId
+          );
+
+        if (
+          subscription.metadata?.kind ===
+          "subscription"
+        ) {
+          await syncSubscription(admin, subscription);
+          await awardSubscriptionBonus(
+            admin,
+            subscription
+          );
+        }
       }
     }
 

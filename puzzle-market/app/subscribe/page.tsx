@@ -16,15 +16,20 @@ const plans: Array<{
   price: string;
   badge: string;
   description: string;
+  bonus: string;
   features: string[];
 }> = [
   {
     tier: "starter",
     name: "Starter",
     price: "$1/mo",
-    badge: "PROFILE ACCESS",
-    description: "Start collecting, buy missing pieces, and keep a private collector profile.",
+    badge: "3-DAY FREE TRIAL",
+    description:
+      "Start collecting, buy missing pieces, and keep a private collector profile.",
+    bonus:
+      "$5 puzzle credit after the first successful billing",
     features: [
+      "Card required, no subscription charge today",
       "Verified collector profile",
       "Buy and own missing pieces",
       "Resell pieces you own",
@@ -34,9 +39,13 @@ const plans: Array<{
     tier: "premium",
     name: "Premium",
     price: "$10/mo",
-    badge: "BOOSTED TRADER",
-    description: "Get stronger marketplace visibility when you list pieces for resale.",
+    badge: "3-DAY FREE TRIAL",
+    description:
+      "Get stronger marketplace visibility when you list pieces for resale.",
+    bonus:
+      "$20 puzzle credit after the first successful billing",
     features: [
+      "Card required, no subscription charge today",
       "Everything in Starter",
       "Boosted resale listings",
       "Premium marketplace badge",
@@ -46,9 +55,13 @@ const plans: Array<{
     tier: "creator",
     name: "Creator",
     price: "$100/mo",
-    badge: "PUZZLE CREATOR",
-    description: "Unlock creator tools for adding your own puzzle collections and prices.",
+    badge: "3-DAY FREE TRIAL",
+    description:
+      "Unlock creator tools for adding your own puzzle collections and prices.",
+    bonus:
+      "$100 puzzle credit after the first successful billing",
     features: [
+      "Card required, no subscription charge today",
       "Everything in Premium",
       "Create official puzzle boards",
       "Set missing piece prices",
@@ -154,7 +167,7 @@ export default function SubscribePage() {
         </h1>
 
         <p className="mt-5 max-w-2xl text-zinc-400 text-base md:text-lg leading-relaxed">
-          A plan unlocks your Puzzle Market profile. Upgrade any time when you want more visibility or creator tools.
+          Start with a 3-day free trial. Add a card now, pay nothing for the subscription today, and cancel before the trial ends if Puzzle Market is not for you.
         </p>
 
         <div className="mt-8 md:mt-10 grid gap-5 md:grid-cols-3">
@@ -179,6 +192,10 @@ export default function SubscribePage() {
                 {plan.description}
               </p>
 
+              <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm font-bold text-cyan-100">
+                {plan.bonus}
+              </div>
+
               <div className="mt-6 space-y-3 text-sm text-zinc-300">
                 {plan.features.map((feature) => (
                   <div key={feature}>
@@ -194,7 +211,7 @@ export default function SubscribePage() {
               >
                 {loadingTier === plan.tier
                   ? "Opening Stripe..."
-                  : `Choose ${plan.name}`}
+                  : `Start ${plan.name} Trial`}
               </button>
             </article>
           ))}

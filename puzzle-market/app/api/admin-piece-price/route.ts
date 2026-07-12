@@ -6,7 +6,10 @@ import {
 
 import { puzzles } from "@/data/puzzles";
 import { isAdminUser } from "@/lib/market-access";
-import { normalizeMarketPieceCount } from "@/lib/rarity";
+import {
+  normalizeMarketPieceCount,
+  pickMissingPieceIndexes,
+} from "@/lib/rarity";
 import {
   createSupabaseAdmin,
   getBearerToken,
@@ -19,23 +22,13 @@ function getMissingIndexes(
   puzzleId: number,
   count: number
 ) {
-  const first =
-    (puzzleId * 7) %
-    (rows * columns);
-
-  const second =
-    (first + 11) %
-    (rows * columns);
-
-  const third =
-    (first + 17) %
-    (rows * columns);
-
-  return [
-    first,
-    second,
-    third,
-  ].slice(0, count);
+  return pickMissingPieceIndexes(
+    `admin-puzzle-${puzzleId}`,
+    rows * columns,
+    count,
+    rows,
+    columns
+  );
 }
 
 export async function POST(
