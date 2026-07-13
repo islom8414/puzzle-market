@@ -6,6 +6,7 @@ import {
   getBearerToken,
 } from "@/lib/supabase-admin";
 import { getStripeConfig } from "@/lib/stripe-config";
+import { ensureUserProfile } from "@/lib/user-profile";
 
 export const runtime = "nodejs";
 
@@ -71,22 +72,13 @@ export async function POST(
         stripeConfig.secretKey
       );
 
-    const {
-      data: profile,
-      error: profileError,
-    } =
-      await admin
-        .from("market_profiles")
-        .select(
-          "id, email, username, stripe_account_id"
-        )
-        .eq("id", userData.user.id)
-        .maybeSingle();
+    const { profile } =
+      await ensureUserProfile(
+        admin,
+        userData.user
+      );
 
-    if (
-      profileError ||
-      !profile
-    ) {
+    if (!profile) {
       return NextResponse.json(
         {
           error:

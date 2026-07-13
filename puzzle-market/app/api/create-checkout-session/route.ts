@@ -6,6 +6,7 @@ import {
   getBearerToken,
 } from "@/lib/supabase-admin";
 import { getStripeConfig } from "@/lib/stripe-config";
+import { ensureUserProfile } from "@/lib/user-profile";
 
 export async function POST(
   request: Request
@@ -101,25 +102,13 @@ export async function POST(
       );
     }
 
-    const {
-      data: profile,
-      error: profileError,
-    } =
-      await admin
-        .from("market_profiles")
-        .select("username")
-        .eq(
-          "id",
-          userData.user.id
-        )
-        .maybeSingle();
+    const ensuredProfile =
+      await ensureUserProfile(
+        admin,
+        userData.user
+      );
 
-    if (
-      profileError ||
-      !profile?.username
-    ) {
-      console.error(profileError);
-
+    if (!ensuredProfile.profile.username) {
       return NextResponse.json(
         {
           error:

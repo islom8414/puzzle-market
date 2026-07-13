@@ -254,6 +254,16 @@ export function trackLogin(
   });
 }
 
+export function trackProfileCreationFailed(
+  reason: string,
+  status?: number
+) {
+  sendGAEvent("profile_creation_failed", {
+    reason,
+    status,
+  });
+}
+
 export function trackSearch(
   searchTerm: string
 ) {

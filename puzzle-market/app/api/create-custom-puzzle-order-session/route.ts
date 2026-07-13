@@ -17,6 +17,7 @@ import {
   getBearerToken,
 } from "@/lib/supabase-admin";
 import { getStripeConfig } from "@/lib/stripe-config";
+import { ensureUserProfile } from "@/lib/user-profile";
 
 export const runtime = "nodejs";
 
@@ -49,15 +50,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
-    const { data: profile, error: profileError } = await admin
-      .from("market_profiles")
-      .select(
-        "id, username, stripe_customer_id, subscription_tier, subscription_status"
-      )
-      .eq("id", user.id)
-      .maybeSingle();
+    const { profile } = await ensureUserProfile(
+      admin,
+      user
+    );
 
-    if (profileError || !profile?.username) {
+    if (!profile?.username) {
       return NextResponse.json(
         { error: "Complete profile setup first" },
         { status: 409 }

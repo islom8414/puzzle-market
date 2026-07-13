@@ -12,6 +12,7 @@ import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
+import { ensureUserProfile } from "@/lib/user-profile";
 
 export async function POST(
   request: Request
@@ -72,6 +73,11 @@ export async function POST(
         }
       );
     }
+
+    await ensureUserProfile(
+      admin,
+      userData.user
+    );
 
     const allowed =
       await requireActivePaidSubscription(

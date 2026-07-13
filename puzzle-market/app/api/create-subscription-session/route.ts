@@ -3,6 +3,7 @@ import Stripe from "stripe";
 
 import { createSupabaseAdmin, getBearerToken } from "@/lib/supabase-admin";
 import { getStripeConfig } from "@/lib/stripe-config";
+import { ensureUserProfile } from "@/lib/user-profile";
 
 type PlanTier = "starter" | "premium" | "creator";
 
@@ -70,15 +71,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
-  const { data: profile, error: profileError } = await admin
-    .from("market_profiles")
-    .select("id, username, stripe_customer_id")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await ensureUserProfile(
+    admin,
+    user
+  );
 
-  if (profileError || !profile?.username) {
-    console.error("Profile lookup failed:", profileError);
-
+  if (!profile?.username) {
     return NextResponse.json(
       { error: "Complete profile setup first" },
       { status: 409 }

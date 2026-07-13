@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { apiFetch } from "@/lib/api-client";
+import { trackProfileCreationFailed } from "@/lib/analytics";
 
 export type UserProfile = {
   username: string;
@@ -40,11 +41,18 @@ export async function fetchMyProfile() {
       });
 
     if (!response.ok) {
+      trackProfileCreationFailed(
+        "profile_api_failed",
+        response.status
+      );
       return null;
     }
 
     return (await response.json()) as UserProfile;
   } catch {
+    trackProfileCreationFailed(
+      "profile_api_exception"
+    );
     return null;
   }
 }

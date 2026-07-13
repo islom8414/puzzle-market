@@ -13,6 +13,7 @@ import {
   createSupabaseAdmin,
   getBearerToken,
 } from "@/lib/supabase-admin";
+import { ensureUserProfile } from "@/lib/user-profile";
 
 export const runtime = "nodejs";
 
@@ -102,65 +103,14 @@ export async function GET(
 
     const { admin, user } = auth;
 
-    const metadataUsername =
-      sanitizeUsername(
-        typeof user.user_metadata
-          ?.username === "string"
-          ? user.user_metadata.username
-          : ""
+    const ensured =
+      await ensureUserProfile(
+        admin,
+        user
       );
 
-    let { data: profile } =
-      await admin
-        .from("market_profiles")
-        .select(
-          "username, email, subscription_tier, subscription_status, referral_code, referred_by_user_id"
-        )
-        .eq("id", user.id)
-        .maybeSingle();
-
-    if (
-      !profile &&
-      metadataUsername &&
-      user.email
-    ) {
-      const referrerId =
-        await resolveReferrerId(
-          admin,
-          user.user_metadata
-            ?.referral_code,
-          user.id
-        );
-      const { data: created } =
-        await admin
-          .from("market_profiles")
-          .upsert(
-            {
-              id: user.id,
-              email: user.email,
-              username:
-                metadataUsername,
-              referral_code:
-                makeReferralCode(
-                  metadataUsername,
-                  user.id
-                ),
-              referred_by_user_id:
-                referrerId,
-              referral_applied_at:
-                referrerId
-                  ? new Date().toISOString()
-                  : null,
-            },
-            { onConflict: "id" }
-          )
-          .select(
-            "username, email, subscription_tier, subscription_status, referral_code, referred_by_user_id"
-          )
-          .maybeSingle();
-
-      profile = created;
-    }
+    const profile =
+      ensured.profile;
 
     const username =
       sanitizeUsername(
