@@ -216,7 +216,12 @@ export default function Navbar() {
                   className="h-12 w-12 shrink-0 rounded-2xl object-cover"
                 />
 
-                <div className="hidden sm:block">
+                <div
+                  className="hidden sm:block notranslate"
+                  translate="no"
+                  data-no-translation="true"
+                  data-linguise-ignore="true"
+                >
 
                   <h1 className="font-black text-lg">
                     Puzzle Market
