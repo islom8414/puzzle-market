@@ -12,12 +12,20 @@ const earlyScript = `
   const params = new URLSearchParams(window.location.search);
   const queryLanguage = params.get("lang");
   const storedLanguage = window.localStorage.getItem(storageKey);
+  const paidCampaignLanding =
+    params.has("utm_source") ||
+    params.has("utm_medium") ||
+    params.has("utm_campaign") ||
+    params.has("gclid") ||
+    params.has("fbclid");
   const criticalPath =
     window.location.pathname === "/marketplace" ||
     window.location.pathname === "/subscribe" ||
     window.location.pathname.startsWith("/puzzle/") ||
     window.location.pathname.startsWith("/fragment/");
-  const language = supported.has(queryLanguage || "")
+  const language = paidCampaignLanding && !queryLanguage
+    ? "en"
+    : supported.has(queryLanguage || "")
     ? queryLanguage
     : supported.has(storedLanguage || "")
       ? storedLanguage

@@ -6,10 +6,8 @@ import {
   LINGUISE_SCRIPT_URL,
 } from "@/lib/linguise";
 
-const publicKey =
-  LINGUISE_PUBLIC_KEY;
-const languageStorageKey =
-  "puzzle-language";
+const publicKey = LINGUISE_PUBLIC_KEY;
+const languageStorageKey = "puzzle-language";
 const supportedLanguages = new Set([
   "en",
   "ru",
@@ -17,47 +15,41 @@ const supportedLanguages = new Set([
   "zh-cn",
 ]);
 
-function getSelectedLanguage() {
-  const earlyLanguage =
-    (
-      window as typeof window & {
-        __puzzleLinguiseLanguage?: string;
-      }
-    ).__puzzleLinguiseLanguage;
-  const queryLanguage =
-    new URLSearchParams(
-      window.location.search
-    ).get("lang");
-  const storedLanguage =
-    window.localStorage.getItem(
-      languageStorageKey
-    );
-  const language =
-    queryLanguage ||
-    earlyLanguage ||
-    storedLanguage ||
-    "en";
-
-  return supportedLanguages.has(language)
-    ? language
-    : "en";
-}
-
-function isCriticalMarketplacePath() {
+function isPaidCampaignLanding(params: URLSearchParams) {
   return (
-    window.location.pathname === "/marketplace" ||
-    window.location.pathname === "/subscribe" ||
-    window.location.pathname.startsWith("/puzzle/") ||
-    window.location.pathname.startsWith("/fragment/")
+    params.has("utm_source") ||
+    params.has("utm_medium") ||
+    params.has("utm_campaign") ||
+    params.has("gclid") ||
+    params.has("fbclid")
   );
 }
 
+function getSelectedLanguage() {
+  const earlyLanguage = (
+    window as typeof window & {
+      __puzzleLinguiseLanguage?: string;
+    }
+  ).__puzzleLinguiseLanguage;
+  const params = new URLSearchParams(window.location.search);
+  const queryLanguage = params.get("lang");
+  const storedLanguage = window.localStorage.getItem(languageStorageKey);
+
+  if (queryLanguage && supportedLanguages.has(queryLanguage)) {
+    return queryLanguage;
+  }
+
+  if (isPaidCampaignLanding(params)) {
+    return "en";
+  }
+
+  const language = queryLanguage || earlyLanguage || storedLanguage || "en";
+
+  return supportedLanguages.has(language) ? language : "en";
+}
+
 function removeLinguiseRuntime() {
-  document
-    .getElementById(
-      "linguise-extra-metadata"
-    )
-    ?.remove();
+  document.getElementById("linguise-extra-metadata")?.remove();
 
   document
     .querySelectorAll<HTMLScriptElement>(
@@ -69,18 +61,15 @@ function removeLinguiseRuntime() {
 }
 
 function refreshTextNodes() {
-  const walker =
-    document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT
-    );
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT
+  );
   const nodes: Text[] = [];
 
   while (walker.nextNode()) {
-    const node =
-      walker.currentNode as Text;
-    const parent =
-      node.parentElement;
+    const node = walker.currentNode as Text;
+    const parent = node.parentElement;
 
     if (
       !parent ||
@@ -96,103 +85,75 @@ function refreshTextNodes() {
   }
 
   for (const node of nodes) {
-    node.replaceWith(
-      document.createTextNode(
-        node.textContent || ""
-      )
-    );
+    node.replaceWith(document.createTextNode(node.textContent || ""));
   }
 }
 
 function addMetadata(language: string) {
-  document
-    .getElementById(
-      "linguise-extra-metadata"
-    )
-    ?.remove();
+  document.getElementById("linguise-extra-metadata")?.remove();
 
-  const metadata =
-    document.createElement("script");
-  metadata.id =
-    "linguise-extra-metadata";
-  metadata.type =
-    "application/json";
-  metadata.textContent =
-    JSON.stringify({
-      domain: window.btoa(
-        "https://www.puzzle-market.com"
-      ),
-      url: window.btoa(
-        window.location.href
-      ),
-      language: "en",
-      translate_urls: false,
-      dynamic_translations: {
-        enabled: true,
+  const metadata = document.createElement("script");
+  metadata.id = "linguise-extra-metadata";
+  metadata.type = "application/json";
+  metadata.textContent = JSON.stringify({
+    domain: window.btoa("https://www.puzzle-market.com"),
+    url: window.btoa(window.location.href),
+    language: "en",
+    translate_urls: false,
+    dynamic_translations: {
+      enabled: true,
+    },
+    language_settings: null,
+    languages: [
+      {
+        code: "zh-cn",
+        name: "Chinese",
+        original_name: "Chinese",
       },
-      language_settings: null,
-      languages: [
-        {
-          code: "zh-cn",
-          name: "Chinese",
-          original_name: "Chinese",
-        },
-        {
-          code: "ru",
-          name: "Russian",
-          original_name: "Russian",
-        },
-        {
-          code: "ja",
-          name: "Japanese",
-          original_name: "Japanese",
-        },
-        {
-          code: "en",
-          name: "English",
-          original_name: "English",
-        },
-      ],
-      current_language: language,
-      structure: "subdomains",
-      platform: "other",
-      debug: false,
-      public_key: publicKey,
-      rules: [],
-      cached_selectors: [],
-    });
+      {
+        code: "ru",
+        name: "Russian",
+        original_name: "Russian",
+      },
+      {
+        code: "ja",
+        name: "Japanese",
+        original_name: "Japanese",
+      },
+      {
+        code: "en",
+        name: "English",
+        original_name: "English",
+      },
+    ],
+    current_language: language,
+    structure: "subdomains",
+    platform: "other",
+    debug: false,
+    public_key: publicKey,
+    rules: [],
+    cached_selectors: [],
+  });
 
-  document.head.appendChild(
-    metadata
-  );
+  document.head.appendChild(metadata);
 }
 
 export default function LinguiseScript() {
   useEffect(() => {
-    const language =
-      getSelectedLanguage();
+    const language = getSelectedLanguage();
 
-    window.localStorage.setItem(
-      languageStorageKey,
-      language
-    );
-
-    if (
-      language === "en" ||
-      isCriticalMarketplacePath()
-    ) {
+    if (language === "en") {
+      window.localStorage.setItem(languageStorageKey, "en");
       removeLinguiseRuntime();
       document.documentElement.lang = "en";
       return;
     }
 
+    window.localStorage.setItem(languageStorageKey, language);
     addMetadata(language);
 
     const unlockRoots = () => {
-      for (const root of [
-        document.documentElement,
-        document.body,
-      ]) {
+      for (const root of [document.documentElement, document.body]) {
         root.classList.remove("notranslate");
         root.removeAttribute("translate");
         root.removeAttribute("data-no-translation");
@@ -203,50 +164,29 @@ export default function LinguiseScript() {
     const translatePage = () => {
       unlockRoots();
       refreshTextNodes();
-      window.setTimeout(
-        refreshTextNodes,
-        60
-      );
-      window.setTimeout(
-        refreshTextNodes,
-        180
-      );
-      window.setTimeout(
-        refreshTextNodes,
-        500
-      );
-      window.setTimeout(
-        refreshTextNodes,
-        1100
-      );
+      window.setTimeout(refreshTextNodes, 60);
+      window.setTimeout(refreshTextNodes, 180);
+      window.setTimeout(refreshTextNodes, 500);
+      window.setTimeout(refreshTextNodes, 1100);
       window.setTimeout(() => {
-        document.documentElement.lang =
-          language;
+        document.documentElement.lang = language;
       }, 350);
     };
-    const existing =
-      document.querySelector<HTMLScriptElement>(
-        `script[src^="${LINGUISE_SCRIPT_URL}"]`
-      );
+
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src^="${LINGUISE_SCRIPT_URL}"]`
+    );
 
     if (existing) {
       translatePage();
       return;
     }
 
-    const script =
-      document.createElement("script");
+    const script = document.createElement("script");
     script.src = LINGUISE_SCRIPT_URL;
     script.async = true;
-    script.setAttribute(
-      "fetchpriority",
-      "high"
-    );
-    script.addEventListener(
-      "load",
-      translatePage,
-      { once: true }
-    );
+    script.setAttribute("fetchpriority", "high");
+    script.addEventListener("load", translatePage, { once: true });
     document.head.appendChild(script);
   }, []);
 

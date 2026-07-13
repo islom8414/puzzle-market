@@ -24,25 +24,39 @@ function targetForLanguage(language: string) {
   return target.toString();
 }
 
+function isPaidCampaignLanding(params: URLSearchParams) {
+  return (
+    params.has("utm_source") ||
+    params.has("utm_medium") ||
+    params.has("utm_campaign") ||
+    params.has("gclid") ||
+    params.has("fbclid")
+  );
+}
+
 export default function LanguagePrompt() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(
-      window.location.search
-    );
+    const params = new URLSearchParams(window.location.search);
 
     if (
       window.localStorage.getItem(promptKey) ||
-      window.localStorage.getItem(languageKey) ||
       params.has("lang")
+    ) {
+      return;
+    }
+
+    if (
+      window.localStorage.getItem(languageKey) &&
+      !isPaidCampaignLanding(params)
     ) {
       return;
     }
 
     const timer = window.setTimeout(() => {
       setVisible(true);
-    }, 700);
+    }, 900);
 
     return () => {
       window.clearTimeout(timer);
@@ -52,9 +66,7 @@ export default function LanguagePrompt() {
   function chooseLanguage(language: string) {
     window.localStorage.setItem(promptKey, "1");
     window.localStorage.setItem(languageKey, language);
-    window.location.assign(
-      targetForLanguage(language)
-    );
+    window.location.assign(targetForLanguage(language));
   }
 
   function dismiss() {
@@ -74,9 +86,7 @@ export default function LanguagePrompt() {
       data-linguise-ignore="true"
     >
       <div>
-        <p className="language-prompt-title">
-          Choose your language
-        </p>
+        <p className="language-prompt-title">Choose your language</p>
         <p className="language-prompt-copy">
           Continue in your preferred language.
         </p>
@@ -87,9 +97,7 @@ export default function LanguagePrompt() {
           <button
             key={language.value}
             type="button"
-            onClick={() =>
-              chooseLanguage(language.value)
-            }
+            onClick={() => chooseLanguage(language.value)}
             className="language-prompt-button"
             aria-label={language.label}
           >

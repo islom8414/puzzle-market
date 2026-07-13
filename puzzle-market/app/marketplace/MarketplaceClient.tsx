@@ -126,6 +126,8 @@ const ruCategoryLabels: Record<string, string> = {
   Other: "Другое",
 };
 
+void ruCategoryLabels;
+
 function createMarketplaceCopy(language: string) {
   const isRussian = language.startsWith("ru");
 
@@ -274,15 +276,7 @@ export default function MarketplaceClient({
 
   const categoryLabel = (
     category: string | null | undefined
-  ) => {
-    const normalized =
-      normalizePuzzleCategory(category);
-
-    return uiLanguage.startsWith("ru")
-      ? ruCategoryLabels[normalized] ||
-          normalized
-      : normalized;
-  };
+  ) => normalizePuzzleCategory(category);
 
   useEffect(() => {
 
@@ -612,25 +606,6 @@ export default function MarketplaceClient({
     loadStatus === "success" &&
     marketItems.length > 0 &&
     filteredFragments.length === 0;
-
-  function fragmentValueNotes(
-    fragment: MarketItem
-  ) {
-    const available =
-      fragment.available_supply ?? 1;
-    const total =
-      fragment.total_supply ??
-      (fragment.puzzle_rows || puzzleRows) *
-        (fragment.puzzle_columns || puzzleColumns);
-
-    return [
-      available <= 1
-        ? "Only 1 available piece"
-        : `${available} available pieces`,
-      `${fragment.rarity} fragment`,
-      `${total}-piece collectible board`,
-    ];
-  }
 
   const rarityGlow = (
     rarity: string
@@ -1261,19 +1236,15 @@ export default function MarketplaceClient({
 
                   {/* BADGES */}
 
-                  <div className="absolute top-5 left-5 flex flex-wrap gap-3">
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-2">
 
-                    <div className="bg-black/70 backdrop-blur-xl px-3 md:px-4 py-2 rounded-full text-[11px] md:text-xs font-black text-cyan-400 border border-cyan-400/20">
+                    <div className="bg-black/70 backdrop-blur-xl px-3 py-2 rounded-full text-[11px] md:text-xs font-black text-cyan-400 border border-cyan-400/20">
                       {
                         fragment.rarity
                       }
                     </div>
 
-                    <div className="bg-green-400 text-black px-3 md:px-4 py-2 rounded-full text-[11px] md:text-xs font-black">
-                      {fragment.availability || ui.available}
-                    </div>
-
-                    <div className="bg-black/70 backdrop-blur-xl px-3 md:px-4 py-2 rounded-full text-[11px] md:text-xs font-black text-white border border-white/10">
+                    <div className="bg-black/70 backdrop-blur-xl px-3 py-2 rounded-full text-[11px] md:text-xs font-black text-white border border-white/10">
                       {fragment.sale_type ||
                         ui.collectorResale}
                     </div>
@@ -1303,7 +1274,7 @@ export default function MarketplaceClient({
 
                 <div className="p-5 md:p-6">
 
-                  <p className="text-zinc-500 text-sm uppercase tracking-wider">
+                  <p className="text-zinc-500 text-xs uppercase tracking-wider">
                     {
                       fragment.title
                     }
@@ -1316,43 +1287,27 @@ export default function MarketplaceClient({
                       : ""}
                   </p>
 
-                  <h2 className="text-3xl md:text-4xl font-black mt-2">
+                  <h2 className="text-2xl md:text-3xl font-black mt-2">
                     {ui.piece} #
                     {
                       fragment.piece
                     }
                   </h2>
 
-                  <div className="mt-5 grid gap-2">
-                    {fragmentValueNotes(fragment).map((note) => (
-                      <div
-                        key={note}
-                        className="rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.06] px-4 py-3 text-sm font-black text-cyan-100"
-                      >
-                        {note}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-3 grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl border border-white/5 bg-black/30 p-3">
+                  <div className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
+                    <div>
                       <p className="text-xs text-zinc-500">
-                        {ui.availableSupply}
+                        Supply
                       </p>
-                      <p className="mt-1 font-black">
-                        {fragment.available_supply ?? 1}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl border border-white/5 bg-black/30 p-3">
-                      <p className="text-xs text-zinc-500">
-                        {ui.totalSupply}
-                      </p>
-                      <p className="mt-1 font-black">
-                        {fragment.total_supply ??
+                      <p className="mt-1 text-sm font-black">
+                        {fragment.available_supply ?? 1} / {fragment.total_supply ??
                           (fragment.puzzle_rows || puzzleRows) *
                             (fragment.puzzle_columns || puzzleColumns)}
                       </p>
+                    </div>
+
+                    <div className="rounded-full bg-green-400 px-3 py-1 text-[11px] font-black text-black">
+                      {fragment.availability || ui.available}
                     </div>
                   </div>
 
