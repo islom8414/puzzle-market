@@ -4,6 +4,7 @@ import {
   isPlatformOwnerName,
   publicOwnerName,
 } from "@/lib/public-identity";
+import { normalizePuzzleCategory } from "@/lib/brand-metadata";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { growthBpsForPriceCents } from "@/lib/price-index";
 
@@ -80,6 +81,91 @@ export type MarketplaceListingsResult = {
   nextOffset: number | null;
 };
 
+export type MarketplaceListingFilters = {
+  search?: string;
+  category?: string;
+  rarity?: string;
+  saleType?: "ALL" | "Primary Sale" | "Collector Resale";
+  priceRange?: "ALL" | "UNDER_25" | "25_100" | "OVER_100";
+};
+
+function hasMarketplaceFilters(
+  filters?: MarketplaceListingFilters
+) {
+  return Boolean(
+    filters?.search?.trim() ||
+      (filters?.category && filters.category !== "ALL") ||
+      (filters?.rarity && filters.rarity !== "ALL") ||
+      (filters?.saleType && filters.saleType !== "ALL") ||
+      (filters?.priceRange && filters.priceRange !== "ALL")
+  );
+}
+
+function categoryMatchesFilter(
+  itemCategory: string | null | undefined,
+  selectedCategory: string
+) {
+  return (
+    normalizePuzzleCategory(itemCategory) ===
+    normalizePuzzleCategory(selectedCategory)
+  );
+}
+
+function listingMatchesFilters(
+  listing: MarketplaceListing,
+  filters?: MarketplaceListingFilters
+) {
+  const search = filters?.search?.trim().toLowerCase();
+
+  if (
+    search &&
+    !listing.title.toLowerCase().includes(search)
+  ) {
+    return false;
+  }
+
+  if (
+    filters?.category &&
+    filters.category !== "ALL" &&
+    !categoryMatchesFilter(
+      listing.category,
+      filters.category
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    filters?.rarity &&
+    filters.rarity !== "ALL" &&
+    listing.rarity !== filters.rarity
+  ) {
+    return false;
+  }
+
+  if (
+    filters?.saleType &&
+    filters.saleType !== "ALL" &&
+    listing.sale_type !== filters.saleType
+  ) {
+    return false;
+  }
+
+  if (filters?.priceRange === "UNDER_25") {
+    return listing.price < 25;
+  }
+
+  if (filters?.priceRange === "25_100") {
+    return listing.price >= 25 && listing.price <= 100;
+  }
+
+  if (filters?.priceRange === "OVER_100") {
+    return listing.price > 100;
+  }
+
+  return true;
+}
+
 function normalizeListingType(
   row: ListingRow,
   sellerName?: string | null,
@@ -109,9 +195,11 @@ function normalizeListingType(
 export async function loadMarketplaceListings({
   limit,
   offset,
+  filters,
 }: {
   limit?: number;
   offset?: number;
+  filters?: MarketplaceListingFilters;
 } = {}): Promise<MarketplaceListingsResult> {
   const admin =
     createSupabaseAdmin();
@@ -124,6 +212,15 @@ export async function loadMarketplaceListings({
 
   const startOffset =
     Math.max(0, offset || 0);
+
+  const hasFilters =
+    hasMarketplaceFilters(filters);
+
+  const dbStartOffset =
+    hasFilters ? 0 : startOffset;
+
+  const dbMaxRows =
+    hasFilters ? 2000 : maxRows;
 
   const query = admin
     .from("piece_listings")
@@ -158,8 +255,8 @@ export async function loadMarketplaceListings({
       ascending: false,
     })
     .range(
-      startOffset,
-      startOffset + maxRows - 1
+      dbStartOffset,
+      dbStartOffset + dbMaxRows - 1
     );
 
   let { data, error, count } =
@@ -198,8 +295,8 @@ export async function loadMarketplaceListings({
         ascending: false,
       })
       .range(
-        startOffset,
-        startOffset + maxRows - 1
+        dbStartOffset,
+        dbStartOffset + dbMaxRows - 1
       );
 
     data =
@@ -293,7 +390,7 @@ export async function loadMarketplaceListings({
     ])
   );
 
-  const listings = rows.map((row) => {
+  const allListings = rows.map((row) => {
     const piece = Array.isArray(
       row.puzzle_pieces
     )
@@ -368,8 +465,28 @@ export async function loadMarketplaceListings({
     };
   });
 
+  const matchedListings =
+    hasFilters
+      ? allListings.filter((listing) =>
+          listingMatchesFilters(
+            listing,
+            filters
+          )
+        )
+      : allListings;
+
+  const listings =
+    hasFilters
+      ? matchedListings.slice(
+          startOffset,
+          startOffset + maxRows
+        )
+      : matchedListings;
+
   const activeCount =
-    count ?? startOffset + listings.length;
+    hasFilters
+      ? matchedListings.length
+      : count ?? startOffset + listings.length;
 
   return {
     listings,

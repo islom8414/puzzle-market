@@ -47,9 +47,13 @@ export default function LanguagePrompt() {
       return;
     }
 
+    if (isPaidCampaignLanding(params)) {
+      window.localStorage.setItem(languageKey, "en");
+      return;
+    }
+
     if (
-      window.localStorage.getItem(languageKey) &&
-      !isPaidCampaignLanding(params)
+      window.localStorage.getItem(languageKey)
     ) {
       return;
     }

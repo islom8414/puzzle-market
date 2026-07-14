@@ -3,6 +3,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -268,6 +269,8 @@ export default function MarketplaceClient({
   const [uiLanguage] =
     useState(() => getStoredLanguage());
 
+  const filterBootedRef = useRef(false);
+
   const ui = useMemo(
     () =>
       createMarketplaceCopy(uiLanguage),
@@ -356,25 +359,12 @@ export default function MarketplaceClient({
   }, [search, puzzleFilter]);
 
   const availableCategories = useMemo(
-    () =>
-      PUZZLE_CATEGORIES.filter((category) =>
-        marketItems.some((item) =>
-          categoryMatches(
-            item.category,
-            category
-          )
-        )
-      ),
-    [marketItems]
+    () => [...PUZZLE_CATEGORIES],
+    []
   );
 
   const activeCategoryFilter =
-    categoryFilter === "ALL" ||
-    availableCategories.some(
-      (category) => category === categoryFilter
-    )
-      ? categoryFilter
-      : "ALL";
+    categoryFilter;
 
   async function loadMarketplace({
     append = false,
@@ -398,9 +388,20 @@ export default function MarketplaceClient({
       }, 10000);
 
     try {
+      const params =
+        new URLSearchParams({
+          limit: "12",
+          offset: String(offset),
+          search: search.trim(),
+          category: activeCategoryFilter,
+          rarity: rarityFilter,
+          saleType: saleTypeFilter,
+          priceRange: priceRangeFilter,
+        });
+
       const response =
         await apiFetch(
-          `/api/marketplace-listings?limit=12&offset=${offset}`,
+          `/api/marketplace-listings?${params.toString()}`,
           {
             signal:
               controller.signal,
@@ -474,6 +475,45 @@ export default function MarketplaceClient({
       setLoadingMore(false);
     }
   }
+
+  useEffect(() => {
+    if (puzzleFilter) {
+      return;
+    }
+
+    const hasActiveFilters =
+      Boolean(search.trim()) ||
+      rarityFilter !== "ALL" ||
+      categoryFilter !== "ALL" ||
+      saleTypeFilter !== "ALL" ||
+      priceRangeFilter !== "ALL";
+
+    if (!filterBootedRef.current) {
+      filterBootedRef.current = true;
+
+      if (!hasActiveFilters) {
+        return;
+      }
+    }
+
+    const timer =
+      window.setTimeout(() => {
+        void loadMarketplace();
+      }, 250);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+    // loadMarketplace intentionally reads the latest filter state from this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    search,
+    rarityFilter,
+    categoryFilter,
+    saleTypeFilter,
+    priceRangeFilter,
+    puzzleFilter,
+  ]);
 
   const filteredFragments =
     useMemo(() => {
@@ -1274,13 +1314,13 @@ export default function MarketplaceClient({
 
                 <div className="p-5 md:p-6">
 
-                  <p className="text-zinc-500 text-xs uppercase tracking-wider">
+                  <p className="text-base font-black uppercase tracking-wide text-white md:text-lg">
                     {
                       fragment.title
                     }
                   </p>
 
-                  <p className="mt-2 text-sm font-bold text-cyan-400">
+                  <p className="mt-2 text-sm font-bold text-cyan-300">
                     {categoryLabel(fragment.category)}
                     {fragment.brand
                       ? ` / ${fragment.brand}`

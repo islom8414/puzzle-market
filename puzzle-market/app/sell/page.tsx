@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
 import { apiFetch } from "@/lib/api-client";
@@ -22,6 +22,12 @@ type OwnedPiece = {
   listingPrice: number | null;
 };
 
+type SellStats = {
+  ownedPieces: number;
+  activeListings: number;
+  listedValue: number;
+};
+
 export default function SellPage() {
   const [pieces, setPieces] =
     useState<OwnedPiece[]>([]);
@@ -34,6 +40,15 @@ export default function SellPage() {
   const [loading, setLoading] =
     useState(true);
 
+  const [loadingMore, setLoadingMore] =
+    useState(false);
+
+  const [nextOffset, setNextOffset] =
+    useState<number | null>(null);
+
+  const [stats, setStats] =
+    useState<SellStats | null>(null);
+
   const [savingId, setSavingId] =
     useState("");
 
@@ -41,8 +56,18 @@ export default function SellPage() {
     loadPieces();
   }, []);
 
-  async function loadPieces() {
-    setLoading(true);
+  async function loadPieces({
+    append = false,
+    offset = 0,
+  }: {
+    append?: boolean;
+    offset?: number;
+  } = {}) {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
 
     try {
       const {
@@ -60,7 +85,7 @@ export default function SellPage() {
 
       const response =
         await apiFetch(
-          "/api/owned-pieces",
+          `/api/owned-pieces?limit=24&offset=${offset}`,
           {
             headers: {
               Authorization:
@@ -72,11 +97,25 @@ export default function SellPage() {
       const data =
         await response.json();
 
-      setPieces(
-        data.pieces || []
+      const nextPieces =
+        data.pieces || [];
+
+      setPieces((current) =>
+        append
+          ? [...current, ...nextPieces]
+          : nextPieces
+      );
+      setStats(
+        data.stats || null
+      );
+      setNextOffset(
+        typeof data.nextOffset === "number"
+          ? data.nextOffset
+          : null
       );
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }
 
@@ -85,29 +124,6 @@ export default function SellPage() {
   ) {
     return loading ? "—" : value;
   }
-
-  const activeListings =
-    useMemo(
-      () =>
-        pieces.filter(
-          (piece) =>
-            piece.listingId
-        ),
-      [pieces]
-    );
-
-  const totalMarketValue =
-    useMemo(
-      () =>
-        activeListings.reduce(
-          (sum, piece) =>
-            sum +
-            (piece.listingPrice ||
-              0),
-          0
-        ),
-      [activeListings]
-    );
 
   function piecePreviewStyle(
     piece: OwnedPiece
@@ -267,29 +283,35 @@ export default function SellPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 mt-8 md:mt-10">
             <div className="bg-black/40 border border-white/10 rounded-[22px] md:rounded-[28px] p-5 md:p-6">
               <p className="text-zinc-500 text-sm">
-                Owned Pieces
+                Your Owned Pieces
               </p>
               <h2 className="text-4xl md:text-5xl font-black mt-3">
-                {statValue(pieces.length)}
+                {statValue(
+                  stats?.ownedPieces ?? pieces.length
+                )}
               </h2>
             </div>
 
             <div className="bg-black/40 border border-white/10 rounded-[22px] md:rounded-[28px] p-5 md:p-6">
               <p className="text-zinc-500 text-sm">
-                Active Listings
+                Your Active Listings
               </p>
               <h2 className="text-cyan-400 text-4xl md:text-5xl font-black mt-3">
-                {statValue(activeListings.length)}
+                {statValue(
+                  stats?.activeListings ?? 0
+                )}
               </h2>
             </div>
 
             <div className="bg-black/40 border border-white/10 rounded-[22px] md:rounded-[28px] p-5 md:p-6">
               <p className="text-zinc-500 text-sm">
-                Listed Value
+                Your Listed Value
               </p>
               <h2 className="text-green-400 text-4xl md:text-5xl font-black mt-3">
                 {statValue(
-                  formatUsd(totalMarketValue)
+                  formatUsd(
+                    stats?.listedValue ?? 0
+                  )
                 )}
               </h2>
             </div>
@@ -462,6 +484,26 @@ export default function SellPage() {
             </div>
           ))}
         </section>
+
+        {!loading && nextOffset !== null && (
+          <div className="mt-10 flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                void loadPieces({
+                  append: true,
+                  offset: nextOffset,
+                });
+              }}
+              disabled={loadingMore}
+              className="rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-7 py-4 font-black text-cyan-200 transition hover:border-cyan-300 disabled:cursor-wait disabled:opacity-60"
+            >
+              {loadingMore
+                ? "Loading..."
+                : "Load More Pieces"}
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -92,8 +92,9 @@ const checks = [
     file: "app/login/page.tsx",
     patterns: [
       "Sign in to manage your collection",
-      "New to Puzzle Market?",
-      "Free registration.",
+      "Start with a 3-day trial and unlock your first-piece bonus.",
+      "Puzzle Market adds",
+      "bonus puzzle credit toward your first collectible piece.",
       "nextPath",
     ],
   },

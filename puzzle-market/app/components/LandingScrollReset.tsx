@@ -36,12 +36,15 @@ export default function LandingScrollReset() {
     };
 
     resetScroll();
-    const shortDelay = window.setTimeout(resetScroll, 100);
-    const renderDelay = window.setTimeout(resetScroll, 600);
+    const delays = [50, 150, 400, 900, 1500];
+    const timers = delays.map((delay) =>
+      window.setTimeout(resetScroll, delay)
+    );
 
     return () => {
-      window.clearTimeout(shortDelay);
-      window.clearTimeout(renderDelay);
+      timers.forEach((timer) => {
+        window.clearTimeout(timer);
+      });
     };
   }, []);
 
