@@ -290,9 +290,9 @@ export default function RegisterPage() {
           Join Puzzle Market
         </p>
 
-        <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4">
+        <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
           <p className="text-sm font-black text-cyan-300">
-            Create your free collector account
+            Create your collector account
           </p>
           <ul className="mt-3 space-y-2 text-sm text-zinc-300">
             {accountBenefits.map(
@@ -303,10 +303,12 @@ export default function RegisterPage() {
               )
             )}
           </ul>
-          <p className="mt-3 text-sm font-bold text-zinc-400">
-            Free registration.
-            <br />
-            No purchase required.
+          <p className="mt-3 text-sm font-semibold text-white">
+            Start with a 3-day trial when you choose a plan.
+          </p>
+          <p className="mt-2 text-sm text-zinc-300">
+            After your first successful subscription billing, get bonus puzzle
+            credit toward your first collectible piece.
           </p>
         </div>
 

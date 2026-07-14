@@ -191,18 +191,23 @@ export default function LoginPage() {
           Access your owned fragments, Watchlist, listings and transaction history.
         </p>
 
-        <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4">
+        <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
           <p className="text-sm font-black text-cyan-300">
-            New to Puzzle Market?
+            New collector bonus
           </p>
-          <p className="mt-2 text-sm text-zinc-300">
-            Create a free collector account.
+          <p className="mt-2 text-sm font-semibold text-white">
+            Start with a 3-day trial and unlock your first-piece bonus.
           </p>
-          <p className="mt-3 text-sm font-bold text-zinc-400">
-            Free registration.
-            <br />
-            No purchase required.
+          <p className="mt-3 text-sm text-zinc-300">
+            After your first successful subscription billing, Puzzle Market adds
+            bonus puzzle credit toward your first collectible piece.
           </p>
+          <a
+            href="/subscribe"
+            className="mt-3 inline-flex text-sm font-black text-cyan-300 underline-offset-4 hover:underline"
+          >
+            View trial plans
+          </a>
         </div>
 
         <div className="mt-5 sm:mt-6">
