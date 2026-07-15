@@ -28,12 +28,38 @@ function getSafeNextPath() {
   const requestedNext =
     new URLSearchParams(
       window.location.search
-    ).get("next");
+    ).get("next") ||
+    new URLSearchParams(
+      window.location.search
+    ).get("returnUrl");
 
   return requestedNext?.startsWith("/") &&
     !requestedNext.startsWith("//")
     ? requestedNext
     : "/marketplace";
+}
+
+function getLoginHref() {
+  if (typeof window === "undefined") {
+    return "/login";
+  }
+
+  const requestedNext =
+    new URLSearchParams(
+      window.location.search
+    ).get("next") ||
+    new URLSearchParams(
+      window.location.search
+    ).get("returnUrl");
+
+  if (
+    requestedNext?.startsWith("/") &&
+    !requestedNext.startsWith("//")
+  ) {
+    return `/login?next=${encodeURIComponent(requestedNext)}`;
+  }
+
+  return "/login";
 }
 
 export default function RegisterPage() {
@@ -295,13 +321,12 @@ export default function RegisterPage() {
             Create your collector account
           </p>
           <ul className="mt-3 space-y-2 text-sm text-zinc-300">
-            {accountBenefits.map(
-              (benefit) => (
-                <li key={benefit}>
-                  • {benefit}
-                </li>
-              )
-            )}
+            {accountBenefits.map((benefit) => (
+              <li key={benefit} className="flex gap-2">
+                <span className="text-cyan-300">-</span>
+                <span>{benefit}</span>
+              </li>
+            ))}
           </ul>
           <p className="mt-3 text-sm font-semibold text-white">
             Start with a 3-day trial when you choose a plan.
@@ -378,6 +403,18 @@ export default function RegisterPage() {
               </button>
             )}
 
+            <p className="text-center text-xs font-semibold text-zinc-500">
+              By creating an account, you agree to the Puzzle Market{" "}
+              <a href="/terms" className="text-cyan-300 hover:underline">
+                Terms
+              </a>{" "}
+              and{" "}
+              <a href="/privacy" className="text-cyan-300 hover:underline">
+                Privacy Policy
+              </a>
+              .
+            </p>
+
           </div>
 
         </div>
@@ -396,6 +433,12 @@ export default function RegisterPage() {
 
           <a
             href="/login"
+            onClick={(event) => {
+              event.preventDefault();
+              window.location.assign(
+                getLoginHref()
+              );
+            }}
             className="text-cyan-400 font-bold"
           >
             Login

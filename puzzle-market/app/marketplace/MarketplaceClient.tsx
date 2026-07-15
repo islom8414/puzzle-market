@@ -57,6 +57,24 @@ type MarketplaceLoadStatus =
 const puzzleColumns = 5;
 const puzzleRows = 5;
 
+function getCurrentReturnPath() {
+  if (typeof window === "undefined") {
+    return "/marketplace";
+  }
+
+  return `${window.location.pathname}${window.location.search}`;
+}
+
+function buildRegisterUrl(nextPath: string) {
+  const params =
+    new URLSearchParams({
+      next: nextPath,
+      intent: "buy",
+    });
+
+  return `/register?${params.toString()}`;
+}
+
 function categoryKey(value: string | null | undefined) {
   const raw = String(value || "")
     .replace(/&amp;/gi, "&")
@@ -241,6 +259,9 @@ export default function MarketplaceClient({
 
   const [loadingMore, setLoadingMore] =
     useState(false);
+
+  const [pendingPurchaseId, setPendingPurchaseId] =
+    useState<string | null>(null);
 
   const [search, setSearch] =
     useState("");
@@ -815,8 +836,13 @@ export default function MarketplaceClient({
     async (
       fragment: MarketItem
     ) => {
+      const purchaseId =
+        String(fragment.id);
 
       try {
+        setPendingPurchaseId(
+          purchaseId
+        );
 
         const {
           data: {
@@ -827,13 +853,10 @@ export default function MarketplaceClient({
             .getSession();
 
         if (!session) {
-
-          alert(
-            "Login required"
-          );
-
           window.location.assign(
-            "/login"
+            buildRegisterUrl(
+              getCurrentReturnPath()
+            )
           );
 
           return;
@@ -858,7 +881,7 @@ export default function MarketplaceClient({
 
           if (upgrade) {
             window.location.assign(
-              "/subscribe"
+              `/subscribe?next=${encodeURIComponent(getCurrentReturnPath())}`
             );
           }
 
@@ -970,6 +993,8 @@ export default function MarketplaceClient({
           "Purchase failed"
         );
 
+      } finally {
+        setPendingPurchaseId(null);
       }
 
     };
@@ -1364,7 +1389,9 @@ export default function MarketplaceClient({
                     disabled={
                       isOwnListing(
                         fragment
-                      )
+                      ) ||
+                      pendingPurchaseId ===
+                        String(fragment.id)
                     }
                     onClick={() =>
                       purchaseFragment(
@@ -1394,6 +1421,9 @@ duration-300
 
 {isOwnListing(fragment)
   ? ui.thisPieceIsYours
+  : pendingPurchaseId ===
+      String(fragment.id)
+    ? "Opening checkout..."
   : `${ui.buyPiece} - $${fragment.price}`}
 
 </button>

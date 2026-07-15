@@ -36,7 +36,10 @@ export default function LoginPage() {
         const requestedNext =
           new URLSearchParams(
             window.location.search
-          ).get("next");
+          ).get("next") ||
+          new URLSearchParams(
+            window.location.search
+          ).get("returnUrl");
         const nextPath =
           requestedNext?.startsWith("/") &&
           !requestedNext.startsWith("//")
@@ -134,12 +137,38 @@ export default function LoginPage() {
     const requestedNext =
       new URLSearchParams(
         window.location.search
-      ).get("next");
+      ).get("next") ||
+      new URLSearchParams(
+        window.location.search
+      ).get("returnUrl");
 
     return requestedNext?.startsWith("/") &&
       !requestedNext.startsWith("//")
       ? requestedNext
       : "/marketplace";
+  }
+
+  function getRegisterHref() {
+    if (typeof window === "undefined") {
+      return "/register";
+    }
+
+    const requestedNext =
+      new URLSearchParams(
+        window.location.search
+      ).get("next") ||
+      new URLSearchParams(
+        window.location.search
+      ).get("returnUrl");
+
+    if (
+      requestedNext?.startsWith("/") &&
+      !requestedNext.startsWith("//")
+    ) {
+      return `/register?next=${encodeURIComponent(requestedNext)}`;
+    }
+
+    return "/register";
   }
 
   const handleGoogleLogin =
@@ -282,6 +311,12 @@ export default function LoginPage() {
 
           <a
             href="/register"
+            onClick={(event) => {
+              event.preventDefault();
+              window.location.assign(
+                getRegisterHref()
+              );
+            }}
             className="text-cyan-400 font-bold"
           >
             Create Account

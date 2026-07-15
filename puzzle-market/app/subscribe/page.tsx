@@ -82,6 +82,21 @@ const trialTrustPoints = [
   "Stripe-secured checkout",
 ] as const;
 
+function getSubscribeReturnPath(tier: PlanTier) {
+  if (typeof window === "undefined") {
+    return `/subscribe?plan=${tier}`;
+  }
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  params.set("plan", tier);
+
+  return `${window.location.pathname}?${params.toString()}`;
+}
+
 export default function SubscribePage() {
   const router = useRouter();
 
@@ -101,7 +116,9 @@ export default function SubscribePage() {
       } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        router.push("/login");
+        router.push(
+          `/register?next=${encodeURIComponent(getSubscribeReturnPath(tier))}&intent=trial`
+        );
         return;
       }
 
@@ -252,7 +269,16 @@ export default function SubscribePage() {
 
               <p className="mt-3 text-center text-xs font-semibold text-zinc-500">
                 Subscription billing starts only after the 3-day trial unless
-                you cancel first.
+                you cancel first. By starting checkout, you continue to the
+                secure Stripe flow and agree to the Puzzle Market{" "}
+                <Link href="/terms" className="text-cyan-300 hover:underline">
+                  Terms
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-cyan-300 hover:underline">
+                  Privacy Policy
+                </Link>
+                .
               </p>
             </article>
           ))}
