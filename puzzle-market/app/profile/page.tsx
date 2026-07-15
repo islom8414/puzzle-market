@@ -45,10 +45,22 @@ type ReferralSummary = {
   rewards: ReferralReward[];
 };
 
+type OwnedPieceStats = {
+  ownedPieces: number;
+  activeListings: number;
+  listedValue: number;
+};
+
 export default function ProfilePage() {
 
   const [ownedPieces, setOwnedPieces] =
     useState<OwnedPiece[]>([]);
+  const [ownedStats, setOwnedStats] =
+    useState<OwnedPieceStats | null>(null);
+  const [ownedNextOffset, setOwnedNextOffset] =
+    useState<number | null>(null);
+  const [loadingMoreOwned, setLoadingMoreOwned] =
+    useState(false);
 
   const [balance, setBalance] =
     useState(0);
@@ -202,7 +214,7 @@ export default function ProfilePage() {
           ownedResponse,
           referralResponse,
         ] = await Promise.all([
-          apiFetch("/api/owned-pieces", {
+          apiFetch("/api/owned-pieces?limit=60&offset=0", {
             headers: authHeaders,
           }),
           apiFetch("/api/referrals", {
@@ -217,6 +229,14 @@ export default function ProfilePage() {
           setOwnedPieces(
             exactData.pieces || []
           );
+          setOwnedStats(
+            exactData.stats || null
+          );
+          setOwnedNextOffset(
+            typeof exactData.nextOffset === "number"
+              ? exactData.nextOffset
+              : null
+          );
         }
 
         if (referralResponse.ok) {
@@ -226,6 +246,60 @@ export default function ProfilePage() {
         }
       }
 
+    };
+
+  const loadMoreOwnedPieces =
+    async () => {
+      if (ownedNextOffset === null) {
+        return;
+      }
+
+      const {
+        data: sessionData,
+      } =
+        await supabase.auth
+          .getSession();
+
+      if (!sessionData.session) {
+        return;
+      }
+
+      setLoadingMoreOwned(true);
+
+      try {
+        const response =
+          await apiFetch(
+            `/api/owned-pieces?limit=60&offset=${ownedNextOffset}`,
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${sessionData.session.access_token}`,
+              },
+            }
+          );
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data =
+          await response.json();
+
+        setOwnedPieces((current) => [
+          ...current,
+          ...(data.pieces || []),
+        ]);
+        setOwnedStats(
+          data.stats || ownedStats
+        );
+        setOwnedNextOffset(
+          typeof data.nextOffset === "number"
+            ? data.nextOffset
+            : null
+        );
+      } finally {
+        setLoadingMoreOwned(false);
+      }
     };
 
   const saveUsername =
@@ -293,6 +367,16 @@ export default function ProfilePage() {
         ).length,
       [ownedPieces]
     );
+
+  const ownedCount =
+    ownedStats?.ownedPieces ??
+    ownedPieces.length;
+  const displayedActiveListings =
+    ownedStats?.activeListings ??
+    activeListings;
+  const displayedListedValue =
+    ownedStats?.listedValue ??
+    totalValue;
   const planIsActive =
     subscriptionStatus === "active" ||
     subscriptionStatus === "trialing";
@@ -677,7 +761,7 @@ export default function ProfilePage() {
             </p>
 
             <h2 className="text-4xl md:text-5xl font-black mt-4">
-              {ownedPieces.length}
+              {ownedCount}
             </h2>
 
           </div>
@@ -689,7 +773,7 @@ export default function ProfilePage() {
             </p>
 
             <h2 className="text-4xl md:text-5xl font-black mt-4">
-              {activeListings}
+              {displayedActiveListings}
             </h2>
 
           </div>
@@ -729,7 +813,9 @@ export default function ProfilePage() {
             </p>
 
             <h2 className="text-4xl md:text-5xl font-black mt-4 text-green-400">
-              {formatUsd(totalValue)}
+              {formatUsd(
+                displayedListedValue
+              )}
             </h2>
 
           </div>
@@ -747,14 +833,41 @@ export default function ProfilePage() {
               <h2 className="text-3xl md:text-5xl font-black mt-3">
                 Owned Pieces
               </h2>
+              <p className="mt-2 text-sm text-zinc-500">
+                Showing{" "}
+                <span className="font-black text-white">
+                  {ownedPieces.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-black text-white">
+                  {ownedCount}
+                </span>{" "}
+                pieces.
+              </p>
             </div>
 
-            <Link
-              href="/sell"
-              className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-5 py-3 rounded-2xl transition"
-            >
-              Resell Pieces
-            </Link>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              {ownedNextOffset !== null && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void loadMoreOwnedPieces();
+                  }}
+                  disabled={loadingMoreOwned}
+                  className="rounded-2xl bg-cyan-400 px-5 py-3 font-black text-black transition hover:bg-cyan-300 disabled:cursor-wait disabled:opacity-60"
+                >
+                  {loadingMoreOwned
+                    ? "Loading..."
+                    : "Load More"}
+                </button>
+              )}
+              <Link
+                href="/sell"
+                className="bg-white/5 border border-white/10 hover:border-cyan-400 font-black px-5 py-3 rounded-2xl transition"
+              >
+                Resell Pieces
+              </Link>
+            </div>
           </div>
 
           {ownedPieces.length === 0 && (
@@ -857,6 +970,23 @@ export default function ProfilePage() {
               </div>
             ))}
           </div>
+
+          {ownedNextOffset !== null && (
+            <div className="mt-10 flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  void loadMoreOwnedPieces();
+                }}
+                disabled={loadingMoreOwned}
+                className="rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-7 py-4 font-black text-cyan-200 transition hover:border-cyan-300 disabled:cursor-wait disabled:opacity-60"
+              >
+                {loadingMoreOwned
+                  ? "Loading more pieces..."
+                  : "Load more owned pieces"}
+              </button>
+            </div>
+          )}
 
         </section>
 

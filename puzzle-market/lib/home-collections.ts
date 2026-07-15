@@ -31,7 +31,7 @@ export async function loadHomeCollections(): Promise<CatalogPuzzle[]> {
         .order("created_at", {
           ascending: false,
         })
-        .limit(6);
+        .limit(120);
 
     if (error) {
       console.warn(

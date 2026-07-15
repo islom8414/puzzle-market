@@ -85,7 +85,7 @@ export default function SellPage() {
 
       const response =
         await apiFetch(
-          `/api/owned-pieces?limit=24&offset=${offset}`,
+          `/api/owned-pieces?limit=60&offset=${offset}`,
           {
             headers: {
               Authorization:
@@ -316,6 +316,39 @@ export default function SellPage() {
               </h2>
             </div>
           </div>
+
+          {!loading && stats && (
+            <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/35 p-4 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
+              <span>
+                Showing{" "}
+                <strong className="text-white">
+                  {pieces.length}
+                </strong>{" "}
+                of{" "}
+                <strong className="text-white">
+                  {stats.ownedPieces}
+                </strong>{" "}
+                owned pieces.
+              </span>
+              {nextOffset !== null && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void loadPieces({
+                      append: true,
+                      offset: nextOffset,
+                    });
+                  }}
+                  disabled={loadingMore}
+                  className="rounded-xl bg-cyan-400 px-4 py-2 font-black text-black transition hover:bg-cyan-300 disabled:cursor-wait disabled:opacity-60"
+                >
+                  {loadingMore
+                    ? "Loading..."
+                    : "Load more pieces"}
+                </button>
+              )}
+            </div>
+          )}
         </section>
 
         {loading && (

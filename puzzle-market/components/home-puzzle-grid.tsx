@@ -14,8 +14,8 @@ import {
 } from "@/lib/puzzle-catalog";
 import { apiFetch } from "@/lib/api-client";
 
-const INITIAL_VISIBLE_PUZZLES = 9;
-const PUZZLE_PAGE_SIZE = 9;
+const INITIAL_VISIBLE_PUZZLES = 12;
+const PUZZLE_PAGE_SIZE = 12;
 
 type HomePuzzleGridProps = {
   initialPuzzles?: CatalogPuzzle[];
@@ -62,10 +62,6 @@ export function HomePuzzleGrid({
     filteredPuzzles.length;
 
   useEffect(() => {
-    if (hasInitialPuzzles) {
-      return;
-    }
-
     async function load() {
       try {
         const response =
@@ -82,7 +78,12 @@ export function HomePuzzleGrid({
       }
     }
 
-    load();
+    if (hasInitialPuzzles) {
+      void load();
+      return;
+    }
+
+    void load();
   }, [hasInitialPuzzles]);
 
   const handleCategoryChange = (
@@ -131,6 +132,39 @@ export function HomePuzzleGrid({
         onChange={handleCategoryChange}
         className="mb-6"
       />
+
+      <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
+        <span>
+          Showing{" "}
+          <strong className="text-white">
+            {Math.min(
+              visibleCount,
+              filteredPuzzles.length
+            )}
+          </strong>{" "}
+          of{" "}
+          <strong className="text-white">
+            {filteredPuzzles.length}
+          </strong>{" "}
+          puzzles
+          {category !== "ALL"
+            ? ` in ${category}`
+            : ""}
+        </span>
+        {hasMorePuzzles && (
+          <button
+            type="button"
+            onClick={() =>
+              setVisibleCount(
+                filteredPuzzles.length
+              )
+            }
+            className="rounded-xl bg-cyan-400 px-4 py-2 font-black text-black transition hover:bg-cyan-300"
+          >
+            Show all
+          </button>
+        )}
+      </div>
 
       {filteredPuzzles.length === 0 ? (
         <div className="rounded-3xl border border-white/10 bg-zinc-950/80 p-10 text-center">
@@ -210,7 +244,7 @@ export function HomePuzzleGrid({
             }
             className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 font-black transition hover:border-cyan-400 hover:bg-cyan-400 hover:text-black"
           >
-            Show more puzzles
+            Show 12 more puzzles
           </button>
         </div>
       )}

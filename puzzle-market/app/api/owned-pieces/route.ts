@@ -7,7 +7,7 @@ import {
 import { getCanonicalSiteUrl } from "@/lib/site-url";
 
 const QUERY_CHUNK_SIZE = 100;
-const DEFAULT_LIMIT = 24;
+const DEFAULT_LIMIT = 60;
 
 function chunkValues<T>(
   values: T[],
@@ -35,7 +35,7 @@ export async function GET(
     const { searchParams } =
       new URL(request.url);
     const limit = Math.min(
-      48,
+      250,
       Math.max(
         1,
         Number(searchParams.get("limit")) ||
