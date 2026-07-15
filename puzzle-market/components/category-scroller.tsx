@@ -144,9 +144,33 @@ export function CategoryScroller({
   }, [updateScrollState, value]);
 
   return (
-    <div
-      className={`flex items-center gap-2 ${className}`}
-    >
+    <div className={className}>
+      <label className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-cyan-300 md:hidden">
+        Category
+      </label>
+      <select
+        value={value}
+        onChange={(event) =>
+          selectCategory(
+            event.target.value
+          )
+        }
+        className="mb-4 h-12 w-full rounded-2xl border border-cyan-400/30 bg-black px-4 text-sm font-black text-white outline-none focus:border-cyan-300 md:hidden"
+      >
+        {choices.map((item) => (
+          <option
+            key={item}
+            value={item}
+            className="bg-black text-white"
+          >
+            {item === "ALL"
+              ? allLabel
+              : item}
+          </option>
+        ))}
+      </select>
+
+      <div className="hidden items-center gap-2 md:flex">
       <button
         type="button"
         aria-label="Scroll categories left"
@@ -202,6 +226,7 @@ export function CategoryScroller({
       >
         <span className="h-2.5 w-2.5 rotate-45 border-r-2 border-t-2 border-current" />
       </button>
+      </div>
     </div>
   );
 }
