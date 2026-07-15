@@ -173,6 +173,13 @@ export default async function HomePage() {
               </Link>
 
               <Link
+                href="/register?next=%2Fmarketplace&intent=hero"
+                className="translate-safe-action rounded-2xl border border-cyan-400/40 bg-cyan-400/10 px-6 py-4 text-center text-base font-black text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-400/15 md:px-8"
+              >
+                Create Account
+              </Link>
+
+              <Link
                 href="/#how-it-works"
                 className="translate-safe-action rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-center text-base font-black transition hover:border-cyan-400"
               >
@@ -180,12 +187,33 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <Link
-              href="/#faq"
-              className="mt-4 inline-flex text-sm font-bold text-cyan-300 underline-offset-4 hover:text-cyan-200 hover:underline"
-            >
-              See fees and payouts
-            </Link>
+            <div className="mt-4 grid gap-3 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 text-sm text-zinc-300 sm:grid-cols-[1fr_auto] sm:items-center">
+              <p className="font-semibold">
+                Start with a 3-day trial. Add a card, pay no subscription charge
+                today, and unlock buying, ownership and resale tools.
+              </p>
+              <Link
+                href="/subscribe?source=hero"
+                className="rounded-xl bg-white px-4 py-3 text-center font-black text-black transition hover:bg-cyan-100"
+              >
+                View Trial Plans
+              </Link>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm font-bold">
+              <Link
+                href="/#faq"
+                className="text-cyan-300 underline-offset-4 hover:text-cyan-200 hover:underline"
+              >
+                See fees and payouts
+              </Link>
+              <Link
+                href="/terms"
+                className="text-zinc-400 underline-offset-4 hover:text-white hover:underline"
+              >
+                Terms
+              </Link>
+            </div>
 
             <HomeTrustStats />
           </div>
