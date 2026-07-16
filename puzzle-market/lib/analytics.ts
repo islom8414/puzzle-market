@@ -246,6 +246,24 @@ export function trackSignUp(
   });
 }
 
+export function trackSignUpStart(
+  method = "unknown"
+) {
+  sendGAEvent("sign_up_start", {
+    method,
+  });
+}
+
+export function trackAuthError(
+  flow: string,
+  reason: string
+) {
+  sendGAEvent("auth_error", {
+    flow,
+    reason,
+  });
+}
+
 export function trackLogin(
   method = "email"
 ) {

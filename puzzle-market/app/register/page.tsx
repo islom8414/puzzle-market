@@ -1,6 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { PasswordInput } from "@/components/password-input";
 import {
   cacheUsername,
@@ -10,7 +14,11 @@ import { sanitizeUsername } from "@/lib/display-name";
 import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 import { termsAcceptPath } from "@/lib/terms-status";
-import { trackSignUp } from "@/lib/analytics";
+import {
+  trackAuthError,
+  trackSignUp,
+  trackSignUpStart,
+} from "@/lib/analytics";
 
 const accountBenefits = [
   "Save fragments",
@@ -82,6 +90,18 @@ export default function RegisterPage() {
   const [confirmationPending, setConfirmationPending] =
     useState(false);
 
+  const signUpStartTracked =
+    useRef(false);
+
+  function trackStart(method: string) {
+    if (signUpStartTracked.current) {
+      return;
+    }
+
+    signUpStartTracked.current = true;
+    trackSignUpStart(method);
+  }
+
   useEffect(() => {
     const params =
       new URLSearchParams(
@@ -126,6 +146,10 @@ export default function RegisterPage() {
         !password ||
         cleanUsername.length < 3
       ) {
+        trackAuthError(
+          "email_signup",
+          "missing_required_fields"
+        );
         setMessage(
           "Fill email, password, and username (3+ characters)"
         );
@@ -164,6 +188,10 @@ export default function RegisterPage() {
         });
 
       if (error) {
+        trackAuthError(
+          "email_signup",
+          error.message
+        );
 
         setMessage(
           error.message
@@ -185,6 +213,10 @@ export default function RegisterPage() {
             );
 
           if (!saved.ok) {
+            trackAuthError(
+              "email_signup",
+              "profile_save_failed"
+            );
             setMessage(
               saved.error ||
               "Account created, but username was not saved. Finish setup after login."
@@ -233,6 +265,10 @@ export default function RegisterPage() {
     async () => {
 
       if (!email) {
+        trackAuthError(
+          "email_confirmation_resend",
+          "missing_email"
+        );
         setMessage(
           "Enter your email first"
         );
@@ -256,6 +292,10 @@ export default function RegisterPage() {
       setLoading(false);
 
       if (error) {
+        trackAuthError(
+          "email_confirmation_resend",
+          error.message
+        );
         setMessage(
           error.message
         );
@@ -271,7 +311,7 @@ export default function RegisterPage() {
 
   const handleGoogleRegister =
     async () => {
-      trackSignUp("google");
+      trackStart("google");
 
       await supabase.auth
         .signInWithOAuth({
@@ -346,6 +386,9 @@ export default function RegisterPage() {
               placeholder="Email"
               value={email}
               autoComplete="email"
+              onFocus={() =>
+                trackStart("email")
+              }
               onChange={(e) =>
                 setEmail(e.target.value)
               }
@@ -355,6 +398,9 @@ export default function RegisterPage() {
             <input
               value={username}
               autoComplete="username"
+              onFocus={() =>
+                trackStart("email")
+              }
               onChange={(e) =>
                 setUsername(e.target.value)
               }
@@ -373,7 +419,10 @@ export default function RegisterPage() {
 
             <button
               type="button"
-              onClick={handleRegister}
+              onClick={() => {
+                trackStart("email");
+                void handleRegister();
+              }}
               disabled={loading}
               className="min-h-12 w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-50"
             >
