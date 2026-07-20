@@ -18,11 +18,6 @@ const earlyScript = `
     params.has("utm_campaign") ||
     params.has("gclid") ||
     params.has("fbclid");
-  const criticalPath =
-    window.location.pathname === "/marketplace" ||
-    window.location.pathname === "/subscribe" ||
-    window.location.pathname.startsWith("/puzzle/") ||
-    window.location.pathname.startsWith("/fragment/");
   const language = paidCampaignLanding && !queryLanguage
     ? "en"
     : supported.has(queryLanguage || "")
@@ -33,11 +28,12 @@ const earlyScript = `
 
   window.__puzzleLinguiseLanguage = language;
 
-  if (language === "en" || criticalPath) {
+  if (language === "en") {
     document.documentElement.lang = "en";
     return;
   }
 
+  document.documentElement.lang = language;
   window.localStorage.setItem(storageKey, language);
   document.documentElement.classList.remove("notranslate");
   document.documentElement.removeAttribute("translate");

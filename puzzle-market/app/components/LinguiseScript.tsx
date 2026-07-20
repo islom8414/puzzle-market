@@ -161,13 +161,25 @@ export default function LinguiseScript() {
       }
     };
 
+    const scheduleRefresh = (delay: number) => {
+      window.setTimeout(() => {
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(refreshTextNodes, {
+            timeout: 300,
+          });
+          return;
+        }
+
+        refreshTextNodes();
+      }, delay);
+    };
+
     const translatePage = () => {
       unlockRoots();
       refreshTextNodes();
-      window.setTimeout(refreshTextNodes, 60);
-      window.setTimeout(refreshTextNodes, 180);
-      window.setTimeout(refreshTextNodes, 500);
-      window.setTimeout(refreshTextNodes, 1100);
+      scheduleRefresh(120);
+      scheduleRefresh(500);
+      scheduleRefresh(1100);
       window.setTimeout(() => {
         document.documentElement.lang = language;
       }, 350);

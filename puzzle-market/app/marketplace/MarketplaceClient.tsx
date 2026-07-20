@@ -147,78 +147,245 @@ const ruCategoryLabels: Record<string, string> = {
 
 void ruCategoryLabels;
 
-function createMarketplaceCopy(language: string) {
-  const isRussian = language.startsWith("ru");
+type UiLanguage = "en" | "ru" | "ja";
 
-  return {
-    eyebrow: isRussian ? "LIVE MARKETPLACE" : "LIVE MARKETPLACE",
-    titleLineOne: isRussian ? "Rare Puzzle" : "Trade Rare",
-    titleLineTwo: isRussian ? "Fragments" : "Puzzle Fragments",
-    defaultDescription: isRussian
-      ? "Browse collectible puzzle fragments from Puzzle Market and other collectors."
-      : "Browse collectible puzzle fragments available from Puzzle Market and other collectors.",
-    exactPieceDescription: isRussian
-      ? "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet."
-      : "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet.",
-    puzzleDescription: isRussian
-      ? "All active missing pieces for this puzzle are shown here. Buy each missing fragment to complete the image."
-      : "All active missing pieces for this puzzle are shown here. Buy each missing fragment to complete the image.",
-    choosePuzzle: isRussian ? "Choose a Puzzle" : "Choose A Puzzle",
-    liveListings: isRussian ? "Live Listings" : "Live Listings",
-    primarySale: isRussian ? "Primary Sale" : "Primary Sale",
-    collectorResale: isRussian ? "Collector Resale" : "Collector Resale",
-    marketplaceAccess: isRussian ? "Marketplace Access" : "Marketplace Access",
-    open: isRussian ? "Open" : "Open",
-    buyNowListLater: isRussian ? "Buy now, list later" : "Buy now, list later",
-    search: isRussian ? "Search rare fragments..." : "Search rare fragments...",
-    exactPuzzleFilter: isRussian ? "Exact puzzle filter is active" : "Exact puzzle filter is active",
-    allRarity: isRussian ? "All Rarity" : "All Rarity",
-    legendary: isRussian ? "Legendary" : "Legendary",
-    epic: isRussian ? "Epic" : "Epic",
-    rare: isRussian ? "Rare" : "Rare",
-    allCategories: isRussian ? "All Categories" : "All Categories",
-    allSaleTypes: isRussian ? "All Sale Types" : "All Sale Types",
-    allPrices: isRussian ? "All Prices" : "All Prices",
-    under25: isRussian ? "Under $25" : "Under $25",
-    over100: isRussian ? "Over $100" : "Over $100",
-    available: isRussian ? "Available" : "Available",
-    price: isRussian ? "PRICE" : "PRICE",
-    piece: isRussian ? "Piece" : "Piece",
-    availableSupply: isRussian ? "Available Supply" : "Available Supply",
-    totalSupply: isRussian ? "Total Supply" : "Total Supply",
-    listedByPuzzleMarket: isRussian
-      ? "Listed by Puzzle Market."
-      : "Listed by Puzzle Market.",
-    listedByCollector: isRussian
-      ? "Listed by"
-      : "Listed by",
-    buyPiece: isRussian ? "Buy Piece" : "Buy Piece",
-    thisPieceIsYours: isRussian ? "This Piece Is Yours" : "This Piece Is Yours",
-    loading: isRussian ? "Loading..." : "Loading...",
-    loadMore: isRussian ? "Load More Listings" : "Load More Listings",
-    couldNotLoad: isRussian
-      ? "Marketplace listings could not be loaded."
-      : "Marketplace listings could not be loaded.",
-    timeout: isRussian
-      ? "The request took too long. Try again on a better connection."
-      : "The request took too long. Try again on a better connection.",
-    failed: isRussian
-      ? "The request failed before live listings could be confirmed."
-      : "The request failed before live listings could be confirmed.",
-    tryAgain: isRussian ? "Try Again" : "Try Again",
-    noListings: isRussian
-      ? "No active listings are available right now."
-      : "No active listings are available right now.",
-    emptyCopy: isRussian
-      ? "Browse collections, create a watchlist or become the first seller."
-      : "Browse collections, create a watchlist or become the first seller.",
-    browseCollections: isRussian ? "Browse Collections" : "Browse Collections",
-    createFreeAccount: isRussian ? "Create Free Account" : "Create Free Account",
-    noMatches: isRussian ? "No matching fragments found" : "No matching fragments found",
-    noMatchesCopy: isRussian
-      ? "The marketplace has live listings, but none match the current filters."
-      : "The marketplace has live listings, but none match the current filters.",
+function getUiLanguage(language: string): UiLanguage {
+  if (language.startsWith("ru")) {
+    return "ru";
+  }
+
+  if (language.startsWith("ja")) {
+    return "ja";
+  }
+
+  return "en";
+}
+
+const categoryLabels: Record<UiLanguage, Record<string, string>> = {
+  en: {},
+  ru: {
+    Animals: "Животные",
+    Anime: "Аниме",
+    Art: "Искусство",
+    Baseball: "Бейсбол",
+    Cars: "Автомобили",
+    Fashion: "Мода",
+    "Food & Drink": "Еда и напитки",
+    Football: "Футбол",
+    Flowers: "Цветы",
+    Gaming: "Игры",
+    Golf: "Гольф",
+    Music: "Музыка",
+    Nature: "Природа",
+    Space: "Космос",
+    Sports: "Спорт",
+    Technology: "Технологии",
+    Toys: "Игрушки",
+    "Travel & Landmarks": "Путешествия и достопримечательности",
+    "World Money": "Мировые деньги",
+    Other: "Другое",
+  },
+  ja: {
+    Animals: "動物",
+    Anime: "アニメ",
+    Art: "アート",
+    Baseball: "野球",
+    Cars: "車",
+    Fashion: "ファッション",
+    "Food & Drink": "フード・ドリンク",
+    Football: "サッカー",
+    Flowers: "花",
+    Gaming: "ゲーム",
+    Golf: "ゴルフ",
+    Music: "音楽",
+    Nature: "自然",
+    Space: "宇宙",
+    Sports: "スポーツ",
+    Technology: "テクノロジー",
+    Toys: "おもちゃ",
+    "Travel & Landmarks": "旅行・名所",
+    "World Money": "世界のお金",
+    Other: "その他",
+  },
+};
+
+function createMarketplaceCopy(language: string) {
+  const copies: Record<UiLanguage, Record<string, string>> = {
+    en: {
+      eyebrow: "LIVE MARKETPLACE",
+      titleLineOne: "Trade Rare",
+      titleLineTwo: "Puzzle Fragments",
+      defaultDescription:
+        "Browse collectible puzzle fragments available from Puzzle Market and other collectors.",
+      exactPieceDescription:
+        "Only the exact missing piece for this puzzle is shown here. If it is not listed, the current owner has not put it back on sale yet.",
+      puzzleDescription:
+        "All active missing pieces for this puzzle are shown here. Buy each missing fragment to complete the image.",
+      choosePuzzle: "Choose A Puzzle",
+      liveListings: "Live Listings",
+      primarySale: "Primary Sale",
+      collectorResale: "Collector Resale",
+      marketplaceAccess: "Marketplace Access",
+      open: "Open",
+      buyNowListLater: "Buy now, list later",
+      search: "Search rare fragments...",
+      exactPuzzleFilter: "Exact puzzle filter is active",
+      allRarity: "All Rarity",
+      legendary: "Legendary",
+      epic: "Epic",
+      rare: "Rare",
+      allCategories: "All Categories",
+      allSaleTypes: "All Sale Types",
+      allPrices: "All Prices",
+      under25: "Under $25",
+      over100: "Over $100",
+      available: "Available",
+      price: "PRICE",
+      piece: "Piece",
+      availableSupply: "Available Supply",
+      totalSupply: "Total Supply",
+      supply: "Supply",
+      listedByPuzzleMarket: "Listed by Puzzle Market.",
+      listedByCollector: "Listed by",
+      collectorFallback: "a collector",
+      buyPiece: "Buy Piece",
+      thisPieceIsYours: "This Piece Is Yours",
+      openingCheckout: "Opening checkout...",
+      loading: "Loading...",
+      loadMore: "Load More Listings",
+      couldNotLoad: "Marketplace listings could not be loaded.",
+      timeout:
+        "The request took too long. Try again on a better connection.",
+      failed:
+        "The request failed before live listings could be confirmed.",
+      tryAgain: "Try Again",
+      noListings: "No active listings are available right now.",
+      emptyCopy:
+        "Browse collections, create a watchlist or become the first seller.",
+      browseCollections: "Browse Collections",
+      createFreeAccount: "Create Free Account",
+      noMatches: "No matching fragments found",
+      noMatchesCopy:
+        "The marketplace has live listings, but none match the current filters.",
+      showAllFragments: "Show All Fragments",
+    },
+    ru: {
+      eyebrow: "ЖИВОЙ МАРКЕТПЛЕЙС",
+      titleLineOne: "Редкие",
+      titleLineTwo: "пазл-фрагменты",
+      defaultDescription:
+        "Просматривайте коллекционные фрагменты от Puzzle Market и других коллекционеров.",
+      exactPieceDescription:
+        "Здесь показан только нужный фрагмент этого пазла. Если его нет в списке, владелец еще не выставил его на продажу.",
+      puzzleDescription:
+        "Здесь показаны все активные недостающие фрагменты этого пазла. Купите нужные части, чтобы завершить изображение.",
+      choosePuzzle: "Выбрать пазл",
+      liveListings: "Активные лоты",
+      primarySale: "Официальная продажа",
+      collectorResale: "Перепродажа коллекционера",
+      marketplaceAccess: "Маркетплейс",
+      open: "Открыто",
+      buyNowListLater: "Купить сейчас, выставить позже",
+      search: "Поиск редких фрагментов...",
+      exactPuzzleFilter: "Включен фильтр точного пазла",
+      allRarity: "Любая редкость",
+      legendary: "Легендарный",
+      epic: "Эпический",
+      rare: "Редкий",
+      allCategories: "Все категории",
+      allSaleTypes: "Все типы продаж",
+      allPrices: "Все цены",
+      under25: "До $25",
+      over100: "Больше $100",
+      available: "Доступно",
+      price: "ЦЕНА",
+      piece: "Фрагмент",
+      availableSupply: "Доступно",
+      totalSupply: "Всего",
+      supply: "Наличие",
+      listedByPuzzleMarket: "Выставлено Puzzle Market.",
+      listedByCollector: "Выставил",
+      collectorFallback: "коллекционер",
+      buyPiece: "Купить фрагмент",
+      thisPieceIsYours: "Этот фрагмент ваш",
+      openingCheckout: "Открываем оплату...",
+      loading: "Загрузка...",
+      loadMore: "Загрузить еще",
+      couldNotLoad: "Не удалось загрузить лоты маркетплейса.",
+      timeout:
+        "Запрос выполнялся слишком долго. Попробуйте снова при более стабильном соединении.",
+      failed: "Запрос не завершился до проверки активных лотов.",
+      tryAgain: "Повторить",
+      noListings: "Сейчас нет активных лотов.",
+      emptyCopy:
+        "Посмотрите коллекции, создайте список наблюдения или станьте первым продавцом.",
+      browseCollections: "Смотреть коллекции",
+      createFreeAccount: "Создать бесплатный аккаунт",
+      noMatches: "Подходящие фрагменты не найдены",
+      noMatchesCopy:
+        "На маркетплейсе есть лоты, но они не подходят под текущие фильтры.",
+      showAllFragments: "Показать все фрагменты",
+    },
+    ja: {
+      eyebrow: "ライブマーケット",
+      titleLineOne: "希少な",
+      titleLineTwo: "パズルフラグメント",
+      defaultDescription:
+        "Puzzle Market と他のコレクターが出品しているコレクション用フラグメントを探せます。",
+      exactPieceDescription:
+        "このパズルに必要なピースだけを表示しています。表示されない場合、現在の所有者はまだ再出品していません。",
+      puzzleDescription:
+        "このパズルの販売中の不足ピースを表示しています。必要なフラグメントを集めて画像を完成させましょう。",
+      choosePuzzle: "パズルを選ぶ",
+      liveListings: "出品中",
+      primarySale: "公式販売",
+      collectorResale: "コレクター再販",
+      marketplaceAccess: "マーケット",
+      open: "公開中",
+      buyNowListLater: "購入後に再出品できます",
+      search: "フラグメントを検索...",
+      exactPuzzleFilter: "対象パズルで絞り込み中",
+      allRarity: "すべてのレア度",
+      legendary: "レジェンダリー",
+      epic: "エピック",
+      rare: "レア",
+      allCategories: "すべてのカテゴリ",
+      allSaleTypes: "すべての販売タイプ",
+      allPrices: "すべての価格",
+      under25: "$25未満",
+      over100: "$100超",
+      available: "購入可能",
+      price: "価格",
+      piece: "ピース",
+      availableSupply: "在庫",
+      totalSupply: "総数",
+      supply: "在庫",
+      listedByPuzzleMarket: "Puzzle Market が出品中。",
+      listedByCollector: "出品者",
+      collectorFallback: "コレクター",
+      buyPiece: "ピースを購入",
+      thisPieceIsYours: "このピースはあなたのものです",
+      openingCheckout: "チェックアウトを開いています...",
+      loading: "読み込み中...",
+      loadMore: "さらに読み込む",
+      couldNotLoad: "マーケットの出品を読み込めませんでした。",
+      timeout:
+        "時間がかかりすぎています。通信環境を確認して再試行してください。",
+      failed: "出品を確認する前にリクエストが失敗しました。",
+      tryAgain: "再試行",
+      noListings: "現在、販売中の出品はありません。",
+      emptyCopy:
+        "コレクションを見たり、ウォッチリストを作ったり、最初の出品者になれます。",
+      browseCollections: "コレクションを見る",
+      createFreeAccount: "無料アカウント作成",
+      noMatches: "条件に合うフラグメントがありません",
+      noMatchesCopy:
+        "出品はありますが、現在のフィルターに一致しません。",
+      showAllFragments: "すべて表示",
+    },
   };
+
+  return copies[getUiLanguage(language)];
 }
 
 export default function MarketplaceClient({
@@ -297,10 +464,17 @@ export default function MarketplaceClient({
       createMarketplaceCopy(uiLanguage),
     [uiLanguage]
   );
+  const uiLanguageKey = getUiLanguage(uiLanguage);
+  const localizedCategoryLabels = categoryLabels[uiLanguageKey];
 
   const categoryLabel = (
     category: string | null | undefined
-  ) => normalizePuzzleCategory(category);
+  ) => {
+    const normalized =
+      normalizePuzzleCategory(category);
+
+    return localizedCategoryLabels[normalized] || normalized;
+  };
 
   useEffect(() => {
 
@@ -1001,12 +1175,7 @@ export default function MarketplaceClient({
 
   return (
 
-    <main
-      className="min-h-screen bg-black text-white overflow-hidden notranslate"
-      translate="no"
-      data-no-translation="true"
-      data-linguise-ignore="true"
-    >
+    <main className="min-h-screen bg-black text-white overflow-hidden">
 
       {/* HERO */}
 
@@ -1362,7 +1531,7 @@ export default function MarketplaceClient({
                   <div className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
                     <div>
                       <p className="text-xs text-zinc-500">
-                        Supply
+                        {ui.supply}
                       </p>
                       <p className="mt-1 text-sm font-black">
                         {fragment.available_supply ?? 1} / {fragment.total_supply ??
@@ -1380,7 +1549,7 @@ export default function MarketplaceClient({
                     {fragment.sale_type ===
                     "Primary Sale"
                       ? ui.listedByPuzzleMarket
-                      : `${ui.listedByCollector} ${fragment.seller_name || "a collector"}.`}
+                      : `${ui.listedByCollector} ${fragment.seller_name || ui.collectorFallback}.`}
                   </p>
 
                   {/* BUTTON */}
@@ -1423,7 +1592,7 @@ duration-300
   ? ui.thisPieceIsYours
   : pendingPurchaseId ===
       String(fragment.id)
-    ? "Opening checkout..."
+    ? ui.openingCheckout
   : `${ui.buyPiece} - $${fragment.price}`}
 
 </button>
@@ -1519,7 +1688,7 @@ duration-300
                 }}
                 className="mt-8 bg-cyan-400 text-black font-black px-6 py-4 rounded-2xl"
               >
-                Show All Fragments
+                {ui.showAllFragments}
               </button>
 
           </div>

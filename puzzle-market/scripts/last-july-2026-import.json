@@ -1,458 +1,732 @@
 {
   "imported": [
     {
-      "title": "Collector Image 5671",
+      "title": "Scholar Library Cabinet",
+      "slug": "scholar-library-cabinet",
       "category": "Other",
-      "price": 5,
-      "missingPieceCount": 3,
+      "price": 4,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9,
+        10,
+        5
+      ],
       "fileName": "photo_2026-06-28_22-45-10.jpg",
       "hash": "5ecf095e756de1c6fe9a8c8ec91bad27adb52f767a8de9c6a90a556b4cc5a157"
     },
     {
-      "title": "Collector Image 1140",
+      "title": "Japanese Book Shelf",
+      "slug": "japanese-book-shelf",
       "category": "Other",
-      "price": 5,
-      "missingPieceCount": 2,
+      "price": 4,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10,
+        9
+      ],
       "fileName": "photo_2026-06-28_22-45-19.jpg",
       "hash": "8757f72e6aeb8c1fa968410528c9ca5704e7d94942dfd213e8af87ac71c0d726"
     },
     {
-      "title": "Collector Image 5687",
-      "category": "Other",
-      "price": 5,
-      "missingPieceCount": 2,
+      "title": "Mini Car Trophy Shelf",
+      "slug": "mini-car-trophy-shelf",
+      "category": "Cars",
+      "price": 6,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        6,
+        5
+      ],
       "fileName": "photo_2026-06-28_22-45-27.jpg",
       "hash": "23878c6f3990a7d3a1ac8577f5dc15d76bd693166259f0175db94023317e1ec8"
     },
     {
-      "title": "Collector Image 937",
+      "title": "Warm Window Table Radio",
+      "slug": "warm-window-table-radio",
       "category": "Other",
       "price": 5,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        5,
+        10
+      ],
       "fileName": "photo_2026-06-28_22-45-33.jpg",
       "hash": "15536595909820644158b57f3b047cc5e4a670cd9e61e72058c31bc2ee1c6e8f"
     },
     {
-      "title": "Collector Image 7184",
+      "title": "Bakelite Round Dial Radio",
+      "slug": "bakelite-round-dial-radio",
       "category": "Other",
       "price": 5,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        14,
+        2
+      ],
       "fileName": "photo_2026-06-28_22-45-40.jpg",
       "hash": "293d35fba88d845fb4ef792c2e7e9980d9a9b4dd81742d8c5e3098659af94a2f"
     },
     {
       "title": "Santorini Sunset Harbor",
+      "slug": "santorini-sunset-harbor",
       "category": "Travel & Landmarks",
       "price": 9,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        11,
+        13,
+        10
+      ],
       "fileName": "photo_2026-06-29_22-58-07.jpg",
       "hash": "51d9757a3440b82ef818d39b9e8f659109dd5c178348d782d9fb2905fe6951cd"
     },
     {
       "title": "Map Room Shelves",
+      "slug": "map-room-shelves",
       "category": "Other",
       "price": 4,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9
+      ],
       "fileName": "photo_2026-07-03_18-14-25.jpg",
       "hash": "8c3e22b1789b3a45cb995655ec14f0ffb411f523504f8515f8807efa6665ff69"
     },
     {
       "title": "Antique Reading Corner",
+      "slug": "antique-reading-corner",
       "category": "Other",
       "price": 4,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9
+      ],
       "fileName": "photo_2026-07-03_18-14-33.jpg",
       "hash": "01e7ea6e825ab554a68af774b38c2d92bb7a3f52bd7dce41805c27bd016f3a53"
     },
     {
       "title": "Home Plate Dive",
+      "slug": "home-plate-dive",
       "category": "Baseball",
       "price": 6,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9,
+        10
+      ],
       "fileName": "photo_2026-07-03_18-16-49.jpg",
       "hash": "055de853960a99936d9c1130889d19144c3651be2868e130f404112a25ef9a60"
     },
     {
       "title": "Green Diamond Swing",
+      "slug": "green-diamond-swing",
       "category": "Baseball",
       "price": 6,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        2,
+        11
+      ],
       "fileName": "photo_2026-07-03_18-16-52.jpg",
       "hash": "cfb0797f10b6169215dba906422f372ce06ea9cc001800c3e8268480f539bacc"
     },
     {
       "title": "Catcher Tag Moment",
+      "slug": "catcher-tag-moment",
       "category": "Baseball",
       "price": 6,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10
+      ],
       "fileName": "photo_2026-07-03_18-16-59.jpg",
       "hash": "676e927abf2e68cc5021ce2567955d95cbcd0b88a4006001a35998633ed56dcd"
     },
     {
       "title": "Five Star Highway",
+      "slug": "five-star-highway",
       "category": "Gaming",
       "price": 7,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        4,
+        2,
+        9
+      ],
       "fileName": "photo_2026-07-03_18-17-02.jpg",
       "hash": "e24435e3e265479719cd6735cace876334b75636e99c16de90fd237552369623"
     },
     {
       "title": "Night Boss Battle",
+      "slug": "night-boss-battle",
       "category": "Gaming",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9
+      ],
       "fileName": "photo_2026-07-03_18-17-05.jpg",
       "hash": "1c12887cae25fc157649d26c0aab4317f67ea594ef38c8da84d992de424451f7"
     },
     {
       "title": "Desert Firefight",
+      "slug": "desert-firefight",
       "category": "Gaming",
       "price": 7,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        11,
+        10
+      ],
       "fileName": "photo_2026-07-03_18-17-11.jpg",
       "hash": "112ca32a7a5db1c522893ccd74c27c7d096de1593bb1c93cd07b3a6fa9de7478"
     },
     {
       "title": "Neon Kart Sprint",
+      "slug": "neon-kart-sprint",
       "category": "Gaming",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        4
+      ],
       "fileName": "photo_2026-07-03_18-17-17.jpg",
       "hash": "201499408857a5fd53641a05527ce302481f16ae630951ff7ff89b2ca4e5c17c"
     },
     {
       "title": "Ancient Jump Quest",
+      "slug": "ancient-jump-quest",
       "category": "Gaming",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        4
+      ],
       "fileName": "photo_2026-07-03_18-18-10.jpg",
       "hash": "88f32205ce529a48d039bf16c98a65e85b5f44cec47efc429d5e5ea0d49b7af2"
     },
     {
       "title": "Cavern Block Run",
+      "slug": "cavern-block-run",
       "category": "Gaming",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        1
+      ],
       "fileName": "photo_2026-07-03_18-18-19.jpg",
       "hash": "6c1c4d72ecb669e578a48570b915296aeaac43d22554dd3d348436eea3984439"
     },
     {
       "title": "Cliffside Golf Chip",
+      "slug": "cliffside-golf-chip",
       "category": "Golf",
       "price": 6,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        11
+      ],
       "fileName": "photo_2026-07-03_18-18-26.jpg",
       "hash": "94bf67366a89cbc78193dcdc9380b681975fce5150a599191f2699d829493170"
     },
     {
       "title": "Ocean Green Putt",
+      "slug": "ocean-green-putt",
       "category": "Golf",
       "price": 6,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        6,
+        5
+      ],
       "fileName": "photo_2026-07-03_18-18-29.jpg",
       "hash": "21f8c993c222690b58c132e7fe43404c29538226121bffbbe828807a17789d70"
     },
     {
       "title": "Sand Save Moment",
+      "slug": "sand-save-moment",
       "category": "Golf",
       "price": 6,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10,
+        9,
+        11
+      ],
       "fileName": "photo_2026-07-03_18-18-32.jpg",
       "hash": "4eebbb58e4ae01af03f8f89991a14292312d179a965d72a45d77ddba8396b003"
     },
     {
       "title": "Mars Canyon Dawn",
+      "slug": "mars-canyon-dawn",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10,
+        5,
+        0
+      ],
       "fileName": "photo_2026-07-03_18-18-48.jpg",
       "hash": "559a4f43b2135f1023b873c44c4abb71e0e6acb8425754b90181620e92fb5118"
     },
     {
       "title": "Orbital Repair Walk",
+      "slug": "orbital-repair-walk",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10
+      ],
       "fileName": "photo_2026-07-03_18-18-51.jpg",
       "hash": "40effab6d447f719c2cae4e4a195b571f9cc3edda725ad99624ba4bea5c9f7ce"
     },
     {
       "title": "Earth Moon Reflection",
+      "slug": "earth-moon-reflection",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9,
+        6,
+        5
+      ],
       "fileName": "photo_2026-07-03_18-18-55.jpg",
       "hash": "8a6741fe98ded294416017f971740e5712e4e6cf73d7f5e2d3d35bd0b25f56be"
     },
     {
       "title": "Ice Ring Planet",
+      "slug": "ice-ring-planet",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10
+      ],
       "fileName": "photo_2026-07-03_18-18-58.jpg",
       "hash": "a05fb95f546c682619838bb554e70618bddce97d67af2906a1562b206226b177"
     },
     {
       "title": "Bronze Red Planet",
+      "slug": "bronze-red-planet",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        5
+      ],
       "fileName": "photo_2026-07-03_18-19-05.jpg",
       "hash": "14c09bbe6ed51eae719185201d2bfb1667a3e37dd52d11fc822e0f490d08061f"
     },
     {
       "title": "Golden Cloud Planet",
+      "slug": "golden-cloud-planet",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9
+      ],
       "fileName": "photo_2026-07-03_18-19-14.jpg",
       "hash": "b717891268bdadb0aa1c2ea3de110bf41bc6a2df3dc15a87d57eadc7abc4e973"
     },
     {
       "title": "Storm Ring World",
+      "slug": "storm-ring-world",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        7
+      ],
       "fileName": "photo_2026-07-03_18-19-31.jpg",
       "hash": "ae03901fe66de6e69747ea2b975b944ebecbb08a242715537a735e5b215c5a98"
     },
     {
       "title": "Blue Ring Giant",
+      "slug": "blue-ring-giant",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10,
+        8
+      ],
       "fileName": "photo_2026-07-03_18-19-35.jpg",
       "hash": "d9cbc33ac8a1bdb379a0d5d26a2af66bf3c104f3f3414f1fb4e2ab18e31977de"
     },
     {
       "title": "Red Canyon Explorer",
+      "slug": "red-canyon-explorer",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        11,
+        5,
+        13
+      ],
       "fileName": "photo_2026-07-03_18-19-41.jpg",
       "hash": "81c7d0b183bcfab9e930240051ff87540625df73d8b3bde711f50daef3d5297f"
     },
     {
       "title": "Lunar Rover Trail",
+      "slug": "lunar-rover-trail",
       "category": "Space",
       "price": 8,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        6
+      ],
       "fileName": "photo_2026-07-03_18-19-50.jpg",
       "hash": "4d8b535008c12bf0c402d1a07d4f85950c92f74a510122d145b55822ab79449b"
     },
     {
       "title": "Garden Hive Morning",
+      "slug": "garden-hive-morning",
       "category": "Animals",
       "price": 5,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        8,
+        2,
+        9
+      ],
       "fileName": "photo_2026-07-03_18-20-03.jpg",
       "hash": "a0877820ab382dd6996bbbeaf39734d75fbcf5bd890cff3c0284ec67aa78366e"
     },
     {
       "title": "Golden Pollen Macro",
+      "slug": "golden-pollen-macro",
       "category": "Animals",
       "price": 5,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        4,
+        6,
+        0
+      ],
       "fileName": "photo_2026-07-03_18-20-07.jpg",
       "hash": "3c3db72c6b27e7f639c7480848d317ca4a64f48aed48d5ae8dcc0f15fea863aa"
     },
     {
       "title": "Cherry Blossom Bee",
+      "slug": "cherry-blossom-bee",
       "category": "Animals",
       "price": 5,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        14,
+        9
+      ],
       "fileName": "photo_2026-07-03_18-20-16.jpg",
       "hash": "5abd700d9eee29515291fae0c55d4fa17d4c7494fe9829bba48e8a09fc690a24"
     },
     {
       "title": "Old Canal Lane",
+      "slug": "old-canal-lane",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10,
+        5
+      ],
       "fileName": "photo_2026-07-03_18-20-24.jpg",
       "hash": "182d4a75f64f53bf4514e3b1a6433bcc09caaba847c21d59b2ceef357d6ca2f4"
     },
     {
       "title": "Skyline Evening Roads",
+      "slug": "skyline-evening-roads",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        5
+      ],
       "fileName": "photo_2026-07-03_18-20-27.jpg",
       "hash": "932b94ea63ebcf0fe31cd77efccacd7e81f08a98f97b5e142080dfeda4b2a22c"
     },
     {
       "title": "Stone Alley Twilight",
+      "slug": "stone-alley-twilight",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        1,
+        8,
+        11
+      ],
       "fileName": "photo_2026-07-03_18-20-37.jpg",
       "hash": "9d07638b64d16701e2f3d2c79b2ab9ad2a57610cd3a7ba32338582a033356b18"
     },
     {
       "title": "Lantern Stair Street",
+      "slug": "lantern-stair-street",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        6
+      ],
       "fileName": "photo_2026-07-03_18-20-41.jpg",
       "hash": "dcbf854e70c4909d26d11a71f934f91697d96d9760ed3a8477a5e3ca2e264932"
     },
     {
       "title": "Tokyo Overpass Glow",
+      "slug": "tokyo-overpass-glow",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9,
+        5,
+        10
+      ],
       "fileName": "photo_2026-07-03_18-20-48.jpg",
       "hash": "3699ca415906f62edaea9794993f634f5953156c515e8be843ae0ad233a0d094"
     },
     {
       "title": "Traditional Town Night",
+      "slug": "traditional-town-night",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        7,
+        4
+      ],
       "fileName": "photo_2026-07-03_18-21-10.jpg",
       "hash": "36248f178b4c513ef8fb56aa88c481adec8c5848b710a929a0146718a2ac0f21"
     },
     {
       "title": "Willow Courtyard Garden",
+      "slug": "willow-courtyard-garden",
       "category": "Nature",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        4
+      ],
       "fileName": "photo_2026-07-03_18-21-13.jpg",
       "hash": "99abfb6b7615644d94df7dee24a9d73b00c1da107133116ff1dc23baddf51ee2"
     },
     {
       "title": "Lotus Pagoda Garden",
+      "slug": "lotus-pagoda-garden",
       "category": "Nature",
       "price": 7,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        2,
+        5,
+        6
+      ],
       "fileName": "photo_2026-07-03_18-21-17.jpg",
       "hash": "198016430ef44901d10c393aeed287334c03c9c7f83895da2f5f575253fc7753"
     },
     {
       "title": "Mist Pavilion Pond",
+      "slug": "mist-pavilion-pond",
       "category": "Nature",
       "price": 7,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        7,
+        10
+      ],
       "fileName": "photo_2026-07-03_18-21-22.jpg",
       "hash": "4883bd84bd2d4f24118569eb3e5c6a700f44fb12f017cbe0d89080c4dfc2fade"
     },
     {
       "title": "Cliff Temple Sunrise",
+      "slug": "cliff-temple-sunrise",
       "category": "Travel & Landmarks",
       "price": 9,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        1,
+        7
+      ],
       "fileName": "photo_2026-07-03_18-21-34.jpg",
       "hash": "00ae46fb32e6ba59df3353efc2be918eedd7b32387cf106f8cf1ffd2a9178daa"
     },
     {
       "title": "Alpine Canal Sunset",
+      "slug": "alpine-canal-sunset",
       "category": "Travel & Landmarks",
       "price": 9,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10,
+        1
+      ],
       "fileName": "photo_2026-07-03_18-21-39.jpg",
       "hash": "0e1656210a75bfc5319fe81ba455e4e31483f7ed5333796f0a8bd5c642a4b34a"
     },
     {
       "title": "Mountain Sunrise Valley",
+      "slug": "mountain-sunrise-valley",
       "category": "Travel & Landmarks",
       "price": 9,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9
+      ],
       "fileName": "photo_2026-07-03_18-21-45.jpg",
       "hash": "9e075a4f31301f54ca9d7d965171533cad702929330bfec7f4befff692f60791"
     },
     {
       "title": "Emerald Rice Terraces",
+      "slug": "emerald-rice-terraces",
       "category": "Travel & Landmarks",
       "price": 9,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        13,
+        7,
+        5
+      ],
       "fileName": "photo_2026-07-03_18-21-58.jpg",
       "hash": "d6ca1753ecbf60666527bb0e83226a73bbc5955724420ef3848c0f187dc3e4a0"
     },
     {
       "title": "Greek Island Dusk",
+      "slug": "greek-island-dusk",
       "category": "Travel & Landmarks",
       "price": 9,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9
+      ],
       "fileName": "photo_2026-07-03_18-22-01.jpg",
       "hash": "4dbae945d342576ceb98d746e51eb493771a2999893bac926ebb05bb451ecffc"
     },
     {
       "title": "Snow Lake Village",
+      "slug": "snow-lake-village",
       "category": "Travel & Landmarks",
       "price": 9,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        9
+      ],
       "fileName": "photo_2026-07-03_18-22-08.jpg",
       "hash": "ccc9e1186a3c6d18e59a6cfabdab1f84a711b3d97c2cd40efda5dfb588e62463"
     },
     {
       "title": "Market Canvas Scene",
+      "slug": "market-canvas-scene",
       "category": "Art",
       "price": 6,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        4,
+        5
+      ],
       "fileName": "photo_2026-07-03_18-22-15.jpg",
       "hash": "625e800b5f3d23960711bd566975b590dcaa1ec2bde672d94d0bcf14fbde6073"
     },
     {
       "title": "Mechanical Abstract Eye",
+      "slug": "mechanical-abstract-eye",
       "category": "Art",
       "price": 6,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        6
+      ],
       "fileName": "photo_2026-07-03_18-22-25.jpg",
       "hash": "80e4ef074219fcef84b4ebade0d303c7e30401962a3aee45e1c1ad04be6645b7"
     },
     {
       "title": "Cubist City Study",
+      "slug": "cubist-city-study",
       "category": "Art",
       "price": 6,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        10
+      ],
       "fileName": "photo_2026-07-03_18-22-28.jpg",
       "hash": "85a4bf2b32eeef919696f7477a0f47d31d7f1f208e8735cb6fc872819d8ccae9"
     },
     {
       "title": "Moon Pine Temple",
+      "slug": "moon-pine-temple",
       "category": "Art",
       "price": 6,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        11
+      ],
       "fileName": "photo_2026-07-03_18-22-31.jpg",
       "hash": "9beee6bd02de200f3f1af966e930dcbbd234a4020e4f6a31b2f875748cc4fd74"
     },
     {
       "title": "Color Mask Abstract",
+      "slug": "color-mask-abstract",
       "category": "Art",
       "price": 6,
-      "missingPieceCount": 3,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        5,
+        14,
+        8
+      ],
       "fileName": "photo_2026-07-03_18-22-34.jpg",
       "hash": "51eaf5428c9cd3dd483d649d506203e7b8ae3190efd6968b7a6174a50476c4b5"
     },
     {
       "title": "Velvet Library Portrait",
+      "slug": "velvet-library-portrait",
       "category": "Art",
       "price": 6,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        6,
+        11
+      ],
       "fileName": "photo_2026-07-03_18-22-43.jpg",
       "hash": "9eb0e712fa4ca26be9cd93386033ab6a3e233c9b4ba14444ec400daef1fed431"
     },
     {
       "title": "Westminster Commuter Bike",
+      "slug": "westminster-commuter-bike",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        13
+      ],
       "fileName": "photo_2026-07-03_18-25-59.jpg",
       "hash": "dd5ab444c359accc21bd9bb9d8c10eba37883b5e9d6bb84d0d1ea653a339bc79"
     },
     {
       "title": "Patagonia Gravel Bike",
+      "slug": "patagonia-gravel-bike",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 2,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        8,
+        2
+      ],
       "fileName": "photo_2026-07-03_18-27-17.jpg",
       "hash": "55b366132564b433ce71d62bfe9e5ae3fd1854001001fbec8f6c3da0c1ba8a47"
     },
     {
       "title": "Capital Cargo Bicycle",
+      "slug": "capital-cargo-bicycle",
       "category": "Travel & Landmarks",
       "price": 7,
-      "missingPieceCount": 1,
+      "rarity": "Rare",
+      "missingPieceIndexes": [
+        5
+      ],
       "fileName": "photo_2026-07-03_18-28-45.jpg",
       "hash": "77b5900081963ae32a3be6545fff835cb3d8dcd0554c0899340232c31096bedb"
     }
@@ -807,13 +1081,13 @@
     },
     {
       "title": "Collector Book Nook",
-      "duplicateOf": "Collector Image 5671",
+      "duplicateOf": "Scholar Library Cabinet",
       "reason": "batch-duplicate",
       "fileName": "photo_2026-07-03_18-14-43.jpg"
     },
     {
       "title": "Vintage Table Radio",
-      "duplicateOf": "Collector Image 937",
+      "duplicateOf": "Warm Window Table Radio",
       "reason": "batch-duplicate",
       "fileName": "photo_2026-07-03_18-16-39.jpg"
     },
@@ -1041,5 +1315,5 @@
   ],
   "importedCount": 57,
   "skippedCount": 115,
-  "owner": "dry-run"
+  "owner": "Admin"
 }

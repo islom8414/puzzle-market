@@ -40,6 +40,11 @@ const explicitFiles = [
 ];
 
 const exactMetadata = {
+  "photo_2026-06-28_22-45-10.jpg": ["Scholar Library Cabinet", "Other", 4],
+  "photo_2026-06-28_22-45-19.jpg": ["Japanese Book Shelf", "Other", 4],
+  "photo_2026-06-28_22-45-27.jpg": ["Mini Car Trophy Shelf", "Cars", 6],
+  "photo_2026-06-28_22-45-33.jpg": ["Warm Window Table Radio", "Other", 5],
+  "photo_2026-06-28_22-45-40.jpg": ["Bakelite Round Dial Radio", "Other", 5],
   "8d797896-1531-4a3b-b18a-4027442d33ce.jpg": ["Village Basket Bicycle", "Travel & Landmarks", 5],
   "23de6a36-c631-4fb8-a1ba-d018d9930bc8.jpg": ["Exchange House Manager", "Other", 6],
   "050fe46d-01bb-4601-b50b-ecd12fb218a3.jpg": ["London Classic Motorbike", "Cars", 7],
@@ -359,7 +364,7 @@ async function fetchExistingImageHashes(admin) {
 
   for (const item of imageUrls) {
     try {
-      const response = await fetch(item.imageUrl);
+      const response = await fetch(item.imageUrl, { signal: AbortSignal.timeout(8000) });
       if (!response.ok) {
         continue;
       }
