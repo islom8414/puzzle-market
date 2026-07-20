@@ -1,8 +1,22 @@
+"use client";
+
 import Link from "next/link";
+
+import { useAccountAccess } from "@/lib/use-account-access";
 
 const LAUNCH_DEADLINE = "July 31, 2026";
 
 export default function LaunchOfferBanner() {
+  const {
+    checking,
+    authenticated,
+    hasActivePlan,
+  } = useAccountAccess();
+
+  if (checking || hasActivePlan) {
+    return null;
+  }
+
   return (
     <section className="relative z-40 border-b border-cyan-400/20 bg-black/95 px-3 py-3 text-white shadow-[0_12px_40px_rgba(0,229,255,0.08)]">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -11,10 +25,10 @@ export default function LaunchOfferBanner() {
             Launch bonus ends {LAUNCH_DEADLINE}
           </p>
           <p className="mt-1 max-w-3xl text-sm font-semibold leading-snug text-zinc-100 sm:text-base">
-            Start a 3-day trial and unlock bonus puzzle credit after your first successful billing.
+            Start a 3-day trial today. After the first successful paid billing, we add bonus puzzle credit to your account.
           </p>
           <p className="mt-1 text-xs leading-snug text-zinc-400">
-            Starter: $5 credit · Premium: $20 credit · Creator: $100 credit. Card required, no subscription charge today.
+            Important: $5 / $20 / $100 are bonus credits, not subscription prices. Starter bonus: $5 credit. Premium: $20 credit. Creator: $100 credit. Card required; no subscription charge today.
           </p>
         </div>
 
@@ -25,12 +39,14 @@ export default function LaunchOfferBanner() {
           >
             Start 3-Day Trial
           </Link>
-          <Link
-            href="/register?next=%2Fmarketplace&intent=launch_banner"
-            className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/15 px-4 text-sm font-bold text-white transition hover:border-cyan-300/60 hover:text-cyan-200"
-          >
-            Create Account
-          </Link>
+          {!authenticated && (
+            <Link
+              href="/register?next=%2Fmarketplace&intent=launch_banner"
+              className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/15 px-4 text-sm font-bold text-white transition hover:border-cyan-300/60 hover:text-cyan-200"
+            >
+              Create Account
+            </Link>
+          )}
         </div>
       </div>
     </section>
