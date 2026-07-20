@@ -1326,7 +1326,12 @@ export default function MarketplaceClient({
 
   return (
 
-    <main className="min-h-screen bg-black text-white overflow-hidden">
+    <main
+      className="min-h-screen bg-black text-white overflow-hidden notranslate"
+      translate="no"
+      data-no-translation="true"
+      data-linguise-ignore="true"
+    >
 
       {/* HERO */}
 

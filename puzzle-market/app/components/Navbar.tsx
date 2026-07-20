@@ -8,7 +8,10 @@ import {
   cacheUsername,
   fetchMyProfile,
 } from "@/lib/client-profile";
-import { hasCreatorUploadAccess } from "@/lib/market-access";
+import {
+  hasCreatorUploadAccess,
+  hasCustomPuzzleOrderAccess,
+} from "@/lib/market-access";
 import { getCanonicalLoginUrl } from "@/lib/site-url";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -40,6 +43,9 @@ export default function Navbar() {
     useState(false);
 
   const [creatorAccess, setCreatorAccess] =
+    useState(false);
+
+  const [customOrderAccess, setCustomOrderAccess] =
     useState(false);
 
   const [username, setUsername] =
@@ -90,6 +96,7 @@ export default function Navbar() {
         setAuthenticated(false);
         setProfileReady(false);
         setCreatorAccess(false);
+        setCustomOrderAccess(false);
         setUsername("");
         setBalance(0);
         localStorage.removeItem(
@@ -121,17 +128,27 @@ export default function Navbar() {
       setProfileReady(
         Boolean(profile)
       );
+
+      const accessProfile = profile
+        ? {
+            subscription_tier:
+              profile.subscriptionTier,
+            subscription_status:
+              profile.subscriptionStatus,
+          }
+        : null;
+
       setCreatorAccess(
         hasCreatorUploadAccess(
           user,
-          profile
-            ? {
-                subscription_tier:
-                  profile.subscriptionTier,
-                subscription_status:
-                  profile.subscriptionStatus,
-              }
-            : null
+          accessProfile
+        )
+      );
+
+      setCustomOrderAccess(
+        hasCustomPuzzleOrderAccess(
+          user,
+          accessProfile
         )
       );
 
@@ -264,6 +281,15 @@ export default function Navbar() {
                 >
                   FAQ
                 </Link>
+
+                {customOrderAccess && (
+                  <a
+                    href="/custom-order"
+                    className="translate-safe-nav text-cyan-300 transition hover:text-cyan-200"
+                  >
+                    Order Puzzle
+                  </a>
+                )}
 
               </nav>
 
@@ -456,9 +482,15 @@ export default function Navbar() {
                 Plans
               </a>
 
+              {customOrderAccess && (
+                <a href="/custom-order" className="translate-safe-action rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-cyan-300">
+                  Order Puzzle
+                </a>
+              )}
+
               {creatorAccess && (
                 <a href="/create" className="translate-safe-action rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-cyan-300">
-                  Create
+                  Creator Studio
                 </a>
               )}
 
