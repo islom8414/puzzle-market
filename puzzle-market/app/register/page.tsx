@@ -21,11 +21,10 @@ import {
 } from "@/lib/analytics";
 
 const accountBenefits = [
-  "Save fragments",
-  "Track ownership",
-  "Buy pieces",
-  "Sell owned fragments",
-  "Receive notifications",
+  "Save favorite collections",
+  "Track every fragment you own",
+  "Return to your puzzle list anytime",
+  "Keep your collector profile ready",
 ] as const;
 
 function getSafeNextPath() {
@@ -349,16 +348,16 @@ export default function RegisterPage() {
         </div>
 
         <h1 className="mt-5 text-center text-4xl font-black sm:mt-6 sm:text-5xl">
-          Create Account
+          Enter Puzzle Market
         </h1>
 
         <p className="mt-2 text-center text-zinc-500 sm:mt-3">
-          Join Puzzle Market
+          Set up your collector profile and continue to the marketplace.
         </p>
 
         <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
           <p className="text-sm font-black text-cyan-300">
-            Create your collector account
+            Your collector profile
           </p>
           <ul className="mt-3 space-y-2 text-sm text-zinc-300">
             {accountBenefits.map((benefit) => (
@@ -368,12 +367,9 @@ export default function RegisterPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-sm font-semibold text-white">
-            Start with a 3-day trial when you choose a plan.
-          </p>
-          <p className="mt-2 text-sm text-zinc-300">
-            After your first successful subscription billing, get bonus puzzle
-            credit toward your first collectible piece.
+          <p className="mt-3 text-sm font-semibold leading-relaxed text-white">
+            Use this profile to keep your saved puzzles, ownership records, and
+            marketplace activity in one place.
           </p>
         </div>
 

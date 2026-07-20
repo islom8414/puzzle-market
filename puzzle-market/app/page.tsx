@@ -18,36 +18,36 @@ const flowSteps = [
 ] as const;
 
 const heroHighlights = [
-  "Buy a missing piece",
-  "Own it in your account",
-  "Choose your resale price later",
+  "Pick a puzzle you like",
+  "Choose an available piece",
+  "Keep or list it later",
 ] as const;
 
 const howItWorks = [
   {
     step: "01",
-    title: "Choose a Collection",
-    body: "Browse available artwork and select a collection you understand and like.",
+    title: "Choose a Puzzle",
+    body: "Start with artwork you actually like. Open a collection and see which pieces are available before you decide.",
   },
   {
     step: "02",
-    title: "Buy a Fragment",
-    body: "Purchase an available fragment at the displayed price.",
+    title: "Pick a Piece",
+    body: "Each listing shows the exact piece, price, rarity and seller, so you know what you are choosing.",
   },
   {
     step: "03",
-    title: "Own It",
-    body: "The fragment and verified ownership record appear in your account.",
+    title: "Keep It in Your Profile",
+    body: "After purchase, the piece is recorded in your account and stays connected to that puzzle collection.",
   },
   {
     step: "04",
-    title: "List for Resale",
-    body: "Choose your listing price and offer the fragment to other collectors.",
+    title: "Decide Later",
+    body: "You can keep the piece as part of your collection, or list it later at your own asking price.",
   },
   {
     step: "05",
-    title: "Complete or Trade",
-    body: "Complete collections, keep your fragment or sell it when another collector accepts the offer.",
+    title: "Build Your Collection",
+    body: "Return anytime to browse more puzzles, complete collections, or manage the pieces you already own.",
   },
 ] as const;
 
@@ -146,13 +146,13 @@ export default async function HomePage() {
             </p>
 
             <h1 className="translate-safe-title mt-5 font-black">
-              Own Rare Puzzle Fragments. Trade Them With Collectors.
+              Choose Puzzle Pieces. Build a Collection You Can Manage.
             </h1>
 
             <p className="translate-safe-copy mt-6 max-w-3xl text-base leading-relaxed text-zinc-300 md:text-lg">
-              Pick a real puzzle, buy one missing fragment, keep verified
-              ownership in your account and list owned pieces when you are
-              ready to sell.
+              Open a real puzzle collection, choose an available piece, and keep
+              it in your account. If you decide to sell later, you control your
+              listing price.
             </p>
 
             <div className="mt-5 grid gap-2 sm:grid-cols-3">
@@ -211,20 +211,20 @@ export default async function HomePage() {
                     Missing piece path
                   </p>
                   <h2 className="mt-3 text-4xl font-black md:text-5xl">
-                    Buy. Own. List.
+                    Choose. Own. Manage.
                   </h2>
                   <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-                    Start with one available fragment. Your account records
-                    ownership after purchase, and seller tools let you choose a
-                    resale price later.
+                    Start with one available piece from a puzzle you like. Your
+                    account keeps the ownership record, and seller tools are
+                    there when you are ready to use them.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3 text-center">
                   {[
-                    ["Buy", "Piece"],
-                    ["Own", "Account"],
-                    ["List", "Price"],
+                    ["Choose", "Puzzle"],
+                    ["Save", "Account"],
+                    ["Manage", "Pieces"],
                   ].map(([label, value]) => (
                     <div
                       key={label}
@@ -257,8 +257,8 @@ export default async function HomePage() {
               </h2>
               <p className="translate-safe-copy mt-5 leading-relaxed text-zinc-400">
                 The site is built around ownership and resale, not mystery
-                promises. You see the collection, the available fragment, the
-                price and the resale rules before making a purchase.
+                promises. You see the collection, the available piece, the
+                price and the resale rules before making a decision.
               </p>
             </div>
 

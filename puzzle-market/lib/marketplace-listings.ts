@@ -251,6 +251,9 @@ export async function loadMarketplaceListings({
       }
     )
     .eq("status", "active")
+    .order("price_cents", {
+      ascending: true,
+    })
     .order("created_at", {
       ascending: false,
     })
@@ -291,6 +294,9 @@ export async function loadMarketplaceListings({
         }
       )
       .eq("status", "active")
+      .order("price_cents", {
+        ascending: true,
+      })
       .order("created_at", {
         ascending: false,
       })

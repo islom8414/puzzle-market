@@ -216,6 +216,12 @@ export async function GET(
             ),
           };
         }
+      ).sort(
+        (left, right) =>
+          left.price - right.price ||
+          String(right.created_at).localeCompare(
+            String(left.created_at)
+          )
       );
 
       return NextResponse.json({
