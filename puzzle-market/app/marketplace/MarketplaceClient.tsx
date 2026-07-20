@@ -47,6 +47,89 @@ type MarketItem = {
   total_supply?: number;
 };
 
+type FilterOption = {
+  value: string;
+  label: string;
+};
+
+function FilterMenu({
+  value,
+  options,
+  onChange,
+  ariaLabel,
+}: {
+  value: string;
+  options: FilterOption[];
+  onChange: (value: string) => void;
+  ariaLabel: string;
+}) {
+  const [open, setOpen] =
+    useState(false);
+  const selected =
+    options.find(
+      (option) =>
+        option.value === value
+    ) || options[0];
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        onClick={() =>
+          setOpen((current) => !current)
+        }
+        className="flex min-h-[56px] w-full items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-left font-bold text-white outline-none backdrop-blur-xl transition hover:border-cyan-400/50 focus:border-cyan-400 md:min-h-[64px] md:rounded-3xl md:px-6 md:py-5"
+      >
+        <span className="min-w-0 truncate">
+          {selected?.label}
+        </span>
+        <span
+          aria-hidden="true"
+          className={`shrink-0 text-cyan-300 transition ${open ? "rotate-180" : ""}`}
+        >
+          v
+        </span>
+      </button>
+
+      {open && (
+        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 max-h-72 overflow-y-auto rounded-2xl border border-cyan-400/30 bg-zinc-950/98 p-2 shadow-2xl shadow-cyan-950/40 backdrop-blur-xl">
+          {options.map((option) => {
+            const selectedOption =
+              option.value === value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-black transition ${
+                  selectedOption
+                    ? "bg-cyan-400 text-black"
+                    : "text-zinc-100 hover:bg-white/10 hover:text-cyan-200"
+                }`}
+              >
+                <span className="truncate">
+                  {option.label}
+                </span>
+                {selectedOption && (
+                  <span aria-hidden="true">
+                    -
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 type MarketplaceLoadStatus =
   | "loading"
   | "success"
@@ -826,6 +909,74 @@ export default function MarketplaceClient({
   const hasCollectorResales =
     collectorResaleCount > 0;
 
+  const rarityOptions = [
+    {
+      value: "ALL",
+      label: ui.allRarity,
+    },
+    {
+      value: "Legendary",
+      label: ui.legendary,
+    },
+    {
+      value: "Epic",
+      label: ui.epic,
+    },
+    {
+      value: "Rare",
+      label: ui.rare,
+    },
+  ];
+
+  const categoryOptions = [
+    {
+      value: "ALL",
+      label: ui.allCategories,
+    },
+    ...availableCategories.map((item) => ({
+      value: item,
+      label: categoryLabel(item),
+    })),
+  ];
+
+  const saleTypeOptions = [
+    {
+      value: "ALL",
+      label: ui.allSaleTypes,
+    },
+    {
+      value: "Primary Sale",
+      label: ui.primarySale,
+    },
+    ...(hasCollectorResales
+      ? [
+          {
+            value: "Collector Resale",
+            label: ui.collectorResale,
+          },
+        ]
+      : []),
+  ];
+
+  const priceRangeOptions = [
+    {
+      value: "ALL",
+      label: ui.allPrices,
+    },
+    {
+      value: "UNDER_25",
+      label: ui.under25,
+    },
+    {
+      value: "25_100",
+      label: "$25 - $100",
+    },
+    {
+      value: "OVER_100",
+      label: ui.over100,
+    },
+  ];
+
   const isLoading =
     loadStatus === "loading";
 
@@ -1301,75 +1452,33 @@ export default function MarketplaceClient({
             className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
           />
 
-          <select
+          <FilterMenu
             value={rarityFilter}
-            onChange={(e) =>
-              setRarityFilter(
-                e.target.value
-              )
-            }
-            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
-          >
+            options={rarityOptions}
+            onChange={setRarityFilter}
+            ariaLabel={ui.allRarity}
+          />
 
-            <option value="ALL">
-              {ui.allRarity}
-            </option>
-
-            <option value="Legendary">
-              {ui.legendary}
-            </option>
-
-            <option value="Epic">
-              {ui.epic}
-            </option>
-
-            <option value="Rare">
-              {ui.rare}
-            </option>
-
-          </select>
-
-          <select
+          <FilterMenu
             value={activeCategoryFilter}
-            onChange={(event) =>
-              setCategoryFilter(event.target.value)
-            }
-            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
-          >
-            <option value="ALL">{ui.allCategories}</option>
-            {availableCategories.map((item) => (
-              <option key={item} value={item}>
-                {categoryLabel(item)}
-              </option>
-            ))}
-          </select>
+            options={categoryOptions}
+            onChange={setCategoryFilter}
+            ariaLabel={ui.allCategories}
+          />
 
-          <select
+          <FilterMenu
             value={saleTypeFilter}
-            onChange={(event) =>
-              setSaleTypeFilter(event.target.value)
-            }
-            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
-          >
-            <option value="ALL">{ui.allSaleTypes}</option>
-            <option value="Primary Sale">{ui.primarySale}</option>
-            {hasCollectorResales && (
-              <option value="Collector Resale">{ui.collectorResale}</option>
-            )}
-          </select>
+            options={saleTypeOptions}
+            onChange={setSaleTypeFilter}
+            ariaLabel={ui.allSaleTypes}
+          />
 
-          <select
+          <FilterMenu
             value={priceRangeFilter}
-            onChange={(event) =>
-              setPriceRangeFilter(event.target.value)
-            }
-            className="bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl px-5 md:px-6 py-4 md:py-5 outline-none focus:border-cyan-400 transition backdrop-blur-xl"
-          >
-            <option value="ALL">{ui.allPrices}</option>
-            <option value="UNDER_25">{ui.under25}</option>
-            <option value="25_100">$25 - $100</option>
-            <option value="OVER_100">{ui.over100}</option>
-          </select>
+            options={priceRangeOptions}
+            onChange={setPriceRangeFilter}
+            ariaLabel={ui.allPrices}
+          />
 
         </div>
 
