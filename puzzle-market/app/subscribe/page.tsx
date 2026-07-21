@@ -8,7 +8,7 @@ import { apiFetch } from "@/lib/api-client";
 import { supabase } from "@/lib/supabase";
 import { trackBeginCheckout } from "@/lib/analytics";
 
-type PlanTier = "starter" | "premium" | "creator";
+type PlanTier = "starter" | "premium" | "creator" | "sweepstakes";
 
 const plans: Array<{
   tier: PlanTier;
@@ -17,8 +17,28 @@ const plans: Array<{
   badge: string;
   description: string;
   bonus: string;
+  cta: string;
+  featured?: boolean;
   features: string[];
 }> = [
+  {
+    tier: "sweepstakes",
+    name: "New Year Entry Pass",
+    price: "$7 / 6 months",
+    badge: "NEW YEAR GIVEAWAY",
+    description:
+      "Join the New Year prize draw and unlock marketplace, resale, and auction access for six months.",
+    bonus:
+      "Automatic giveaway entry. Earlier entry means more winning chances.",
+    cta: "Join Giveaway",
+    featured: true,
+    features: [
+      "6-month Puzzle Market access",
+      "Automatic prize draw entry",
+      "Buy and resell puzzle pieces",
+      "Create auction listings and make offers",
+    ],
+  },
   {
     tier: "starter",
     name: "Starter",
@@ -28,6 +48,7 @@ const plans: Array<{
       "Start collecting, buy missing pieces, and keep a private collector profile.",
     bonus:
       "$5 puzzle credit after the first successful billing",
+    cta: "Start Starter Trial",
     features: [
       "Card required, no subscription charge today",
       "Verified collector profile",
@@ -44,6 +65,7 @@ const plans: Array<{
       "Get stronger marketplace visibility when you list pieces for resale.",
     bonus:
       "$20 puzzle credit after the first successful billing",
+    cta: "Start Premium Trial",
     features: [
       "Card required, no subscription charge today",
       "Everything in Starter",
@@ -60,6 +82,7 @@ const plans: Array<{
       "Unlock creator tools for adding your own puzzle collections and prices.",
     bonus:
       "$100 puzzle credit after the first successful billing",
+    cta: "Start Creator Trial",
     features: [
       "Card required, no subscription charge today",
       "Everything in Premium",
@@ -73,6 +96,7 @@ const planValues: Record<PlanTier, number> = {
   starter: 1,
   premium: 10,
   creator: 100,
+  sweepstakes: 7,
 };
 
 const trialTrustPoints = [
@@ -198,8 +222,8 @@ export default function SubscribePage() {
 
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-300 md:text-lg">
             Add a card to unlock buying, ownership and resale tools today. The
-            subscription is not charged during the trial, and you can cancel
-            before the trial ends.
+            regular plans start with a free trial, and the New Year Entry Pass
+            gives six months of access plus automatic giveaway participation.
           </p>
         </div>
 
@@ -215,17 +239,26 @@ export default function SubscribePage() {
         </div>
 
         <div className="mt-4 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] px-4 py-3 text-sm font-bold text-cyan-100">
-          Bonus puzzle credit is added after the first successful subscription
-          billing, not during the free trial.
+          Bonus puzzle credit applies to Starter, Premium, and Creator plans.
+          The New Year Entry Pass is built for giveaway tickets and 6-month
+          marketplace access.
         </div>
 
-        <div className="mt-7 grid gap-4 md:grid-cols-3">
+        <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {plans.map((plan) => (
             <article
               key={plan.tier}
-              className="flex min-h-[420px] flex-col rounded-3xl border border-cyan-400/20 bg-white/[0.035] p-5 shadow-[0_0_50px_rgba(34,211,238,0.08)] md:p-6"
+              className={`flex min-h-[440px] flex-col rounded-3xl border p-5 shadow-[0_0_50px_rgba(34,211,238,0.08)] md:p-6 ${
+                plan.featured
+                  ? "border-amber-300/50 bg-amber-300/[0.08] shadow-[0_0_60px_rgba(251,191,36,0.16)]"
+                  : "border-cyan-400/20 bg-white/[0.035]"
+              }`}
             >
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-400">
+              <p
+                className={`text-xs font-black uppercase tracking-[0.16em] ${
+                  plan.featured ? "text-amber-200" : "text-cyan-400"
+                }`}
+              >
                 {plan.badge}
               </p>
 
@@ -233,7 +266,11 @@ export default function SubscribePage() {
                 {plan.name}
               </h2>
 
-              <div className="plan-price mt-2 text-4xl font-black text-cyan-400 md:text-5xl">
+              <div
+                className={`plan-price mt-2 text-4xl font-black md:text-5xl ${
+                  plan.featured ? "text-amber-200" : "text-cyan-400"
+                }`}
+              >
                 {plan.price}
               </div>
 
@@ -241,7 +278,13 @@ export default function SubscribePage() {
                 {plan.description}
               </p>
 
-              <div className="mt-4 rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-4 py-3 text-sm font-black text-cyan-100">
+              <div
+                className={`mt-4 rounded-2xl border px-4 py-3 text-sm font-black ${
+                  plan.featured
+                    ? "border-amber-300/30 bg-amber-300/10 text-amber-100"
+                    : "border-cyan-400/25 bg-cyan-400/10 text-cyan-100"
+                }`}
+              >
                 {plan.bonus}
               </div>
 
@@ -251,7 +294,11 @@ export default function SubscribePage() {
                     key={feature}
                     className="flex gap-2"
                   >
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
+                    <span
+                      className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${
+                        plan.featured ? "bg-amber-300" : "bg-cyan-400"
+                      }`}
+                    />
                     <span>{feature}</span>
                   </div>
                 ))}
@@ -260,16 +307,22 @@ export default function SubscribePage() {
               <button
                 onClick={() => startSubscription(plan.tier)}
                 disabled={loadingTier !== null}
-                className="mt-6 w-full rounded-2xl bg-cyan-400 px-5 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-60"
+                className={`mt-6 w-full rounded-2xl px-5 py-4 font-black text-black transition disabled:opacity-60 ${
+                  plan.featured
+                    ? "bg-amber-300 hover:bg-amber-200"
+                    : "bg-cyan-400 hover:bg-cyan-300"
+                }`}
               >
                 {loadingTier === plan.tier
                   ? "Opening Stripe..."
-                  : `Start ${plan.name} Trial`}
+                  : plan.cta}
               </button>
 
               <p className="mt-3 text-center text-xs font-semibold text-zinc-500">
-                Subscription billing starts only after the 3-day trial unless
-                you cancel first. By starting checkout, you continue to the
+                {plan.featured
+                  ? "The giveaway pass starts after successful checkout and renews every 6 months until cancelled."
+                  : "Subscription billing starts only after the 3-day trial unless you cancel first."}{" "}
+                By starting checkout, you continue to the
                 secure Stripe flow and agree to the Puzzle Market{" "}
                 <Link href="/terms" className="text-cyan-300 hover:underline">
                   Terms

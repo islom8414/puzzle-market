@@ -51,6 +51,20 @@ type OwnedPieceStats = {
   listedValue: number;
 };
 
+type SweepstakesSummary = {
+  isEntered: boolean;
+  entryDate: string | null;
+  baseTickets: number;
+  referralTickets: number;
+  purchaseTickets: number;
+  oneDollarBundleTickets: number;
+  totalTickets: number;
+  qualifiedReferralCount: number;
+  purchaseSpendCents: number;
+  oneDollarPieceCount: number;
+  waveLabel: string | null;
+};
+
 export default function ProfilePage() {
 
   const [ownedPieces, setOwnedPieces] =
@@ -82,6 +96,10 @@ export default function ProfilePage() {
     useState("inactive");
   const [referrals, setReferrals] =
     useState<ReferralSummary | null>(
+      null
+    );
+  const [sweepstakes, setSweepstakes] =
+    useState<SweepstakesSummary | null>(
       null
     );
   const [giftingPieceId, setGiftingPieceId] =
@@ -213,11 +231,15 @@ export default function ProfilePage() {
         const [
           ownedResponse,
           referralResponse,
+          sweepstakesResponse,
         ] = await Promise.all([
           apiFetch("/api/owned-pieces?limit=60&offset=0", {
             headers: authHeaders,
           }),
           apiFetch("/api/referrals", {
+            headers: authHeaders,
+          }),
+          apiFetch("/api/sweepstakes", {
             headers: authHeaders,
           }),
         ]);
@@ -242,6 +264,15 @@ export default function ProfilePage() {
         if (referralResponse.ok) {
           setReferrals(
             await referralResponse.json()
+          );
+        }
+
+        if (sweepstakesResponse.ok) {
+          const giveawayData =
+            await sweepstakesResponse.json();
+
+          setSweepstakes(
+            giveawayData.summary || null
           );
         }
       }
@@ -386,9 +417,11 @@ export default function ProfilePage() {
       ? "CREATOR PLAN"
       : subscriptionTier === "premium"
         ? "PREMIUM PLAN"
-        : subscriptionTier === "starter"
-          ? "STARTER PLAN"
-          : "FREE PROFILE";
+        : subscriptionTier === "sweepstakes"
+          ? "NEW YEAR ENTRY PASS"
+          : subscriptionTier === "starter"
+            ? "STARTER PLAN"
+            : "FREE PROFILE";
 
   const activeReferralCredit =
     referrals?.rewards.reduce(
@@ -675,7 +708,8 @@ export default function ProfilePage() {
               </h2>
 
               <p className="mt-3 max-w-3xl text-zinc-400">
-                Rewards unlock only when invited users register and buy an active Starter, Premium, or Creator plan.
+                Rewards unlock when invited users register and activate a paid
+                Puzzle Market plan, including the New Year Entry Pass.
               </p>
             </div>
 
@@ -747,6 +781,70 @@ export default function ProfilePage() {
             ) : (
               "All launch referral milestones are unlocked. More tiers can be added later."
             )}
+          </div>
+        </section>
+
+        <section className="mt-8 rounded-[24px] border border-amber-300/25 bg-amber-300/[0.06] p-5 md:rounded-[30px] md:p-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-amber-200 text-xs font-black uppercase tracking-[0.22em]">
+                New Year Giveaway
+              </p>
+
+              <h2 className="mt-3 text-3xl md:text-4xl font-black">
+                Your current prize draw chances
+              </h2>
+
+              <p className="mt-3 max-w-3xl text-zinc-400">
+                Tickets update from your entry wave, qualified referrals,
+                puzzle purchases, and seven-piece $1 bundles.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-amber-300/25 bg-black/55 px-7 py-5 text-center">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-zinc-500">
+                Tickets
+              </p>
+              <p className="mt-2 text-5xl font-black text-amber-200">
+                {sweepstakes?.totalTickets || 0}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["Base", sweepstakes?.baseTickets || 0],
+              ["Referrals", sweepstakes?.referralTickets || 0],
+              ["Purchases", sweepstakes?.purchaseTickets || 0],
+              ["$1 Bonus", sweepstakes?.oneDollarBundleTickets || 0],
+            ].map(([label, value]) => (
+              <div
+                key={label}
+                className="rounded-2xl border border-white/10 bg-black/45 p-4"
+              >
+                <p className="text-sm text-zinc-500">
+                  {label}
+                </p>
+                <p className="mt-2 text-2xl font-black">
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm leading-6 text-zinc-400">
+              {sweepstakes?.isEntered
+                ? `Entered through ${sweepstakes.waveLabel || "the active wave"}.`
+                : "Buy the $7 six-month Entry Pass to activate giveaway participation."}
+            </p>
+
+            <Link
+              href="/sweepstakes"
+              className="rounded-2xl bg-amber-300 px-5 py-3 text-center font-black text-black transition hover:bg-amber-200"
+            >
+              Open Giveaway
+            </Link>
           </div>
         </section>
 

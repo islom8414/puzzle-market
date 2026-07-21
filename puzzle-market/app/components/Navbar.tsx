@@ -276,6 +276,13 @@ export default function Navbar() {
                 </a>
 
                 <Link
+                  href="/sweepstakes"
+                  className="translate-safe-nav text-amber-200 transition hover:text-amber-100"
+                >
+                  Giveaway
+                </Link>
+
+                <Link
                   href="/#faq"
                   className="translate-safe-nav hover:text-cyan-400 transition"
                 >
@@ -480,6 +487,10 @@ export default function Navbar() {
 
               <a href="/subscribe" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Plans
+              </a>
+
+              <a href="/sweepstakes" className="translate-safe-action rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-amber-200">
+                Giveaway
               </a>
 
               {customOrderAccess && (

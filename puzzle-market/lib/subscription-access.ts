@@ -2,7 +2,12 @@ import { isAdminUser } from "@/lib/market-access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 const activeStatuses = new Set(["active", "trialing"]);
-const paidTiers = new Set(["starter", "premium", "creator"]);
+const paidTiers = new Set([
+  "starter",
+  "premium",
+  "creator",
+  "sweepstakes",
+]);
 
 export function hasActivePaidSubscription(
   profile:

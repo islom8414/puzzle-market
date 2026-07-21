@@ -9,7 +9,7 @@ import {
 import { awardReferralRewards } from "@/lib/referrals";
 import { claimPendingGiftsForUser } from "@/lib/piece-gifts";
 
-type SubscriptionTier = "starter" | "premium" | "creator";
+type SubscriptionTier = "starter" | "premium" | "creator" | "sweepstakes";
 
 type SupabaseAdmin = ReturnType<typeof createSupabaseAdmin>;
 
@@ -25,10 +25,15 @@ const subscriptionBonusCents: Record<
   starter: 500,
   premium: 2000,
   creator: 10000,
+  sweepstakes: 0,
 };
 
 function normalizeTier(tier: string | null | undefined): SubscriptionTier {
-  if (tier === "premium" || tier === "creator") {
+  if (
+    tier === "premium" ||
+    tier === "creator" ||
+    tier === "sweepstakes"
+  ) {
     return tier;
   }
 
@@ -71,16 +76,33 @@ async function syncSubscription(
     ? normalizeTier(subscription.metadata?.tier)
     : "free";
 
+  const { data: profile } = await admin
+    .from("market_profiles")
+    .select("sweepstakes_entered_at")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const updatePayload: Record<string, unknown> = {
+    subscription_tier: tier,
+    subscription_status: subscription.status,
+    stripe_customer_id: getCustomerId(subscription),
+    stripe_subscription_id: subscription.id,
+    subscription_current_period_end: getCurrentPeriodEnd(subscription),
+    subscription_updated_at: new Date().toISOString(),
+  };
+
+  if (
+    isActive &&
+    tier === "sweepstakes" &&
+    !profile?.sweepstakes_entered_at
+  ) {
+    updatePayload.sweepstakes_entered_at =
+      new Date().toISOString();
+  }
+
   const { error } = await admin
     .from("market_profiles")
-    .update({
-      subscription_tier: tier,
-      subscription_status: subscription.status,
-      stripe_customer_id: getCustomerId(subscription),
-      stripe_subscription_id: subscription.id,
-      subscription_current_period_end: getCurrentPeriodEnd(subscription),
-      subscription_updated_at: new Date().toISOString(),
-    })
+    .update(updatePayload)
     .eq("id", userId);
 
   if (error) {

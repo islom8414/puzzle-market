@@ -104,6 +104,7 @@ export async function awardReferralRewards(
       "starter",
       "premium",
       "creator",
+      "sweepstakes",
     ])
     .in("subscription_status", [
       "active",

@@ -111,6 +111,7 @@ export async function GET(
           "starter",
           "premium",
           "creator",
+          "sweepstakes",
         ])
         .in("subscription_status", [
           "active",

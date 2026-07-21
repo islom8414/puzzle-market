@@ -70,7 +70,8 @@ export function hasAuctionListingAccess(
   return (
     active &&
     (profile?.subscription_tier === "premium" ||
-      profile?.subscription_tier === "creator")
+      profile?.subscription_tier === "creator" ||
+      profile?.subscription_tier === "sweepstakes")
   );
 }
 
@@ -96,6 +97,7 @@ export function hasCustomPuzzleOrderAccess(
     active &&
     (profile?.subscription_tier === "starter" ||
       profile?.subscription_tier === "premium" ||
-      profile?.subscription_tier === "creator")
+      profile?.subscription_tier === "creator" ||
+      profile?.subscription_tier === "sweepstakes")
   );
 }

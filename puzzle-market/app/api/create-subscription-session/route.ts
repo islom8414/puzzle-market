@@ -5,28 +5,56 @@ import { createSupabaseAdmin, getBearerToken } from "@/lib/supabase-admin";
 import { getStripeConfig } from "@/lib/stripe-config";
 import { ensureUserProfile } from "@/lib/user-profile";
 
-type PlanTier = "starter" | "premium" | "creator";
+type PlanTier = "starter" | "premium" | "creator" | "sweepstakes";
 
 const trialDays = 3;
 
 const plans: Record<
   PlanTier,
-  { name: string; amount: number; bonusCents: number }
+  {
+    name: string;
+    amount: number;
+    bonusCents: number;
+    trialDays: number;
+    intervalCount: number;
+    description: string;
+  }
 > = {
   starter: {
     name: "Puzzle Market Starter",
     amount: 100,
     bonusCents: 500,
+    trialDays,
+    intervalCount: 1,
+    description:
+      "3-day free trial. Bonus puzzle credit is added after the first successful subscription payment.",
   },
   premium: {
     name: "Puzzle Market Premium",
     amount: 1000,
     bonusCents: 2000,
+    trialDays,
+    intervalCount: 1,
+    description:
+      "3-day free trial. Bonus puzzle credit is added after the first successful subscription payment.",
   },
   creator: {
     name: "Puzzle Market Creator",
     amount: 10000,
     bonusCents: 10000,
+    trialDays,
+    intervalCount: 1,
+    description:
+      "3-day free trial. Bonus puzzle credit is added after the first successful subscription payment.",
+  },
+  sweepstakes: {
+    name: "Puzzle Market New Year Entry Pass",
+    amount: 700,
+    bonusCents: 0,
+    trialDays: 0,
+    intervalCount: 6,
+    description:
+      "6-month giveaway entry plan with marketplace, resale, and auction access.",
   },
 };
 
@@ -94,17 +122,19 @@ export async function POST(request: Request) {
       mode: "subscription",
       customer,
       customer_email: customer ? undefined : user.email,
-      payment_method_collection: "always",
+      payment_method_collection:
+        plan.trialDays > 0 ? "always" : undefined,
       line_items: [
         {
           price_data: {
             currency: "usd",
             product_data: {
               name: plan.name,
-              description: `${trialDays}-day free trial. Bonus puzzle credit is added after the first successful subscription payment.`,
+              description: plan.description,
             },
             recurring: {
               interval: "month",
+              interval_count: plan.intervalCount,
             },
             unit_amount: plan.amount,
           },
@@ -115,11 +145,13 @@ export async function POST(request: Request) {
         kind: "subscription",
         user_id: user.id,
         tier,
-        trial_days: String(trialDays),
+        trial_days: String(plan.trialDays),
         bonus_cents: String(plan.bonusCents),
       },
       subscription_data: {
-        trial_period_days: trialDays,
+        ...(plan.trialDays > 0
+          ? { trial_period_days: plan.trialDays }
+          : {}),
         metadata: {
           kind: "subscription",
           user_id: user.id,
