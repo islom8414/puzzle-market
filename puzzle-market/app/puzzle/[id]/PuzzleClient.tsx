@@ -355,6 +355,9 @@ export default function PuzzleClient({
     };
   }, [columns]);
 
+  const trayPieceSize =
+    Math.min(pieceSize, 58);
+
   const puzzle =
     catalogPuzzle
       ? {
@@ -999,8 +1002,8 @@ export default function PuzzleClient({
             };
 
     return (
-      <main className="min-h-[calc(100svh-4rem)] bg-black px-4 py-8 text-white md:px-6 md:py-12">
-        <section className="mx-auto flex w-full max-w-7xl flex-col gap-5">
+      <main className="min-h-[calc(100svh-4rem)] bg-black px-4 pb-28 pt-5 text-white md:px-6 md:py-12">
+        <section className="mx-auto flex w-full max-w-7xl flex-col gap-4 md:gap-5">
           <Link
             href={CHOOSE_PUZZLE_HREF}
             className="inline-flex w-fit rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-black transition hover:border-cyan-400"
@@ -1008,30 +1011,32 @@ export default function PuzzleClient({
             Browse Puzzles
           </Link>
 
-          <div className="grid w-full overflow-hidden rounded-[24px] border border-white/10 bg-zinc-950 shadow-2xl lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
-            <div className="relative aspect-[16/10] min-h-[280px] bg-black lg:aspect-auto lg:min-h-[560px]">
+          <div className="grid w-full overflow-hidden rounded-[22px] border border-white/10 bg-zinc-950 shadow-2xl lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
+            <div className="relative order-2 aspect-[16/9] max-h-[42svh] min-h-[190px] bg-black lg:order-1 lg:aspect-auto lg:max-h-none lg:min-h-[560px]">
               <img
                 src={puzzle.image}
                 alt={puzzle.title}
+                loading="eager"
+                decoding="async"
                 className="absolute inset-0 h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-black/10 lg:to-zinc-950/70" />
             </div>
 
-            <div className="flex min-h-[360px] flex-col justify-center p-6 sm:p-9 lg:p-12">
+            <div className="order-1 flex flex-col justify-center p-5 sm:p-8 lg:order-2 lg:min-h-[560px] lg:p-12">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">
                 Puzzle Preview
               </p>
 
-              <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
+              <h1 className="mt-3 text-3xl font-black leading-tight sm:text-5xl lg:mt-4 lg:text-6xl">
                 {puzzle.title}
               </h1>
 
-              <p className="mt-4 text-zinc-400">
+              <p className="mt-3 text-sm text-zinc-400 sm:text-base lg:mt-4">
                 {puzzle.rarity} collection / {rows} x {columns} board / {missingIndexes.length} hidden market {missingIndexes.length === 1 ? "piece" : "pieces"}
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2 lg:mt-5">
                 <span className="rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-2 text-sm font-black text-cyan-300">
                   {puzzle.category}
                 </span>
@@ -1046,15 +1051,24 @@ export default function PuzzleClient({
                 )}
               </div>
 
-              <p className="mt-6 leading-relaxed text-zinc-300">
-                Look through the artwork first. Your subscription is checked only when you decide to start assembling it.
+              <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4 lg:mt-6">
+                <p className="text-sm font-black text-cyan-200">
+                  Ready to assemble this puzzle?
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-300 sm:text-base">
+                  Tap Start Playing to open the board. You can assemble the available pieces first, then buy the exact missing piece when you need it.
+                </p>
+              </div>
+
+              <p className="mt-4 text-sm leading-relaxed text-zinc-400 sm:text-base">
+                Your access is checked only when you begin playing.
               </p>
 
               <button
                 type="button"
                 onClick={requestPlayAccess}
                 disabled={checkingAccess}
-                className="mt-8 flex min-h-14 w-full items-center justify-center rounded-2xl bg-cyan-400 px-6 py-4 text-lg font-black text-black transition hover:bg-cyan-300 disabled:opacity-60"
+                className="mt-5 flex min-h-14 w-full items-center justify-center rounded-2xl bg-cyan-400 px-6 py-4 text-lg font-black text-black transition hover:bg-cyan-300 disabled:opacity-60 lg:mt-8"
               >
                 {checkingAccess
                   ? "Checking access..."
@@ -1071,14 +1085,27 @@ export default function PuzzleClient({
           </div>
         </section>
 
+        <div className="fixed inset-x-0 bottom-0 z-[120] border-t border-white/10 bg-black/90 p-3 backdrop-blur md:hidden">
+          <button
+            type="button"
+            onClick={requestPlayAccess}
+            disabled={checkingAccess}
+            className="flex min-h-14 w-full items-center justify-center rounded-2xl bg-cyan-400 px-5 py-4 text-base font-black text-black shadow-[0_0_30px_rgba(34,211,238,0.28)] disabled:opacity-60"
+          >
+            {checkingAccess
+              ? "Checking access..."
+              : "Start Playing"}
+          </button>
+        </div>
+
         {playPrompt && (
-          <div className="fixed inset-0 z-[210] flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-md">
-            <section className="w-full max-w-md rounded-[24px] border border-cyan-400/25 bg-zinc-950 p-6 shadow-2xl sm:p-8">
+          <div className="fixed inset-0 z-[210] flex items-end justify-center bg-black/80 px-4 pb-4 pt-6 backdrop-blur-md sm:items-center sm:pb-6">
+            <section className="w-full max-w-md rounded-[24px] border border-cyan-400/25 bg-zinc-950 p-5 shadow-2xl sm:p-8">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">
                 Ready When You Are
               </p>
 
-              <h2 className="mt-4 text-3xl font-black leading-tight">
+              <h2 className="mt-4 text-2xl font-black leading-tight sm:text-3xl">
                 {promptCopy.title}
               </h2>
 
@@ -1206,7 +1233,7 @@ export default function PuzzleClient({
             )}
           </aside>
 
-          <section className="bg-white/[0.03] border border-white/10 rounded-[28px] p-4 md:p-5 overflow-x-auto">
+          <section className="bg-white/[0.03] border border-white/10 rounded-[28px] p-3 md:p-5 overflow-x-auto">
             <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-5 items-start min-w-0">
               <div
                 className="grid rounded-2xl border border-white/10 bg-black/50 overflow-hidden mx-auto lg:mx-0"
@@ -1283,7 +1310,7 @@ export default function PuzzleClient({
                   className="mt-4 grid gap-2"
                   style={{
                     gridTemplateColumns:
-                      "repeat(auto-fill, minmax(58px, 1fr))",
+                      `repeat(auto-fill, minmax(${trayPieceSize}px, 1fr))`,
                   }}
                 >
                   {tray.map((piece) => {
@@ -1305,7 +1332,7 @@ export default function PuzzleClient({
                           piece,
                           rows,
                           columns,
-                          pieceSize
+                          trayPieceSize
                         )}
                       />
                     );
