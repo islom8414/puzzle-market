@@ -23,12 +23,23 @@ export const runtime = "nodejs";
 
 const ORDER_AMOUNT_CENTS = 5000;
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+};
 
 function cleanText(value: FormDataEntryValue | null, maxLength: number) {
   return String(value || "")
     .trim()
     .replace(/\s+/g, " ")
     .slice(0, maxLength);
+}
+
+function getImageExtension(file: File) {
+  return ALLOWED_IMAGE_TYPES[file.type] || null;
 }
 
 export async function POST(request: Request) {
@@ -117,9 +128,14 @@ export async function POST(request: Request) {
     let imageUrl: string | null = null;
 
     if (image instanceof File && image.size > 0) {
-      if (!image.type.startsWith("image/")) {
+      const imageExtension = getImageExtension(image);
+
+      if (!imageExtension) {
         return NextResponse.json(
-          { error: "Only image uploads are supported" },
+          {
+            error:
+              "Upload a supported image: JPG, PNG, WEBP, GIF, or AVIF",
+          },
           { status: 400 }
         );
       }
@@ -131,8 +147,7 @@ export async function POST(request: Request) {
         );
       }
 
-      const fileExt = image.name.split(".").pop()?.toLowerCase() || "png";
-      imagePath = `custom-orders/${user.id}/${Date.now()}.${fileExt}`;
+      imagePath = `custom-orders/${user.id}/${Date.now()}.${imageExtension}`;
       const fileBytes = new Uint8Array(await image.arrayBuffer());
 
       const upload = await admin.storage

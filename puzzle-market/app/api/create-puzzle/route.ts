@@ -29,6 +29,14 @@ export const runtime = "nodejs";
 const ROWS = 4;
 const COLUMNS = 4;
 const TOTAL_PIECES = ROWS * COLUMNS;
+const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+};
 
 function makeSlug(title: string) {
   return (
@@ -40,6 +48,10 @@ function makeSlug(title: string) {
     "-" +
     Date.now()
   );
+}
+
+function getImageExtension(file: File) {
+  return ALLOWED_IMAGE_TYPES[file.type] || null;
 }
 
 export async function POST(
@@ -230,6 +242,26 @@ export async function POST(
       );
     }
 
+    const imageExtension =
+      getImageExtension(image);
+
+    if (!imageExtension) {
+      return NextResponse.json(
+        {
+          error:
+            "Upload a supported image: JPG, PNG, WEBP, GIF, or AVIF",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (image.size > MAX_IMAGE_SIZE) {
+      return NextResponse.json(
+        { error: "Image must be 8MB or smaller" },
+        { status: 400 }
+      );
+    }
+
     const slug = makeSlug(title);
     const missingPieceIndexes =
       pickMissingPieceIndexes(
@@ -252,10 +284,7 @@ export async function POST(
         missingPieceIndexes
       );
 
-    const fileExt =
-      image.name.split(".").pop() ||
-      "png";
-    const filePath = `puzzles/${slug}.${fileExt}`;
+    const filePath = `puzzles/${slug}.${imageExtension}`;
     const fileBytes =
       new Uint8Array(
         await image.arrayBuffer()
