@@ -65,30 +65,35 @@ const animatedPrizes = [
     quantity: "7",
     tag: "Grand prize",
     className: "phone-prize",
+    imageSrc: "/giveaway/generated/iphone-17-pro-max-prize.png",
   },
   {
     title: "AirPods for iPhone",
     quantity: "7",
     tag: "Audio prize",
     className: "airpods-prize",
+    imageSrc: "/giveaway/generated/airpods-prize.png",
   },
   {
     title: "$100 puzzle credit",
     quantity: "7",
     tag: "Puzzle credit",
     className: "credit-prize high-credit",
+    imageSrc: "/giveaway/generated/puzzle-credit-100.png",
   },
   {
     title: "$10 puzzle credit",
     quantity: "7",
     tag: "Puzzle credit",
     className: "credit-prize mid-credit",
+    imageSrc: "/giveaway/generated/puzzle-credit-10.png",
   },
   {
     title: "$1 puzzle credit",
     quantity: "70",
     tag: "Bonus prizes",
     className: "credit-prize small-credit",
+    imageSrc: "/giveaway/generated/puzzle-credit-1-bonus.png",
   },
 ];
 
@@ -105,38 +110,44 @@ const prizeVisuals: Record<
   string,
   {
     imageClass: string;
+    imageSrc: string;
     accent: string;
     subtitle: string;
   }
 > = {
   "iPhone 17 Pro Max": {
     imageClass: "object-left",
+    imageSrc: "/giveaway/generated/iphone-17-pro-max-prize.png",
     accent: "Grand prize",
     subtitle: "flagship smartphone prize for seven winners",
   },
   "AirPods Pro": {
     imageClass: "object-center",
+    imageSrc: "/giveaway/generated/airpods-prize.png",
     accent: "Audio prize",
     subtitle: "premium wireless earbuds for seven winners",
   },
   "$100 puzzle credit": {
     imageClass: "object-right",
+    imageSrc: "/giveaway/generated/puzzle-credit-100.png",
     accent: "Puzzle credit",
     subtitle: "high-value marketplace credit",
   },
   "$10 puzzle credit": {
     imageClass: "object-right",
+    imageSrc: "/giveaway/generated/puzzle-credit-10.png",
     accent: "Puzzle credit",
     subtitle: "extra credit for puzzle collectors",
   },
   "$1 puzzle credit": {
     imageClass: "object-right",
+    imageSrc: "/giveaway/generated/puzzle-credit-1-bonus.png",
     accent: "Bonus prizes",
     subtitle: "many small wins for more collectors",
   },
 };
 
-const prizeImageSrc = "/giveaway/new-year-prize-showcase-v2.png";
+const megaPrizeImageSrc = "/giveaway/generated/bmw-x7-mega-prize.png";
 const firstDrawLabel =
   sweepstakesFirstDrawDate === "2026-12-25"
     ? "December 25, 2026"
@@ -340,37 +351,52 @@ export default function SweepstakesPage() {
                       key={prize.title}
                       className={`animated-prize ${prize.className}`}
                       style={{
-                        animationDelay: `${index * 2.3}s`,
+                        animationDelay: `${index * 2.25}s`,
                       }}
                     >
-                      <div className="rounded-full border border-amber-200/30 bg-black/75 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
-                        {prize.tag}
-                      </div>
-                      <div className="mt-3 flex items-end gap-3">
-                        <p className="text-6xl font-black leading-none text-amber-200">
-                          {prize.quantity}
-                        </p>
-                        <p className="pb-2 text-xl font-black leading-tight text-white">
-                          {prize.title}
-                        </p>
+                      <Image
+                        src={prize.imageSrc}
+                        alt={`${prize.title} giveaway prize`}
+                        fill
+                        sizes="(min-width: 1024px) 42vw, 100vw"
+                        className="object-cover"
+                        priority={index === 0}
+                      />
+                      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.88)_0%,rgba(0,0,0,0.45)_48%,rgba(0,0,0,0.12)_100%)]" />
+                      <div className="absolute inset-x-4 bottom-4 rounded-[22px] border border-amber-200/35 bg-black/72 p-4 shadow-[0_18px_45px_rgba(0,0,0,0.45)] backdrop-blur md:inset-x-5 md:bottom-5 md:p-5">
+                        <div className="inline-flex rounded-full border border-amber-200/30 bg-black/75 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
+                          {prize.tag}
+                        </div>
+                        <div className="mt-3 flex items-end gap-3">
+                          <p className="text-6xl font-black leading-none text-amber-200 md:text-7xl">
+                            {prize.quantity}
+                          </p>
+                          <p className="pb-2 text-xl font-black leading-tight text-white md:text-2xl">
+                            {prize.title}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   ))}
 
                   <div className="mega-car">
-                    <div className="car-body">
-                      <div className="car-window" />
-                      <div className="car-light left" />
-                      <div className="car-light right" />
-                      <div className="car-wheel left" />
-                      <div className="car-wheel right" />
-                    </div>
-                    <div className="mt-4 rounded-3xl border border-amber-200/40 bg-black/80 px-5 py-4 text-center">
+                    <Image
+                      src={megaPrizeImageSrc}
+                      alt="BMW X-7 mega giveaway prize"
+                      fill
+                      sizes="(min-width: 1024px) 42vw, 100vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.35)_46%,rgba(0,0,0,0.08)_100%)]" />
+                    <div className="absolute bottom-5 left-5 right-5 rounded-[24px] border border-amber-200/45 bg-black/76 px-5 py-4 text-center shadow-[0_0_55px_rgba(251,191,36,0.28)] backdrop-blur">
                       <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
-                        2nd draw 07.07.2027
+                        Mega draw 07.07.2027
                       </p>
-                      <p className="mt-1 text-3xl font-black">
+                      <p className="mt-1 text-4xl font-black md:text-5xl">
                         BMW X-7
+                      </p>
+                      <p className="mt-1 text-sm font-bold text-cyan-200">
+                        Wave 1 entry unlocks the mega draw automatically.
                       </p>
                     </div>
                   </div>
@@ -513,7 +539,7 @@ export default function SweepstakesPage() {
               >
                 <div className="relative h-40 overflow-hidden bg-zinc-950">
                   <Image
-                    src={prizeImageSrc}
+                    src={prizeVisuals[prize.name]?.imageSrc || megaPrizeImageSrc}
                     alt={`${prize.name} prize`}
                     fill
                     sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
@@ -659,177 +685,111 @@ export default function SweepstakesPage() {
           position: absolute;
           left: 50%;
           top: 46%;
-          width: min(78%, 380px);
-          min-height: 245px;
-          padding: 120px 22px 22px;
+          width: min(90%, 560px);
+          min-height: 330px;
+          overflow: hidden;
           opacity: 0;
-          transform: translate(-50%, -44%) scale(0.86);
+          transform: translate(-50%, -40%) scale(0.86) rotate(0.5deg);
           border: 1px solid rgba(251, 191, 36, 0.32);
-          border-radius: 28px;
-          background:
-            radial-gradient(circle at 72% 18%, rgba(251, 191, 36, 0.2), transparent 32%),
-            linear-gradient(145deg, rgba(7, 19, 20, 0.98), rgba(0, 0, 0, 0.9));
-          box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
-          animation: prizeCycle 13.8s infinite cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .animated-prize::before {
-          position: absolute;
-          left: 50%;
-          top: 22px;
-          content: "";
-          transform: translateX(-50%);
-        }
-
-        .phone-prize::before {
-          width: 86px;
-          height: 116px;
-          border-radius: 22px;
-          background:
-            radial-gradient(circle at 25px 26px, #0b1220 0 9px, #b8c4d8 10px 14px, transparent 15px),
-            radial-gradient(circle at 60px 26px, #0b1220 0 9px, #b8c4d8 10px 14px, transparent 15px),
-            radial-gradient(circle at 43px 54px, #0b1220 0 9px, #b8c4d8 10px 14px, transparent 15px),
-            linear-gradient(145deg, #d8dee9, #6d7788 48%, #1d2634);
-          box-shadow: 0 18px 50px rgba(180, 197, 225, 0.25);
-        }
-
-        .airpods-prize::before {
-          width: 130px;
-          height: 82px;
-          border-radius: 26px 26px 34px 34px;
-          background:
-            radial-gradient(ellipse at 35% 36%, #f9fafb 0 12px, #d7dce5 13px 21px, transparent 22px),
-            radial-gradient(ellipse at 66% 36%, #f9fafb 0 12px, #d7dce5 13px 21px, transparent 22px),
-            linear-gradient(180deg, #ffffff, #cfd6df);
-          box-shadow: 0 18px 45px rgba(255, 255, 255, 0.22);
-        }
-
-        .credit-prize::before {
-          width: 148px;
-          height: 92px;
-          border-radius: 20px;
-          background:
-            radial-gradient(circle at 24% 30%, rgba(34, 211, 238, 0.55), transparent 16%),
-            linear-gradient(135deg, #0d282b, #1a1610 44%, #d3a52d);
+          border-radius: 30px;
+          background: #050505;
           box-shadow:
-            inset 0 0 0 1px rgba(255, 232, 168, 0.45),
-            0 20px 60px rgba(251, 191, 36, 0.18);
+            0 30px 100px rgba(0, 0, 0, 0.58),
+            0 0 70px rgba(251, 191, 36, 0.12);
+          animation: prizeCycle 15.6s infinite cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .credit-prize::after {
-          position: absolute;
-          left: calc(50% - 24px);
-          top: 44px;
-          width: 48px;
-          height: 48px;
-          content: "";
-          background:
-            linear-gradient(90deg, transparent 35%, rgba(255, 244, 207, 0.9) 35% 65%, transparent 65%),
-            linear-gradient(0deg, transparent 35%, rgba(255, 244, 207, 0.9) 35% 65%, transparent 65%);
-          clip-path: polygon(8% 0, 92% 0, 92% 28%, 100% 28%, 100% 72%, 92% 72%, 92% 100%, 8% 100%, 8% 72%, 0 72%, 0 28%, 8% 28%);
-          opacity: 0.8;
+        .animated-prize :global(img) {
+          filter: saturate(1.08) contrast(1.05);
+        }
+
+        .phone-prize,
+        .high-credit {
+          box-shadow:
+            0 34px 110px rgba(0, 0, 0, 0.62),
+            0 0 82px rgba(251, 191, 36, 0.2),
+            0 0 42px rgba(34, 211, 238, 0.11);
+        }
+
+        .small-credit {
+          box-shadow:
+            0 30px 96px rgba(0, 0, 0, 0.58),
+            0 0 64px rgba(34, 211, 238, 0.15);
         }
 
         .mega-car {
           position: absolute;
           left: 50%;
           top: 45%;
-          width: min(86%, 430px);
+          width: min(94%, 640px);
+          min-height: 370px;
+          overflow: hidden;
           opacity: 0;
-          transform: translate(-40%, -38%) scale(0.82);
-          animation: carReveal 13.8s infinite cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .car-body {
-          position: relative;
-          height: 132px;
-          border-radius: 70px 92px 42px 42px;
-          background:
-            linear-gradient(0deg, #050505, #0b0b0b 44%, #30343a 45%, #0f1418 100%);
+          transform: translate(-36%, -38%) scale(0.78);
+          border: 1px solid rgba(251, 191, 36, 0.45);
+          border-radius: 34px;
+          background: #020202;
           box-shadow:
-            inset 0 0 0 1px rgba(255, 255, 255, 0.18),
-            0 34px 80px rgba(0, 0, 0, 0.65);
+            0 36px 120px rgba(0, 0, 0, 0.68),
+            0 0 90px rgba(251, 191, 36, 0.26);
+          animation: carReveal 15.6s infinite cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .car-window {
+        .mega-car::after {
           position: absolute;
-          left: 88px;
-          top: 18px;
-          width: 148px;
-          height: 46px;
-          border-radius: 36px 54px 12px 12px;
-          background: linear-gradient(135deg, rgba(34, 211, 238, 0.48), rgba(255, 255, 255, 0.12));
-        }
-
-        .car-light {
-          position: absolute;
-          bottom: 30px;
-          width: 42px;
-          height: 10px;
-          border-radius: 999px;
-          background: #eafcff;
-          box-shadow: 0 0 28px rgba(34, 211, 238, 0.9);
-        }
-
-        .car-light.left {
-          left: 36px;
-        }
-
-        .car-light.right {
-          right: 36px;
-        }
-
-        .car-wheel {
-          position: absolute;
-          bottom: -20px;
-          width: 54px;
-          height: 54px;
-          border: 10px solid #090909;
-          border-radius: 999px;
-          background: #737373;
-          box-shadow: inset 0 0 0 5px #1f2937;
-        }
-
-        .car-wheel.left {
-          left: 76px;
-        }
-
-        .car-wheel.right {
-          right: 78px;
+          inset: -30%;
+          content: "";
+          background: conic-gradient(
+            from 0deg,
+            transparent,
+            rgba(251, 191, 36, 0.22),
+            transparent 38%,
+            rgba(34, 211, 238, 0.18),
+            transparent 66%
+          );
+          mix-blend-mode: screen;
+          pointer-events: none;
+          animation: megaGlow 2.4s linear infinite;
         }
 
         @keyframes prizeCycle {
           0%,
-          9% {
+          8% {
             opacity: 0;
-            transform: translate(-50%, -38%) scale(0.82);
+            transform: translate(-50%, -34%) scale(0.82) rotate(0.5deg);
           }
-          13%,
-          25% {
+          12%,
+          23% {
             opacity: 1;
-            transform: translate(-50%, -44%) scale(1);
+            transform: translate(-50%, -44%) scale(1) rotate(0deg);
           }
-          31%,
+          29%,
           100% {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(1.08);
+            transform: translate(-50%, -52%) scale(1.08) rotate(-0.5deg);
           }
         }
 
         @keyframes carReveal {
           0%,
-          77% {
+          74% {
             opacity: 0;
-            transform: translate(-25%, -34%) scale(0.76);
+            transform: translate(-18%, -36%) scale(0.74);
           }
-          83%,
-          95% {
+          80%,
+          94% {
             opacity: 1;
             transform: translate(-50%, -38%) scale(1);
           }
           100% {
             opacity: 0;
             transform: translate(-58%, -38%) scale(1.04);
+          }
+        }
+
+        @keyframes megaGlow {
+          to {
+            transform: rotate(1turn);
           }
         }
 
@@ -854,8 +814,12 @@ export default function SweepstakesPage() {
             opacity: 1;
           }
 
+          .animated-prize:first-child {
+            transform: translate(-50%, -44%) scale(1);
+          }
+
           .mega-car {
-            transform: translate(-50%, 34%) scale(0.74);
+            opacity: 0;
           }
         }
       `}</style>
