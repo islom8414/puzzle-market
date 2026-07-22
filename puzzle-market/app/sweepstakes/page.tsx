@@ -24,19 +24,36 @@ const ticketRules = [
   {
     title: "Entry plan",
     body: "Buy the $7 six-month New Year Entry Pass and your base tickets are added automatically.",
+    meta: "$7 / 6 months",
   },
   {
     title: "Referral boost",
     body: "Invite a collector. When they subscribe, you receive one extra ticket.",
+    meta: "+1 ticket",
   },
   {
     title: "Puzzle purchases",
     body: "Every $7 spent on puzzle pieces adds one extra ticket. $14 gives two, $21 gives three.",
+    meta: "Every $7",
   },
   {
     title: "$1 piece bonus",
     body: "Collect seven $1 pieces and receive one extra ticket on top of your purchase tickets.",
+    meta: "7 pieces",
   },
+];
+
+const campaignHighlights = [
+  "Real prize draw",
+  "Automatic tickets",
+  "Referral bonuses",
+  "Marketplace included",
+];
+
+const heroPrizeList = [
+  "7 x iPhone 17 Pro Max",
+  "7 x AirPods Pro",
+  "84 puzzle credit prizes",
 ];
 
 const prizeVisuals: Record<
@@ -50,29 +67,31 @@ const prizeVisuals: Record<
   "iPhone 17 Pro Max": {
     imageClass: "object-left",
     accent: "Grand prize",
-    subtitle: "flagship smartphone prize",
+    subtitle: "flagship smartphone prize for seven winners",
   },
   "AirPods Pro": {
     imageClass: "object-center",
     accent: "Audio prize",
-    subtitle: "premium wireless earbuds",
+    subtitle: "premium wireless earbuds for seven winners",
   },
   "$100 puzzle credit": {
     imageClass: "object-right",
     accent: "Puzzle credit",
-    subtitle: "for collectible puzzle pieces",
+    subtitle: "high-value marketplace credit",
   },
   "$10 puzzle credit": {
     imageClass: "object-right",
     accent: "Puzzle credit",
-    subtitle: "for your next puzzle move",
+    subtitle: "extra credit for puzzle collectors",
   },
   "$1 puzzle credit": {
     imageClass: "object-right",
     accent: "Bonus prizes",
-    subtitle: "small credits for many winners",
+    subtitle: "many small wins for more collectors",
   },
 };
+
+const prizeImageSrc = "/giveaway/new-year-prize-showcase-v2.png";
 
 const faqs = [
   {
@@ -144,62 +163,95 @@ export default function SweepstakesPage() {
   const totalTickets = summary?.totalTickets || 0;
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[linear-gradient(135deg,#050505_0%,#090706_40%,#031716_100%)] text-white">
-      <div className="pointer-events-none fixed inset-x-0 top-0 h-28 bg-black/80" />
+    <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-28 bg-black/90" />
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-5 md:px-6 md:pt-32">
-        <section className="overflow-hidden rounded-[28px] border border-amber-300/35 bg-black/60 shadow-[0_24px_80px_rgba(0,0,0,0.45)] md:rounded-[32px]">
-          <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
-            <div>
-              <div className="p-5 sm:p-6 md:p-8 lg:p-10">
-                <p className="text-[11px] font-black uppercase tracking-[0.28em] text-amber-200 sm:text-xs">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 pb-14 pt-28 sm:px-5 md:px-6 md:pt-32">
+        <section className="overflow-hidden rounded-[26px] border border-amber-300/30 bg-[linear-gradient(135deg,#0b0904_0%,#050505_48%,#031b1b_100%)] shadow-[0_24px_90px_rgba(0,0,0,0.55)] md:rounded-[32px]">
+          <div className="grid lg:min-h-[620px] lg:grid-cols-[0.84fr_1.16fr]">
+            <div className="flex flex-col justify-between p-5 sm:p-7 md:p-9 lg:p-10">
+              <div>
+                <div className="inline-flex rounded-full border border-amber-200/25 bg-amber-200/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-amber-100">
                   New Year Grand Giveaway
-                </p>
+                </div>
 
-                <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[0.96] sm:text-5xl md:text-6xl xl:text-7xl">
-                  Win iPhone 17 Pro Max, AirPods Pro and puzzle credits.
+                <h1 className="mt-6 max-w-2xl text-4xl font-black leading-[0.96] sm:text-5xl md:text-6xl">
+                  Enter once. Collect tickets. Win premium prizes.
                 </h1>
 
-                <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-300 md:text-lg">
-                  Buy the $7 six-month Entry Pass before the deadline and
-                  become a participant in the New Year prize draw. The earlier
-                  you enter, the more base chances you receive.
+                <p className="mt-5 max-w-xl text-base leading-7 text-zinc-300 md:text-lg">
+                  Buy the $7 six-month Entry Pass before the deadline and join
+                  the New Year prize draw. Earlier entry means more base
+                  tickets, and marketplace activity can add more chances.
                 </p>
 
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                  {heroPrizeList.map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-3 text-sm font-black text-zinc-100"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <div className="flex flex-col gap-3 sm:flex-row">
                   <Link
                     href="/subscribe?plan=sweepstakes"
-                    className="rounded-2xl bg-amber-300 px-6 py-4 text-center font-black text-black transition hover:bg-amber-200"
+                    className="rounded-2xl bg-amber-300 px-6 py-4 text-center font-black text-black shadow-[0_16px_40px_rgba(251,191,36,0.22)] transition hover:bg-amber-200"
                   >
                     Get Entry Pass
                   </Link>
 
                   <Link
                     href="/marketplace"
-                    className="rounded-2xl border border-white/15 px-6 py-4 text-center font-black text-white transition hover:border-cyan-300 hover:text-cyan-200"
+                    className="rounded-2xl border border-white/15 bg-black/35 px-6 py-4 text-center font-black text-white transition hover:border-cyan-300 hover:text-cyan-200"
                   >
                     Explore Marketplace
                   </Link>
                 </div>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {campaignHighlights.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-cyan-200"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="relative min-h-[360px] border-t border-amber-300/20 bg-black lg:border-l lg:border-t-0">
+            <div className="relative min-h-[470px] border-t border-amber-300/20 bg-black lg:border-l lg:border-t-0">
               <Image
-                src="/giveaway/new-year-prize-showcase.png"
-                alt="New Year giveaway prizes"
+                src={prizeImageSrc}
+                alt="iPhone 17 Pro Max, AirPods Pro and Puzzle Market prize credits"
                 fill
                 priority
-                sizes="(min-width: 1024px) 54vw, 100vw"
+                sizes="(min-width: 1024px) 58vw, 100vw"
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/5 to-transparent" />
 
-              <div className="absolute bottom-4 left-4 right-4 rounded-[24px] border border-white/15 bg-black/75 p-4 backdrop-blur md:bottom-6 md:left-6 md:right-6 md:p-5">
+              <div className="absolute left-4 top-4 rounded-2xl border border-amber-200/30 bg-black/70 px-4 py-3 backdrop-blur md:left-6 md:top-6">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
+                  Entry deadline
+                </p>
+                <p className="mt-1 text-2xl font-black">
+                  Nov 30, 2026
+                </p>
+              </div>
+
+              <div className="absolute bottom-4 left-4 right-4 rounded-[24px] border border-white/15 bg-black/78 p-4 backdrop-blur md:bottom-6 md:left-6 md:right-6 md:p-5">
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300">
-                      Your Chances
+                      Your live tickets
                     </p>
                     <p className="mt-2 text-sm text-zinc-400">
                       {summary?.isEntered
@@ -228,7 +280,7 @@ export default function SweepstakesPage() {
                   ].map(([label, value]) => (
                     <div
                       key={label}
-                      className="rounded-2xl border border-white/10 bg-white/[0.05] p-3"
+                      className="rounded-2xl border border-white/10 bg-white/[0.06] p-3"
                     >
                       <p className="text-xs text-zinc-500">{label}</p>
                       <p className="mt-1 text-xl font-black">
@@ -242,11 +294,11 @@ export default function SweepstakesPage() {
           </div>
         </section>
 
-        <section className="mt-8 grid gap-4 md:grid-cols-3">
+        <section className="mt-6 grid gap-4 md:grid-cols-3">
           {sweepstakesWaves.map((wave) => (
             <article
               key={wave.name}
-              className="rounded-[26px] border border-white/10 bg-white/[0.035] p-5"
+              className="rounded-[24px] border border-white/10 bg-[linear-gradient(135deg,rgba(251,191,36,0.12),rgba(255,255,255,0.035))] p-5"
             >
               <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
                 {wave.name}
@@ -261,19 +313,20 @@ export default function SweepstakesPage() {
           ))}
         </section>
 
-        <section className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.035] p-5 md:p-8">
+        <section className="mt-8 rounded-[30px] border border-white/10 bg-[#090909] p-5 md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-200">
                 Prize Pool
               </p>
               <h2 className="mt-3 text-4xl font-black leading-none md:text-5xl">
-                Real prize pool
+                Real New Year rewards
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-relaxed text-zinc-400">
-              The campaign is built as a real prize draw. Full official rules
-              should be published before launch and linked from this page.
+              The prize pool is shown clearly before entry. Full official rules
+              should be linked here before launch, including eligibility,
+              winner selection, delivery, and tax responsibility.
             </p>
           </div>
 
@@ -281,11 +334,11 @@ export default function SweepstakesPage() {
             {sweepstakesPrizePool.map((prize) => (
               <div
                 key={prize.name}
-                className="group overflow-hidden rounded-[24px] border border-amber-300/25 bg-black/60 shadow-[0_18px_50px_rgba(0,0,0,0.25)]"
+                className="group overflow-hidden rounded-[24px] border border-amber-300/25 bg-black shadow-[0_18px_50px_rgba(0,0,0,0.28)]"
               >
-                <div className="relative h-36 overflow-hidden bg-zinc-950">
+                <div className="relative h-40 overflow-hidden bg-zinc-950">
                   <Image
-                    src="/giveaway/new-year-prize-showcase.png"
+                    src={prizeImageSrc}
                     alt={`${prize.name} prize`}
                     fill
                     sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
@@ -319,8 +372,11 @@ export default function SweepstakesPage() {
           {ticketRules.map((rule) => (
             <article
               key={rule.title}
-              className="rounded-[24px] border border-cyan-400/15 bg-cyan-400/[0.045] p-5"
+              className="rounded-[24px] border border-cyan-400/15 bg-[linear-gradient(180deg,rgba(34,211,238,0.08),rgba(0,0,0,0.45))] p-5"
             >
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
+                {rule.meta}
+              </p>
               <h3 className="text-xl font-black">{rule.title}</h3>
               <p className="mt-3 text-sm leading-6 text-zinc-400">
                 {rule.body}
