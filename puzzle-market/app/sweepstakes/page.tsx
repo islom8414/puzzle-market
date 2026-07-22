@@ -63,6 +63,8 @@ const animatedPrizes = [
   {
     title: "iPhone 17 Pro Max",
     quantity: "7",
+    quantityLabel: "7 prizes",
+    value: "Flagship smartphone",
     tag: "Grand prize",
     className: "phone-prize",
     imageSrc: "/giveaway/generated/iphone-17-pro-max-prize.png",
@@ -70,6 +72,8 @@ const animatedPrizes = [
   {
     title: "AirPods for iPhone",
     quantity: "7",
+    quantityLabel: "7 prizes",
+    value: "Premium audio",
     tag: "Audio prize",
     className: "airpods-prize",
     imageSrc: "/giveaway/generated/airpods-prize.png",
@@ -77,6 +81,8 @@ const animatedPrizes = [
   {
     title: "$100 puzzle credit",
     quantity: "7",
+    quantityLabel: "7 prizes",
+    value: "$100 credit each",
     tag: "Puzzle credit",
     className: "credit-prize high-credit",
     imageSrc: "/giveaway/generated/puzzle-credit-100.png",
@@ -84,6 +90,8 @@ const animatedPrizes = [
   {
     title: "$10 puzzle credit",
     quantity: "7",
+    quantityLabel: "7 prizes",
+    value: "$10 credit each",
     tag: "Puzzle credit",
     className: "credit-prize mid-credit",
     imageSrc: "/giveaway/generated/puzzle-credit-10.png",
@@ -91,6 +99,8 @@ const animatedPrizes = [
   {
     title: "$1 puzzle credit",
     quantity: "70",
+    quantityLabel: "70 prizes",
+    value: "$1 credit each",
     tag: "Bonus prizes",
     className: "credit-prize small-credit",
     imageSrc: "/giveaway/generated/puzzle-credit-1-bonus.png",
@@ -351,10 +361,10 @@ export default function SweepstakesPage() {
                       key={prize.title}
                       className={`animated-prize ${prize.className}`}
                       style={{
-                        animationDelay: `${index * 2.55}s`,
+                        animationDelay: `${index * 3}s`,
                       }}
                     >
-                      <div className="absolute inset-x-0 top-0 bottom-[104px] overflow-hidden">
+                      <div className="absolute inset-x-0 top-0 bottom-[116px] overflow-hidden rounded-t-[28px]">
                         <Image
                           src={prize.imageSrc}
                           alt={`${prize.title} giveaway prize`}
@@ -363,26 +373,36 @@ export default function SweepstakesPage() {
                           className="object-cover"
                           priority={index === 0}
                         />
-                        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.36)_0%,rgba(0,0,0,0.06)_48%,rgba(0,0,0,0)_100%)]" />
+                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1)_0%,rgba(0,0,0,0)_42%,rgba(0,0,0,0.22)_100%)]" />
                       </div>
-                      <div className="absolute inset-x-0 bottom-0 flex min-h-[104px] items-center justify-between gap-4 border-t border-amber-200/25 bg-black/90 px-4 py-3 shadow-[0_-18px_45px_rgba(0,0,0,0.45)] md:px-5">
-                        <div className="inline-flex rounded-full border border-amber-200/30 bg-black/75 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
-                          {prize.tag}
+                      <div className="absolute inset-x-0 bottom-0 min-h-[116px] border-t border-amber-200/30 bg-[linear-gradient(135deg,rgba(7,7,7,0.98),rgba(26,20,5,0.96)_58%,rgba(6,24,28,0.9))] px-4 py-4 shadow-[0_-18px_45px_rgba(0,0,0,0.5)] md:px-5">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <div className="inline-flex rounded-full border border-amber-200/35 bg-amber-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
+                              {prize.tag}
+                            </div>
+                            <p className="mt-2 text-xl font-black leading-tight text-white md:text-2xl">
+                              {prize.title}
+                            </p>
+                            <p className="mt-1 text-sm font-bold text-zinc-300">
+                              {prize.value}
+                            </p>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <p className="text-5xl font-black leading-none text-amber-200 md:text-6xl">
+                              {prize.quantity}
+                            </p>
+                            <p className="mt-1 text-[11px] font-black uppercase tracking-[0.16em] text-cyan-200">
+                              {prize.quantityLabel}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-base font-black leading-tight text-white md:text-xl">
-                            {prize.title}
-                          </p>
-                        </div>
-                        <p className="shrink-0 text-5xl font-black leading-none text-amber-200 md:text-6xl">
-                          {prize.quantity}
-                        </p>
                       </div>
                     </div>
                   ))}
 
                   <div className="mega-car">
-                    <div className="absolute inset-x-0 top-0 bottom-[126px] overflow-hidden">
+                    <div className="absolute inset-x-0 top-0 bottom-[132px] overflow-hidden rounded-t-[32px]">
                       <Image
                         src={megaPrizeImageSrc}
                         alt="BMW X-7 mega giveaway prize"
@@ -390,24 +410,29 @@ export default function SweepstakesPage() {
                         sizes="(min-width: 1024px) 42vw, 100vw"
                         className="object-cover"
                       />
-                      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.4)_0%,rgba(0,0,0,0.08)_46%,rgba(0,0,0,0)_100%)]" />
+                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0)_48%,rgba(0,0,0,0.28)_100%)]" />
                     </div>
-                    <div className="absolute inset-x-0 bottom-0 border-t border-amber-200/35 bg-black/92 px-5 py-4 shadow-[0_-20px_60px_rgba(251,191,36,0.16)]">
+                    <div className="absolute inset-x-0 bottom-0 min-h-[132px] border-t border-amber-200/40 bg-[linear-gradient(135deg,rgba(5,5,5,0.98),rgba(42,28,4,0.96)_55%,rgba(4,30,34,0.92))] px-5 py-4 shadow-[0_-20px_60px_rgba(251,191,36,0.16)]">
                       <div className="flex items-end justify-between gap-4">
                         <div>
                           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
                             Mega draw 07.07.2027
                           </p>
-                          <p className="mt-1 text-4xl font-black md:text-5xl">
+                          <p className="mt-1 text-3xl font-black md:text-5xl">
                             BMW X-7
                           </p>
                           <p className="mt-1 text-sm font-bold text-cyan-200">
                             Wave 1 entry unlocks the mega draw automatically.
                           </p>
                         </div>
-                        <p className="hidden rounded-full border border-cyan-200/35 bg-cyan-300/10 px-4 py-2 text-sm font-black uppercase tracking-[0.14em] text-cyan-100 md:block">
-                          Mega prize
-                        </p>
+                        <div className="hidden shrink-0 rounded-2xl border border-cyan-200/35 bg-cyan-300/10 px-4 py-3 text-right md:block">
+                          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
+                            Grand prize
+                          </p>
+                          <p className="mt-1 text-xl font-black text-white">
+                            1 winner
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -695,12 +720,12 @@ export default function SweepstakesPage() {
         .animated-prize {
           position: absolute;
           left: 50%;
-          top: 46%;
-          width: min(90%, 560px);
-          min-height: 330px;
+          top: 50%;
+          width: min(96%, 720px);
+          height: calc(100% - 32px);
           overflow: hidden;
           opacity: 0;
-          transform: translate(-50%, -40%) scale(0.86) rotate(0.5deg);
+          transform: translate(-50%, -50%) scale(0.92) rotate(0.5deg);
           border: 1px solid rgba(251, 191, 36, 0.32);
           border-radius: 30px;
           background: #050505;
@@ -731,12 +756,12 @@ export default function SweepstakesPage() {
         .mega-car {
           position: absolute;
           left: 50%;
-          top: 45%;
-          width: min(94%, 640px);
-          min-height: 370px;
+          top: 50%;
+          width: min(96%, 740px);
+          height: calc(100% - 28px);
           overflow: hidden;
           opacity: 0;
-          transform: translate(-36%, -38%) scale(0.78);
+          transform: translate(-50%, -50%) scale(0.9);
           border: 1px solid rgba(251, 191, 36, 0.45);
           border-radius: 34px;
           background: #020202;
@@ -765,36 +790,36 @@ export default function SweepstakesPage() {
 
         @keyframes prizeCycle {
           0%,
-          7% {
+          4% {
             opacity: 0;
-            transform: translate(-50%, -34%) scale(0.82) rotate(0.5deg);
+            transform: translate(-50%, -46%) scale(0.9) rotate(0.5deg);
           }
-          10%,
-          20% {
+          6%,
+          23% {
             opacity: 1;
-            transform: translate(-50%, -44%) scale(1) rotate(0deg);
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
           }
-          25%,
+          28%,
           100% {
             opacity: 0;
-            transform: translate(-50%, -52%) scale(1.08) rotate(-0.5deg);
+            transform: translate(-50%, -54%) scale(1.04) rotate(-0.5deg);
           }
         }
 
         @keyframes carReveal {
           0%,
-          77% {
+          78% {
             opacity: 0;
-            transform: translate(-18%, -36%) scale(0.74);
+            transform: translate(-50%, -46%) scale(0.88);
           }
           82%,
-          95% {
+          98% {
             opacity: 1;
-            transform: translate(-50%, -38%) scale(1);
+            transform: translate(-50%, -50%) scale(1);
           }
           100% {
             opacity: 0;
-            transform: translate(-58%, -38%) scale(1.04);
+            transform: translate(-50%, -54%) scale(1.03);
           }
         }
 
@@ -826,7 +851,7 @@ export default function SweepstakesPage() {
           }
 
           .animated-prize:first-child {
-            transform: translate(-50%, -44%) scale(1);
+            transform: translate(-50%, -50%) scale(1);
           }
 
           .mega-car {
