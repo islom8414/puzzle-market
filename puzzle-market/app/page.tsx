@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { HomePuzzleGrid } from "@/components/home-puzzle-grid";
 import { HomeTrustStats } from "@/components/home-trust-stats";
@@ -146,46 +147,81 @@ export default async function HomePage() {
               THE COLLECTIBLE PUZZLE MARKETPLACE
             </p>
 
-            <Link
-              href="/sweepstakes"
-              className="mt-5 block overflow-hidden rounded-[24px] border border-amber-200/30 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.34)_52%,rgba(0,0,0,0.74))] p-4 shadow-2xl shadow-amber-950/20 transition hover:border-amber-100/60 md:p-5"
-            >
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="min-w-0">
-                  <p className="text-xs font-black uppercase text-amber-200">
-                    New Year Grand Giveaway
-                  </p>
-                  <h2 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl">
-                    3 tickets before August 31. Draw on Dec 25.
-                  </h2>
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-                    Join with the $7 six-month Entry Pass. Prizes include 7
-                    iPhone 17 Pro Max, 7 AirPods Pro and 84 puzzle credit
-                    prizes, plus automatic entry into the 07.07.2027 BMW X-7
-                    mega draw.
-                  </p>
+            <div className="mt-5 overflow-hidden rounded-[28px] border border-amber-200/35 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.36)_52%,rgba(0,0,0,0.8))] shadow-2xl shadow-amber-950/25">
+              <Link
+                href="/sweepstakes"
+                className="group grid gap-0 md:grid-cols-[1.08fr_0.92fr]"
+              >
+                <div className="relative min-h-[220px] overflow-hidden bg-black sm:min-h-[260px] md:min-h-[300px]">
+                  <Image
+                    src="/giveaway/generated/iphone-17-pro-max-prize.png"
+                    alt="Puzzle Market New Year Giveaway prizes"
+                    fill
+                    sizes="(min-width: 1024px) 44vw, 100vw"
+                    className="object-cover opacity-90 transition duration-500 group-hover:scale-[1.035]"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(250,204,21,0.26),transparent_28%),linear-gradient(90deg,rgba(0,0,0,0.9)_0%,rgba(0,0,0,0.38)_62%,rgba(0,0,0,0.1)_100%)]" />
+                  <div className="absolute left-4 top-4 rounded-2xl border border-amber-200/35 bg-black/70 px-4 py-3 backdrop-blur">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-200">
+                      1st draw
+                    </p>
+                    <p className="mt-1 text-xl font-black text-white">
+                      Dec 25, 2026
+                    </p>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4 rounded-[24px] border border-white/10 bg-black/72 p-4 backdrop-blur">
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-200">
+                      New Year Grand Giveaway
+                    </p>
+                    <h2 className="mt-2 text-3xl font-black leading-none text-white sm:text-4xl">
+                      Join the prize draw
+                    </h2>
+                    <p className="mt-2 text-sm font-bold text-amber-100">
+                      7 x iPhone 17 Pro Max • 7 x AirPods Pro • 84 puzzle
+                      credit prizes
+                    </p>
+                  </div>
                 </div>
 
-                <div className="shrink-0 md:w-[300px]">
-                  <GiveawayCountdown compact />
-                </div>
-              </div>
+                <div className="flex flex-col justify-between gap-5 p-4 sm:p-5">
+                  <div>
+                    <div className="inline-flex rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-cyan-200">
+                      Wave 1 ends August 31
+                    </div>
+                    <h3 className="mt-4 text-2xl font-black leading-tight md:text-3xl">
+                      Participate in the New Year giveaway.
+                    </h3>
+                    <p className="mt-3 text-sm leading-relaxed text-zinc-300">
+                      Buy the $7 six-month Entry Pass before August 31 and get
+                      3 base tickets, plus automatic entry into the 07.07.2027
+                      BMW X-7 mega draw.
+                    </p>
+                  </div>
 
-              <div className="mt-4 flex flex-wrap gap-2 text-xs font-black">
-                {[
-                  "Real prize draw",
-                  "Automatic tickets",
-                  "Referral bonuses",
-                ].map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-amber-100"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </Link>
+                  <div>
+                    <GiveawayCountdown compact />
+                    <div className="mt-4 flex flex-wrap gap-2 text-xs font-black">
+                      {[
+                        "Real prize draw",
+                        "Automatic tickets",
+                        "Referral bonuses",
+                      ].map((item) => (
+                        <span
+                          key={item}
+                          className="rounded-full border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-amber-100"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-4 inline-flex rounded-2xl bg-amber-300 px-5 py-3 font-black text-black transition group-hover:bg-amber-200">
+                      Go to Giveaway
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
 
             <h1 className="translate-safe-title mt-5 font-black">
               Choose Puzzle Pieces. Build a Collection You Can Manage.
