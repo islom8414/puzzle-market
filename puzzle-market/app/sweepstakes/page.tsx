@@ -56,6 +56,15 @@ const heroPrizeList = [
   "84 puzzle credit prizes",
 ];
 
+const firstWave = sweepstakesWaves[0];
+const firstWaveEnd = new Date(firstWave.endsAt);
+const countdownUnits = [
+  { key: "days", label: "Days" },
+  { key: "hours", label: "Hours" },
+  { key: "minutes", label: "Min" },
+  { key: "seconds", label: "Sec" },
+] as const;
+
 const prizeVisuals: Record<
   string,
   {
@@ -93,6 +102,25 @@ const prizeVisuals: Record<
 
 const prizeImageSrc = "/giveaway/new-year-prize-showcase-v2.png";
 
+function getCountdownParts(targetDate: Date, currentDate: Date) {
+  const distance = Math.max(
+    0,
+    targetDate.getTime() - currentDate.getTime()
+  );
+  const totalSeconds = Math.floor(distance / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+  };
+}
+
 const faqs = [
   {
     question: "How do I enter the New Year Giveaway?",
@@ -122,9 +150,16 @@ export default function SweepstakesPage() {
   const [authenticated, setAuthenticated] =
     useState(false);
   const [loading, setLoading] = useState(true);
+  const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
     let mounted = true;
+    const firstTick = window.setTimeout(() => {
+      setNow(new Date());
+    }, 0);
+    const timer = window.setInterval(() => {
+      setNow(new Date());
+    }, 1000);
 
     async function loadGiveaway() {
       const {
@@ -157,39 +192,52 @@ export default function SweepstakesPage() {
 
     return () => {
       mounted = false;
+      window.clearTimeout(firstTick);
+      window.clearInterval(timer);
     };
   }, []);
 
   const totalTickets = summary?.totalTickets || 0;
+  const countdown = now ? getCountdownParts(firstWaveEnd, now) : null;
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
       <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-28 bg-black/90" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 pb-14 pt-28 sm:px-5 md:px-6 md:pt-32">
-        <section className="overflow-hidden rounded-[26px] border border-amber-300/30 bg-[linear-gradient(135deg,#0b0904_0%,#050505_48%,#031b1b_100%)] shadow-[0_24px_90px_rgba(0,0,0,0.55)] md:rounded-[32px]">
-          <div className="grid lg:min-h-[620px] lg:grid-cols-[0.84fr_1.16fr]">
-            <div className="flex flex-col justify-between p-5 sm:p-7 md:p-9 lg:p-10">
+        <section className="relative overflow-hidden rounded-[26px] border border-amber-300/30 bg-black shadow-[0_24px_90px_rgba(0,0,0,0.55)] md:rounded-[32px]">
+          <Image
+            src={prizeImageSrc}
+            alt="iPhone 17 Pro Max, AirPods Pro and Puzzle Market prize credits"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-80"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.96)_0%,rgba(0,0,0,0.78)_38%,rgba(0,0,0,0.2)_72%,rgba(0,0,0,0.82)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
+
+          <div className="relative grid gap-8 p-5 sm:p-7 md:p-9 lg:min-h-[640px] lg:grid-cols-[0.92fr_0.78fr] lg:p-10">
+            <div className="flex max-w-2xl flex-col justify-between">
               <div>
-                <div className="inline-flex rounded-full border border-amber-200/25 bg-amber-200/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-amber-100">
+                <div className="inline-flex rounded-full border border-amber-200/25 bg-amber-200/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-amber-100">
                   New Year Grand Giveaway
                 </div>
 
-                <h1 className="mt-6 max-w-2xl text-4xl font-black leading-[0.96] sm:text-5xl md:text-6xl">
-                  Enter once. Collect tickets. Win premium prizes.
+                <h1 className="mt-6 text-4xl font-black leading-[0.96] sm:text-5xl md:text-6xl lg:text-[64px]">
+                  Win iPhone 17 Pro Max, AirPods Pro and puzzle credits.
                 </h1>
 
                 <p className="mt-5 max-w-xl text-base leading-7 text-zinc-300 md:text-lg">
-                  Buy the $7 six-month Entry Pass before the deadline and join
-                  the New Year prize draw. Earlier entry means more base
-                  tickets, and marketplace activity can add more chances.
+                  Join the draw with the $7 six-month Entry Pass. Wave 1 ends
+                  on August 31 and gives the biggest base ticket bonus.
                 </p>
 
-                <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                <div className="mt-6 grid max-w-xl gap-2 sm:grid-cols-3">
                   {heroPrizeList.map((item) => (
                     <div
                       key={item}
-                      className="rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-3 text-sm font-black text-zinc-100"
+                      className="rounded-2xl border border-white/10 bg-black/55 px-4 py-3 text-sm font-black text-zinc-100 backdrop-blur"
                     >
                       {item}
                     </div>
@@ -227,27 +275,42 @@ export default function SweepstakesPage() {
               </div>
             </div>
 
-            <div className="relative min-h-[470px] border-t border-amber-300/20 bg-black lg:border-l lg:border-t-0">
-              <Image
-                src={prizeImageSrc}
-                alt="iPhone 17 Pro Max, AirPods Pro and Puzzle Market prize credits"
-                fill
-                priority
-                sizes="(min-width: 1024px) 58vw, 100vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/5 to-transparent" />
+            <div className="flex flex-col gap-4 lg:self-end">
+              <div className="rounded-[26px] border border-amber-200/30 bg-black/75 p-4 backdrop-blur md:p-5">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
+                      Wave 1 deadline
+                    </p>
+                    <p className="mt-1 text-2xl font-black">
+                      August 31, 2026
+                    </p>
+                  </div>
+                  <p className="text-sm font-bold text-zinc-400">
+                    3 base tickets
+                  </p>
+                </div>
 
-              <div className="absolute left-4 top-4 rounded-2xl border border-amber-200/30 bg-black/70 px-4 py-3 backdrop-blur md:left-6 md:top-6">
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
-                  Entry deadline
-                </p>
-                <p className="mt-1 text-2xl font-black">
-                  Nov 30, 2026
-                </p>
+                <div className="mt-4 grid grid-cols-4 gap-2">
+                  {countdownUnits.map((unit) => (
+                    <div
+                      key={unit.key}
+                      className="rounded-2xl border border-amber-200/20 bg-amber-200/[0.08] p-3 text-center"
+                    >
+                      <p className="text-3xl font-black leading-none text-amber-200 md:text-4xl">
+                        {countdown
+                          ? String(countdown[unit.key]).padStart(2, "0")
+                          : "--"}
+                      </p>
+                      <p className="mt-2 text-[10px] font-black uppercase tracking-[0.16em] text-zinc-400">
+                        {unit.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="absolute bottom-4 left-4 right-4 rounded-[24px] border border-white/15 bg-black/78 p-4 backdrop-blur md:bottom-6 md:left-6 md:right-6 md:p-5">
+              <div className="rounded-[26px] border border-white/15 bg-black/78 p-4 backdrop-blur md:p-5">
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300">
@@ -295,14 +358,25 @@ export default function SweepstakesPage() {
         </section>
 
         <section className="mt-6 grid gap-4 md:grid-cols-3">
-          {sweepstakesWaves.map((wave) => (
+          {sweepstakesWaves.map((wave, index) => (
             <article
               key={wave.name}
-              className="rounded-[24px] border border-white/10 bg-[linear-gradient(135deg,rgba(251,191,36,0.12),rgba(255,255,255,0.035))] p-5"
+              className={`rounded-[24px] border p-5 ${
+                index === 0
+                  ? "border-amber-300/35 bg-[linear-gradient(135deg,rgba(251,191,36,0.18),rgba(0,0,0,0.75))] shadow-[0_18px_55px_rgba(251,191,36,0.12)]"
+                  : "border-white/10 bg-[linear-gradient(135deg,rgba(251,191,36,0.08),rgba(255,255,255,0.035))]"
+              }`}
             >
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
-                {wave.name}
-              </p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
+                  {wave.name}
+                </p>
+                {index === 0 ? (
+                  <span className="rounded-full bg-amber-300 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-black">
+                    Current deadline
+                  </span>
+                ) : null}
+              </div>
               <h2 className="mt-3 text-3xl font-black">
                 {wave.tickets} tickets
               </h2>
