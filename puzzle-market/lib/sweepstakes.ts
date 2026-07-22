@@ -34,8 +34,8 @@ export const sweepstakesWaves = [
 ] as const;
 
 export const sweepstakesPrizePool = [
-  { name: "iPhone", quantity: 7 },
-  { name: "AirPods", quantity: 7 },
+  { name: "iPhone 17 Pro Max", quantity: 7 },
+  { name: "AirPods Pro", quantity: 7 },
   { name: "$100 puzzle credit", quantity: 7 },
   { name: "$10 puzzle credit", quantity: 7 },
   { name: "$1 puzzle credit", quantity: 70 },

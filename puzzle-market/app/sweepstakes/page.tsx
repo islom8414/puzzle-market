@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { apiFetch } from "@/lib/api-client";
@@ -37,6 +38,41 @@ const ticketRules = [
     body: "Collect seven $1 pieces and receive one extra ticket on top of your purchase tickets.",
   },
 ];
+
+const prizeVisuals: Record<
+  string,
+  {
+    imageClass: string;
+    accent: string;
+    subtitle: string;
+  }
+> = {
+  "iPhone 17 Pro Max": {
+    imageClass: "object-left",
+    accent: "Grand prize",
+    subtitle: "flagship smartphone prize",
+  },
+  "AirPods Pro": {
+    imageClass: "object-center",
+    accent: "Audio prize",
+    subtitle: "premium wireless earbuds",
+  },
+  "$100 puzzle credit": {
+    imageClass: "object-right",
+    accent: "Puzzle credit",
+    subtitle: "for collectible puzzle pieces",
+  },
+  "$10 puzzle credit": {
+    imageClass: "object-right",
+    accent: "Puzzle credit",
+    subtitle: "for your next puzzle move",
+  },
+  "$1 puzzle credit": {
+    imageClass: "object-right",
+    accent: "Bonus prizes",
+    subtitle: "small credits for many winners",
+  },
+};
 
 const faqs = [
   {
@@ -108,83 +144,99 @@ export default function SweepstakesPage() {
   const totalTickets = summary?.totalTickets || 0;
 
   return (
-    <main className="min-h-screen overflow-hidden bg-black text-white">
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.20),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.18),transparent_36%)]" />
+    <main className="min-h-screen overflow-hidden bg-[linear-gradient(135deg,#050505_0%,#090706_40%,#031716_100%)] text-white">
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-28 bg-black/80" />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
-        <section className="overflow-hidden rounded-[32px] border border-amber-300/30 bg-white/[0.035] p-5 shadow-[0_0_70px_rgba(251,191,36,0.12)] md:p-10">
-          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-28 sm:px-5 md:px-6 md:pt-32">
+        <section className="overflow-hidden rounded-[28px] border border-amber-300/35 bg-black/60 shadow-[0_24px_80px_rgba(0,0,0,0.45)] md:rounded-[32px]">
+          <div className="grid gap-0 lg:grid-cols-[0.92fr_1.08fr]">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.24em] text-amber-200">
-                New Year Grand Giveaway
-              </p>
+              <div className="p-5 sm:p-6 md:p-8 lg:p-10">
+                <p className="text-[11px] font-black uppercase tracking-[0.28em] text-amber-200 sm:text-xs">
+                  New Year Grand Giveaway
+                </p>
 
-              <h1 className="mt-4 max-w-4xl text-5xl font-black leading-[0.92] md:text-7xl">
-                Join Puzzle Market. Collect tickets. Win real prizes.
-              </h1>
+                <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[0.96] sm:text-5xl md:text-6xl xl:text-7xl">
+                  Win iPhone 17 Pro Max, AirPods Pro and puzzle credits.
+                </h1>
 
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-300 md:text-lg">
-                Buy the $7 six-month Entry Pass before the deadline and become
-                a participant in the New Year prize draw. The earlier you enter,
-                the more base chances you receive.
-              </p>
+                <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-300 md:text-lg">
+                  Buy the $7 six-month Entry Pass before the deadline and
+                  become a participant in the New Year prize draw. The earlier
+                  you enter, the more base chances you receive.
+                </p>
 
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/subscribe?plan=sweepstakes"
-                  className="rounded-2xl bg-amber-300 px-6 py-4 text-center font-black text-black transition hover:bg-amber-200"
-                >
-                  Get Entry Pass
-                </Link>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <Link
+                    href="/subscribe?plan=sweepstakes"
+                    className="rounded-2xl bg-amber-300 px-6 py-4 text-center font-black text-black transition hover:bg-amber-200"
+                  >
+                    Get Entry Pass
+                  </Link>
 
-                <Link
-                  href="/marketplace"
-                  className="rounded-2xl border border-white/15 px-6 py-4 text-center font-black text-white transition hover:border-cyan-300 hover:text-cyan-200"
-                >
-                  Explore Marketplace
-                </Link>
+                  <Link
+                    href="/marketplace"
+                    className="rounded-2xl border border-white/15 px-6 py-4 text-center font-black text-white transition hover:border-cyan-300 hover:text-cyan-200"
+                  >
+                    Explore Marketplace
+                  </Link>
+                </div>
               </div>
             </div>
 
-            <div className="rounded-[28px] border border-white/10 bg-black/55 p-5 md:p-6">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-300">
-                Your Chances
-              </p>
+            <div className="relative min-h-[360px] border-t border-amber-300/20 bg-black lg:border-l lg:border-t-0">
+              <Image
+                src="/giveaway/new-year-prize-showcase.png"
+                alt="New Year giveaway prizes"
+                fill
+                priority
+                sizes="(min-width: 1024px) 54vw, 100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
 
-              <div className="mt-4 flex items-end gap-3">
-                <span className="text-7xl font-black text-amber-200">
-                  {loading ? "..." : totalTickets}
-                </span>
-                <span className="pb-3 text-xl font-black text-zinc-300">
-                  tickets
-                </span>
-              </div>
-
-              <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-                {summary?.isEntered
-                  ? `You are entered through ${summary.waveLabel || "the current wave"}.`
-                  : authenticated
-                    ? "Get the Entry Pass to activate your giveaway participation."
-                    : "Sign in or create an account to see your live ticket count."}
-              </p>
-
-              <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-                {[
-                  ["Base", summary?.baseTickets || 0],
-                  ["Referrals", summary?.referralTickets || 0],
-                  ["Purchases", summary?.purchaseTickets || 0],
-                  ["$1 Bonus", summary?.oneDollarBundleTickets || 0],
-                ].map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
-                  >
-                    <p className="text-zinc-500">{label}</p>
-                    <p className="mt-2 text-2xl font-black">
-                      {value}
+              <div className="absolute bottom-4 left-4 right-4 rounded-[24px] border border-white/15 bg-black/75 p-4 backdrop-blur md:bottom-6 md:left-6 md:right-6 md:p-5">
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300">
+                      Your Chances
+                    </p>
+                    <p className="mt-2 text-sm text-zinc-400">
+                      {summary?.isEntered
+                        ? `Entered through ${summary.waveLabel || "the current wave"}.`
+                        : authenticated
+                          ? "Get the Entry Pass to activate participation."
+                          : "Sign in to see your live ticket count."}
                     </p>
                   </div>
-                ))}
+                  <div className="shrink-0 text-right">
+                    <p className="text-5xl font-black leading-none text-amber-200 md:text-6xl">
+                      {loading ? "..." : totalTickets}
+                    </p>
+                    <p className="mt-1 text-sm font-black text-zinc-300">
+                      tickets
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
+                  {[
+                    ["Base", summary?.baseTickets || 0],
+                    ["Referrals", summary?.referralTickets || 0],
+                    ["Purchases", summary?.purchaseTickets || 0],
+                    ["$1 Bonus", summary?.oneDollarBundleTickets || 0],
+                  ].map(([label, value]) => (
+                    <div
+                      key={label}
+                      className="rounded-2xl border border-white/10 bg-white/[0.05] p-3"
+                    >
+                      <p className="text-xs text-zinc-500">{label}</p>
+                      <p className="mt-1 text-xl font-black">
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -215,8 +267,8 @@ export default function SweepstakesPage() {
               <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-200">
                 Prize Pool
               </p>
-              <h2 className="mt-3 text-4xl font-black md:text-5xl">
-                New Year rewards
+              <h2 className="mt-3 text-4xl font-black leading-none md:text-5xl">
+                Real prize pool
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-relaxed text-zinc-400">
@@ -225,16 +277,39 @@ export default function SweepstakesPage() {
             </p>
           </div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {sweepstakesPrizePool.map((prize) => (
               <div
                 key={prize.name}
-                className="rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] p-4"
+                className="group overflow-hidden rounded-[24px] border border-amber-300/25 bg-black/60 shadow-[0_18px_50px_rgba(0,0,0,0.25)]"
               >
-                <p className="text-4xl font-black text-amber-200">
-                  {prize.quantity}
-                </p>
-                <p className="mt-2 font-black">{prize.name}</p>
+                <div className="relative h-36 overflow-hidden bg-zinc-950">
+                  <Image
+                    src="/giveaway/new-year-prize-showcase.png"
+                    alt={`${prize.name} prize`}
+                    fill
+                    sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
+                    className={`object-cover transition duration-500 group-hover:scale-105 ${
+                      prizeVisuals[prize.name]?.imageClass || "object-center"
+                    }`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+                  <div className="absolute left-3 top-3 rounded-full border border-amber-200/30 bg-black/70 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-100">
+                    {prizeVisuals[prize.name]?.accent || "Prize"}
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  <p className="text-5xl font-black leading-none text-amber-200">
+                    {prize.quantity}
+                  </p>
+                  <p className="mt-3 min-h-[56px] text-2xl font-black leading-tight">
+                    {prize.name}
+                  </p>
+                  <p className="mt-2 text-sm leading-5 text-zinc-500">
+                    {prizeVisuals[prize.name]?.subtitle}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
