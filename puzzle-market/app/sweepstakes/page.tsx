@@ -810,36 +810,27 @@ export default function SweepstakesPage() {
 
         @keyframes prizeCycle {
           0%,
-          4% {
-            opacity: 0;
-            transform: translate(-50%, -46%) scale(0.9) rotate(0.5deg);
-          }
-          6%,
-          23% {
+          13.8% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1) rotate(0deg);
           }
-          28%,
+          16.66%,
           100% {
             opacity: 0;
-            transform: translate(-50%, -54%) scale(1.04) rotate(-0.5deg);
+            transform: translate(-50%, -51%) scale(1.015) rotate(-0.25deg);
           }
         }
 
         @keyframes carReveal {
           0%,
-          78% {
+          81.8% {
             opacity: 0;
-            transform: translate(-50%, -46%) scale(0.88);
+            transform: translate(-50%, -51%) scale(0.96);
           }
-          82%,
-          98% {
+          84%,
+          100% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
-          }
-          100% {
-            opacity: 0;
-            transform: translate(-50%, -54%) scale(1.03);
           }
         }
 
