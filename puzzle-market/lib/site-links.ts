@@ -3,18 +3,18 @@ export const CHOOSE_PUZZLE_HREF =
 
 export const trustStats = [
   {
-    value: "8K+",
-    label: "Rare Fragments Traded",
+    value: "Live listings",
+    label: "Browse available puzzle fragments and active marketplace offers.",
     accent: true,
   },
   {
-    value: "$2.4M",
-    label: "Market Volume",
+    value: "Clear pricing",
+    label: "See the piece price and checkout details before you buy.",
     accent: false,
   },
   {
-    value: "24K+",
-    label: "Verified Collectors",
+    value: "Private records",
+    label: "Owned pieces stay connected to your account and profile.",
     accent: false,
   },
 ] as const;

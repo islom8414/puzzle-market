@@ -4,7 +4,7 @@ export function HomeTrustStats() {
   return (
     <div className="mt-14">
       <p className="text-zinc-500 text-sm font-semibold">
-        Trusted by collectors worldwide
+        Built around clear rules and real account ownership
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-5">
