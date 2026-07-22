@@ -4,6 +4,7 @@ import Image from "next/image";
 import { HomePuzzleGrid } from "@/components/home-puzzle-grid";
 import { HomeTrustStats } from "@/components/home-trust-stats";
 import HomeHeroActions from "@/app/components/HomeHeroActions";
+import HomeGiveawayModal from "@/app/components/HomeGiveawayModal";
 import HomeTrialPrompt from "@/app/components/HomeTrialPrompt";
 import LandingScrollReset from "@/app/components/LandingScrollReset";
 import GiveawayCountdown from "@/app/components/GiveawayCountdown";
@@ -138,6 +139,7 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen overflow-hidden text-white">
       <LandingScrollReset />
+      <HomeGiveawayModal />
       <section className="relative px-4 pb-14 pt-10 md:px-6 md:pb-20 md:pt-16">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.12),transparent_34%)]" />
 
@@ -147,7 +149,7 @@ export default async function HomePage() {
               THE COLLECTIBLE PUZZLE MARKETPLACE
             </p>
 
-            <div className="mt-5 overflow-hidden rounded-[28px] border border-amber-200/35 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.36)_52%,rgba(0,0,0,0.8))] shadow-2xl shadow-amber-950/25">
+            <div className="mt-5 overflow-hidden rounded-[28px] border border-amber-200/35 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.36)_52%,rgba(0,0,0,0.86))] shadow-[0_26px_90px_rgba(250,204,21,0.14)]">
               <Link
                 href="/sweepstakes"
                 className="group grid gap-0 md:grid-cols-[1.08fr_0.92fr]"
@@ -178,8 +180,8 @@ export default async function HomePage() {
                       Join the prize draw
                     </h2>
                     <p className="mt-2 text-sm font-bold text-amber-100">
-                      7 x iPhone 17 Pro Max • 7 x AirPods Pro • 84 puzzle
-                      credit prizes
+                      7 x iPhone 17 Pro Max, 7 x AirPods Pro, 84 puzzle credit
+                      prizes
                     </p>
                   </div>
                 </div>
@@ -190,7 +192,7 @@ export default async function HomePage() {
                       Wave 1 ends August 31
                     </div>
                     <h3 className="mt-4 text-2xl font-black leading-tight md:text-3xl">
-                      Participate in the New Year giveaway.
+                      New Year giveaway is open.
                     </h3>
                     <p className="mt-3 text-sm leading-relaxed text-zinc-300">
                       Buy the $7 six-month Entry Pass before August 31 and get
@@ -205,7 +207,7 @@ export default async function HomePage() {
                       {[
                         "Real prize draw",
                         "Automatic tickets",
-                        "Referral bonuses",
+                        "Mega draw included",
                       ].map((item) => (
                         <span
                           key={item}
