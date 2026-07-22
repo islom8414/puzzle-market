@@ -15,6 +15,7 @@ import {
 import { getCanonicalLoginUrl } from "@/lib/site-url";
 import { CHOOSE_PUZZLE_HREF } from "@/lib/site-links";
 import LanguageSwitcher from "./LanguageSwitcher";
+import GiveawayCountdown from "./GiveawayCountdown";
 
 const initialNotifications = [
   "Verified wallet flow is online",
@@ -468,6 +469,27 @@ export default function Navbar() {
           <div className="border-t border-white/5 bg-black/95 backdrop-blur-xl">
 
             <div className="px-4 py-5 grid grid-cols-2 gap-3 text-sm font-semibold">
+
+              <Link
+                href="/sweepstakes"
+                onClick={() =>
+                  setOpen(false)
+                }
+                className="col-span-2 overflow-hidden rounded-[24px] border border-amber-200/30 bg-[linear-gradient(135deg,rgba(250,204,21,0.18),rgba(8,47,73,0.38)_54%,rgba(0,0,0,0.78))] p-4 shadow-xl shadow-amber-950/20"
+              >
+                <p className="text-xs font-black uppercase text-amber-200">
+                  New Year Grand Giveaway
+                </p>
+                <h2 className="mt-2 text-2xl font-black leading-tight text-white">
+                  3 tickets before August 31
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-300">
+                  Buy the $7 six-month Entry Pass and join the prize draw.
+                </p>
+                <div className="mt-3">
+                  <GiveawayCountdown compact />
+                </div>
+              </Link>
 
               <a href="/marketplace" className="translate-safe-action rounded-2xl bg-white/[0.04] px-4 py-3">
                 Marketplace

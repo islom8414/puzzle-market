@@ -5,6 +5,7 @@ import { HomeTrustStats } from "@/components/home-trust-stats";
 import HomeHeroActions from "@/app/components/HomeHeroActions";
 import HomeTrialPrompt from "@/app/components/HomeTrialPrompt";
 import LandingScrollReset from "@/app/components/LandingScrollReset";
+import GiveawayCountdown from "@/app/components/GiveawayCountdown";
 import { loadHomeCollections } from "@/lib/home-collections";
 
 export const dynamic =
@@ -144,6 +145,46 @@ export default async function HomePage() {
             <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400 md:text-sm">
               THE COLLECTIBLE PUZZLE MARKETPLACE
             </p>
+
+            <Link
+              href="/sweepstakes"
+              className="mt-5 block overflow-hidden rounded-[24px] border border-amber-200/30 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.34)_52%,rgba(0,0,0,0.74))] p-4 shadow-2xl shadow-amber-950/20 transition hover:border-amber-100/60 md:p-5"
+            >
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0">
+                  <p className="text-xs font-black uppercase text-amber-200">
+                    New Year Grand Giveaway
+                  </p>
+                  <h2 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl">
+                    Wave 1 gives 3 tickets. Ends August 31.
+                  </h2>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-300">
+                    Join with the $7 six-month Entry Pass. Prizes include 7
+                    iPhone 17 Pro Max, 7 AirPods Pro and 84 puzzle credit
+                    prizes.
+                  </p>
+                </div>
+
+                <div className="shrink-0 md:w-[300px]">
+                  <GiveawayCountdown compact />
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2 text-xs font-black">
+                {[
+                  "Real prize draw",
+                  "Automatic tickets",
+                  "Referral bonuses",
+                ].map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-amber-100"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </Link>
 
             <h1 className="translate-safe-title mt-5 font-black">
               Choose Puzzle Pieces. Build a Collection You Can Manage.
