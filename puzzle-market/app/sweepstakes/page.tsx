@@ -354,50 +354,61 @@ export default function SweepstakesPage() {
                         animationDelay: `${index * 2.55}s`,
                       }}
                     >
-                      <Image
-                        src={prize.imageSrc}
-                        alt={`${prize.title} giveaway prize`}
-                        fill
-                        sizes="(min-width: 1024px) 42vw, 100vw"
-                        className="object-cover"
-                        priority={index === 0}
-                      />
-                      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.88)_0%,rgba(0,0,0,0.45)_48%,rgba(0,0,0,0.12)_100%)]" />
-                      <div className="absolute inset-x-4 bottom-4 rounded-[22px] border border-amber-200/35 bg-black/72 p-4 shadow-[0_18px_45px_rgba(0,0,0,0.45)] backdrop-blur md:inset-x-5 md:bottom-5 md:p-5">
+                      <div className="absolute inset-x-0 top-0 bottom-[104px] overflow-hidden">
+                        <Image
+                          src={prize.imageSrc}
+                          alt={`${prize.title} giveaway prize`}
+                          fill
+                          sizes="(min-width: 1024px) 42vw, 100vw"
+                          className="object-cover"
+                          priority={index === 0}
+                        />
+                        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.36)_0%,rgba(0,0,0,0.06)_48%,rgba(0,0,0,0)_100%)]" />
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 flex min-h-[104px] items-center justify-between gap-4 border-t border-amber-200/25 bg-black/90 px-4 py-3 shadow-[0_-18px_45px_rgba(0,0,0,0.45)] md:px-5">
                         <div className="inline-flex rounded-full border border-amber-200/30 bg-black/75 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
                           {prize.tag}
                         </div>
-                        <div className="mt-3 flex items-end gap-3">
-                          <p className="text-6xl font-black leading-none text-amber-200 md:text-7xl">
-                            {prize.quantity}
-                          </p>
-                          <p className="pb-2 text-xl font-black leading-tight text-white md:text-2xl">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-base font-black leading-tight text-white md:text-xl">
                             {prize.title}
                           </p>
                         </div>
+                        <p className="shrink-0 text-5xl font-black leading-none text-amber-200 md:text-6xl">
+                          {prize.quantity}
+                        </p>
                       </div>
                     </div>
                   ))}
 
                   <div className="mega-car">
-                    <Image
-                      src={megaPrizeImageSrc}
-                      alt="BMW X-7 mega giveaway prize"
-                      fill
-                      sizes="(min-width: 1024px) 42vw, 100vw"
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.35)_46%,rgba(0,0,0,0.08)_100%)]" />
-                    <div className="absolute bottom-5 left-5 right-5 rounded-[24px] border border-amber-200/45 bg-black/76 px-5 py-4 text-center shadow-[0_0_55px_rgba(251,191,36,0.28)] backdrop-blur">
-                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
-                        Mega draw 07.07.2027
-                      </p>
-                      <p className="mt-1 text-4xl font-black md:text-5xl">
-                        BMW X-7
-                      </p>
-                      <p className="mt-1 text-sm font-bold text-cyan-200">
-                        Wave 1 entry unlocks the mega draw automatically.
-                      </p>
+                    <div className="absolute inset-x-0 top-0 bottom-[126px] overflow-hidden">
+                      <Image
+                        src={megaPrizeImageSrc}
+                        alt="BMW X-7 mega giveaway prize"
+                        fill
+                        sizes="(min-width: 1024px) 42vw, 100vw"
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.4)_0%,rgba(0,0,0,0.08)_46%,rgba(0,0,0,0)_100%)]" />
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 border-t border-amber-200/35 bg-black/92 px-5 py-4 shadow-[0_-20px_60px_rgba(251,191,36,0.16)]">
+                      <div className="flex items-end justify-between gap-4">
+                        <div>
+                          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
+                            Mega draw 07.07.2027
+                          </p>
+                          <p className="mt-1 text-4xl font-black md:text-5xl">
+                            BMW X-7
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-cyan-200">
+                            Wave 1 entry unlocks the mega draw automatically.
+                          </p>
+                        </div>
+                        <p className="hidden rounded-full border border-cyan-200/35 bg-cyan-300/10 px-4 py-2 text-sm font-black uppercase tracking-[0.14em] text-cyan-100 md:block">
+                          Mega prize
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
