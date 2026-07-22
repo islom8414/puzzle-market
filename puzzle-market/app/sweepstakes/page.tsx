@@ -8,6 +8,8 @@ import { apiFetch } from "@/lib/api-client";
 import { formatUsd } from "@/lib/price-index";
 import { supabase } from "@/lib/supabase";
 import {
+  sweepstakesFirstDrawDate,
+  sweepstakesMegaDrawDate,
   sweepstakesOneDollarBundleSize,
   sweepstakesPrizePool,
   sweepstakesPurchaseUnitCents,
@@ -54,6 +56,40 @@ const heroPrizeList = [
   "7 x iPhone 17 Pro Max",
   "7 x AirPods Pro",
   "84 puzzle credit prizes",
+  "BMW X-7 mega draw",
+];
+
+const animatedPrizes = [
+  {
+    title: "iPhone 17 Pro Max",
+    quantity: "7",
+    tag: "Grand prize",
+    className: "phone-prize",
+  },
+  {
+    title: "AirPods for iPhone",
+    quantity: "7",
+    tag: "Audio prize",
+    className: "airpods-prize",
+  },
+  {
+    title: "$100 puzzle credit",
+    quantity: "7",
+    tag: "Puzzle credit",
+    className: "credit-prize high-credit",
+  },
+  {
+    title: "$10 puzzle credit",
+    quantity: "7",
+    tag: "Puzzle credit",
+    className: "credit-prize mid-credit",
+  },
+  {
+    title: "$1 puzzle credit",
+    quantity: "70",
+    tag: "Bonus prizes",
+    className: "credit-prize small-credit",
+  },
 ];
 
 const firstWave = sweepstakesWaves[0];
@@ -101,6 +137,14 @@ const prizeVisuals: Record<
 };
 
 const prizeImageSrc = "/giveaway/new-year-prize-showcase-v2.png";
+const firstDrawLabel =
+  sweepstakesFirstDrawDate === "2026-12-25"
+    ? "December 25, 2026"
+    : sweepstakesFirstDrawDate;
+const megaDrawLabel =
+  sweepstakesMegaDrawDate === "2027-07-07"
+    ? "07.07.2027"
+    : sweepstakesMegaDrawDate;
 
 function getCountdownParts(targetDate: Date, currentDate: Date) {
   const distance = Math.max(
@@ -135,7 +179,7 @@ const faqs = [
   {
     question: "When is the draw?",
     answer:
-      "The prize draw is planned for New Year's Eve. The final official draw details should be published before the event.",
+      "The New Year prize draw is planned for December 25, 2026. Wave 1 participants also enter the BMW X-7 mega draw on 07.07.2027.",
   },
   {
     question: "Can I still use the marketplace?",
@@ -205,19 +249,11 @@ export default function SweepstakesPage() {
       <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-28 bg-black/90" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 pb-14 pt-28 sm:px-5 md:px-6 md:pt-32">
-        <section className="relative overflow-hidden rounded-[26px] border border-amber-300/30 bg-black shadow-[0_24px_90px_rgba(0,0,0,0.55)] md:rounded-[32px]">
-          <Image
-            src={prizeImageSrc}
-            alt="iPhone 17 Pro Max, AirPods Pro and Puzzle Market prize credits"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover opacity-80"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.96)_0%,rgba(0,0,0,0.78)_38%,rgba(0,0,0,0.2)_72%,rgba(0,0,0,0.82)_100%)]" />
+        <section className="relative overflow-hidden rounded-[26px] border border-amber-300/30 bg-[radial-gradient(circle_at_78%_20%,rgba(251,191,36,0.18),transparent_34%),linear-gradient(135deg,#090705_0%,#050505_46%,#07191b_100%)] shadow-[0_24px_90px_rgba(0,0,0,0.55)] md:rounded-[32px]">
+          <div className="giveaway-sparks absolute inset-0 opacity-70" />
           <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
 
-          <div className="relative grid gap-8 p-5 sm:p-7 md:p-9 lg:min-h-[640px] lg:grid-cols-[0.92fr_0.78fr] lg:p-10">
+          <div className="relative grid gap-8 p-5 sm:p-7 md:p-9 lg:min-h-[670px] lg:grid-cols-[0.86fr_0.86fr] lg:p-10">
             <div className="flex max-w-2xl flex-col justify-between">
               <div>
                 <div className="inline-flex rounded-full border border-amber-200/25 bg-amber-200/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-amber-100">
@@ -225,15 +261,16 @@ export default function SweepstakesPage() {
                 </div>
 
                 <h1 className="mt-6 text-4xl font-black leading-[0.96] sm:text-5xl md:text-6xl lg:text-[64px]">
-                  Win iPhone 17 Pro Max, AirPods Pro and puzzle credits.
+                  Animated prize draw. Real rewards. Live tickets.
                 </h1>
 
                 <p className="mt-5 max-w-xl text-base leading-7 text-zinc-300 md:text-lg">
-                  Join the draw with the $7 six-month Entry Pass. Wave 1 ends
-                  on August 31 and gives the biggest base ticket bonus.
+                  Buy the $7 six-month Entry Pass before August 31 to receive
+                  3 base tickets for the first draw and automatic entry into
+                  the BMW X-7 mega draw.
                 </p>
 
-                <div className="mt-6 grid max-w-xl gap-2 sm:grid-cols-3">
+                <div className="mt-6 grid max-w-xl gap-2 sm:grid-cols-2">
                   {heroPrizeList.map((item) => (
                     <div
                       key={item}
@@ -275,7 +312,115 @@ export default function SweepstakesPage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 lg:self-end">
+            <div className="flex flex-col gap-4">
+              <div className="relative min-h-[430px] overflow-hidden rounded-[30px] border border-amber-200/25 bg-black/58 p-4 shadow-[inset_0_0_80px_rgba(251,191,36,0.08)] backdrop-blur md:min-h-[520px] md:p-5">
+                <div className="absolute inset-x-6 top-6 flex items-center justify-between gap-3">
+                  <div className="rounded-2xl border border-amber-200/25 bg-black/70 px-4 py-3">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-200">
+                      1st draw
+                    </p>
+                    <p className="mt-1 text-xl font-black">
+                      {firstDrawLabel}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 px-4 py-3 text-right">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-200">
+                      Mega draw
+                    </p>
+                    <p className="mt-1 text-xl font-black">
+                      {megaDrawLabel}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="prize-orbit absolute inset-0">
+                  {animatedPrizes.map((prize, index) => (
+                    <div
+                      key={prize.title}
+                      className={`animated-prize ${prize.className}`}
+                      style={{
+                        animationDelay: `${index * 2.3}s`,
+                      }}
+                    >
+                      <div className="rounded-full border border-amber-200/30 bg-black/75 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
+                        {prize.tag}
+                      </div>
+                      <div className="mt-3 flex items-end gap-3">
+                        <p className="text-6xl font-black leading-none text-amber-200">
+                          {prize.quantity}
+                        </p>
+                        <p className="pb-2 text-xl font-black leading-tight text-white">
+                          {prize.title}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="mega-car">
+                    <div className="car-body">
+                      <div className="car-window" />
+                      <div className="car-light left" />
+                      <div className="car-light right" />
+                      <div className="car-wheel left" />
+                      <div className="car-wheel right" />
+                    </div>
+                    <div className="mt-4 rounded-3xl border border-amber-200/40 bg-black/80 px-5 py-4 text-center">
+                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
+                        2nd draw 07.07.2027
+                      </p>
+                      <p className="mt-1 text-3xl font-black">
+                        BMW X-7
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute inset-x-5 bottom-5 rounded-[26px] border border-white/15 bg-black/78 p-4 backdrop-blur md:p-5">
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300">
+                        Your live tickets
+                      </p>
+                      <p className="mt-2 text-sm text-zinc-400">
+                        {summary?.isEntered
+                          ? `Entered through ${summary.waveLabel || "the current wave"}.`
+                          : authenticated
+                            ? "Get the Entry Pass to activate participation."
+                            : "Sign in to see your live ticket count."}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="text-5xl font-black leading-none text-amber-200 md:text-6xl">
+                        {loading ? "..." : totalTickets}
+                      </p>
+                      <p className="mt-1 text-sm font-black text-zinc-300">
+                        tickets
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
+                    {[
+                      ["Base", summary?.baseTickets || 0],
+                      ["Referrals", summary?.referralTickets || 0],
+                      ["Purchases", summary?.purchaseTickets || 0],
+                      ["$1 Bonus", summary?.oneDollarBundleTickets || 0],
+                    ].map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="rounded-2xl border border-white/10 bg-white/[0.06] p-3"
+                      >
+                        <p className="text-xs text-zinc-500">{label}</p>
+                        <p className="mt-1 text-xl font-black">
+                          {value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               <div className="rounded-[26px] border border-amber-200/30 bg-black/75 p-4 backdrop-blur md:p-5">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
@@ -304,50 +449,6 @@ export default function SweepstakesPage() {
                       </p>
                       <p className="mt-2 text-[10px] font-black uppercase tracking-[0.16em] text-zinc-400">
                         {unit.label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-[26px] border border-white/15 bg-black/78 p-4 backdrop-blur md:p-5">
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300">
-                      Your live tickets
-                    </p>
-                    <p className="mt-2 text-sm text-zinc-400">
-                      {summary?.isEntered
-                        ? `Entered through ${summary.waveLabel || "the current wave"}.`
-                        : authenticated
-                          ? "Get the Entry Pass to activate participation."
-                          : "Sign in to see your live ticket count."}
-                    </p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="text-5xl font-black leading-none text-amber-200 md:text-6xl">
-                      {loading ? "..." : totalTickets}
-                    </p>
-                    <p className="mt-1 text-sm font-black text-zinc-300">
-                      tickets
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-4 grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
-                  {[
-                    ["Base", summary?.baseTickets || 0],
-                    ["Referrals", summary?.referralTickets || 0],
-                    ["Purchases", summary?.purchaseTickets || 0],
-                    ["$1 Bonus", summary?.oneDollarBundleTickets || 0],
-                  ].map(([label, value]) => (
-                    <div
-                      key={label}
-                      className="rounded-2xl border border-white/10 bg-white/[0.06] p-3"
-                    >
-                      <p className="text-xs text-zinc-500">{label}</p>
-                      <p className="mt-1 text-xl font-black">
-                        {value}
                       </p>
                     </div>
                   ))}
@@ -531,6 +632,233 @@ export default function SweepstakesPage() {
           </div>
         </section>
       </div>
+
+      <style jsx>{`
+        .giveaway-sparks {
+          background:
+            radial-gradient(circle at 18% 24%, rgba(255, 225, 148, 0.45) 0 2px, transparent 3px),
+            radial-gradient(circle at 66% 18%, rgba(34, 211, 238, 0.35) 0 2px, transparent 3px),
+            radial-gradient(circle at 82% 54%, rgba(255, 225, 148, 0.34) 0 2px, transparent 3px),
+            radial-gradient(circle at 42% 80%, rgba(34, 211, 238, 0.26) 0 2px, transparent 3px);
+          animation: sparkDrift 9s linear infinite;
+        }
+
+        .prize-orbit::before {
+          position: absolute;
+          inset: 18% 10% 20%;
+          content: "";
+          border: 1px solid rgba(251, 191, 36, 0.22);
+          border-radius: 999px;
+          box-shadow:
+            inset 0 0 70px rgba(34, 211, 238, 0.08),
+            0 0 90px rgba(251, 191, 36, 0.12);
+          transform: rotate(-10deg);
+        }
+
+        .animated-prize {
+          position: absolute;
+          left: 50%;
+          top: 46%;
+          width: min(78%, 380px);
+          min-height: 245px;
+          padding: 120px 22px 22px;
+          opacity: 0;
+          transform: translate(-50%, -44%) scale(0.86);
+          border: 1px solid rgba(251, 191, 36, 0.32);
+          border-radius: 28px;
+          background:
+            radial-gradient(circle at 72% 18%, rgba(251, 191, 36, 0.2), transparent 32%),
+            linear-gradient(145deg, rgba(7, 19, 20, 0.98), rgba(0, 0, 0, 0.9));
+          box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
+          animation: prizeCycle 13.8s infinite cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .animated-prize::before {
+          position: absolute;
+          left: 50%;
+          top: 22px;
+          content: "";
+          transform: translateX(-50%);
+        }
+
+        .phone-prize::before {
+          width: 86px;
+          height: 116px;
+          border-radius: 22px;
+          background:
+            radial-gradient(circle at 25px 26px, #0b1220 0 9px, #b8c4d8 10px 14px, transparent 15px),
+            radial-gradient(circle at 60px 26px, #0b1220 0 9px, #b8c4d8 10px 14px, transparent 15px),
+            radial-gradient(circle at 43px 54px, #0b1220 0 9px, #b8c4d8 10px 14px, transparent 15px),
+            linear-gradient(145deg, #d8dee9, #6d7788 48%, #1d2634);
+          box-shadow: 0 18px 50px rgba(180, 197, 225, 0.25);
+        }
+
+        .airpods-prize::before {
+          width: 130px;
+          height: 82px;
+          border-radius: 26px 26px 34px 34px;
+          background:
+            radial-gradient(ellipse at 35% 36%, #f9fafb 0 12px, #d7dce5 13px 21px, transparent 22px),
+            radial-gradient(ellipse at 66% 36%, #f9fafb 0 12px, #d7dce5 13px 21px, transparent 22px),
+            linear-gradient(180deg, #ffffff, #cfd6df);
+          box-shadow: 0 18px 45px rgba(255, 255, 255, 0.22);
+        }
+
+        .credit-prize::before {
+          width: 148px;
+          height: 92px;
+          border-radius: 20px;
+          background:
+            radial-gradient(circle at 24% 30%, rgba(34, 211, 238, 0.55), transparent 16%),
+            linear-gradient(135deg, #0d282b, #1a1610 44%, #d3a52d);
+          box-shadow:
+            inset 0 0 0 1px rgba(255, 232, 168, 0.45),
+            0 20px 60px rgba(251, 191, 36, 0.18);
+        }
+
+        .credit-prize::after {
+          position: absolute;
+          left: calc(50% - 24px);
+          top: 44px;
+          width: 48px;
+          height: 48px;
+          content: "";
+          background:
+            linear-gradient(90deg, transparent 35%, rgba(255, 244, 207, 0.9) 35% 65%, transparent 65%),
+            linear-gradient(0deg, transparent 35%, rgba(255, 244, 207, 0.9) 35% 65%, transparent 65%);
+          clip-path: polygon(8% 0, 92% 0, 92% 28%, 100% 28%, 100% 72%, 92% 72%, 92% 100%, 8% 100%, 8% 72%, 0 72%, 0 28%, 8% 28%);
+          opacity: 0.8;
+        }
+
+        .mega-car {
+          position: absolute;
+          left: 50%;
+          top: 45%;
+          width: min(86%, 430px);
+          opacity: 0;
+          transform: translate(-40%, -38%) scale(0.82);
+          animation: carReveal 13.8s infinite cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .car-body {
+          position: relative;
+          height: 132px;
+          border-radius: 70px 92px 42px 42px;
+          background:
+            linear-gradient(0deg, #050505, #0b0b0b 44%, #30343a 45%, #0f1418 100%);
+          box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+            0 34px 80px rgba(0, 0, 0, 0.65);
+        }
+
+        .car-window {
+          position: absolute;
+          left: 88px;
+          top: 18px;
+          width: 148px;
+          height: 46px;
+          border-radius: 36px 54px 12px 12px;
+          background: linear-gradient(135deg, rgba(34, 211, 238, 0.48), rgba(255, 255, 255, 0.12));
+        }
+
+        .car-light {
+          position: absolute;
+          bottom: 30px;
+          width: 42px;
+          height: 10px;
+          border-radius: 999px;
+          background: #eafcff;
+          box-shadow: 0 0 28px rgba(34, 211, 238, 0.9);
+        }
+
+        .car-light.left {
+          left: 36px;
+        }
+
+        .car-light.right {
+          right: 36px;
+        }
+
+        .car-wheel {
+          position: absolute;
+          bottom: -20px;
+          width: 54px;
+          height: 54px;
+          border: 10px solid #090909;
+          border-radius: 999px;
+          background: #737373;
+          box-shadow: inset 0 0 0 5px #1f2937;
+        }
+
+        .car-wheel.left {
+          left: 76px;
+        }
+
+        .car-wheel.right {
+          right: 78px;
+        }
+
+        @keyframes prizeCycle {
+          0%,
+          9% {
+            opacity: 0;
+            transform: translate(-50%, -38%) scale(0.82);
+          }
+          13%,
+          25% {
+            opacity: 1;
+            transform: translate(-50%, -44%) scale(1);
+          }
+          31%,
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.08);
+          }
+        }
+
+        @keyframes carReveal {
+          0%,
+          77% {
+            opacity: 0;
+            transform: translate(-25%, -34%) scale(0.76);
+          }
+          83%,
+          95% {
+            opacity: 1;
+            transform: translate(-50%, -38%) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-58%, -38%) scale(1.04);
+          }
+        }
+
+        @keyframes sparkDrift {
+          from {
+            transform: translate3d(0, 0, 0);
+          }
+          to {
+            transform: translate3d(-18px, 14px, 0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .giveaway-sparks,
+          .animated-prize,
+          .mega-car {
+            animation: none;
+          }
+
+          .animated-prize:first-child,
+          .mega-car {
+            opacity: 1;
+          }
+
+          .mega-car {
+            transform: translate(-50%, 34%) scale(0.74);
+          }
+        }
+      `}</style>
     </main>
   );
 }

@@ -156,12 +156,13 @@ export default async function HomePage() {
                     New Year Grand Giveaway
                   </p>
                   <h2 className="mt-2 text-2xl font-black leading-tight text-white md:text-3xl">
-                    Wave 1 gives 3 tickets. Ends August 31.
+                    3 tickets before August 31. Draw on Dec 25.
                   </h2>
                   <p className="mt-2 text-sm leading-relaxed text-zinc-300">
                     Join with the $7 six-month Entry Pass. Prizes include 7
                     iPhone 17 Pro Max, 7 AirPods Pro and 84 puzzle credit
-                    prizes.
+                    prizes, plus automatic entry into the 07.07.2027 BMW X-7
+                    mega draw.
                   </p>
                 </div>
 

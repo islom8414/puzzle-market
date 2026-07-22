@@ -484,7 +484,8 @@ export default function Navbar() {
                   3 tickets before August 31
                 </h2>
                 <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-                  Buy the $7 six-month Entry Pass and join the prize draw.
+                  First draw: Dec 25, 2026. Wave 1 also enters the 07.07.2027
+                  BMW X-7 mega draw.
                 </p>
                 <div className="mt-3">
                   <GiveawayCountdown compact />

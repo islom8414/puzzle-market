@@ -33,6 +33,9 @@ export const sweepstakesWaves = [
   },
 ] as const;
 
+export const sweepstakesFirstDrawDate = "2026-12-25";
+export const sweepstakesMegaDrawDate = "2027-07-07";
+
 export const sweepstakesPrizePool = [
   { name: "iPhone 17 Pro Max", quantity: 7 },
   { name: "AirPods Pro", quantity: 7 },
