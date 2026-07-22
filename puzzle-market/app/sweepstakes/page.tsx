@@ -264,15 +264,15 @@ export default function SweepstakesPage() {
           <div className="giveaway-sparks absolute inset-0 opacity-70" />
           <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
 
-          <div className="relative grid gap-8 p-5 sm:p-7 md:p-9 lg:min-h-[670px] lg:grid-cols-[0.86fr_0.86fr] lg:p-10">
+          <div className="relative grid gap-8 p-5 sm:p-7 md:p-9 lg:min-h-[680px] lg:grid-cols-[0.78fr_1fr] lg:p-10">
             <div className="flex max-w-2xl flex-col justify-between">
               <div>
                 <div className="inline-flex rounded-full border border-amber-200/25 bg-amber-200/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-amber-100">
                   New Year Grand Giveaway
                 </div>
 
-                <h1 className="mt-6 text-4xl font-black leading-[0.96] sm:text-5xl md:text-6xl lg:text-[64px]">
-                  Animated prize draw. Real rewards. Live tickets.
+                <h1 className="mt-6 text-4xl font-black leading-[0.96] sm:text-5xl md:text-[56px] lg:text-[60px] xl:text-[64px]">
+                  Win real prizes. Collect tickets. Join the mega draw.
                 </h1>
 
                 <p className="mt-5 max-w-xl text-base leading-7 text-zinc-300 md:text-lg">
@@ -324,8 +324,8 @@ export default function SweepstakesPage() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="relative min-h-[430px] overflow-hidden rounded-[30px] border border-amber-200/25 bg-black/58 p-4 shadow-[inset_0_0_80px_rgba(251,191,36,0.08)] backdrop-blur md:min-h-[520px] md:p-5">
-                <div className="absolute inset-x-6 top-6 flex items-center justify-between gap-3">
+              <div className="relative flex min-h-[560px] flex-col gap-4 overflow-hidden rounded-[30px] border border-amber-200/25 bg-black/58 p-4 shadow-[inset_0_0_80px_rgba(251,191,36,0.08)] backdrop-blur md:min-h-[620px] md:p-5">
+                <div className="relative z-20 flex items-center justify-between gap-3">
                   <div className="rounded-2xl border border-amber-200/25 bg-black/70 px-4 py-3">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-200">
                       1st draw
@@ -345,7 +345,7 @@ export default function SweepstakesPage() {
                   </div>
                 </div>
 
-                <div className="prize-orbit absolute inset-0">
+                <div className="prize-orbit relative min-h-[330px] flex-1 overflow-hidden rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_50%_35%,rgba(251,191,36,0.13),transparent_42%),#050505] md:min-h-[390px]">
                   {animatedPrizes.map((prize, index) => (
                     <div
                       key={prize.title}
@@ -402,7 +402,7 @@ export default function SweepstakesPage() {
                   </div>
                 </div>
 
-                <div className="absolute inset-x-5 bottom-5 rounded-[26px] border border-white/15 bg-black/78 p-4 backdrop-blur md:p-5">
+                <div className="relative z-20 rounded-[26px] border border-white/15 bg-black/78 p-4 backdrop-blur md:p-5">
                   <div className="flex items-end justify-between gap-4">
                     <div>
                       <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-300">
