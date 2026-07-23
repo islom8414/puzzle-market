@@ -7,7 +7,6 @@ import "./globals.css";
 import ConditionalNavbar from "./components/ConditionalNavbar";
 import EnableDynamicTranslation from "./components/EnableDynamicTranslation";
 import GoogleAnalyticsRouteTracker from "./components/GoogleAnalyticsRouteTracker";
-import LanguagePrompt from "./components/LanguagePrompt";
 import LiveFeed from "./components/LiveFeed";
 import LinguiseHead from "./components/LinguiseHead";
 import LinguiseScript from "./components/LinguiseScript";
@@ -80,7 +79,6 @@ export default function RootLayout({
         {/* NAVBAR */}
 
         <ConditionalNavbar />
-        <LanguagePrompt />
 
         {/* LIVE FEED */}
 
