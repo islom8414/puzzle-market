@@ -8,6 +8,7 @@ import { ensureUserProfile } from "@/lib/user-profile";
 type PlanTier = "starter" | "premium" | "creator" | "sweepstakes";
 
 const trialDays = 3;
+const sweepstakesRulesVersion = "2026-07-23";
 
 const plans: Record<
   PlanTier,
@@ -99,6 +100,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
+  const sweepstakesRulesAccepted =
+    body?.sweepstakesRulesAccepted === true;
+
+  if (tier === "sweepstakes" && !sweepstakesRulesAccepted) {
+    return NextResponse.json(
+      { error: "Official Giveaway Rules must be accepted" },
+      { status: 400 }
+    );
+  }
+
+  const rulesAcceptedAt =
+    tier === "sweepstakes" ? new Date().toISOString() : null;
+  const rulesMetadata: Record<string, string> =
+    tier === "sweepstakes" && rulesAcceptedAt
+      ? {
+          sweepstakes_rules_accepted: "true",
+          sweepstakes_rules_version: sweepstakesRulesVersion,
+          sweepstakes_rules_accepted_at: rulesAcceptedAt,
+        }
+      : {};
+
   const { profile } = await ensureUserProfile(
     admin,
     user
@@ -147,6 +169,7 @@ export async function POST(request: Request) {
         tier,
         trial_days: String(plan.trialDays),
         bonus_cents: String(plan.bonusCents),
+        ...rulesMetadata,
       },
       subscription_data: {
         ...(plan.trialDays > 0
@@ -157,10 +180,14 @@ export async function POST(request: Request) {
           user_id: user.id,
           tier,
           bonus_cents: String(plan.bonusCents),
+          ...rulesMetadata,
         },
       },
       success_url: `${origin}/profile?subscription=success`,
-      cancel_url: `${origin}/subscribe?subscription=cancelled`,
+      cancel_url:
+        tier === "sweepstakes"
+          ? `${origin}/subscribe?subscription=cancelled&plan=sweepstakes#sweepstakes-entry-pass`
+          : `${origin}/subscribe?subscription=cancelled`,
     });
   } catch (error) {
     console.error("Stripe checkout failed:", error);

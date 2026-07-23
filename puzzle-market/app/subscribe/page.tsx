@@ -108,7 +108,9 @@ const trialTrustPoints = [
 
 function getSubscribeReturnPath(tier: PlanTier) {
   if (typeof window === "undefined") {
-    return `/subscribe?plan=${tier}`;
+    return `/subscribe?plan=${tier}${
+      tier === "sweepstakes" ? "#sweepstakes-entry-pass" : ""
+    }`;
   }
 
   const params =
@@ -118,7 +120,9 @@ function getSubscribeReturnPath(tier: PlanTier) {
 
   params.set("plan", tier);
 
-  return `${window.location.pathname}?${params.toString()}`;
+  return `${window.location.pathname}?${params.toString()}${
+    tier === "sweepstakes" ? "#sweepstakes-entry-pass" : ""
+  }`;
 }
 
 export default function SubscribePage() {
@@ -129,8 +133,29 @@ export default function SubscribePage() {
 
   const [errorMessage, setErrorMessage] =
     useState("");
+  const [sweepstakesRulesAccepted, setSweepstakesRulesAccepted] =
+    useState(() => {
+      if (typeof window === "undefined") {
+        return false;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+
+      return (
+        params.get("plan") === "sweepstakes" &&
+        window.sessionStorage.getItem("sweepstakes-rules-accepted") === "true"
+      );
+    });
 
   async function startSubscription(tier: PlanTier) {
+    if (tier === "sweepstakes" && !sweepstakesRulesAccepted) {
+      const message =
+        "Accept the Official Giveaway Rules before continuing.";
+      setErrorMessage(message);
+      alert(message);
+      return;
+    }
+
     setLoadingTier(tier);
     setErrorMessage("");
 
@@ -141,7 +166,9 @@ export default function SubscribePage() {
 
       if (!session?.access_token) {
         router.push(
-          `/register?next=${encodeURIComponent(getSubscribeReturnPath(tier))}&intent=trial`
+          `/register?next=${encodeURIComponent(getSubscribeReturnPath(tier))}&intent=${
+            tier === "sweepstakes" ? "giveaway" : "trial"
+          }`
         );
         return;
       }
@@ -152,7 +179,11 @@ export default function SubscribePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ tier }),
+        body: JSON.stringify({
+          tier,
+          sweepstakesRulesAccepted:
+            tier === "sweepstakes" ? sweepstakesRulesAccepted : undefined,
+        }),
       });
 
       const text =
@@ -248,6 +279,11 @@ export default function SubscribePage() {
           {plans.map((plan) => (
             <article
               key={plan.tier}
+              id={
+                plan.tier === "sweepstakes"
+                  ? "sweepstakes-entry-pass"
+                  : undefined
+              }
               className={`flex min-h-[440px] flex-col rounded-3xl border p-5 shadow-[0_0_50px_rgba(34,211,238,0.08)] md:p-6 ${
                 plan.featured
                   ? "border-amber-300/50 bg-amber-300/[0.08] shadow-[0_0_60px_rgba(251,191,36,0.16)]"
@@ -304,9 +340,51 @@ export default function SubscribePage() {
                 ))}
               </div>
 
+              {plan.tier === "sweepstakes" ? (
+                <div className="mt-5 rounded-2xl border border-amber-200/30 bg-black/35 p-4">
+                  <label className="flex cursor-pointer items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={sweepstakesRulesAccepted}
+                      onChange={(event) => {
+                        const accepted = event.target.checked;
+                        setSweepstakesRulesAccepted(accepted);
+
+                        if (accepted) {
+                          window.sessionStorage.setItem(
+                            "sweepstakes-rules-accepted",
+                            "true"
+                          );
+                        } else {
+                          window.sessionStorage.removeItem(
+                            "sweepstakes-rules-accepted"
+                          );
+                        }
+                      }}
+                      className="mt-0.5 h-5 w-5 shrink-0 accent-amber-300"
+                    />
+                    <span className="text-sm font-semibold leading-5 text-zinc-200">
+                      I accept the Official Giveaway Rules and understand the
+                      recurring $7 charge every six months until cancelled.
+                    </span>
+                  </label>
+                  <Link
+                    href="/sweepstakes/rules"
+                    target="_blank"
+                    className="mt-3 inline-flex text-xs font-black text-amber-200 underline decoration-amber-200/50 underline-offset-4 hover:text-white"
+                  >
+                    Read the Official Giveaway Rules
+                  </Link>
+                </div>
+              ) : null}
+
               <button
                 onClick={() => startSubscription(plan.tier)}
-                disabled={loadingTier !== null}
+                disabled={
+                  loadingTier !== null ||
+                  (plan.tier === "sweepstakes" &&
+                    !sweepstakesRulesAccepted)
+                }
                 className={`mt-6 w-full rounded-2xl px-5 py-4 font-black text-black transition disabled:opacity-60 ${
                   plan.featured
                     ? "bg-amber-300 hover:bg-amber-200"
@@ -315,7 +393,9 @@ export default function SubscribePage() {
               >
                 {loadingTier === plan.tier
                   ? "Opening Stripe..."
-                  : plan.cta}
+                  : plan.tier === "sweepstakes"
+                    ? "Participate - Continue to Stripe"
+                    : plan.cta}
               </button>
 
               <p className="mt-3 text-center text-xs font-semibold text-zinc-500">

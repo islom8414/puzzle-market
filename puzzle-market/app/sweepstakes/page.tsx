@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { apiFetch } from "@/lib/api-client";
 import { formatUsd } from "@/lib/price-index";
@@ -61,13 +62,13 @@ const heroPrizeList = [
 
 const animatedPrizes = [
   {
-    title: "New Year Giveaway",
-    quantity: "3",
-    quantityLabel: "base tickets",
-    value: "Wave 1 ends August 31",
-    tag: "Prize draw",
+    title: "Two draws. One entry.",
+    quantity: "98",
+    quantityLabel: "New Year prizes",
+    value: "7 x iPhone 17 Pro Max · 7 x AirPods Pro · 84 puzzle credit prizes",
+    tag: "New Year + BMW X-7",
     className: "poster-prize",
-    imageSrc: "/giveaway/generated/new-year-giveaway-poster.png",
+    imageSrc: "/giveaway/generated/new-year-giveaway-hero-16x9.png",
   },
   {
     title: "iPhone 17 Pro Max",
@@ -219,12 +220,14 @@ const faqs = [
 ];
 
 export default function SweepstakesPage() {
+  const router = useRouter();
   const [summary, setSummary] =
     useState<SweepstakesSummary | null>(null);
   const [authenticated, setAuthenticated] =
     useState(false);
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState<Date | null>(null);
+  const [rulesAccepted, setRulesAccepted] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -274,6 +277,20 @@ export default function SweepstakesPage() {
   const totalTickets = summary?.totalTickets || 0;
   const countdown = now ? getCountdownParts(firstWaveEnd, now) : null;
 
+  function continueToEntryPass() {
+    if (!rulesAccepted) {
+      return;
+    }
+
+    window.sessionStorage.setItem(
+      "sweepstakes-rules-accepted",
+      "true"
+    );
+    router.push(
+      "/subscribe?plan=sweepstakes#sweepstakes-entry-pass"
+    );
+  }
+
   return (
     <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
       <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-28 bg-black/90" />
@@ -315,13 +332,39 @@ export default function SweepstakesPage() {
               </div>
 
               <div>
-                <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="mb-4 rounded-2xl border border-amber-200/25 bg-black/60 p-4 backdrop-blur">
+                  <label className="flex cursor-pointer items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={rulesAccepted}
+                      onChange={(event) =>
+                        setRulesAccepted(event.target.checked)
+                      }
+                      className="mt-1 h-5 w-5 shrink-0 accent-amber-300"
+                    />
+                    <span className="text-sm leading-6 text-zinc-200">
+                      I accept the Official Giveaway Rules and understand that
+                      the $7 Entry Pass renews every 6 months until cancelled.
+                    </span>
+                  </label>
                   <Link
-                    href="/subscribe?plan=sweepstakes"
-                    className="rounded-2xl bg-amber-300 px-6 py-4 text-center font-black text-black shadow-[0_16px_40px_rgba(251,191,36,0.22)] transition hover:bg-amber-200"
+                    href="/sweepstakes/rules"
+                    target="_blank"
+                    className="ml-8 mt-1 inline-flex text-xs font-bold text-amber-200 underline decoration-amber-200/40 underline-offset-4 hover:text-amber-100"
                   >
-                    Get Entry Pass
+                    Read Official Giveaway Rules
                   </Link>
+                </div>
+
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={continueToEntryPass}
+                    disabled={!rulesAccepted}
+                    className="rounded-2xl bg-amber-300 px-6 py-4 text-center font-black text-black shadow-[0_16px_40px_rgba(251,191,36,0.22)] transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none"
+                  >
+                    Participate - $7 / 6 months
+                  </button>
 
                   <Link
                     href="/marketplace"
@@ -372,21 +415,21 @@ export default function SweepstakesPage() {
                       key={prize.title}
                       className={`animated-prize ${prize.className}`}
                       style={{
-                        animationDelay: `${index * 2.35}s`,
+                        animationDelay: `${-(15 - index * 2)}s`,
                       }}
                     >
-                      <div className="absolute inset-x-0 top-0 bottom-[132px] overflow-hidden rounded-t-[28px] bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.14),rgba(0,0,0,0)_58%),#050505]">
+                      <div className="absolute inset-0 overflow-hidden rounded-[28px] bg-[#050505]">
                         <Image
                           src={prize.imageSrc}
                           alt={`${prize.title} giveaway prize`}
                           fill
                           sizes="(min-width: 1024px) 42vw, 100vw"
-                          className="object-contain p-3 sm:p-4"
+                          className="object-cover"
                           priority={index === 0}
                         />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0)_42%,rgba(0,0,0,0.16)_100%)]" />
+                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0)_48%,rgba(0,0,0,0.88)_100%)]" />
                       </div>
-                      <div className="absolute inset-x-0 bottom-0 min-h-[132px] border-t border-amber-200/35 bg-[linear-gradient(135deg,rgba(7,7,7,0.99),rgba(27,20,5,0.98)_58%,rgba(6,24,28,0.94))] px-4 py-4 shadow-[0_-18px_45px_rgba(0,0,0,0.5)] md:px-5">
+                      <div className="absolute inset-x-0 bottom-0 min-h-[132px] border-t border-amber-200/25 bg-[linear-gradient(135deg,rgba(7,7,7,0.94),rgba(27,20,5,0.91)_58%,rgba(6,24,28,0.88))] px-4 py-4 shadow-[0_-18px_45px_rgba(0,0,0,0.38)] backdrop-blur-[2px] md:px-5">
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
                             <div className="inline-flex rounded-full border border-amber-200/35 bg-amber-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
@@ -413,17 +456,17 @@ export default function SweepstakesPage() {
                   ))}
 
                   <div className="mega-car">
-                    <div className="absolute inset-x-0 top-0 bottom-[146px] overflow-hidden rounded-t-[32px] bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.16),rgba(0,0,0,0)_62%),#050505]">
+                    <div className="absolute inset-0 overflow-hidden rounded-[32px] bg-[#050505]">
                       <Image
                         src={megaPrizeImageSrc}
                         alt="BMW X-7 mega giveaway prize"
                         fill
                         sizes="(min-width: 1024px) 42vw, 100vw"
-                        className="object-contain p-3 sm:p-4"
+                        className="object-cover"
                       />
-                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0)_48%,rgba(0,0,0,0.28)_100%)]" />
+                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0)_48%,rgba(0,0,0,0.9)_100%)]" />
                     </div>
-                    <div className="absolute inset-x-0 bottom-0 min-h-[146px] border-t border-amber-200/40 bg-[linear-gradient(135deg,rgba(5,5,5,0.99),rgba(42,28,4,0.98)_55%,rgba(4,30,34,0.94))] px-5 py-4 shadow-[0_-20px_60px_rgba(251,191,36,0.16)]">
+                    <div className="absolute inset-x-0 bottom-0 min-h-[146px] border-t border-amber-200/30 bg-[linear-gradient(135deg,rgba(5,5,5,0.94),rgba(42,28,4,0.91)_55%,rgba(4,30,34,0.88))] px-5 py-4 shadow-[0_-20px_60px_rgba(251,191,36,0.12)] backdrop-blur-[2px]">
                       <div className="flex items-end justify-between gap-4">
                         <div>
                           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
@@ -572,9 +615,16 @@ export default function SweepstakesPage() {
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-relaxed text-zinc-400">
-              The prize pool is shown clearly before entry. Full official rules
-              should be linked here before launch, including eligibility,
-              winner selection, delivery, and tax responsibility.
+              Eligibility, ticket calculation, winner selection, prize
+              delivery, taxes, and territory restrictions are explained in
+              the{" "}
+              <Link
+                href="/sweepstakes/rules"
+                className="font-black text-amber-200 underline decoration-amber-200/40 underline-offset-4 hover:text-white"
+              >
+                Official Giveaway Rules
+              </Link>
+              .
             </p>
           </div>
 
@@ -761,16 +811,12 @@ export default function SweepstakesPage() {
           box-shadow:
             0 30px 100px rgba(0, 0, 0, 0.58),
             0 0 70px rgba(251, 191, 36, 0.12);
-          animation: prizeCycle 16.45s infinite cubic-bezier(0.16, 1, 0.3, 1);
+          animation: prizeCycle 15s infinite linear;
+          will-change: opacity, transform;
         }
 
         .animated-prize :global(img) {
           filter: saturate(1.08) contrast(1.05);
-        }
-
-        .poster-prize :global(img) {
-          object-fit: contain;
-          padding: 0;
         }
 
         .phone-prize,
@@ -802,7 +848,8 @@ export default function SweepstakesPage() {
           box-shadow:
             0 36px 120px rgba(0, 0, 0, 0.68),
             0 0 90px rgba(251, 191, 36, 0.26);
-          animation: carReveal 16.45s infinite cubic-bezier(0.16, 1, 0.3, 1);
+          animation: carReveal 15s infinite linear;
+          will-change: opacity, transform;
         }
 
         .mega-car::after {
@@ -828,27 +875,34 @@ export default function SweepstakesPage() {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1) rotate(0deg);
           }
-          14.75%,
-          100% {
+          14% {
             opacity: 0;
-            transform: translate(-50%, -50.8%) scale(1.018) rotate(-0.2deg);
+            transform: translate(-50%, -50.5%) scale(1.012) rotate(-0.12deg);
+          }
+          97% {
+            opacity: 0;
+            transform: translate(-50%, -49.5%) scale(0.988) rotate(0.12deg);
+          }
+          100% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
           }
         }
 
         @keyframes carReveal {
           0%,
-          83.8% {
+          81% {
             opacity: 0;
-            transform: translate(-50%, -51%) scale(0.96);
+            transform: translate(-50%, -49.5%) scale(0.98);
           }
-          86.4%,
-          99.2% {
+          84.5%,
+          97.5% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
           }
           100% {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(1.01);
+            transform: translate(-50%, -50.5%) scale(1.012);
           }
         }
 
