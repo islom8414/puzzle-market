@@ -37,7 +37,7 @@ export default function HomeGiveawayModal() {
       aria-modal="true"
       aria-labelledby="giveaway-modal-title"
     >
-      <div className="relative grid max-h-[78dvh] w-full max-w-[390px] overflow-hidden rounded-[22px] border border-amber-200/35 bg-black shadow-[0_24px_90px_rgba(250,204,21,0.22)] sm:max-h-[92vh] sm:max-w-5xl sm:rounded-[28px] md:grid-cols-[0.95fr_1.05fr]">
+      <div className="relative max-h-[92dvh] w-full max-w-[420px] overflow-y-auto rounded-[22px] border border-amber-200/40 bg-[#050505] shadow-[0_28px_110px_rgba(250,204,21,0.25)] sm:max-w-4xl sm:rounded-[28px]">
         <button
           type="button"
           onClick={closeModal}
@@ -47,47 +47,38 @@ export default function HomeGiveawayModal() {
           x
         </button>
 
-        <div className="relative min-h-[185px] overflow-hidden bg-zinc-950 sm:min-h-[300px] md:min-h-[520px]">
+        <div className="group relative aspect-[16/9] w-full overflow-hidden bg-zinc-950">
           <Image
-            src="/giveaway/generated/new-year-giveaway-poster.png"
-            alt="New Year Giveaway prize showcase"
+            src="/giveaway/generated/new-year-giveaway-hero-16x9.png"
+            alt="Puzzle Market New Year Giveaway with iPhone, AirPods, puzzle prizes and BMW X-7"
             fill
-            sizes="(min-width: 768px) 48vw, 100vw"
-            className="object-contain object-top"
+            sizes="(min-width: 640px) 896px, 100vw"
+            className="object-cover object-center transition duration-700 group-hover:scale-[1.015]"
             priority
           />
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.86),rgba(0,0,0,0.05)_42%,rgba(0,0,0,0.22)),radial-gradient(circle_at_12%_85%,rgba(250,204,21,0.34),transparent_34%)]" />
-          <div className="absolute bottom-2 left-2 right-2 rounded-[18px] border border-amber-200/30 bg-black/76 p-2.5 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 sm:rounded-[24px] sm:p-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-200 sm:text-[11px]">
-              December 25, 2026
-            </p>
-            <p className="mt-1 text-lg font-black leading-none text-white sm:mt-2 sm:text-2xl">
-              New Year Grand Giveaway
-            </p>
-            <p className="mt-1 text-[11px] font-bold text-cyan-100 sm:mt-2 sm:text-sm">
-              Wave 1 ends August 31. Enter early for 3 base tickets.
-            </p>
-          </div>
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08),transparent_62%,rgba(0,0,0,0.72))]" />
+          <div className="pointer-events-none absolute inset-y-[-45%] left-[-35%] w-[28%] rotate-12 bg-gradient-to-r from-transparent via-white/25 to-transparent blur-sm animate-[giveawaySheen_4.8s_ease-in-out_infinite]" />
         </div>
 
-        <div className="relative flex flex-col justify-between gap-3 overflow-y-auto bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_34%),linear-gradient(135deg,rgba(250,204,21,0.16),rgba(0,0,0,0.88)_44%)] p-3 sm:gap-6 sm:p-8 md:p-10">
-          <div>
+        <div className="relative bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_34%),linear-gradient(135deg,rgba(250,204,21,0.14),rgba(0,0,0,0.94)_48%)] p-4 sm:p-6">
+          <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end sm:gap-8">
+            <div>
             <p className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-200 sm:py-2 sm:text-[11px]">
               Real prize draw
             </p>
             <h2
               id="giveaway-modal-title"
-              className="mt-2.5 text-2xl font-black leading-[0.95] text-white sm:mt-5 sm:text-5xl"
+              className="mt-2.5 text-2xl font-black leading-[1.02] text-white sm:mt-3 sm:text-4xl"
             >
-              Win real prizes. Collect tickets. Join the mega draw.
+              One entry. Two prize draws.
             </h2>
-            <p className="mt-2.5 text-xs leading-relaxed text-zinc-200 sm:mt-5 sm:text-base">
+            <p className="mt-2 text-xs leading-relaxed text-zinc-200 sm:text-sm">
               Buy the $7 six-month Entry Pass before August 31 to receive 3
               base tickets for the New Year draw and automatic entry into the
               BMW X-7 mega draw on 07.07.2027.
             </p>
 
-            <div className="mt-3 grid gap-1.5 sm:mt-6 sm:grid-cols-2 sm:gap-3">
+            <div className="mt-3 grid grid-cols-2 gap-1.5 sm:gap-2">
               {[
                 "7 x iPhone 17 Pro Max",
                 "7 x AirPods Pro",
@@ -96,7 +87,7 @@ export default function HomeGiveawayModal() {
               ].map((item) => (
                 <div
                   key={item}
-                  className="rounded-xl border border-white/10 bg-black/50 px-2.5 py-2 text-[11px] font-black text-amber-50 sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm"
+                  className="rounded-xl border border-white/10 bg-black/50 px-2.5 py-2 text-[10px] font-black text-amber-50 sm:px-3 sm:text-xs"
                 >
                   {item}
                 </div>
@@ -104,7 +95,7 @@ export default function HomeGiveawayModal() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col sm:gap-3 md:flex-row">
+          <div className="grid grid-cols-2 gap-2 sm:w-[300px]">
             <Link
               href="/sweepstakes"
               onClick={closeModal}
@@ -120,7 +111,25 @@ export default function HomeGiveawayModal() {
               Maybe Later
             </button>
           </div>
+          </div>
         </div>
+        <style jsx>{`
+          @keyframes giveawaySheen {
+            0%,
+            22% {
+              transform: translateX(0) rotate(12deg);
+              opacity: 0;
+            }
+            34% {
+              opacity: 0.8;
+            }
+            56%,
+            100% {
+              transform: translateX(610%) rotate(12deg);
+              opacity: 0;
+            }
+          }
+        `}</style>
       </div>
     </div>
   );

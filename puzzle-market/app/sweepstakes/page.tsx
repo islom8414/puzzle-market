@@ -228,6 +228,16 @@ export default function SweepstakesPage() {
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState<Date | null>(null);
   const [rulesAccepted, setRulesAccepted] = useState(false);
+  const [activePrizeIndex, setActivePrizeIndex] = useState(0);
+
+  useEffect(() => {
+    const slideCount = animatedPrizes.length + 1;
+    const timer = window.setInterval(() => {
+      setActivePrizeIndex((current) => (current + 1) % slideCount);
+    }, 2800);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -413,10 +423,10 @@ export default function SweepstakesPage() {
                   {animatedPrizes.map((prize, index) => (
                     <div
                       key={prize.title}
-                      className={`animated-prize ${prize.className}`}
-                      style={{
-                        animationDelay: `${-(15 - index * 2)}s`,
-                      }}
+                      className={`animated-prize ${prize.className} ${
+                        activePrizeIndex === index ? "is-active" : ""
+                      }`}
+                      aria-hidden={activePrizeIndex !== index}
                     >
                       <div className="absolute inset-0 overflow-hidden rounded-[28px] bg-[#050505]">
                         <Image
@@ -455,7 +465,14 @@ export default function SweepstakesPage() {
                     </div>
                   ))}
 
-                  <div className="mega-car">
+                  <div
+                    className={`mega-car ${
+                      activePrizeIndex === animatedPrizes.length
+                        ? "is-active"
+                        : ""
+                    }`}
+                    aria-hidden={activePrizeIndex !== animatedPrizes.length}
+                  >
                     <div className="absolute inset-0 overflow-hidden rounded-[32px] bg-[#050505]">
                       <Image
                         src={megaPrizeImageSrc}
@@ -804,15 +821,47 @@ export default function SweepstakesPage() {
           height: calc(100% - 38px);
           overflow: hidden;
           opacity: 0;
-          transform: translate(-50%, -50%) scale(0.92) rotate(0.5deg);
+          transform: translate(-50%, -50%) scale(0.985);
           border: 1px solid rgba(251, 191, 36, 0.32);
           border-radius: 30px;
           background: #050505;
           box-shadow:
             0 30px 100px rgba(0, 0, 0, 0.58),
             0 0 70px rgba(251, 191, 36, 0.12);
-          animation: prizeCycle 15s infinite linear;
+          visibility: hidden;
+          transition:
+            opacity 620ms ease,
+            transform 720ms cubic-bezier(0.22, 1, 0.36, 1),
+            visibility 0s linear 720ms;
           will-change: opacity, transform;
+        }
+
+        .animated-prize.is-active {
+          z-index: 2;
+          visibility: visible;
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+          transition-delay: 0s;
+        }
+
+        .animated-prize::after {
+          position: absolute;
+          inset: -45%;
+          z-index: 3;
+          content: "";
+          pointer-events: none;
+          opacity: 0;
+          transform: translateX(-78%) rotate(12deg);
+          background: linear-gradient(
+            90deg,
+            transparent 44%,
+            rgba(255, 255, 255, 0.2) 50%,
+            transparent 56%
+          );
+        }
+
+        .animated-prize.is-active::after {
+          animation: prizeSheen 2.8s ease-out;
         }
 
         .animated-prize :global(img) {
@@ -841,15 +890,27 @@ export default function SweepstakesPage() {
           height: calc(100% - 36px);
           overflow: hidden;
           opacity: 0;
-          transform: translate(-50%, -50%) scale(0.9);
+          transform: translate(-50%, -50%) scale(0.985);
           border: 1px solid rgba(251, 191, 36, 0.45);
           border-radius: 34px;
           background: #020202;
           box-shadow:
             0 36px 120px rgba(0, 0, 0, 0.68),
             0 0 90px rgba(251, 191, 36, 0.26);
-          animation: carReveal 15s infinite linear;
+          visibility: hidden;
+          transition:
+            opacity 620ms ease,
+            transform 720ms cubic-bezier(0.22, 1, 0.36, 1),
+            visibility 0s linear 720ms;
           will-change: opacity, transform;
+        }
+
+        .mega-car.is-active {
+          z-index: 2;
+          visibility: visible;
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+          transition-delay: 0s;
         }
 
         .mega-car::after {
@@ -869,40 +930,18 @@ export default function SweepstakesPage() {
           animation: megaGlow 2.4s linear infinite;
         }
 
-        @keyframes prizeCycle {
-          0%,
-          11.5% {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1) rotate(0deg);
-          }
-          14% {
+        @keyframes prizeSheen {
+          0% {
             opacity: 0;
-            transform: translate(-50%, -50.5%) scale(1.012) rotate(-0.12deg);
+            transform: translateX(-78%) rotate(12deg);
           }
-          97% {
-            opacity: 0;
-            transform: translate(-50%, -49.5%) scale(0.988) rotate(0.12deg);
+          24% {
+            opacity: 0.72;
           }
-          100% {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1) rotate(0deg);
-          }
-        }
-
-        @keyframes carReveal {
-          0%,
-          81% {
-            opacity: 0;
-            transform: translate(-50%, -49.5%) scale(0.98);
-          }
-          84.5%,
-          97.5% {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-          }
+          60%,
           100% {
             opacity: 0;
-            transform: translate(-50%, -50.5%) scale(1.012);
+            transform: translateX(78%) rotate(12deg);
           }
         }
 
@@ -923,22 +962,17 @@ export default function SweepstakesPage() {
 
         @media (prefers-reduced-motion: reduce) {
           .giveaway-sparks,
-          .animated-prize,
           .mega-car {
             animation: none;
           }
 
-          .animated-prize:first-child,
+          .animated-prize,
           .mega-car {
-            opacity: 1;
+            transition: none;
           }
 
-          .animated-prize:first-child {
-            transform: translate(-50%, -50%) scale(1);
-          }
-
-          .mega-car {
-            opacity: 0;
+          .animated-prize.is-active::after {
+            animation: none;
           }
         }
 
