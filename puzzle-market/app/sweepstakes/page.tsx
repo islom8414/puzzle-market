@@ -61,6 +61,15 @@ const heroPrizeList = [
 
 const animatedPrizes = [
   {
+    title: "New Year Giveaway",
+    quantity: "3",
+    quantityLabel: "base tickets",
+    value: "Wave 1 ends August 31",
+    tag: "Prize draw",
+    className: "poster-prize",
+    imageSrc: "/giveaway/generated/new-year-giveaway-poster.png",
+  },
+  {
     title: "iPhone 17 Pro Max",
     quantity: "7",
     quantityLabel: "7 prizes",
@@ -363,7 +372,7 @@ export default function SweepstakesPage() {
                       key={prize.title}
                       className={`animated-prize ${prize.className}`}
                       style={{
-                        animationDelay: `${index * 3}s`,
+                        animationDelay: `${index * 2.35}s`,
                       }}
                     >
                       <div className="absolute inset-x-0 top-0 bottom-[132px] overflow-hidden rounded-t-[28px] bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.14),rgba(0,0,0,0)_58%),#050505]">
@@ -752,11 +761,16 @@ export default function SweepstakesPage() {
           box-shadow:
             0 30px 100px rgba(0, 0, 0, 0.58),
             0 0 70px rgba(251, 191, 36, 0.12);
-          animation: prizeCycle 18s infinite cubic-bezier(0.16, 1, 0.3, 1);
+          animation: prizeCycle 16.45s infinite cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .animated-prize :global(img) {
           filter: saturate(1.08) contrast(1.05);
+        }
+
+        .poster-prize :global(img) {
+          object-fit: contain;
+          padding: 0;
         }
 
         .phone-prize,
@@ -788,7 +802,7 @@ export default function SweepstakesPage() {
           box-shadow:
             0 36px 120px rgba(0, 0, 0, 0.68),
             0 0 90px rgba(251, 191, 36, 0.26);
-          animation: carReveal 18s infinite cubic-bezier(0.16, 1, 0.3, 1);
+          animation: carReveal 16.45s infinite cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .mega-car::after {
@@ -810,27 +824,31 @@ export default function SweepstakesPage() {
 
         @keyframes prizeCycle {
           0%,
-          13.8% {
+          11.5% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1) rotate(0deg);
           }
-          16.66%,
+          14.75%,
           100% {
             opacity: 0;
-            transform: translate(-50%, -51%) scale(1.015) rotate(-0.25deg);
+            transform: translate(-50%, -50.8%) scale(1.018) rotate(-0.2deg);
           }
         }
 
         @keyframes carReveal {
           0%,
-          81.8% {
+          83.8% {
             opacity: 0;
             transform: translate(-50%, -51%) scale(0.96);
           }
-          84%,
-          100% {
+          86.4%,
+          99.2% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.01);
           }
         }
 

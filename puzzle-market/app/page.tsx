@@ -149,52 +149,52 @@ export default async function HomePage() {
               THE COLLECTIBLE PUZZLE MARKETPLACE
             </p>
 
-            <div className="mt-5 overflow-hidden rounded-[28px] border border-amber-200/35 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.36)_52%,rgba(0,0,0,0.86))] shadow-[0_26px_90px_rgba(250,204,21,0.14)]">
+            <div className="mt-5 overflow-hidden rounded-[24px] border border-amber-200/35 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.36)_52%,rgba(0,0,0,0.86))] shadow-[0_26px_90px_rgba(250,204,21,0.14)] md:rounded-[28px]">
               <Link
                 href="/sweepstakes"
                 className="group grid gap-0 md:grid-cols-[1.08fr_0.92fr]"
               >
-                <div className="relative min-h-[220px] overflow-hidden bg-black sm:min-h-[260px] md:min-h-[300px]">
+                <div className="relative min-h-[250px] overflow-hidden bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.12),transparent_54%),#020202] sm:min-h-[300px] md:min-h-[300px]">
                   <Image
-                    src="/giveaway/generated/iphone-17-pro-max-prize.png"
+                    src="/giveaway/generated/new-year-giveaway-poster.png"
                     alt="Puzzle Market New Year Giveaway prizes"
                     fill
                     sizes="(min-width: 1024px) 44vw, 100vw"
-                    className="object-cover opacity-90 transition duration-500 group-hover:scale-[1.035]"
+                    className="object-contain object-center opacity-95 transition duration-500 group-hover:scale-[1.015]"
                     priority
                   />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(250,204,21,0.26),transparent_28%),linear-gradient(90deg,rgba(0,0,0,0.9)_0%,rgba(0,0,0,0.38)_62%,rgba(0,0,0,0.1)_100%)]" />
-                  <div className="absolute left-4 top-4 rounded-2xl border border-amber-200/35 bg-black/70 px-4 py-3 backdrop-blur">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-200">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(250,204,21,0.26),transparent_28%),linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.18)_48%,rgba(0,0,0,0.88)_100%)] md:bg-[radial-gradient(circle_at_78%_18%,rgba(250,204,21,0.26),transparent_28%),linear-gradient(90deg,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.3)_62%,rgba(0,0,0,0.06)_100%)]" />
+                  <div className="absolute left-3 top-3 rounded-2xl border border-amber-200/35 bg-black/70 px-3 py-2 backdrop-blur sm:left-4 sm:top-4 sm:px-4 sm:py-3">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-200 sm:text-[10px]">
                       1st draw
                     </p>
-                    <p className="mt-1 text-xl font-black text-white">
+                    <p className="mt-1 text-base font-black text-white sm:text-xl">
                       Dec 25, 2026
                     </p>
                   </div>
-                  <div className="absolute bottom-4 left-4 right-4 rounded-[24px] border border-white/10 bg-black/72 p-4 backdrop-blur">
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-cyan-200">
+                  <div className="absolute bottom-3 left-3 right-3 rounded-[22px] border border-white/10 bg-black/74 p-3 backdrop-blur sm:bottom-4 sm:left-4 sm:right-4 sm:rounded-[24px] sm:p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-200 sm:text-[11px]">
                       New Year Grand Giveaway
                     </p>
-                    <h2 className="mt-2 text-3xl font-black leading-none text-white sm:text-4xl">
+                    <h2 className="mt-1.5 text-2xl font-black leading-none text-white sm:mt-2 sm:text-4xl">
                       Join the prize draw
                     </h2>
-                    <p className="mt-2 text-sm font-bold text-amber-100">
+                    <p className="mt-1.5 text-xs font-bold text-amber-100 sm:mt-2 sm:text-sm">
                       7 x iPhone 17 Pro Max, 7 x AirPods Pro, 84 puzzle credit
                       prizes
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-col justify-between gap-5 p-4 sm:p-5">
+                <div className="flex flex-col justify-between gap-4 p-4 sm:p-5">
                   <div>
-                    <div className="inline-flex rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-cyan-200">
+                    <div className="inline-flex rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-200 sm:py-2 sm:text-[11px]">
                       Wave 1 ends August 31
                     </div>
-                    <h3 className="mt-4 text-2xl font-black leading-tight md:text-3xl">
+                    <h3 className="mt-3 text-xl font-black leading-tight sm:text-2xl md:mt-4 md:text-3xl">
                       New Year giveaway is open.
                     </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-zinc-300">
+                    <p className="mt-2 text-sm leading-relaxed text-zinc-300 md:mt-3">
                       Buy the $7 six-month Entry Pass before August 31 and get
                       3 base tickets, plus automatic entry into the 07.07.2027
                       BMW X-7 mega draw.
@@ -203,7 +203,7 @@ export default async function HomePage() {
 
                   <div>
                     <GiveawayCountdown compact />
-                    <div className="mt-4 flex flex-wrap gap-2 text-xs font-black">
+                    <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-black sm:mt-4 sm:gap-2 sm:text-xs">
                       {[
                         "Real prize draw",
                         "Automatic tickets",
@@ -211,13 +211,13 @@ export default async function HomePage() {
                       ].map((item) => (
                         <span
                           key={item}
-                          className="rounded-full border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-amber-100"
+                          className="rounded-full border border-amber-200/20 bg-amber-200/10 px-2.5 py-1.5 text-amber-100 sm:px-3 sm:py-2"
                         >
                           {item}
                         </span>
                       ))}
                     </div>
-                    <div className="mt-4 inline-flex rounded-2xl bg-amber-300 px-5 py-3 font-black text-black transition group-hover:bg-amber-200">
+                    <div className="mt-3 inline-flex rounded-2xl bg-amber-300 px-4 py-2.5 text-sm font-black text-black transition group-hover:bg-amber-200 sm:mt-4 sm:px-5 sm:py-3 sm:text-base">
                       Go to Giveaway
                     </div>
                   </div>

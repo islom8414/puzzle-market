@@ -67,22 +67,38 @@ export default function GiveawayCountdown({
 
   return (
     <div
-      className={`grid grid-cols-4 gap-2 ${
+      className={`grid grid-cols-4 ${
         compact ? "text-center" : ""
-      }`}
+      } ${compact ? "gap-1.5 sm:gap-2" : "gap-2"}`}
     >
       {items.map(([label, value]) => (
         <div
           key={label}
-          className="rounded-2xl border border-amber-200/20 bg-black/45 px-2 py-2"
+          className={`border border-amber-200/20 bg-black/45 ${
+            compact
+              ? "rounded-xl px-1.5 py-1.5 sm:rounded-2xl sm:px-2 sm:py-2"
+              : "rounded-2xl px-2 py-2"
+          }`}
         >
-          <p className="text-base font-black text-amber-200 md:text-xl">
+          <p
+            className={`font-black text-amber-200 ${
+              compact
+                ? "text-sm sm:text-base md:text-xl"
+                : "text-base md:text-xl"
+            }`}
+          >
             {String(value).padStart(
               2,
               "0"
             )}
           </p>
-          <p className="mt-0.5 text-[10px] font-black uppercase text-zinc-400 md:text-[11px]">
+          <p
+            className={`mt-0.5 font-black uppercase text-zinc-400 ${
+              compact
+                ? "text-[8px] sm:text-[10px] md:text-[11px]"
+                : "text-[10px] md:text-[11px]"
+            }`}
+          >
             {label}
           </p>
         </div>
