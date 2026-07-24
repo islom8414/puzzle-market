@@ -57,12 +57,12 @@ export default function HomeGiveawayModal() {
         <div className="relative bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_34%),linear-gradient(135deg,rgba(250,204,21,0.14),rgba(0,0,0,0.94)_48%)] p-3.5 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end sm:gap-8">
             <div>
-            <p className="inline-flex max-w-full rounded-full border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.1em] text-cyan-200 sm:px-3 sm:py-2 sm:text-[11px]">
+            <p className="inline-flex max-w-full items-center rounded-full border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-2 text-[9px] font-black uppercase leading-none tracking-[0.08em] text-cyan-200 sm:px-3 sm:text-[11px]">
               Real prize draw
             </p>
             <h2
               id="giveaway-modal-title"
-              className="mt-2 text-[25px] font-black leading-[1.02] text-white sm:mt-3 sm:text-4xl"
+              className="mt-2 text-[25px] font-black leading-[1.08] text-white sm:mt-3 sm:text-4xl"
             >
               One entry. Two prize draws.
             </h2>
@@ -81,7 +81,7 @@ export default function HomeGiveawayModal() {
               ].map((item) => (
                 <div
                   key={item}
-                  className="min-w-0 rounded-xl border border-white/10 bg-black/50 px-2 py-1.5 text-[9.5px] font-black leading-tight text-amber-50 sm:px-3 sm:py-2 sm:text-xs"
+                  className="min-w-0 rounded-xl border border-white/10 bg-black/50 px-2 py-2 text-[9.5px] font-black leading-[1.18] text-amber-50 sm:px-3 sm:text-xs"
                 >
                   {item}
                 </div>

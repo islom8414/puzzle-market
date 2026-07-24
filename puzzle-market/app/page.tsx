@@ -168,14 +168,14 @@ export default async function HomePage() {
                 <div className="flex flex-col justify-between gap-4 p-4 sm:p-5">
                   <div>
                     <div className="flex flex-wrap gap-2">
-                      <div className="rounded-full border border-amber-200/30 bg-amber-200/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-amber-100 sm:py-2 sm:text-[11px]">
+                      <div className="inline-flex items-center rounded-full border border-amber-200/30 bg-amber-200/10 px-3 py-2 text-[10px] font-black uppercase leading-none tracking-[0.1em] text-amber-100 sm:text-[11px]">
                         1st draw: Dec 25, 2026
                       </div>
-                      <div className="rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-200 sm:py-2 sm:text-[11px]">
+                      <div className="inline-flex items-center rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-2 text-[10px] font-black uppercase leading-none tracking-[0.1em] text-cyan-200 sm:text-[11px]">
                         Wave 1 ends August 31
                       </div>
                     </div>
-                    <h3 className="mt-3 text-[25px] font-black leading-[1.04] sm:text-2xl md:mt-4 md:text-3xl">
+                    <h3 className="mt-3 text-[25px] font-black leading-[1.08] sm:text-2xl md:mt-4 md:text-3xl">
                       New Year giveaway is open.
                     </h3>
                     <p className="mt-2 text-sm leading-[1.55] text-zinc-300 md:mt-3 md:leading-relaxed">
@@ -195,7 +195,7 @@ export default async function HomePage() {
                       ].map((item) => (
                         <span
                           key={item}
-                          className="inline-flex rounded-full border border-amber-200/20 bg-amber-200/10 px-2.5 py-1.5 text-amber-100 sm:px-3 sm:py-2"
+                          className="inline-flex items-center rounded-full border border-amber-200/20 bg-amber-200/10 px-2.5 py-2 text-amber-100 sm:px-3"
                         >
                           {item}
                         </span>

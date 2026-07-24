@@ -291,14 +291,14 @@ export default function SweepstakesPage() {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.36),transparent_38%,rgba(251,191,36,0.06)_65%,rgba(0,0,0,0.22))]" />
           <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
 
-          <div className="relative grid gap-8 p-5 sm:p-7 md:p-9 lg:min-h-[720px] lg:grid-cols-[0.56fr_1fr] lg:items-stretch lg:p-10 xl:p-12">
-            <div className="flex max-w-xl flex-col justify-between gap-8 py-1 pl-3 sm:pl-0 lg:py-4 lg:pl-3 xl:pl-0">
+          <div className="relative grid gap-8 px-6 pb-6 pt-8 sm:px-7 sm:pb-7 sm:pt-9 md:px-9 md:pb-9 md:pt-10 lg:min-h-[720px] lg:grid-cols-[0.56fr_1fr] lg:items-stretch lg:px-10 lg:pb-10 lg:pt-12 xl:px-12 xl:pb-12 xl:pt-14">
+            <div className="flex max-w-xl flex-col justify-between gap-8 py-1 lg:py-3">
               <div>
-                <div className="inline-flex max-w-full rounded-full border border-amber-200/30 bg-amber-200/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-amber-100 shadow-[0_0_28px_rgba(251,191,36,0.12)] sm:text-[11px]">
+                <div className="inline-flex max-w-full items-center rounded-full border border-amber-200/30 bg-amber-200/10 px-4 py-2.5 text-[10px] font-black uppercase leading-none tracking-[0.16em] text-amber-100 shadow-[0_0_28px_rgba(251,191,36,0.12)] sm:text-[11px]">
                   New Year Grand Giveaway
                 </div>
 
-                <h1 className="mt-6 text-[42px] font-black leading-[0.95] sm:text-5xl md:text-[54px] lg:text-[58px] xl:text-[64px]">
+                <h1 className="mt-6 text-[42px] font-black leading-[1.04] sm:text-5xl md:text-[54px] lg:text-[58px] xl:text-[64px]">
                   New Year prizes. Live tickets. Mega BMW draw.
                 </h1>
 
@@ -379,22 +379,22 @@ export default function SweepstakesPage() {
             </div>
 
             <div className="flex min-w-0 flex-col gap-4">
-              <div className="relative flex min-h-[620px] flex-col gap-4 overflow-hidden rounded-[30px] border border-amber-200/30 bg-black/64 p-4 shadow-[inset_0_0_90px_rgba(251,191,36,0.1),0_22px_80px_rgba(0,0,0,0.45)] backdrop-blur md:min-h-[650px] md:p-5 lg:min-h-full">
+              <div className="relative flex min-h-[620px] flex-col gap-4 overflow-hidden rounded-[30px] border border-amber-200/30 bg-black/64 p-5 shadow-[inset_0_0_90px_rgba(251,191,36,0.1),0_22px_80px_rgba(0,0,0,0.45)] backdrop-blur md:min-h-[650px] md:p-6 lg:min-h-full">
                 <div className="relative z-20 grid gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3">
-                  <div className="min-w-0 rounded-2xl border border-amber-200/30 bg-black/78 px-3 py-3 shadow-[0_12px_35px_rgba(0,0,0,0.38)] sm:min-w-[150px] sm:shrink-0 sm:px-4">
-                    <p className="whitespace-nowrap text-[8px] font-black uppercase tracking-[0.1em] text-amber-200 sm:text-[9px]">
+                  <div className="min-w-0 rounded-2xl border border-amber-200/30 bg-black/78 px-4 py-3.5 shadow-[0_12px_35px_rgba(0,0,0,0.38)] sm:min-w-[180px] sm:shrink-0">
+                    <p className="whitespace-nowrap text-[8px] font-black uppercase leading-none tracking-[0.08em] text-amber-200 sm:text-[9px]">
                       1st draw
                     </p>
-                    <p className="mt-1 text-base font-black leading-tight sm:text-xl">
+                    <p className="mt-1.5 whitespace-nowrap text-base font-black leading-[1.08] sm:text-xl">
                       {firstDrawLabel}
                     </p>
                   </div>
 
-                  <div className="min-w-0 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-3 py-3 shadow-[0_12px_35px_rgba(0,0,0,0.32)] sm:min-w-[138px] sm:shrink-0 sm:px-4 sm:text-right">
-                    <p className="whitespace-nowrap text-[8px] font-black uppercase tracking-[0.1em] text-cyan-200 sm:text-[9px]">
+                  <div className="min-w-0 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-3.5 shadow-[0_12px_35px_rgba(0,0,0,0.32)] sm:min-w-[168px] sm:shrink-0 sm:text-right">
+                    <p className="whitespace-nowrap text-[8px] font-black uppercase leading-none tracking-[0.08em] text-cyan-200 sm:text-[9px]">
                       Mega draw
                     </p>
-                    <p className="mt-1 text-base font-black leading-tight sm:text-xl">
+                    <p className="mt-1.5 whitespace-nowrap text-base font-black leading-[1.08] sm:text-xl">
                       {megaDrawLabel}
                     </p>
                   </div>
