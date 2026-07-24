@@ -94,7 +94,7 @@ export default function GiveawayPrizeShowcase({
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % prizeSlides.length);
-    }, mode === "modal" ? 3600 : 4200);
+    }, mode === "modal" ? 2600 : 3000);
 
     return () => window.clearInterval(timer);
   }, [mode]);

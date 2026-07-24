@@ -1,6 +1,11 @@
 ﻿"use client";
 
-import { useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -125,11 +130,28 @@ function getSubscribeReturnPath(tier: PlanTier) {
   }`;
 }
 
+function isSweepstakesCheckoutIntent() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  return (
+    params.get("plan") === "sweepstakes" &&
+    params.get("checkout") === "1" &&
+    params.get("rules") === "accepted"
+  );
+}
+
 export default function SubscribePage() {
   const router = useRouter();
+  const autoCheckoutStarted = useRef(false);
 
   const [loadingTier, setLoadingTier] =
     useState<PlanTier | null>(null);
+  const [autoCheckoutActive, setAutoCheckoutActive] =
+    useState(() => isSweepstakesCheckoutIntent());
 
   const [errorMessage, setErrorMessage] =
     useState("");
@@ -143,16 +165,31 @@ export default function SubscribePage() {
 
       return (
         params.get("plan") === "sweepstakes" &&
-        window.sessionStorage.getItem("sweepstakes-rules-accepted") === "true"
+        (params.get("rules") === "accepted" ||
+          window.sessionStorage.getItem("sweepstakes-rules-accepted") ===
+            "true")
       );
     });
 
-  async function startSubscription(tier: PlanTier) {
-    if (tier === "sweepstakes" && !sweepstakesRulesAccepted) {
+  const startSubscription = useCallback(
+    async (
+      tier: PlanTier,
+      options?: {
+        sweepstakesRulesAccepted?: boolean;
+        auto?: boolean;
+      }
+    ) => {
+      const acceptedRules =
+        options?.sweepstakesRulesAccepted ??
+        sweepstakesRulesAccepted;
+
+    if (tier === "sweepstakes" && !acceptedRules) {
       const message =
         "Accept the Official Giveaway Rules before continuing.";
       setErrorMessage(message);
-      alert(message);
+      if (!options?.auto) {
+        alert(message);
+      }
       return;
     }
 
@@ -165,8 +202,13 @@ export default function SubscribePage() {
       } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
+        const returnPath =
+          tier === "sweepstakes" && acceptedRules
+            ? "/subscribe?plan=sweepstakes&checkout=1&rules=accepted&source=subscribe#sweepstakes-entry-pass"
+            : getSubscribeReturnPath(tier);
+
         router.push(
-          `/register?next=${encodeURIComponent(getSubscribeReturnPath(tier))}&intent=${
+          `/register?next=${encodeURIComponent(returnPath)}&intent=${
             tier === "sweepstakes" ? "giveaway" : "trial"
           }`
         );
@@ -182,7 +224,7 @@ export default function SubscribePage() {
         body: JSON.stringify({
           tier,
           sweepstakesRulesAccepted:
-            tier === "sweepstakes" ? sweepstakesRulesAccepted : undefined,
+            tier === "sweepstakes" ? acceptedRules : undefined,
         }),
       });
 
@@ -229,10 +271,36 @@ export default function SubscribePage() {
           : "Subscription checkout failed";
 
       setErrorMessage(message);
-      alert(message);
+      if (!options?.auto) {
+        alert(message);
+      }
       setLoadingTier(null);
     }
-  }
+    },
+    [router, sweepstakesRulesAccepted]
+  );
+
+  useEffect(() => {
+    if (
+      !isSweepstakesCheckoutIntent() ||
+      autoCheckoutStarted.current
+    ) {
+      return;
+    }
+
+    autoCheckoutStarted.current = true;
+    setAutoCheckoutActive(true);
+    setSweepstakesRulesAccepted(true);
+    window.sessionStorage.setItem(
+      "sweepstakes-rules-accepted",
+      "true"
+    );
+
+    void startSubscription("sweepstakes", {
+      sweepstakesRulesAccepted: true,
+      auto: true,
+    });
+  }, [startSubscription]);
 
   return (
     <main
@@ -270,9 +338,9 @@ export default function SubscribePage() {
         </div>
 
         <div className="mt-4 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] px-4 py-3 text-sm font-bold text-cyan-100">
-          Bonus puzzle credit applies to Starter, Premium, and Creator plans.
-          The New Year Entry Pass is built for giveaway tickets and 6-month
-          marketplace access.
+          {autoCheckoutActive
+            ? "Opening the secure Stripe checkout for your New Year Entry Pass..."
+            : "Bonus puzzle credit applies to Starter, Premium, and Creator plans. The New Year Entry Pass is built for giveaway tickets and 6-month marketplace access."}
         </div>
 
         <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-4">

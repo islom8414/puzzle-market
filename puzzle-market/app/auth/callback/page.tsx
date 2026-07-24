@@ -11,8 +11,10 @@ import {
 import { supabase } from "@/lib/supabase";
 import {
   hasAcceptedCurrentTerms,
+  isGiveawayCheckoutIntent,
   termsAcceptPath,
 } from "@/lib/terms-status";
+import { TERMS_VERSION } from "@/lib/legal";
 
 export default function AuthCallbackPage() {
   const router =
@@ -38,6 +40,8 @@ export default function AuthCallbackPage() {
       finalNext.startsWith(
         "/reset-password?"
       );
+    const canAcceptTermsFromEntry =
+      isGiveawayCheckoutIntent(finalNext);
 
     function needsTerms(
       session: NonNullable<
@@ -55,6 +59,17 @@ export default function AuthCallbackPage() {
           unknown
         >
       );
+    }
+
+    async function acceptTermsFromEntry() {
+      await supabase.auth.updateUser({
+        data: {
+          terms_version:
+            TERMS_VERSION,
+          terms_accepted_at:
+            new Date().toISOString(),
+        },
+      });
     }
 
     async function finishLogin() {
@@ -92,6 +107,12 @@ export default function AuthCallbackPage() {
         }
 
         if (needsTerms(session)) {
+          if (canAcceptTermsFromEntry) {
+            await acceptTermsFromEntry();
+            router.replace(finalNext);
+            return;
+          }
+
           router.replace(
             termsAcceptPath(finalNext)
           );
@@ -132,6 +153,12 @@ export default function AuthCallbackPage() {
             }
 
             if (needsTerms(exchangedSession)) {
+              if (canAcceptTermsFromEntry) {
+                await acceptTermsFromEntry();
+                router.replace(finalNext);
+                return;
+              }
+
               router.replace(
                 termsAcceptPath(finalNext)
               );
@@ -165,6 +192,12 @@ export default function AuthCallbackPage() {
             ) {
               if (needsTerms(nextSession)) {
                 if (isPasswordRecovery) {
+                  router.replace(finalNext);
+                  return;
+                }
+
+                if (canAcceptTermsFromEntry) {
+                  await acceptTermsFromEntry();
                   router.replace(finalNext);
                   return;
                 }

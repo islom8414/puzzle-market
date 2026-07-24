@@ -120,6 +120,8 @@ const megaDrawLabel =
   sweepstakesMegaDrawDate === "2027-07-07"
     ? "07.07.2027"
     : sweepstakesMegaDrawDate;
+const sweepstakesCheckoutIntentPath =
+  "/subscribe?plan=sweepstakes&checkout=1&rules=accepted&source=giveaway#sweepstakes-entry-pass";
 
 function getCountdownParts(targetDate: Date, currentDate: Date) {
   const distance = Math.max(
@@ -172,6 +174,7 @@ export default function SweepstakesPage() {
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState<Date | null>(null);
   const [rulesAccepted, setRulesAccepted] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -221,7 +224,7 @@ export default function SweepstakesPage() {
   const totalTickets = summary?.totalTickets || 0;
   const countdown = now ? getCountdownParts(firstWaveEnd, now) : null;
 
-  function continueToEntryPass() {
+  async function continueToEntryPass() {
     if (!rulesAccepted) {
       return;
     }
@@ -230,9 +233,51 @@ export default function SweepstakesPage() {
       "sweepstakes-rules-accepted",
       "true"
     );
-    router.push(
-      "/subscribe?plan=sweepstakes#sweepstakes-entry-pass"
-    );
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      router.push(
+        `/register?next=${encodeURIComponent(
+          sweepstakesCheckoutIntentPath
+        )}&intent=giveaway`
+      );
+      return;
+    }
+
+    setCheckoutLoading(true);
+
+    try {
+      const response = await apiFetch("/api/create-subscription-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          tier: "sweepstakes",
+          sweepstakesRulesAccepted: true,
+        }),
+      });
+
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : {};
+
+      if (!response.ok || !data.url) {
+        throw new Error(data.error || "Stripe checkout failed");
+      }
+
+      window.location.assign(data.url);
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Stripe checkout failed"
+      );
+      setCheckoutLoading(false);
+    }
   }
 
   return (
@@ -304,10 +349,12 @@ export default function SweepstakesPage() {
                   <button
                     type="button"
                     onClick={continueToEntryPass}
-                    disabled={!rulesAccepted}
+                    disabled={!rulesAccepted || checkoutLoading}
                     className="rounded-2xl bg-amber-300 px-6 py-4 text-center font-black text-black shadow-[0_16px_40px_rgba(251,191,36,0.22)] transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none"
                   >
-                    Participate - $7 / 6 months
+                    {checkoutLoading
+                      ? "Opening Stripe..."
+                      : "Participate - $7 / 6 months"}
                   </button>
 
                   <Link

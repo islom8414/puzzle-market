@@ -13,7 +13,11 @@ import {
 import { sanitizeUsername } from "@/lib/display-name";
 import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
-import { termsAcceptPath } from "@/lib/terms-status";
+import {
+  isGiveawayCheckoutIntent,
+  termsAcceptPath,
+} from "@/lib/terms-status";
+import { TERMS_VERSION } from "@/lib/legal";
 import {
   trackAuthError,
   trackSignUp,
@@ -67,6 +71,14 @@ function getLoginHref() {
   }
 
   return "/login";
+}
+
+function getPostRegisterPath() {
+  const nextPath = getSafeNextPath();
+
+  return isGiveawayCheckoutIntent(nextPath)
+    ? nextPath
+    : termsAcceptPath(nextPath);
 }
 
 export default function RegisterPage() {
@@ -172,6 +184,10 @@ export default function RegisterPage() {
                 `/auth/callback?next=${encodeURIComponent(getSafeNextPath())}`
               ),
             data: {
+              terms_version:
+                TERMS_VERSION,
+              terms_accepted_at:
+                new Date().toISOString(),
               username:
                 cleanUsername,
               referral_code:
@@ -238,9 +254,7 @@ export default function RegisterPage() {
 
           setTimeout(() => {
             window.location.href =
-              termsAcceptPath(
-                getSafeNextPath()
-              );
+              getPostRegisterPath();
           }, 1200);
         } else {
           localStorage.setItem(

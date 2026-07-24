@@ -10,8 +10,10 @@ import { getAuthRedirectUrl } from "@/lib/site-url";
 import { supabase } from "@/lib/supabase";
 import {
   hasAcceptedCurrentTerms,
+  isGiveawayCheckoutIntent,
   termsAcceptPath,
 } from "@/lib/terms-status";
+import { TERMS_VERSION } from "@/lib/legal";
 import { trackLogin } from "@/lib/analytics";
 
 export default function LoginPage() {
@@ -72,10 +74,21 @@ export default function LoginPage() {
             >
           )
         ) {
+          if (isGiveawayCheckoutIntent(nextPath)) {
+            await supabase.auth.updateUser({
+              data: {
+                terms_version:
+                  TERMS_VERSION,
+                terms_accepted_at:
+                  new Date().toISOString(),
+              },
+            });
+          } else {
           window.location.assign(
             termsAcceptPath(nextPath)
           );
           return;
+          }
         }
 
         const profile =
