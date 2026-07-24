@@ -156,20 +156,17 @@ export default async function HomePage() {
               >
                 <div className="relative min-h-[250px] overflow-hidden bg-[#020202] sm:min-h-[300px] md:min-h-[300px]">
                   <GiveawayPrizeShowcase mode="compact" />
-                  <div className="absolute left-3 top-3 rounded-2xl border border-amber-200/35 bg-black/70 px-3 py-2 backdrop-blur sm:left-4 sm:top-4 sm:px-4 sm:py-3">
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-200 sm:text-[10px]">
-                      1st draw
-                    </p>
-                    <p className="mt-1 text-base font-black text-white sm:text-xl">
-                      Dec 25, 2026
-                    </p>
-                  </div>
                 </div>
 
                 <div className="flex flex-col justify-between gap-4 p-4 sm:p-5">
                   <div>
-                    <div className="inline-flex rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-cyan-200 sm:py-2 sm:text-[11px]">
-                      Wave 1 ends August 31
+                    <div className="flex flex-wrap gap-2">
+                      <div className="rounded-full border border-amber-200/30 bg-amber-200/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-amber-100 sm:py-2 sm:text-[11px]">
+                        1st draw: Dec 25, 2026
+                      </div>
+                      <div className="rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-200 sm:py-2 sm:text-[11px]">
+                        Wave 1 ends August 31
+                      </div>
                     </div>
                     <h3 className="mt-3 text-xl font-black leading-tight sm:text-2xl md:mt-4 md:text-3xl">
                       New Year giveaway is open.
@@ -183,7 +180,7 @@ export default async function HomePage() {
 
                   <div>
                     <GiveawayCountdown compact />
-                    <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-black sm:mt-4 sm:gap-2 sm:text-xs">
+                    <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-black leading-none sm:mt-4 sm:gap-2.5 sm:text-xs">
                       {[
                         "Real prize draw",
                         "Automatic tickets",
@@ -191,7 +188,7 @@ export default async function HomePage() {
                       ].map((item) => (
                         <span
                           key={item}
-                          className="rounded-full border border-amber-200/20 bg-amber-200/10 px-2.5 py-1.5 text-amber-100 sm:px-3 sm:py-2"
+                          className="inline-flex rounded-full border border-amber-200/20 bg-amber-200/10 px-2.5 py-1.5 text-amber-100 sm:px-3 sm:py-2"
                         >
                           {item}
                         </span>

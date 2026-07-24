@@ -12,7 +12,7 @@ const prizeSlides = [
     detail: "84 puzzle credits + BMW X-7 mega draw entry.",
     badge: "Lucky Grand Giveaway",
     imageSrc: "/giveaway/generated/grand-giveaway-all-prizes-v3.png",
-    imageClassName: "object-cover object-center",
+    imageClassName: "object-contain object-center",
     metric: "98",
     metricLabel: "prizes",
     isAllPrizes: true,
@@ -24,7 +24,7 @@ const prizeSlides = [
     detail: "Enter before August 31 for the strongest Wave 1 ticket boost.",
     badge: "Grand prize",
     imageSrc: "/giveaway/generated/iphone-17-pro-max-prize.png",
-    imageClassName: "object-cover object-center",
+    imageClassName: "object-contain object-center",
     metric: "7",
     metricLabel: "winners",
   },
@@ -34,7 +34,7 @@ const prizeSlides = [
     detail: "A bright audio prize drop for New Year winners.",
     badge: "Audio prize",
     imageSrc: "/giveaway/generated/airpods-prize.png",
-    imageClassName: "object-cover object-center",
+    imageClassName: "object-contain object-center",
     metric: "7",
     metricLabel: "winners",
   },
@@ -44,7 +44,7 @@ const prizeSlides = [
     detail: "Use credit toward puzzle pieces and collection building.",
     badge: "Puzzle credit",
     imageSrc: "/giveaway/generated/puzzle-credit-100.png",
-    imageClassName: "object-cover object-center",
+    imageClassName: "object-contain object-center",
     metric: "$100",
     metricLabel: "credit",
   },
@@ -54,7 +54,7 @@ const prizeSlides = [
     detail: "More ways to keep collecting after the draw.",
     badge: "Puzzle credit",
     imageSrc: "/giveaway/generated/puzzle-credit-10.png",
-    imageClassName: "object-cover object-center",
+    imageClassName: "object-contain object-center",
     metric: "$10",
     metricLabel: "credit",
   },
@@ -64,7 +64,7 @@ const prizeSlides = [
     detail: "Small wins spread across more collectors.",
     badge: "Bonus prizes",
     imageSrc: "/giveaway/generated/puzzle-credit-1-bonus.png",
-    imageClassName: "object-cover object-center",
+    imageClassName: "object-contain object-center",
     metric: "70",
     metricLabel: "winners",
   },
@@ -74,7 +74,7 @@ const prizeSlides = [
     detail: "1 winner. Wave 1 entry unlocks the mega draw automatically.",
     badge: "Mega draw",
     imageSrc: "/giveaway/generated/bmw-x7-mega-draw-only-v3.png",
-    imageClassName: "object-cover object-center",
+    imageClassName: "object-contain object-center",
     metric: "1",
     metricLabel: "winner",
     isMega: true,
@@ -101,8 +101,6 @@ export default function GiveawayPrizeShowcase({
 
   return (
     <div className={`giveaway-showcase ${mode} ${className}`}>
-      <div className="spark-field" />
-      <div className="light-rig" />
       <div className="showcase-track">
         {prizeSlides.map((slide, index) => (
           <article
@@ -182,33 +180,11 @@ export default function GiveawayPrizeShowcase({
           aspect-ratio: 16 / 9;
         }
 
-        .spark-field,
-        .light-rig {
+        .showcase-track {
           position: absolute;
-          inset: 0;
-          pointer-events: none;
-          z-index: 2;
+          inset: 16px 0 0;
         }
 
-        .spark-field {
-          opacity: 0.34;
-          background:
-            radial-gradient(circle at 14% 22%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
-            radial-gradient(circle at 73% 16%, rgba(125, 211, 252, 0.62) 0 1px, transparent 2px),
-            radial-gradient(circle at 86% 60%, rgba(251, 191, 36, 0.72) 0 1px, transparent 2px),
-            radial-gradient(circle at 38% 82%, rgba(255, 255, 255, 0.52) 0 1px, transparent 2px);
-          animation: sparkDrift 18s linear infinite;
-        }
-
-        .light-rig {
-          inset: -20%;
-          background: radial-gradient(circle at 70% 18%, rgba(34, 211, 238, 0.18), transparent 28%);
-          mix-blend-mode: screen;
-          opacity: 0.55;
-          animation: ambientGlow 7s ease-in-out infinite alternate;
-        }
-
-        .showcase-track,
         .showcase-slide {
           position: absolute;
           inset: 0;
@@ -240,6 +216,9 @@ export default function GiveawayPrizeShowcase({
           position: relative;
           min-height: 0;
           overflow: hidden;
+          background:
+            radial-gradient(circle at 50% 48%, rgba(34, 211, 238, 0.08), transparent 38%),
+            linear-gradient(180deg, #061014, #030303);
         }
 
         .showcase-slide.is-active .slide-media {
@@ -250,15 +229,14 @@ export default function GiveawayPrizeShowcase({
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(circle at 68% 42%, transparent 0 38%, rgba(0, 0, 0, 0.12) 70%, rgba(0, 0, 0, 0.28) 100%),
-            linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.06) 42%, rgba(0, 0, 0, 0.03) 72%, rgba(0, 0, 0, 0.18)),
-            linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.02) 76%, rgba(0, 0, 0, 0.16));
+            linear-gradient(90deg, rgba(0, 0, 0, 0.14), transparent 24%, transparent 78%, rgba(0, 0, 0, 0.1)),
+            linear-gradient(180deg, rgba(0, 0, 0, 0.02), transparent 76%, rgba(0, 0, 0, 0.08));
         }
 
         .mega-slide .slide-vignette {
           background:
-            linear-gradient(90deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.04) 42%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.12)),
-            linear-gradient(180deg, transparent, transparent 76%, rgba(0, 0, 0, 0.14));
+            linear-gradient(90deg, rgba(0, 0, 0, 0.12), transparent 28%, transparent 80%, rgba(0, 0, 0, 0.1)),
+            linear-gradient(180deg, transparent, transparent 80%, rgba(0, 0, 0, 0.08));
         }
 
         .headlight-flash {
@@ -284,12 +262,9 @@ export default function GiveawayPrizeShowcase({
           border-top: 1px solid rgba(251, 191, 36, 0.26);
           background:
             radial-gradient(circle at 88% 50%, rgba(251, 191, 36, 0.16), transparent 26%),
-            linear-gradient(135deg, rgba(0, 0, 0, 0.86), rgba(25, 18, 5, 0.8) 50%, rgba(4, 26, 30, 0.78));
+            linear-gradient(135deg, rgba(0, 0, 0, 0.94), rgba(15, 13, 8, 0.92) 50%, rgba(3, 18, 22, 0.92));
           padding: 12px 14px;
-          backdrop-filter: blur(6px);
-          box-shadow:
-            0 -10px 28px rgba(0, 0, 0, 0.32),
-            0 0 42px rgba(251, 191, 36, 0.12);
+          box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.04);
         }
 
         .copy-main {
@@ -391,7 +366,7 @@ export default function GiveawayPrizeShowcase({
           position: absolute;
           left: 16px;
           right: 16px;
-          top: 14px;
+          top: 6px;
           z-index: 5;
           display: flex;
           gap: 6px;
@@ -442,23 +417,6 @@ export default function GiveawayPrizeShowcase({
 
         .compact .slide-metric strong {
           font-size: 42px;
-        }
-
-        @keyframes sparkDrift {
-          to {
-            transform: translate3d(-18px, 12px, 0);
-          }
-        }
-
-        @keyframes ambientGlow {
-          from {
-            opacity: 0.28;
-            transform: translate3d(-1%, -1%, 0) scale(1);
-          }
-          to {
-            opacity: 0.62;
-            transform: translate3d(1%, 1%, 0) scale(1.04);
-          }
         }
 
         @keyframes mediaBreath {
@@ -523,8 +481,6 @@ export default function GiveawayPrizeShowcase({
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .spark-field,
-          .light-rig,
           .showcase-slide,
           .slide-media,
           .headlight-flash {
