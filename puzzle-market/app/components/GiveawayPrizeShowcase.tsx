@@ -8,7 +8,7 @@ type ShowcaseMode = "hero" | "modal" | "compact";
 const prizeSlides = [
   {
     title: "Win Real Prizes",
-    subtitle: "iPhone 17 Pro Max · AirPods Pro · Puzzle Credits",
+    subtitle: "7 x iPhone 17 Pro Max · 7 x AirPods Pro · Puzzle Credits",
     detail: "Enter the New Year draw and unlock the BMW X-7 mega draw.",
     badge: "Lucky Grand Giveaway",
     imageSrc: "/giveaway/generated/lucky-grand-giveaway-showcase-v2.png",
@@ -135,8 +135,8 @@ export default function GiveawayPrizeShowcase({
                   <strong>Lucky Grand Giveaway</strong>
                 </div>
                 <div className="prize-strip" aria-hidden="true">
-                  <span>iPhone 17 Pro Max</span>
-                  <span>AirPods Pro</span>
+                  <span>7 x iPhone 17 Pro Max</span>
+                  <span>7 x AirPods Pro</span>
                   <span>Puzzle Credits</span>
                   <span>BMW X-7</span>
                 </div>
