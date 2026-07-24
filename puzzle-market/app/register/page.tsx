@@ -328,38 +328,38 @@ export default function RegisterPage() {
   return (
 
     <main
-      className="flex min-h-dvh items-center justify-center overflow-y-auto bg-black px-4 py-6 text-white sm:py-10"
+      className="flex min-h-dvh items-center justify-center overflow-y-auto bg-black px-4 py-4 text-white sm:py-10"
     >
 
       {/* BG */}
 
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.12),transparent_35%)] pointer-events-none" />
 
-      <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-zinc-950 p-5 pb-6 backdrop-blur-xl sm:p-8">
+      <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-zinc-950 p-4 pb-5 backdrop-blur-xl sm:p-8">
 
         <div className="flex justify-center">
 
           <img
             src="/puzzle-market-cube-logo.png"
             alt="Puzzle Market"
-            className="h-20 w-20 rounded-3xl object-cover shadow-[0_0_40px_rgba(34,211,238,0.35)] sm:h-28 sm:w-28"
+            className="h-16 w-16 rounded-3xl object-cover shadow-[0_0_40px_rgba(34,211,238,0.35)] sm:h-28 sm:w-28"
           />
 
         </div>
 
-        <h1 className="mt-5 text-center text-4xl font-black sm:mt-6 sm:text-5xl">
+        <h1 className="mt-4 text-center text-[32px] font-black leading-[1.04] sm:mt-6 sm:text-5xl">
           Enter Puzzle Market
         </h1>
 
-        <p className="mt-2 text-center text-zinc-500 sm:mt-3">
+        <p className="mt-2 text-center text-sm leading-snug text-zinc-500 sm:mt-3 sm:text-base">
           Set up your collector profile and continue to the marketplace.
         </p>
 
-        <div className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
-          <p className="text-sm font-black text-cyan-300">
+        <div className="mt-4 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-3 shadow-[0_0_30px_rgba(34,211,238,0.08)] sm:mt-5 sm:p-4">
+          <p className="text-xs font-black text-cyan-300 sm:text-sm">
             Your collector profile
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-zinc-300">
+          <ul className="mt-2 space-y-1 text-xs text-zinc-300 sm:mt-3 sm:space-y-2 sm:text-sm">
             {accountBenefits.map((benefit) => (
               <li key={benefit} className="flex gap-2">
                 <span className="text-cyan-300">-</span>
@@ -367,15 +367,15 @@ export default function RegisterPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-sm font-semibold leading-relaxed text-white">
+          <p className="mt-2 text-xs font-semibold leading-relaxed text-white sm:mt-3 sm:text-sm">
             Use this profile to keep your saved puzzles, ownership records, and
             marketplace activity in one place.
           </p>
         </div>
 
-        <div className="mt-5 sm:mt-6">
+        <div className="mt-4 sm:mt-6">
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
 
             <input
               type="email"
@@ -388,7 +388,7 @@ export default function RegisterPage() {
               onChange={(e) =>
                 setEmail(e.target.value)
               }
-              className="min-h-12 w-full rounded-2xl border border-white/10 bg-black px-5 py-4 outline-none focus:border-cyan-400"
+              className="min-h-11 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 outline-none focus:border-cyan-400 sm:min-h-12 sm:px-5 sm:py-4"
             />
 
             <input
@@ -401,7 +401,7 @@ export default function RegisterPage() {
                 setUsername(e.target.value)
               }
               placeholder="Username"
-              className="min-h-12 w-full rounded-2xl border border-white/10 bg-black px-5 py-4 outline-none focus:border-cyan-400"
+              className="min-h-11 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 outline-none focus:border-cyan-400 sm:min-h-12 sm:px-5 sm:py-4"
             />
 
             <PasswordInput
@@ -411,7 +411,7 @@ export default function RegisterPage() {
 
           </div>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 space-y-3 sm:mt-6 sm:space-y-4">
 
             <button
               type="button"
@@ -420,7 +420,7 @@ export default function RegisterPage() {
                 void handleRegister();
               }}
               disabled={loading}
-              className="min-h-12 w-full rounded-2xl bg-cyan-400 py-4 font-black text-black transition hover:bg-cyan-300 disabled:opacity-50"
+              className="min-h-11 w-full rounded-2xl bg-cyan-400 py-3 font-black text-black transition hover:bg-cyan-300 disabled:opacity-50 sm:min-h-12 sm:py-4"
             >
 
               {loading
@@ -432,7 +432,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={handleGoogleRegister}
-              className="min-h-12 w-full rounded-2xl bg-white py-4 font-black text-black transition hover:bg-zinc-200"
+              className="min-h-11 w-full rounded-2xl bg-white py-3 font-black text-black transition hover:bg-zinc-200 sm:min-h-12 sm:py-4"
             >
               Continue with Google
             </button>
@@ -472,7 +472,7 @@ export default function RegisterPage() {
 
         )}
 
-        <p className="mb-1 mt-8 text-center text-zinc-500">
+        <p className="mb-1 mt-4 text-center text-zinc-500 sm:mt-8">
 
           Already have account?{" "}
 

@@ -449,6 +449,15 @@ export default function GiveawayPrizeShowcase({
             min-height: 330px;
           }
 
+          .giveaway-showcase.modal {
+            height: 100%;
+            aspect-ratio: auto;
+          }
+
+          .modal .showcase-slide {
+            grid-template-rows: minmax(168px, 1fr) auto;
+          }
+
           .slide-copy {
             display: block;
             min-height: 108px;
@@ -504,7 +513,8 @@ export default function GiveawayPrizeShowcase({
           }
 
           .modal .slide-copy {
-            min-height: 132px;
+            min-height: 124px;
+            padding: 11px 13px;
           }
 
           .modal .copy-main {
@@ -517,13 +527,30 @@ export default function GiveawayPrizeShowcase({
             min-width: 0;
             align-items: baseline;
             gap: 7px;
-            margin-top: 8px;
+            margin-top: 6px;
             transform: none;
             text-align: left;
           }
 
+          .modal .slide-badge {
+            padding: 4px 8px;
+            font-size: 9px;
+          }
+
+          .modal h2 {
+            margin-top: 7px;
+            font-size: clamp(24px, 7.2vw, 28px);
+            line-height: 0.98;
+          }
+
+          .modal .copy-main p:not(.slide-badge) {
+            margin-top: 5px;
+            font-size: 11px;
+            line-height: 1.2;
+          }
+
           .modal .slide-metric strong {
-            font-size: 34px;
+            font-size: 32px;
           }
 
           .modal .slide-metric span {

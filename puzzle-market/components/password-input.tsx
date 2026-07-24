@@ -32,7 +32,7 @@ export function PasswordInput({
         onChange={(event) =>
           onChange(event.target.value)
         }
-        className="min-h-12 w-full rounded-2xl border border-white/10 bg-black px-5 py-4 pr-14 outline-none focus:border-cyan-400"
+        className="min-h-11 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 pr-14 outline-none focus:border-cyan-400 sm:min-h-12 sm:px-5 sm:py-4"
       />
 
       <button

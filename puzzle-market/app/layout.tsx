@@ -53,6 +53,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <meta name="google" content="notranslate" />
         <LinguiseHead />
         <OriginalPathGuard />
       </head>
