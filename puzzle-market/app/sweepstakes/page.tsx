@@ -335,7 +335,7 @@ export default function SweepstakesPage() {
               <div className="relative flex min-h-[620px] flex-col gap-4 overflow-hidden rounded-[30px] border border-amber-200/30 bg-black/64 p-4 shadow-[inset_0_0_90px_rgba(251,191,36,0.1),0_22px_80px_rgba(0,0,0,0.45)] backdrop-blur md:min-h-[650px] md:p-5 lg:min-h-full">
                 <div className="relative z-20 flex items-center justify-between gap-3">
                   <div className="min-w-0 rounded-2xl border border-amber-200/30 bg-black/78 px-4 py-3 shadow-[0_12px_35px_rgba(0,0,0,0.38)]">
-                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-200">
+                    <p className="whitespace-nowrap text-[9px] font-black uppercase tracking-[0.12em] text-amber-200">
                       1st draw
                     </p>
                     <p className="mt-1 text-lg font-black sm:text-xl">
@@ -344,7 +344,7 @@ export default function SweepstakesPage() {
                   </div>
 
                   <div className="shrink-0 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-3 text-right shadow-[0_12px_35px_rgba(0,0,0,0.32)]">
-                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-200">
+                    <p className="whitespace-nowrap text-[9px] font-black uppercase tracking-[0.12em] text-cyan-200">
                       Mega draw
                     </p>
                     <p className="mt-1 text-lg font-black sm:text-xl">

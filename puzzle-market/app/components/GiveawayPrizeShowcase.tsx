@@ -281,7 +281,7 @@ export default function GiveawayPrizeShowcase({
         .promo-header {
           position: absolute;
           left: 16px;
-          top: 28px;
+          top: 34px;
           z-index: 4;
           display: grid;
           max-width: min(44%, 360px);
@@ -315,7 +315,7 @@ export default function GiveawayPrizeShowcase({
           position: absolute;
           left: 16px;
           right: 16px;
-          bottom: 134px;
+          bottom: 158px;
           z-index: 4;
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -365,8 +365,8 @@ export default function GiveawayPrizeShowcase({
         .feature-slide .slide-copy {
           left: 16px;
           right: auto;
-          width: min(58%, 640px);
-          min-height: 132px;
+          width: min(56%, 620px);
+          min-height: 126px;
           align-items: center;
           bottom: 16px;
         }
@@ -400,7 +400,7 @@ export default function GiveawayPrizeShowcase({
         }
 
         .feature-slide h2 {
-          font-size: clamp(34px, 5.2vw, 70px);
+          font-size: clamp(32px, 4.8vw, 64px);
           text-transform: uppercase;
           text-shadow:
             0 2px 0 rgba(0, 0, 0, 0.32),
@@ -487,17 +487,28 @@ export default function GiveawayPrizeShowcase({
           display: none;
         }
 
-        .compact .promo-header {
-          max-width: 72%;
-        }
-
+        .compact .promo-header,
         .compact .prize-strip {
-          bottom: 108px;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          display: none;
         }
 
         .compact .feature-slide .slide-copy {
           width: calc(100% - 24px);
+          min-height: 86px;
+          bottom: 12px;
+        }
+
+        .compact .feature-slide h2 {
+          font-size: clamp(24px, 5vw, 32px);
+        }
+
+        .compact .copy-main p:not(.slide-badge) {
+          font-size: 12px;
+          line-height: 1.2;
+        }
+
+        .compact .slide-metric strong {
+          font-size: 42px;
         }
 
         @keyframes sparkDrift {
