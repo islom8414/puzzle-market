@@ -7,14 +7,15 @@ type ShowcaseMode = "hero" | "modal" | "compact";
 
 const prizeSlides = [
   {
-    title: "Win Real Prizes",
-    subtitle: "7 x iPhone 17 Pro Max · 7 x AirPods Pro · Puzzle Credits",
-    detail: "Enter the New Year draw and unlock the BMW X-7 mega draw.",
+    title: "Real Prize Pool",
+    subtitle: "7 x iPhone 17 Pro Max / 7 x AirPods Pro",
+    detail: "84 puzzle credits + BMW X-7 mega draw entry.",
     badge: "Lucky Grand Giveaway",
-    imageSrc: "/giveaway/generated/lucky-grand-giveaway-showcase-v2.png",
+    imageSrc: "/giveaway/generated/grand-giveaway-all-prizes-v3.png",
     imageClassName: "object-cover object-center",
     metric: "98",
     metricLabel: "prizes",
+    isAllPrizes: true,
     isFeature: true,
   },
   {
@@ -69,10 +70,10 @@ const prizeSlides = [
   },
   {
     title: "BMW X-7 Mega Draw",
-    subtitle: "One high-attention final prize",
-    detail: "Wave 1 entry includes the 07.07.2027 mega draw automatically.",
+    subtitle: "Draw takes place on 27.07.2027.",
+    detail: "1 winner. Wave 1 entry unlocks the mega draw automatically.",
     badge: "Mega draw",
-    imageSrc: "/giveaway/generated/lucky-grand-giveaway-showcase-v2.png",
+    imageSrc: "/giveaway/generated/bmw-x7-mega-draw-only-v3.png",
     imageClassName: "object-cover object-center",
     metric: "1",
     metricLabel: "winner",
@@ -93,7 +94,7 @@ export default function GiveawayPrizeShowcase({
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % prizeSlides.length);
-    }, mode === "modal" ? 2500 : 2800);
+    }, mode === "modal" ? 3600 : 4200);
 
     return () => window.clearInterval(timer);
   }, [mode]);
@@ -107,6 +108,8 @@ export default function GiveawayPrizeShowcase({
           <article
             key={slide.title}
             className={`showcase-slide ${slide.isFeature ? "feature-slide" : ""} ${
+              slide.isAllPrizes ? "all-prizes-slide" : ""
+            } ${
               slide.isMega ? "mega-slide" : ""
             } ${
               activeIndex === index ? "is-active" : ""
@@ -128,17 +131,11 @@ export default function GiveawayPrizeShowcase({
             <div className="slide-vignette" />
             <div className="speed-lines" />
             {slide.isMega ? <div className="headlight-flash" /> : null}
-            {slide.isFeature ? (
+            {slide.isFeature && !slide.isMega && !slide.isAllPrizes ? (
               <>
                 <div className="promo-header">
                   <span>Puzzle Market</span>
                   <strong>Lucky Grand Giveaway</strong>
-                </div>
-                <div className="prize-strip" aria-hidden="true">
-                  <span>7 x iPhone 17 Pro Max</span>
-                  <span>7 x AirPods Pro</span>
-                  <span>Puzzle Credits</span>
-                  <span>BMW X-7</span>
                 </div>
               </>
             ) : null}
@@ -311,18 +308,18 @@ export default function GiveawayPrizeShowcase({
             0 0 28px rgba(251, 191, 36, 0.26);
         }
 
-        .prize-strip {
+        .prize-counts {
           position: absolute;
           left: 16px;
           right: 16px;
-          bottom: 158px;
+          top: 132px;
           z-index: 4;
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
           gap: 8px;
         }
 
-        .prize-strip span {
+        .prize-counts span {
           min-width: 0;
           overflow: hidden;
           border: 1px solid rgba(34, 211, 238, 0.32);
@@ -371,6 +368,23 @@ export default function GiveawayPrizeShowcase({
           bottom: 16px;
         }
 
+        .all-prizes-slide .slide-copy {
+          left: 20px;
+          top: 82px;
+          bottom: auto;
+          width: min(43%, 500px);
+          min-height: 0;
+          padding: 12px;
+        }
+
+        .mega-slide .slide-copy {
+          left: 24px;
+          top: 92px;
+          bottom: auto;
+          width: min(38%, 450px);
+          min-height: 150px;
+        }
+
         .copy-main {
           min-width: 0;
         }
@@ -405,6 +419,25 @@ export default function GiveawayPrizeShowcase({
           text-shadow:
             0 2px 0 rgba(0, 0, 0, 0.32),
             0 0 28px rgba(34, 211, 238, 0.28);
+        }
+
+        .all-prizes-slide h2 {
+          font-size: clamp(30px, 3.2vw, 42px);
+          line-height: 0.94;
+        }
+
+        .all-prizes-slide .copy-main p:not(.slide-badge) {
+          font-size: 12px;
+          line-height: 1.18;
+        }
+
+        .all-prizes-slide .copy-main span {
+          font-size: 10px;
+          line-height: 1.15;
+        }
+
+        .all-prizes-slide .slide-metric strong {
+          font-size: clamp(42px, 5vw, 56px);
         }
 
         .copy-main p:not(.slide-badge) {
@@ -488,7 +521,7 @@ export default function GiveawayPrizeShowcase({
         }
 
         .compact .promo-header,
-        .compact .prize-strip {
+        .compact .prize-counts {
           display: none;
         }
 
@@ -496,6 +529,18 @@ export default function GiveawayPrizeShowcase({
           width: calc(100% - 24px);
           min-height: 86px;
           bottom: 12px;
+        }
+
+        .compact .all-prizes-slide .slide-copy {
+          top: auto;
+          bottom: 12px;
+        }
+
+        .compact .mega-slide .slide-copy {
+          top: auto;
+          bottom: 12px;
+          width: calc(100% - 24px);
+          min-height: 86px;
         }
 
         .compact .feature-slide h2 {
@@ -580,17 +625,14 @@ export default function GiveawayPrizeShowcase({
             font-size: 16px;
           }
 
-          .prize-strip {
-            left: 10px;
-            right: 10px;
-            bottom: 118px;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 6px;
+          .prize-counts {
+            display: none;
           }
 
-          .prize-strip span {
-            padding: 6px 7px;
-            font-size: 9px;
+          .all-prizes-slide .slide-copy {
+            top: 78px;
+            bottom: auto;
+            min-height: 98px;
           }
 
           .feature-slide .slide-copy {
