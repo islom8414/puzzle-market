@@ -116,29 +116,22 @@ export default function GiveawayPrizeShowcase({
             }`}
             aria-hidden={activeIndex !== index}
           >
-            <Image
-              src={slide.imageSrc}
-              alt={`${slide.title} giveaway prize`}
-              fill
-              sizes={
-                mode === "modal"
-                  ? "(min-width: 640px) 896px, 100vw"
-                  : "(min-width: 1024px) 44vw, 100vw"
-              }
-              className={slide.imageClassName}
-              priority={index === 0}
-            />
-            <div className="slide-vignette" />
-            <div className="speed-lines" />
-            {slide.isMega ? <div className="headlight-flash" /> : null}
-            {slide.isFeature && !slide.isMega && !slide.isAllPrizes ? (
-              <>
-                <div className="promo-header">
-                  <span>Puzzle Market</span>
-                  <strong>Lucky Grand Giveaway</strong>
-                </div>
-              </>
-            ) : null}
+            <div className="slide-media">
+              <Image
+                src={slide.imageSrc}
+                alt={`${slide.title} giveaway prize`}
+                fill
+                sizes={
+                  mode === "modal"
+                    ? "(min-width: 640px) 896px, 100vw"
+                    : "(min-width: 1024px) 44vw, 100vw"
+                }
+                className={slide.imageClassName}
+                priority={index === 0}
+              />
+              <div className="slide-vignette" />
+              {slide.isMega ? <div className="headlight-flash" /> : null}
+            </div>
             <div className="slide-copy">
               <div className="copy-main">
                 <p className="slide-badge">{slide.badge}</p>
@@ -194,26 +187,25 @@ export default function GiveawayPrizeShowcase({
           position: absolute;
           inset: 0;
           pointer-events: none;
-          z-index: 3;
+          z-index: 2;
         }
 
         .spark-field {
-          opacity: 0.72;
+          opacity: 0.34;
           background:
             radial-gradient(circle at 14% 22%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
             radial-gradient(circle at 73% 16%, rgba(125, 211, 252, 0.62) 0 1px, transparent 2px),
             radial-gradient(circle at 86% 60%, rgba(251, 191, 36, 0.72) 0 1px, transparent 2px),
             radial-gradient(circle at 38% 82%, rgba(255, 255, 255, 0.52) 0 1px, transparent 2px);
-          animation: sparkDrift 7.8s linear infinite;
+          animation: sparkDrift 18s linear infinite;
         }
 
         .light-rig {
-          background:
-            linear-gradient(105deg, transparent 0 34%, rgba(255, 255, 255, 0.18) 42%, transparent 50% 100%),
-            linear-gradient(82deg, transparent 0 58%, rgba(34, 211, 238, 0.16) 64%, transparent 72% 100%);
+          inset: -20%;
+          background: radial-gradient(circle at 70% 18%, rgba(34, 211, 238, 0.18), transparent 28%);
           mix-blend-mode: screen;
-          opacity: 0;
-          animation: spotlightSweep 4.8s ease-in-out infinite;
+          opacity: 0.55;
+          animation: ambientGlow 7s ease-in-out infinite alternate;
         }
 
         .showcase-track,
@@ -223,13 +215,17 @@ export default function GiveawayPrizeShowcase({
         }
 
         .showcase-slide {
+          display: grid;
+          grid-template-rows: minmax(0, 1fr) auto;
           opacity: 0;
           visibility: hidden;
-          transform: scale(1.035);
+          overflow: hidden;
+          transform: scale(1.012);
+          background: #050505;
           transition:
-            opacity 260ms ease,
-            transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
-            visibility 0s linear 460ms;
+            opacity 420ms ease,
+            transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+            visibility 0s linear 900ms;
           will-change: opacity, transform;
         }
 
@@ -240,27 +236,29 @@ export default function GiveawayPrizeShowcase({
           transition-delay: 0s;
         }
 
+        .slide-media {
+          position: relative;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .showcase-slide.is-active .slide-media {
+          animation: mediaBreath 4200ms ease-in-out both;
+        }
+
         .slide-vignette {
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(circle at 68% 42%, transparent 0 34%, rgba(0, 0, 0, 0.24) 58%, rgba(0, 0, 0, 0.68) 100%),
-            linear-gradient(90deg, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.18) 38%, rgba(0, 0, 0, 0.08) 68%, rgba(0, 0, 0, 0.45)),
-            linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.08) 46%, rgba(0, 0, 0, 0.82));
+            radial-gradient(circle at 68% 42%, transparent 0 38%, rgba(0, 0, 0, 0.12) 70%, rgba(0, 0, 0, 0.28) 100%),
+            linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.06) 42%, rgba(0, 0, 0, 0.03) 72%, rgba(0, 0, 0, 0.18)),
+            linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.02) 76%, rgba(0, 0, 0, 0.16));
         }
 
-        .speed-lines {
-          position: absolute;
-          inset: 0;
+        .mega-slide .slide-vignette {
           background:
-            repeating-linear-gradient(103deg, transparent 0 42px, rgba(125, 211, 252, 0.16) 43px 44px, transparent 45px 92px);
-          mix-blend-mode: screen;
-          opacity: 0;
-          transform: translateX(-16%);
-        }
-
-        .showcase-slide.is-active .speed-lines {
-          animation: lineRush 1250ms ease-out;
+            linear-gradient(90deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.04) 42%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.12)),
+            linear-gradient(180deg, transparent, transparent 76%, rgba(0, 0, 0, 0.14));
         }
 
         .headlight-flash {
@@ -272,117 +270,26 @@ export default function GiveawayPrizeShowcase({
             radial-gradient(circle at 62% 58%, rgba(125, 211, 252, 0.66), transparent 12%),
             linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
           mix-blend-mode: screen;
-          animation: headlightPulse 920ms ease-in-out infinite alternate;
-        }
-
-        .promo-header {
-          position: absolute;
-          left: 16px;
-          top: 34px;
-          z-index: 4;
-          display: grid;
-          max-width: min(44%, 360px);
-          gap: 6px;
-          border-left: 3px solid rgb(34, 211, 238);
-          padding-left: 12px;
-          text-transform: uppercase;
-          filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.34));
-        }
-
-        .promo-header span {
-          color: rgb(186, 230, 253);
-          font-size: 11px;
-          font-weight: 900;
-          line-height: 1;
-          letter-spacing: 0;
-        }
-
-        .promo-header strong {
-          color: white;
-          font-size: clamp(16px, 2.2vw, 28px);
-          font-weight: 900;
-          line-height: 0.92;
-          letter-spacing: 0;
-          text-shadow:
-            0 0 14px rgba(34, 211, 238, 0.5),
-            0 0 28px rgba(251, 191, 36, 0.26);
-        }
-
-        .prize-counts {
-          position: absolute;
-          left: 16px;
-          right: 16px;
-          top: 132px;
-          z-index: 4;
-          display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 8px;
-        }
-
-        .prize-counts span {
-          min-width: 0;
-          overflow: hidden;
-          border: 1px solid rgba(34, 211, 238, 0.32);
-          border-radius: 999px;
-          background: linear-gradient(90deg, rgba(5, 5, 5, 0.72), rgba(12, 74, 110, 0.42));
-          padding: 7px 10px;
-          color: rgb(224, 242, 254);
-          font-size: 10px;
-          font-weight: 900;
-          line-height: 1;
-          text-align: center;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          box-shadow:
-            inset 0 0 18px rgba(34, 211, 238, 0.08),
-            0 0 20px rgba(34, 211, 238, 0.12);
+          animation: headlightPulse 1.8s ease-in-out infinite alternate;
         }
 
         .slide-copy {
-          position: absolute;
-          inset: auto 14px 14px;
+          position: relative;
           z-index: 4;
           display: flex;
-          min-height: 112px;
-          align-items: flex-end;
+          min-height: 106px;
+          align-items: center;
           justify-content: space-between;
           gap: 14px;
-          border: 1px solid rgba(251, 191, 36, 0.28);
-          border-radius: 20px;
+          border-top: 1px solid rgba(251, 191, 36, 0.26);
           background:
             radial-gradient(circle at 88% 50%, rgba(251, 191, 36, 0.16), transparent 26%),
             linear-gradient(135deg, rgba(0, 0, 0, 0.86), rgba(25, 18, 5, 0.8) 50%, rgba(4, 26, 30, 0.78));
-          padding: 14px;
+          padding: 12px 14px;
           backdrop-filter: blur(6px);
           box-shadow:
-            0 -16px 44px rgba(0, 0, 0, 0.38),
+            0 -10px 28px rgba(0, 0, 0, 0.32),
             0 0 42px rgba(251, 191, 36, 0.12);
-        }
-
-        .feature-slide .slide-copy {
-          left: 16px;
-          right: auto;
-          width: min(56%, 620px);
-          min-height: 126px;
-          align-items: center;
-          bottom: 16px;
-        }
-
-        .all-prizes-slide .slide-copy {
-          left: 20px;
-          top: 82px;
-          bottom: auto;
-          width: min(43%, 500px);
-          min-height: 0;
-          padding: 12px;
-        }
-
-        .mega-slide .slide-copy {
-          left: 24px;
-          top: 92px;
-          bottom: auto;
-          width: min(38%, 450px);
-          min-height: 150px;
         }
 
         .copy-main {
@@ -414,7 +321,7 @@ export default function GiveawayPrizeShowcase({
         }
 
         .feature-slide h2 {
-          font-size: clamp(32px, 4.8vw, 64px);
+          font-size: clamp(24px, 3.2vw, 40px);
           text-transform: uppercase;
           text-shadow:
             0 2px 0 rgba(0, 0, 0, 0.32),
@@ -422,7 +329,7 @@ export default function GiveawayPrizeShowcase({
         }
 
         .all-prizes-slide h2 {
-          font-size: clamp(30px, 3.2vw, 42px);
+          font-size: clamp(24px, 3vw, 38px);
           line-height: 0.94;
         }
 
@@ -520,27 +427,8 @@ export default function GiveawayPrizeShowcase({
           display: none;
         }
 
-        .compact .promo-header,
-        .compact .prize-counts {
-          display: none;
-        }
-
         .compact .feature-slide .slide-copy {
-          width: calc(100% - 24px);
-          min-height: 86px;
-          bottom: 12px;
-        }
-
-        .compact .all-prizes-slide .slide-copy {
-          top: auto;
-          bottom: 12px;
-        }
-
-        .compact .mega-slide .slide-copy {
-          top: auto;
-          bottom: 12px;
-          width: calc(100% - 24px);
-          min-height: 86px;
+          min-height: 84px;
         }
 
         .compact .feature-slide h2 {
@@ -562,33 +450,23 @@ export default function GiveawayPrizeShowcase({
           }
         }
 
-        @keyframes spotlightSweep {
-          0%,
-          18% {
-            opacity: 0;
-            transform: translateX(-34%);
+        @keyframes ambientGlow {
+          from {
+            opacity: 0.28;
+            transform: translate3d(-1%, -1%, 0) scale(1);
           }
-          38% {
-            opacity: 0.9;
-          }
-          68%,
-          100% {
-            opacity: 0;
-            transform: translateX(42%);
+          to {
+            opacity: 0.62;
+            transform: translate3d(1%, 1%, 0) scale(1.04);
           }
         }
 
-        @keyframes lineRush {
+        @keyframes mediaBreath {
           0% {
-            opacity: 0;
-            transform: translateX(-22%);
-          }
-          35% {
-            opacity: 0.7;
+            transform: scale(1);
           }
           100% {
-            opacity: 0;
-            transform: translateX(22%);
+            transform: scale(1.018);
           }
         }
 
@@ -615,31 +493,8 @@ export default function GiveawayPrizeShowcase({
             padding: 12px;
           }
 
-          .promo-header {
-            left: 12px;
-            top: 24px;
-            max-width: calc(100% - 24px);
-          }
-
-          .promo-header strong {
-            font-size: 16px;
-          }
-
-          .prize-counts {
-            display: none;
-          }
-
-          .all-prizes-slide .slide-copy {
-            top: 78px;
-            bottom: auto;
-            min-height: 98px;
-          }
-
           .feature-slide .slide-copy {
-            left: 10px;
-            right: 10px;
-            width: auto;
-            min-height: 108px;
+            min-height: 96px;
           }
 
           h2 {
@@ -671,7 +526,7 @@ export default function GiveawayPrizeShowcase({
           .spark-field,
           .light-rig,
           .showcase-slide,
-          .speed-lines,
+          .slide-media,
           .headlight-flash {
             animation: none !important;
             transition: none !important;
