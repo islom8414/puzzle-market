@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import GiveawayPrizeShowcase from "@/app/components/GiveawayPrizeShowcase";
 
-const STORAGE_KEY = "puzzle-market-new-year-giveaway-modal-v2";
+const STORAGE_KEY = "puzzle-market-new-year-giveaway-modal-v3";
 
 export default function HomeGiveawayModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,12 +33,14 @@ export default function HomeGiveawayModal() {
 
   return (
     <div
-      className="fixed inset-0 z-[120] flex items-end justify-center bg-black/66 px-3 py-3 backdrop-blur-md sm:items-center sm:px-4 sm:py-6"
+      className="notranslate fixed inset-0 z-[120] flex items-end justify-center bg-black/66 px-3 py-3 backdrop-blur-md sm:items-center sm:px-4 sm:py-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="giveaway-modal-title"
+      lang="en"
+      translate="no"
     >
-      <div className="relative max-h-[92dvh] w-full max-w-[420px] overflow-y-auto rounded-[22px] border border-amber-200/40 bg-[#050505] shadow-[0_28px_110px_rgba(250,204,21,0.25)] sm:max-w-4xl sm:rounded-[28px]">
+      <div className="relative max-h-[92dvh] w-[calc(100vw-24px)] max-w-[420px] overflow-y-auto rounded-[22px] border border-amber-200/40 bg-[#050505] shadow-[0_28px_110px_rgba(250,204,21,0.25)] sm:w-full sm:max-w-4xl sm:rounded-[28px]">
         <button
           type="button"
           onClick={closeModal}
@@ -48,19 +50,19 @@ export default function HomeGiveawayModal() {
           x
         </button>
 
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-950">
+        <div className="relative h-[330px] w-full overflow-hidden bg-zinc-950 sm:aspect-[16/9] sm:h-auto">
           <GiveawayPrizeShowcase mode="modal" />
         </div>
 
         <div className="relative bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_34%),linear-gradient(135deg,rgba(250,204,21,0.14),rgba(0,0,0,0.94)_48%)] p-4 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end sm:gap-8">
             <div>
-            <p className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-200 sm:py-2 sm:text-[11px]">
+            <p className="inline-flex max-w-full rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-cyan-200 sm:py-2 sm:text-[11px]">
               Real prize draw
             </p>
             <h2
               id="giveaway-modal-title"
-              className="mt-2.5 text-2xl font-black leading-[1.02] text-white sm:mt-3 sm:text-4xl"
+              className="mt-2.5 text-[26px] font-black leading-[1.03] text-white sm:mt-3 sm:text-4xl"
             >
               One entry. Two prize draws.
             </h2>
@@ -79,7 +81,7 @@ export default function HomeGiveawayModal() {
               ].map((item) => (
                 <div
                   key={item}
-                  className="rounded-xl border border-white/10 bg-black/50 px-2.5 py-2 text-[10px] font-black text-amber-50 sm:px-3 sm:text-xs"
+                  className="min-w-0 rounded-xl border border-white/10 bg-black/50 px-2.5 py-2 text-[10px] font-black leading-tight text-amber-50 sm:px-3 sm:text-xs"
                 >
                   {item}
                 </div>

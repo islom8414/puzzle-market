@@ -100,7 +100,11 @@ export default function GiveawayPrizeShowcase({
   }, [mode]);
 
   return (
-    <div className={`giveaway-showcase ${mode} ${className}`}>
+    <div
+      className={`giveaway-showcase notranslate ${mode} ${className}`}
+      lang="en"
+      translate="no"
+    >
       <div className="showcase-track">
         {prizeSlides.map((slide, index) => (
           <article
@@ -269,6 +273,7 @@ export default function GiveawayPrizeShowcase({
 
         .copy-main {
           min-width: 0;
+          overflow: hidden;
         }
 
         .slide-badge {
@@ -293,6 +298,7 @@ export default function GiveawayPrizeShowcase({
           font-weight: 900;
           line-height: 0.96;
           letter-spacing: 0;
+          overflow-wrap: anywhere;
         }
 
         .feature-slide h2 {
@@ -344,6 +350,7 @@ export default function GiveawayPrizeShowcase({
 
         .slide-metric {
           flex: 0 0 auto;
+          min-width: 68px;
           text-align: right;
         }
 
@@ -443,40 +450,84 @@ export default function GiveawayPrizeShowcase({
           }
 
           .slide-copy {
-            inset: auto 10px 10px;
-            min-height: 102px;
-            align-items: flex-end;
-            gap: 10px;
+            display: block;
+            min-height: 108px;
             border-radius: 18px;
-            padding: 12px;
+            padding: 12px 14px;
+          }
+
+          .copy-main {
+            padding-right: 78px;
           }
 
           .feature-slide .slide-copy {
-            min-height: 96px;
+            min-height: 108px;
           }
 
           h2 {
-            font-size: 24px;
+            font-size: clamp(22px, 7vw, 27px);
+            line-height: 1;
           }
 
           .feature-slide h2 {
-            font-size: 30px;
+            font-size: clamp(24px, 7.4vw, 30px);
+          }
+
+          .all-prizes-slide h2 {
+            font-size: clamp(24px, 7vw, 29px);
           }
 
           .copy-main p:not(.slide-badge) {
             font-size: 12px;
+            max-width: 100%;
+            overflow-wrap: anywhere;
           }
 
           .copy-main span {
             display: none;
           }
 
+          .slide-metric {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            min-width: 62px;
+            transform: translateY(-50%);
+          }
+
           .slide-metric strong {
-            font-size: 34px;
+            font-size: clamp(34px, 11vw, 44px);
           }
 
           .slide-metric span {
             font-size: 9px;
+          }
+
+          .modal .slide-copy {
+            min-height: 132px;
+          }
+
+          .modal .copy-main {
+            padding-right: 0;
+          }
+
+          .modal .slide-metric {
+            position: static;
+            display: inline-flex;
+            min-width: 0;
+            align-items: baseline;
+            gap: 7px;
+            margin-top: 8px;
+            transform: none;
+            text-align: left;
+          }
+
+          .modal .slide-metric strong {
+            font-size: 34px;
+          }
+
+          .modal .slide-metric span {
+            margin-top: 0;
           }
         }
 
