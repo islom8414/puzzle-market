@@ -379,10 +379,10 @@ export default function SweepstakesPage() {
             </div>
 
             <div className="flex min-w-0 flex-col gap-4">
-              <div className="sweepstakes-visual-card relative flex min-h-[620px] flex-col gap-4 overflow-visible rounded-[30px] border border-amber-200/30 bg-black/64 p-5 shadow-[inset_0_0_90px_rgba(251,191,36,0.1),0_22px_80px_rgba(0,0,0,0.45)] backdrop-blur md:min-h-[650px] md:p-6 lg:min-h-full">
+              <div className="sweepstakes-visual-card relative flex min-h-[620px] flex-col gap-4 overflow-visible rounded-[30px] border border-amber-200/30 bg-black/64 p-5 shadow-[inset_0_0_90px_rgba(251,191,36,0.1),0_22px_80px_rgba(0,0,0,0.45)] backdrop-blur md:min-h-[650px] md:p-6 lg:min-h-[650px]">
                 <div className="relative z-20 grid gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3">
-                  <div className="sweepstakes-date-card min-w-0 rounded-2xl border border-amber-200/30 bg-black/78 px-4 py-3.5 shadow-[0_12px_35px_rgba(0,0,0,0.38)] sm:min-w-[180px] sm:shrink-0">
-                    <p className="whitespace-nowrap text-[8px] font-black uppercase leading-none tracking-[0.08em] text-amber-200 sm:text-[9px]">
+                  <div className="sweepstakes-date-card min-w-0 rounded-2xl border border-amber-200/30 bg-black/78 px-4 py-4 shadow-[0_12px_35px_rgba(0,0,0,0.38)] sm:min-w-[180px] sm:shrink-0">
+                    <p className="whitespace-nowrap text-[8px] font-black uppercase leading-[1.15] tracking-[0.08em] text-amber-200 sm:text-[9px]">
                       1st draw
                     </p>
                     <p className="mt-1.5 whitespace-nowrap text-base font-black leading-[1.08] sm:text-xl">
@@ -390,8 +390,8 @@ export default function SweepstakesPage() {
                     </p>
                   </div>
 
-                  <div className="sweepstakes-date-card min-w-0 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-3.5 shadow-[0_12px_35px_rgba(0,0,0,0.32)] sm:min-w-[168px] sm:shrink-0 sm:text-right">
-                    <p className="whitespace-nowrap text-[8px] font-black uppercase leading-none tracking-[0.08em] text-cyan-200 sm:text-[9px]">
+                  <div className="sweepstakes-date-card min-w-0 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-4 shadow-[0_12px_35px_rgba(0,0,0,0.32)] sm:min-w-[168px] sm:shrink-0 sm:text-right">
+                    <p className="whitespace-nowrap text-[8px] font-black uppercase leading-[1.15] tracking-[0.08em] text-cyan-200 sm:text-[9px]">
                       Mega draw
                     </p>
                     <p className="mt-1.5 whitespace-nowrap text-base font-black leading-[1.08] sm:text-xl">
