@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import GiveawayPrizeShowcase from "@/app/components/GiveawayPrizeShowcase";
 import { apiFetch } from "@/lib/api-client";
 import { formatUsd } from "@/lib/price-index";
 import { supabase } from "@/lib/supabase";
@@ -58,63 +59,6 @@ const heroPrizeList = [
   "7 x AirPods Pro",
   "84 puzzle credit prizes",
   "BMW X-7 mega draw",
-];
-
-const animatedPrizes = [
-  {
-    title: "Two draws. One entry.",
-    quantity: "98",
-    quantityLabel: "New Year prizes",
-    value: "7 x iPhone 17 Pro Max · 7 x AirPods Pro · 84 puzzle credit prizes",
-    tag: "New Year + BMW X-7",
-    className: "poster-prize",
-    imageSrc: "/giveaway/generated/new-year-giveaway-hero-16x9.png",
-  },
-  {
-    title: "iPhone 17 Pro Max",
-    quantity: "7",
-    quantityLabel: "7 prizes",
-    value: "Flagship smartphone",
-    tag: "Grand prize",
-    className: "phone-prize",
-    imageSrc: "/giveaway/generated/iphone-17-pro-max-prize.png",
-  },
-  {
-    title: "AirPods for iPhone",
-    quantity: "7",
-    quantityLabel: "7 prizes",
-    value: "Premium audio",
-    tag: "Audio prize",
-    className: "airpods-prize",
-    imageSrc: "/giveaway/generated/airpods-prize.png",
-  },
-  {
-    title: "$100 puzzle credit",
-    quantity: "7",
-    quantityLabel: "7 prizes",
-    value: "$100 credit each",
-    tag: "Puzzle credit",
-    className: "credit-prize high-credit",
-    imageSrc: "/giveaway/generated/puzzle-credit-100.png",
-  },
-  {
-    title: "$10 puzzle credit",
-    quantity: "7",
-    quantityLabel: "7 prizes",
-    value: "$10 credit each",
-    tag: "Puzzle credit",
-    className: "credit-prize mid-credit",
-    imageSrc: "/giveaway/generated/puzzle-credit-10.png",
-  },
-  {
-    title: "$1 puzzle credit",
-    quantity: "70",
-    quantityLabel: "70 prizes",
-    value: "$1 credit each",
-    tag: "Bonus prizes",
-    className: "credit-prize small-credit",
-    imageSrc: "/giveaway/generated/puzzle-credit-1-bonus.png",
-  },
 ];
 
 const firstWave = sweepstakesWaves[0];
@@ -228,16 +172,6 @@ export default function SweepstakesPage() {
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState<Date | null>(null);
   const [rulesAccepted, setRulesAccepted] = useState(false);
-  const [activePrizeIndex, setActivePrizeIndex] = useState(0);
-
-  useEffect(() => {
-    const slideCount = animatedPrizes.length + 1;
-    const timer = window.setInterval(() => {
-      setActivePrizeIndex((current) => (current + 1) % slideCount);
-    }, 2800);
-
-    return () => window.clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -419,94 +353,8 @@ export default function SweepstakesPage() {
                   </div>
                 </div>
 
-                <div className="prize-orbit relative min-h-[390px] flex-1 overflow-hidden rounded-[28px] border border-white/12 bg-[radial-gradient(circle_at_50%_35%,rgba(251,191,36,0.15),transparent_42%),radial-gradient(circle_at_20%_70%,rgba(34,211,238,0.1),transparent_34%),#050505] md:min-h-[430px]">
-                  {animatedPrizes.map((prize, index) => (
-                    <div
-                      key={prize.title}
-                      className={`animated-prize ${prize.className} ${
-                        activePrizeIndex === index ? "is-active" : ""
-                      }`}
-                      aria-hidden={activePrizeIndex !== index}
-                    >
-                      <div className="absolute inset-0 overflow-hidden rounded-[28px] bg-[#050505]">
-                        <Image
-                          src={prize.imageSrc}
-                          alt={`${prize.title} giveaway prize`}
-                          fill
-                          sizes="(min-width: 1024px) 42vw, 100vw"
-                          className="object-cover"
-                          priority={index === 0}
-                        />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0)_48%,rgba(0,0,0,0.88)_100%)]" />
-                      </div>
-                      <div className="absolute inset-x-0 bottom-0 min-h-[132px] border-t border-amber-200/25 bg-[linear-gradient(135deg,rgba(7,7,7,0.94),rgba(27,20,5,0.91)_58%,rgba(6,24,28,0.88))] px-4 py-4 shadow-[0_-18px_45px_rgba(0,0,0,0.38)] backdrop-blur-[2px] md:px-5">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="min-w-0">
-                            <div className="inline-flex rounded-full border border-amber-200/35 bg-amber-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-amber-100">
-                              {prize.tag}
-                            </div>
-                            <p className="mt-2 text-[22px] font-black leading-tight text-white md:text-3xl">
-                              {prize.title}
-                            </p>
-                            <p className="mt-1 text-sm font-bold text-zinc-300">
-                              {prize.value}
-                            </p>
-                          </div>
-                          <div className="shrink-0 text-right">
-                            <p className="text-5xl font-black leading-none text-amber-200 md:text-6xl">
-                              {prize.quantity}
-                            </p>
-                            <p className="mt-1 text-[11px] font-black uppercase tracking-[0.16em] text-cyan-200">
-                              {prize.quantityLabel}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div
-                    className={`mega-car ${
-                      activePrizeIndex === animatedPrizes.length
-                        ? "is-active"
-                        : ""
-                    }`}
-                    aria-hidden={activePrizeIndex !== animatedPrizes.length}
-                  >
-                    <div className="absolute inset-0 overflow-hidden rounded-[32px] bg-[#050505]">
-                      <Image
-                        src={megaPrizeImageSrc}
-                        alt="BMW X-7 mega giveaway prize"
-                        fill
-                        sizes="(min-width: 1024px) 42vw, 100vw"
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0)_48%,rgba(0,0,0,0.9)_100%)]" />
-                    </div>
-                    <div className="absolute inset-x-0 bottom-0 min-h-[146px] border-t border-amber-200/30 bg-[linear-gradient(135deg,rgba(5,5,5,0.94),rgba(42,28,4,0.91)_55%,rgba(4,30,34,0.88))] px-5 py-4 shadow-[0_-20px_60px_rgba(251,191,36,0.12)] backdrop-blur-[2px]">
-                      <div className="flex items-end justify-between gap-4">
-                        <div>
-                          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-amber-200">
-                            Mega draw 07.07.2027
-                          </p>
-                          <p className="mt-1 text-3xl font-black md:text-5xl">
-                            BMW X-7
-                          </p>
-                          <p className="mt-1 text-sm font-bold text-cyan-200">
-                            Wave 1 entry unlocks the mega draw automatically.
-                          </p>
-                        </div>
-                        <div className="hidden shrink-0 rounded-2xl border border-cyan-200/35 bg-cyan-300/10 px-4 py-3 text-right md:block">
-                          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-100">
-                            Grand prize
-                          </p>
-                          <p className="mt-1 text-xl font-black text-white">
-                            1 winner
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="relative min-h-[390px] flex-1 overflow-hidden rounded-[28px] border border-white/12 bg-[#050505] md:min-h-[430px]">
+                  <GiveawayPrizeShowcase mode="hero" />
                 </div>
 
                 <div className="relative z-20 rounded-[26px] border border-white/15 bg-black/78 p-4 backdrop-blur md:p-5">

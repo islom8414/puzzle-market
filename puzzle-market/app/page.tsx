@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 
 import { HomePuzzleGrid } from "@/components/home-puzzle-grid";
 import { HomeTrustStats } from "@/components/home-trust-stats";
@@ -8,6 +7,7 @@ import HomeGiveawayModal from "@/app/components/HomeGiveawayModal";
 import HomeTrialPrompt from "@/app/components/HomeTrialPrompt";
 import LandingScrollReset from "@/app/components/LandingScrollReset";
 import GiveawayCountdown from "@/app/components/GiveawayCountdown";
+import GiveawayPrizeShowcase from "@/app/components/GiveawayPrizeShowcase";
 import { loadHomeCollections } from "@/lib/home-collections";
 
 export const dynamic =
@@ -154,34 +154,14 @@ export default async function HomePage() {
                 href="/sweepstakes"
                 className="group grid gap-0 md:grid-cols-[1.08fr_0.92fr]"
               >
-                <div className="relative min-h-[250px] overflow-hidden bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.12),transparent_54%),#020202] sm:min-h-[300px] md:min-h-[300px]">
-                  <Image
-                    src="/giveaway/generated/new-year-giveaway-poster.png"
-                    alt="Puzzle Market New Year Giveaway prizes"
-                    fill
-                    sizes="(min-width: 1024px) 44vw, 100vw"
-                    className="object-contain object-center opacity-95 transition duration-500 group-hover:scale-[1.015]"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(250,204,21,0.26),transparent_28%),linear-gradient(180deg,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.18)_48%,rgba(0,0,0,0.88)_100%)] md:bg-[radial-gradient(circle_at_78%_18%,rgba(250,204,21,0.26),transparent_28%),linear-gradient(90deg,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.3)_62%,rgba(0,0,0,0.06)_100%)]" />
+                <div className="relative min-h-[250px] overflow-hidden bg-[#020202] sm:min-h-[300px] md:min-h-[300px]">
+                  <GiveawayPrizeShowcase mode="compact" />
                   <div className="absolute left-3 top-3 rounded-2xl border border-amber-200/35 bg-black/70 px-3 py-2 backdrop-blur sm:left-4 sm:top-4 sm:px-4 sm:py-3">
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-200 sm:text-[10px]">
                       1st draw
                     </p>
                     <p className="mt-1 text-base font-black text-white sm:text-xl">
                       Dec 25, 2026
-                    </p>
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 rounded-[22px] border border-white/10 bg-black/74 p-3 backdrop-blur sm:bottom-4 sm:left-4 sm:right-4 sm:rounded-[24px] sm:p-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-200 sm:text-[11px]">
-                      New Year Grand Giveaway
-                    </p>
-                    <h2 className="mt-1.5 text-2xl font-black leading-none text-white sm:mt-2 sm:text-4xl">
-                      Join the prize draw
-                    </h2>
-                    <p className="mt-1.5 text-xs font-bold text-amber-100 sm:mt-2 sm:text-sm">
-                      7 x iPhone 17 Pro Max, 7 x AirPods Pro, 84 puzzle credit
-                      prizes
                     </p>
                   </div>
                 </div>

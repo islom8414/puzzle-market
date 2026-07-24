@@ -1,8 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
+import GiveawayPrizeShowcase from "@/app/components/GiveawayPrizeShowcase";
 
 const STORAGE_KEY = "puzzle-market-new-year-giveaway-modal-v2";
 
@@ -47,17 +48,8 @@ export default function HomeGiveawayModal() {
           x
         </button>
 
-        <div className="group relative aspect-[16/9] w-full overflow-hidden bg-zinc-950">
-          <Image
-            src="/giveaway/generated/new-year-giveaway-hero-16x9.png"
-            alt="Puzzle Market New Year Giveaway with iPhone, AirPods, puzzle prizes and BMW X-7"
-            fill
-            sizes="(min-width: 640px) 896px, 100vw"
-            className="object-cover object-center transition duration-700 group-hover:scale-[1.015]"
-            priority
-          />
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08),transparent_62%,rgba(0,0,0,0.72))]" />
-          <div className="pointer-events-none absolute inset-y-[-45%] left-[-35%] w-[28%] rotate-12 bg-gradient-to-r from-transparent via-white/25 to-transparent blur-sm animate-[giveawaySheen_4.8s_ease-in-out_infinite]" />
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-950">
+          <GiveawayPrizeShowcase mode="modal" />
         </div>
 
         <div className="relative bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.15),transparent_34%),linear-gradient(135deg,rgba(250,204,21,0.14),rgba(0,0,0,0.94)_48%)] p-4 sm:p-6">
