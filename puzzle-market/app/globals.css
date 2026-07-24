@@ -89,7 +89,7 @@ img{
 }
 
 .sweepstakes-page .sweepstakes-hero-frame{
-  overflow:visible !important;
+  overflow:hidden !important;
 }
 
 .sweepstakes-page .sweepstakes-hero-inner{
@@ -125,6 +125,10 @@ img{
 .sweepstakes-page h1{
   line-height:1.08 !important;
   overflow:visible !important;
+}
+
+.sweepstakes-page .sweepstakes-visual-card{
+  overflow:hidden !important;
 }
 
 @media (max-width:640px){
