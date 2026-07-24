@@ -140,21 +140,28 @@ export default async function HomePage() {
     <main className="min-h-screen overflow-hidden text-white">
       <LandingScrollReset />
       <HomeGiveawayModal />
-      <section className="relative px-4 pb-14 pt-10 md:px-6 md:pb-20 md:pt-16">
+      <section className="home-landing-section relative px-0 pb-14 pt-10 md:px-6 md:pb-20 md:pt-16">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(168,85,247,0.12),transparent_34%)]" />
 
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.82fr)] lg:items-center">
-          <div className="min-w-0">
+        <div
+          className="home-hero-grid mx-auto grid max-w-7xl gap-10 lg:items-center"
+          style={{
+            gridTemplateColumns: "minmax(0, 100%)",
+            paddingLeft: 0,
+            paddingRight: 0,
+          }}
+        >
+          <div className="w-full min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-400 md:text-sm">
               THE COLLECTIBLE PUZZLE MARKETPLACE
             </p>
 
-            <div className="mt-5 overflow-hidden rounded-[24px] border border-amber-200/35 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.36)_52%,rgba(0,0,0,0.86))] shadow-[0_26px_90px_rgba(250,204,21,0.14)] md:rounded-[28px]">
+            <div className="home-giveaway-card mt-5 overflow-hidden rounded-[24px] border border-amber-200/35 bg-[linear-gradient(135deg,rgba(250,204,21,0.16),rgba(8,47,73,0.36)_52%,rgba(0,0,0,0.86))] shadow-[0_26px_90px_rgba(250,204,21,0.14)] md:rounded-[28px]">
               <Link
                 href="/sweepstakes"
-                className="group grid gap-0 md:grid-cols-[1.08fr_0.92fr]"
+                className="home-giveaway-link group grid gap-0"
               >
-                <div className="relative min-h-[250px] overflow-hidden bg-[#020202] sm:min-h-[300px] md:min-h-[300px]">
+                <div className="relative min-h-[382px] overflow-hidden bg-[#020202] md:min-h-[300px]">
                   <GiveawayPrizeShowcase mode="compact" />
                 </div>
 
@@ -168,10 +175,10 @@ export default async function HomePage() {
                         Wave 1 ends August 31
                       </div>
                     </div>
-                    <h3 className="mt-3 text-xl font-black leading-tight sm:text-2xl md:mt-4 md:text-3xl">
+                    <h3 className="mt-3 text-[25px] font-black leading-[1.04] sm:text-2xl md:mt-4 md:text-3xl">
                       New Year giveaway is open.
                     </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-300 md:mt-3">
+                    <p className="mt-2 text-sm leading-[1.55] text-zinc-300 md:mt-3 md:leading-relaxed">
                       Buy the $7 six-month Entry Pass before August 31 and get
                       3 base tickets, plus automatic entry into the 07.07.2027
                       BMW X-7 mega draw.

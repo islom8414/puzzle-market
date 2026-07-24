@@ -45,8 +45,8 @@ const prizeSlides = [
     badge: "Puzzle credit",
     imageSrc: "/giveaway/generated/puzzle-credit-100.png",
     imageClassName: "object-contain object-center",
-    metric: "$100",
-    metricLabel: "credit",
+    metric: "7",
+    metricLabel: "winners",
   },
   {
     title: "$10 Puzzle Credit",
@@ -55,8 +55,8 @@ const prizeSlides = [
     badge: "Puzzle credit",
     imageSrc: "/giveaway/generated/puzzle-credit-10.png",
     imageClassName: "object-contain object-center",
-    metric: "$10",
-    metricLabel: "credit",
+    metric: "7",
+    metricLabel: "winners",
   },
   {
     title: "$1 Puzzle Credit",
@@ -447,6 +447,22 @@ export default function GiveawayPrizeShowcase({
         @media (max-width: 640px) {
           .giveaway-showcase.hero {
             min-height: 330px;
+          }
+
+          .giveaway-showcase.compact {
+            min-height: 382px;
+          }
+
+          .compact .showcase-slide {
+            grid-template-rows: minmax(210px, 1fr) auto;
+          }
+
+          .compact .slide-copy {
+            min-height: 142px;
+          }
+
+          .compact .feature-slide .slide-copy {
+            min-height: 142px;
           }
 
           .giveaway-showcase.modal {
