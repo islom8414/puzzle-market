@@ -88,6 +88,67 @@ img{
   }
 }
 
+.sweepstakes-page .sweepstakes-hero-frame{
+  overflow:visible !important;
+}
+
+.sweepstakes-page .sweepstakes-hero-inner{
+  padding-top:clamp(2.75rem, 3.2vw, 3.7rem) !important;
+  padding-right:clamp(2rem, 3vw, 3rem) !important;
+  padding-bottom:clamp(1.75rem, 2.8vw, 3rem) !important;
+  padding-left:clamp(2.5rem, 3.4vw, 3.5rem) !important;
+}
+
+.sweepstakes-page .sweepstakes-hero-copy{
+  padding-left:.25rem !important;
+  overflow:visible !important;
+}
+
+.sweepstakes-page .sweepstakes-kicker,
+.sweepstakes-page .sweepstakes-date-card{
+  overflow:visible !important;
+}
+
+.sweepstakes-page .sweepstakes-kicker{
+  line-height:1.05 !important;
+  min-height:2.1rem;
+}
+
+.sweepstakes-page .sweepstakes-date-card{
+  min-height:4.5rem;
+}
+
+.sweepstakes-page .sweepstakes-date-card p{
+  overflow-wrap:normal !important;
+}
+
+.sweepstakes-page h1{
+  line-height:1.08 !important;
+  overflow:visible !important;
+}
+
+@media (max-width:640px){
+  .sweepstakes-page .sweepstakes-hero-inner{
+    padding-top:1.5rem !important;
+    padding-right:1.25rem !important;
+    padding-bottom:1.25rem !important;
+    padding-left:1.25rem !important;
+  }
+
+  .sweepstakes-page .sweepstakes-hero-copy{
+    padding-left:0 !important;
+  }
+
+  .sweepstakes-page .sweepstakes-kicker{
+    min-height:2rem;
+    letter-spacing:.1em !important;
+  }
+
+  .sweepstakes-page .sweepstakes-date-card{
+    min-height:4.25rem;
+  }
+}
+
 ::selection{
   background:rgba(34,211,238,.35);
 }

@@ -281,20 +281,20 @@ export default function SweepstakesPage() {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
+    <main className="sweepstakes-page min-h-screen overflow-hidden bg-[#050505] text-white">
       <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-28 bg-black/90" />
       <div className="giveaway-aurora pointer-events-none fixed inset-0 z-0" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 pb-14 pt-32 sm:px-5 md:px-6 md:pt-36">
-        <section className="relative overflow-hidden rounded-[28px] border border-amber-300/35 bg-[radial-gradient(circle_at_78%_20%,rgba(251,191,36,0.2),transparent_34%),radial-gradient(circle_at_22%_70%,rgba(34,211,238,0.13),transparent_32%),linear-gradient(135deg,#0d0903_0%,#050505_44%,#061719_100%)] shadow-[0_28px_110px_rgba(0,0,0,0.65)] md:rounded-[36px]">
+        <section className="sweepstakes-hero-frame relative overflow-visible rounded-[28px] border border-amber-300/35 bg-[radial-gradient(circle_at_78%_20%,rgba(251,191,36,0.2),transparent_34%),radial-gradient(circle_at_22%_70%,rgba(34,211,238,0.13),transparent_32%),linear-gradient(135deg,#0d0903_0%,#050505_44%,#061719_100%)] shadow-[0_28px_110px_rgba(0,0,0,0.65)] md:rounded-[36px]">
           <div className="giveaway-sparks absolute inset-0 opacity-70" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.36),transparent_38%,rgba(251,191,36,0.06)_65%,rgba(0,0,0,0.22))]" />
           <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
 
-          <div className="relative grid gap-8 px-6 pb-6 pt-8 sm:px-7 sm:pb-7 sm:pt-9 md:px-9 md:pb-9 md:pt-10 lg:min-h-[720px] lg:grid-cols-[0.56fr_1fr] lg:items-stretch lg:px-10 lg:pb-10 lg:pt-12 xl:px-12 xl:pb-12 xl:pt-14">
-            <div className="flex max-w-xl flex-col justify-between gap-8 py-1 lg:py-3">
+          <div className="sweepstakes-hero-inner relative grid gap-8 px-6 pb-6 pt-8 sm:px-7 sm:pb-7 sm:pt-9 md:px-9 md:pb-9 md:pt-10 lg:min-h-[720px] lg:grid-cols-[0.56fr_1fr] lg:items-stretch lg:px-10 lg:pb-10 lg:pt-12 xl:px-12 xl:pb-12 xl:pt-14">
+            <div className="sweepstakes-hero-copy flex max-w-xl flex-col justify-between gap-8 py-1 lg:py-3">
               <div>
-                <div className="inline-flex max-w-full items-center rounded-full border border-amber-200/30 bg-amber-200/10 px-4 py-2.5 text-[10px] font-black uppercase leading-none tracking-[0.16em] text-amber-100 shadow-[0_0_28px_rgba(251,191,36,0.12)] sm:text-[11px]">
+                <div className="sweepstakes-kicker inline-flex max-w-full items-center rounded-full border border-amber-200/30 bg-amber-200/10 px-4 py-2.5 text-[10px] font-black uppercase leading-none tracking-[0.16em] text-amber-100 shadow-[0_0_28px_rgba(251,191,36,0.12)] sm:text-[11px]">
                   New Year Grand Giveaway
                 </div>
 
@@ -379,9 +379,9 @@ export default function SweepstakesPage() {
             </div>
 
             <div className="flex min-w-0 flex-col gap-4">
-              <div className="relative flex min-h-[620px] flex-col gap-4 overflow-hidden rounded-[30px] border border-amber-200/30 bg-black/64 p-5 shadow-[inset_0_0_90px_rgba(251,191,36,0.1),0_22px_80px_rgba(0,0,0,0.45)] backdrop-blur md:min-h-[650px] md:p-6 lg:min-h-full">
+              <div className="sweepstakes-visual-card relative flex min-h-[620px] flex-col gap-4 overflow-visible rounded-[30px] border border-amber-200/30 bg-black/64 p-5 shadow-[inset_0_0_90px_rgba(251,191,36,0.1),0_22px_80px_rgba(0,0,0,0.45)] backdrop-blur md:min-h-[650px] md:p-6 lg:min-h-full">
                 <div className="relative z-20 grid gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3">
-                  <div className="min-w-0 rounded-2xl border border-amber-200/30 bg-black/78 px-4 py-3.5 shadow-[0_12px_35px_rgba(0,0,0,0.38)] sm:min-w-[180px] sm:shrink-0">
+                  <div className="sweepstakes-date-card min-w-0 rounded-2xl border border-amber-200/30 bg-black/78 px-4 py-3.5 shadow-[0_12px_35px_rgba(0,0,0,0.38)] sm:min-w-[180px] sm:shrink-0">
                     <p className="whitespace-nowrap text-[8px] font-black uppercase leading-none tracking-[0.08em] text-amber-200 sm:text-[9px]">
                       1st draw
                     </p>
@@ -390,7 +390,7 @@ export default function SweepstakesPage() {
                     </p>
                   </div>
 
-                  <div className="min-w-0 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-3.5 shadow-[0_12px_35px_rgba(0,0,0,0.32)] sm:min-w-[168px] sm:shrink-0 sm:text-right">
+                  <div className="sweepstakes-date-card min-w-0 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-4 py-3.5 shadow-[0_12px_35px_rgba(0,0,0,0.32)] sm:min-w-[168px] sm:shrink-0 sm:text-right">
                     <p className="whitespace-nowrap text-[8px] font-black uppercase leading-none tracking-[0.08em] text-cyan-200 sm:text-[9px]">
                       Mega draw
                     </p>
